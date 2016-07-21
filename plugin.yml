@@ -1,0 +1,7 @@
+name: MangoQuest
+main: me.Cutiemango.MangoQuest.Main
+version: 1.0.0
+depend: [Vault, Citizens]
+commands:
+   mq:
+      description: command
