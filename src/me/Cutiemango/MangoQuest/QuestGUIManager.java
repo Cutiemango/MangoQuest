@@ -10,7 +10,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
 import io.netty.buffer.Unpooled;
+import me.Cutiemango.MangoQuest.data.QuestObjectProgress;
+import me.Cutiemango.MangoQuest.data.QuestProgress;
+import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectItemDeliver;
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectKillMob;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -68,6 +73,12 @@ public class QuestGUIManager {
 						if (obj instanceof QuestObjectItemDeliver)
 							QuestInfo.addExtra(new TextComponent(QuestUtil.translateColor(
 									" &8(" + ob.getProgress() + "/" + ((QuestObjectItemDeliver)obj).getDeliverAmount() + ")")));
+						else if (obj instanceof QuestObjectBreakBlock)
+							QuestInfo.addExtra(new TextComponent(QuestUtil.translateColor(
+									" &8(" + ob.getProgress() + "/" + ((QuestObjectBreakBlock)obj).getAmount() + ")")));
+						else if (obj instanceof QuestObjectKillMob)
+							QuestInfo.addExtra(new TextComponent(QuestUtil.translateColor(
+									" &8(" + ob.getProgress() + "/" + ((QuestObjectKillMob)obj).getAmount() + ")")));
 						QuestInfo.addExtra("\n");
 					}
 				}

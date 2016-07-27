@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest;
+package me.Cutiemango.MangoQuest.data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import me.Cutiemango.MangoQuest.QuestStorage;
+import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.QuestUtil.QuestTitleEnum;
+import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.model.QuestTrigger;
+import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 
 public class QuestProgress {
@@ -35,6 +40,12 @@ public class QuestProgress {
 	private List<QuestObjectProgress> objlist;
 
 	public void finish() {
+		for (QuestTrigger t : quest.getTriggers()){
+			if (t.getType().equals(TriggerType.TRIGGER_ON_FINISH)){
+				t.trigger(owner);
+				continue;
+			}
+		}
 		QuestPlayerData pd = QuestUtil.getData(owner);
 		pd.addFinishedQuest(quest);
 		pd.removeProgress(quest);
@@ -51,26 +62,6 @@ public class QuestProgress {
 			t++;
 		}
 	}
-
-//	public void save() {
-//		SimpleQuestObject obj = this.quest.getStages().get(CurrentStage).getObjects().get(CurrentObject);
-//		Main.config.pconfig.set(
-//				"玩家資料." + this.getOwner().getUniqueId() + ".任務進度." + this.quest.getInternalID() + ".QuestStage",
-//				this.CurrentStage);
-//		Main.config.pconfig.set(
-//				"玩家資料." + this.getOwner().getUniqueId() + ".任務進度." + this.quest.getInternalID() + ".QuestObject",
-//				obj.toString());
-//		if (obj instanceof QuestObjectItemDeliver) {
-//			Main.config.pconfig.set(
-//					"玩家資料." + this.getOwner().getUniqueId() + ".任務進度." + this.quest.getInternalID() + ".Amount",
-//					((QuestObjectItemDeliver) obj).getDeliveredAmount());
-//		}
-//		if (obj instanceof QuestObjectKillMob) {
-//			Main.config.pconfig.set(
-//					"玩家資料." + this.getOwner().getUniqueId() + ".任務進度." + this.quest.getInternalID() + ".Amount",
-//					((QuestObjectKillMob) obj).getKilledAmount());
-//		}
-//	}
 	
 	public void checkIfnextStage(){
 		for (QuestObjectProgress o : objlist){
@@ -81,6 +72,22 @@ public class QuestProgress {
 	}
 	
 	public void nextStage(){
+		if (quest.hasTrigger()){
+			for (QuestTrigger t : quest.getTriggers()){
+				if (t.getType().equals(TriggerType.TRIGGER_STAGE_FINISH)){
+					if (CurrentStage + 1 == t.getCount()){
+						t.trigger(owner);
+						continue;
+					}
+				}
+				else if (t.getType().equals(TriggerType.TRIGGER_STAGE_START)){
+					if (CurrentStage + 2 == t.getCount()){
+						t.trigger(owner);
+						continue;
+					}
+				}
+			}
+		}
 		if (CurrentStage + 1 < quest.getStages().size()){
 			CurrentStage++;
 			owner.sendMessage(ChatColor.translateAlternateColorCodes('&',

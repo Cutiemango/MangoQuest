@@ -4,7 +4,6 @@ import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.QuestUtil;
 import net.citizensnpcs.api.npc.NPC;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestObjectItemDeliver extends SimpleQuestObject{
@@ -47,20 +46,22 @@ public class QuestObjectItemDeliver extends SimpleQuestObject{
 	public TextComponent toTextComponent(boolean isFinished) {
 		TextComponent text = new TextComponent();
 		if (isFinished){
-			text = new TextComponent(QuestUtil.translateColor("&8&m&o提交物品 "));
+			text = new TextComponent(QuestUtil.translateColor("&8&m&o提交 "));
 			text.addExtra(QuestUtil.translateColor("&8&m&o"));
 			text.addExtra(QuestUtil.convertItemStacktoHoverEvent(true, DeliverItem));
 			TextComponent suffix = new TextComponent(
-					QuestUtil.translateColor(" &8&m&o" + DeliverItem.getAmount() + " &8&m&o個"));
+					QuestUtil.translateColor(" &8&m&o" + DeliverAmount + " &8&m&o個 給 "));
 			text.addExtra(suffix);
+			text.addExtra(QuestUtil.convertNPCtoHoverEvent(isFinished, TargetNPC));
 			return text;
 		}
 		else{
-			text = new TextComponent(ChatColor.translateAlternateColorCodes('&', "&0提交物品 "));
+			text = new TextComponent(QuestUtil.translateColor("&0提交 "));
 			text.addExtra(QuestUtil.convertItemStacktoHoverEvent(false, DeliverItem));
 			TextComponent suffix = new TextComponent(
-					ChatColor.translateAlternateColorCodes('&', " &0&l" + DeliverItem.getAmount() + " &0個"));
+					QuestUtil.translateColor(" &0&l" + DeliverAmount + " &0個 給 "));
 			text.addExtra(suffix);
+			text.addExtra(QuestUtil.convertNPCtoHoverEvent(isFinished, TargetNPC));
 			return text;
 		}
 	}
@@ -68,11 +69,9 @@ public class QuestObjectItemDeliver extends SimpleQuestObject{
 	@Override
 	public String toPlainText() {
 		if (DeliverItem.getItemMeta().hasDisplayName())
-			return ChatColor.translateAlternateColorCodes('&',
-				"&a提交物品 " + DeliverItem.getItemMeta().getDisplayName() + " &f" + DeliverAmount + " &a個");
+			return QuestUtil.translateColor("&a提交 " + DeliverItem.getItemMeta().getDisplayName() + " &f" + DeliverAmount + " &a個 給 " + TargetNPC.getName());
 		else
-			return ChatColor.translateAlternateColorCodes('&',
-					"&a提交物品 &f" + QuestUtil.translateItemStackToChinese(DeliverItem) + " &f" + DeliverAmount + " &a個");
+			return QuestUtil.translateColor("&a提交 &f" + QuestUtil.translate(DeliverItem.getType()) + " &f" + DeliverAmount + " &a個 給 " + TargetNPC.getName());
 	}
 	
 	

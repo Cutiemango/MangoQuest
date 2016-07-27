@@ -1,8 +1,9 @@
-package me.Cutiemango.MangoQuest;
+package me.Cutiemango.MangoQuest.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -22,8 +23,15 @@ public class Quest {
 
 	private String QuestName;
 	private String QuestOutline;
+	private String FailRequirementMessage;
 	private List<QuestStage> AllStages = new ArrayList<>();
 	private QuestReward reward;
+	
+	private List<QuestRequirement> Requirements = new ArrayList<>();
+	private List<QuestTrigger> Triggers = new ArrayList<>();
+	
+	private boolean isRedoable = false;
+	private long RedoDelay;
 
 	public String getInternalID() {
 		return InternalID;
@@ -64,5 +72,53 @@ public class Quest {
 	
 	public QuestStage getStage(int index){
 		return AllStages.get(index);
+	}
+
+	public List<QuestRequirement> getRequirements() {
+		return Requirements;
+	}
+
+	public List<QuestTrigger> getTriggers() {
+		return Triggers;
+	}
+
+	public void setRequirements(List<QuestRequirement> requirements) {
+		Requirements = requirements;
+	}
+
+	public void setTriggers(List<QuestTrigger> triggers) {
+		Triggers = triggers;
+	}
+	
+	public boolean hasTrigger(){
+		return !Triggers.isEmpty();
+	}
+	
+	public boolean hasRequirement(){
+		return !Requirements.isEmpty();
+	}
+	
+	public String getFailMessage(){
+		return FailRequirementMessage;
+	}
+	
+	public void setFailMessage(String s){
+		FailRequirementMessage = s;
+	}
+	
+	public boolean isRedoable(){
+		return isRedoable;
+	}
+	
+	public void setRedoable(boolean b){
+		isRedoable = b;
+	}
+	
+	public long getRedoDelay(){
+		return RedoDelay;
+	}
+	
+	public void setRedoDelay(long delay){
+		RedoDelay = delay;
 	}
 }

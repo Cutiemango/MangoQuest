@@ -6,11 +6,22 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.entity.EntityType;
 
+import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.model.QuestRequirement;
+import me.Cutiemango.MangoQuest.model.QuestReward;
+import me.Cutiemango.MangoQuest.model.QuestStage;
+import me.Cutiemango.MangoQuest.model.QuestTrigger;
+import me.Cutiemango.MangoQuest.model.QuestRequirement.RequirementType;
+import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerObject;
+import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectItemDeliver;
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectKillMob;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.CitizensAPI;
@@ -20,19 +31,27 @@ public class QuestConfigLoad {
 	
 	public static FileConfiguration pconfig;
 	private FileConfiguration qconfig;
+	private FileConfiguration tconfig;
 	private Main plugin;
 	
 	public QuestConfigLoad(Main pl){
 		plugin = pl;
 		init();
-		new BukkitRunnable(){
-			@Override
-			public void run() {
-				loadQuests();
-			}
-		}.runTaskLater(plugin, 5L);
+		loadTranslation();
 	}
 	
+	private void loadTranslation() {
+		for (String s : tconfig.getConfigurationSection("Material").getKeys(false)){
+			Material m = Material.getMaterial(s);
+			QuestStorage.TranslateMap.put(m, tconfig.getString("Material." + m.toString()));
+		}
+		for (String e : tconfig.getConfigurationSection("EntityType").getKeys(false)){
+			EntityType t = EntityType.valueOf(e);
+			QuestStorage.EntityTypeMap.put(t, tconfig.getString("EntityType." + e.toString()));
+		}
+		Bukkit.getLogger().log(Level.INFO, "[MangoQuest] 翻譯檔案讀取完成！");
+	}
+
 	private void init(){
 		File file = new File(plugin.getDataFolder(), "players.yml");
 		
@@ -41,6 +60,14 @@ public class QuestConfigLoad {
 			Bukkit.getLogger().log(Level.SEVERE, "[MangoQuest] 找不到players.yml，建立新檔案！");
 		}
 		pconfig = YamlConfiguration.loadConfiguration(file);
+		
+		file = new File(plugin.getDataFolder(), "translations.yml");
+		if (!file.exists()){
+			plugin.saveResource("translations.yml", true);
+			Bukkit.getLogger().log(Level.SEVERE, "[MangoQuest] 找不到translations.yml，建立新檔案！");
+		}
+		
+		tconfig = YamlConfiguration.loadConfiguration(file);
 		
 		file = new File(this.plugin.getDataFolder(), "quests.yml");
 		if (!file.exists()){
@@ -76,6 +103,19 @@ public class QuestConfigLoad {
 						obj = new QuestObjectTalkToNPC(CitizensAPI.getNPCRegistry()
 								.getById(qconfig.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".目標NPC")));
 						break;
+					case "KILL_MOB":
+						String name = null;
+						if (qconfig.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".怪物名稱") != null)
+							name = qconfig.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".怪物名稱");
+						obj = new QuestObjectKillMob(
+								EntityType.valueOf(qconfig.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".怪物類型")),
+								qconfig.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".數量"), name);
+						break;
+					case "BREAK_BLOCK":
+						obj = new QuestObjectBreakBlock(Material.getMaterial(
+								qconfig.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".方塊")),
+								qconfig.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".數量"));
+						break;
 					default:
 						break;
 					}
@@ -96,6 +136,56 @@ public class QuestConfigLoad {
 				if (CitizensAPI.getNPCRegistry().getById(0) != null){
 					NPC npc = CitizensAPI.getNPCRegistry().getById(0);
 					Quest quest = new Quest(internal, questname, questoutline, reward, stages, npc);
+					if (qconfig.getString("任務列表." + internal + ".不符合任務需求訊息") != null)
+						quest.setFailMessage(qconfig.getString("任務列表." + internal + ".不符合任務需求訊息"));
+					if (qconfig.isConfigurationSection("任務列表." + internal + ".任務需求")){
+						List<QuestRequirement> list = new ArrayList<>();
+						if (qconfig.getInt("任務列表." + internal + ".任務需求.Level") != 0)
+							list.add(new QuestRequirement(RequirementType.LEVEL, qconfig.getInt(qconfig.getString("任務列表." + internal + ".任務需求.Level"))));
+						if (qconfig.getStringList("任務列表." + internal + ".任務需求.Quest") != null){
+							for (String q : qconfig.getStringList("任務列表." + internal + ".任務需求.Quest")){
+								list.add(new QuestRequirement(RequirementType.QUEST, q));
+							}
+						}
+						if (qconfig.isConfigurationSection("任務列表." + internal + ".任務需求.Item")){
+							for (String i : qconfig.getConfigurationSection("任務列表." + internal + ".任務需求.Item").getKeys(false)) {
+								list.add(new QuestRequirement(RequirementType.ITEM, QuestUtil.getItemStack(qconfig, "任務列表." + internal + ".任務需求.Item." + i)));
+							}
+						}
+						quest.setRequirements(list);
+					}
+					if (qconfig.getStringList("任務列表." + internal + ".任務觸發事件") != null){
+						List<QuestTrigger> list = new ArrayList<>();
+						for (String tri : qconfig.getStringList("任務列表." + internal + ".任務觸發事件")){
+							String[] Stri = tri.split(" ");
+							QuestTrigger trigger = null;
+							TriggerType type = TriggerType.valueOf(Stri[0]);
+							TriggerObject obj;
+							switch(type){
+							case TRIGGER_STAGE_START:
+							case TRIGGER_STAGE_FINISH:
+								obj = TriggerObject.valueOf(Stri[2]);
+								String s = Stri[3];
+								if (Stri.length > 4){
+									for (int k = 4; k < Stri.length; k++){
+										s += Stri[k];
+									}
+								}
+								trigger = new QuestTrigger(type, obj, Integer.parseInt(Stri[1]), s);
+								break;
+							default:
+								obj = TriggerObject.valueOf(Stri[1]);
+								trigger = new QuestTrigger(type, obj, Stri[2]);
+								break;
+							}
+							list.add(trigger);
+						}
+						quest.setTriggers(list);
+					}
+					if (qconfig.getBoolean("任務列表." + internal + ".可重複執行")){
+						quest.setRedoable(true);
+						quest.setRedoDelay(qconfig.getInt("任務列表." + internal + ".重複執行時間") * 1000);
+					}
 					QuestStorage.Quests.put(internal, quest);
 					Bukkit.getLogger().log(Level.INFO, "任務 " + questname + " 已經讀取成功！");
 				}else{

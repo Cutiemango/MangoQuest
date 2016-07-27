@@ -1,6 +1,8 @@
-package me.Cutiemango.MangoQuest;
+package me.Cutiemango.MangoQuest.data;
 
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectItemDeliver;
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectKillMob;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 
@@ -22,6 +24,14 @@ public class QuestObjectProgress {
 		}
 		else if (obj instanceof QuestObjectTalkToNPC){
 			if (i == 1)
+				isFinished = true;
+		}
+		else if (obj instanceof QuestObjectKillMob){
+			if (((QuestObjectKillMob)obj).getAmount() == i)
+				isFinished = true;
+		}
+		else if (obj instanceof QuestObjectBreakBlock){
+			if (((QuestObjectBreakBlock)obj).getAmount() == i)
 				isFinished = true;
 		}
 	}

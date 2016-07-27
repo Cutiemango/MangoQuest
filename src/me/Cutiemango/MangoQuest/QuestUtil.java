@@ -10,10 +10,13 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import me.Cutiemango.MangoQuest.model.Quest;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -35,15 +38,15 @@ public class QuestUtil {
 		ItemStack is = it.clone();
 		if (!is.getItemMeta().hasDisplayName()) {
 			ItemMeta im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + translateItemStackToChinese(is));
+			im.setDisplayName(ChatColor.WHITE + translate(is.getType()));
 			is.setItemMeta(im);
 			if (f)
-				itemname = new TextComponent(QuestUtil.translateColor("&8&m&o") + translateItemStackToChinese(is));
+				itemname = new TextComponent(QuestUtil.translateColor("&8&m&o") + translate(is.getType()));
 			else
-				itemname = new TextComponent(ChatColor.BLACK + translateItemStackToChinese(is));
+				itemname = new TextComponent(ChatColor.BLACK + translate(is.getType()));
 		} else {
 			if (f)
-				itemname = new TextComponent(QuestUtil.translateColor("&8&m&o") + translateItemStackToChinese(is));
+				itemname = new TextComponent(QuestUtil.translateColor("&8&m&o") + translate(is.getType()));
 			else
 				itemname = new TextComponent(is.getItemMeta().getDisplayName());
 		}
@@ -60,7 +63,7 @@ public class QuestUtil {
 	
 	public static ItemStack getItemStack(FileConfiguration config, String path) {
 		Material m = Material.getMaterial(config.getString(path + ".Ãþ§O"));
-		int amount = Integer.parseInt(config.getString(path + ".¼Æ¶q"));
+		int amount = config.getInt(path + ".¼Æ¶q");
 		ItemStack is = new ItemStack(m, amount);
 		if (config.getString(path + ".¦WºÙ") != null) {
 			String name = ChatColor.translateAlternateColorCodes('&', config.getString(path + ".¦WºÙ"));
@@ -140,6 +143,10 @@ public class QuestUtil {
 		return QuestStorage.Players.get(p.getName());
 	}
 	
+	public static Quest getQuest(String s){
+		return QuestStorage.Quests.get(s);
+	}
+	
 	public static void info(Player p, String s){
 		p.sendMessage(QuestStorage.prefix + " " + translateColor(s));
 		return;
@@ -150,71 +157,34 @@ public class QuestUtil {
 		return;
 	}
 	
-	public static String translateItemStackToChinese(ItemStack is) {
-		switch (is.getType()) {
-		case AIR:
-			return "ªÅ®ð";
-		case APPLE:
-			return "Ä«ªG";
-		case DIAMOND:
-			return "Æp¥Û";
-		case EMERALD:
-			return "ºñÄ_¥Û";
-		case IRON_INGOT:
-			return "ÅK¿õ";
-		case GOLD_INGOT:
-			return "ª÷¿õ";
-			
-		case WOOD_SWORD:
-			return "¤ì¼C";
-		case STONE_SWORD:
-			return "¥Û¼C";
-		case GOLD_SWORD:
-			return "ª÷¼C";
-		case IRON_SWORD:
-			return "ÅK¼C";
-		case DIAMOND_SWORD:
-			return "Æp¥Û¼C";
-			
-		case WOOD_AXE:
-			return "¤ì©ò";
-		case STONE_AXE:
-			return "¥Û©ò";
-		case GOLD_AXE:
-			return "ª÷©ò";
-		case IRON_AXE:
-			return "ÅK©ò";
-		case DIAMOND_AXE:
-			return "Æp¥Û©ò";
-			
-		case WOOD_PICKAXE:
-			return "¤ìÂî";
-		case STONE_PICKAXE:
-			return "¥ÛÂî";
-		case GOLD_PICKAXE:
-			return "ª÷Âî";
-		case IRON_PICKAXE:
-			return "ÅKÂî";
-		case DIAMOND_PICKAXE:
-			return "Æp¥ÛÂî";
-			
-		case WOOD_SPADE:
-			return "¤ìÃê";
-		case STONE_SPADE:
-			return "¥ÛÃê";
-		case GOLD_SPADE:
-			return "ª÷Ãê";
-		case IRON_SPADE:
-			return "ÅKÃê";
-		case DIAMOND_SPADE:
-			return "Æp¥ÛÃê";
-			
-		case BOW:
-			return "¤}";
+	public static String convertTime(long l){
+		String s = "";
 
-		default:
-			return "¥¼ª¾ªºª««~";
-		}
+		long days = l / 86400000;
+		long hours = (l % 86400000) / 3600000;
+		long minutes = ((l % 86400000) % 3600000) / 60000;
+		long seconds = (((l % 86400000) % 3600000) % 60000) / 1000;
+		
+		if (days > 0)
+			s += days + " ¤Ñ,";
+		if (hours > 0)
+			s += hours + " ¤p®É,";
+		if (minutes > 0)
+			s += minutes + " ¤ÀÄÁ,";
+		if (seconds > 0)
+			s += seconds + " ¬í";
+		return s;
 	}
-
+	
+	public static String translate(Material m){
+		if (!QuestStorage.TranslateMap.containsKey(m))
+			return "¥¼ª¾";
+		else return QuestStorage.TranslateMap.get(m);
+	}
+	
+	public static String translate(EntityType e){
+		if (!QuestStorage.EntityTypeMap.containsKey(e))
+			return "¥¼ª¾";
+		else return QuestStorage.EntityTypeMap.get(e);
+	}
 }

@@ -3,30 +3,44 @@
     "任務名稱": "測試任務"
     "任務提要": "只是測試用的而已。"
     "任務NPC": 0
+    "任務需求":
+      Level: 5
+      Quest:
+      - "Apple"
+      Item:
+        '1':
+          "類別": DIAMOND_SWORD
+          "數量": 1
+    "不符合任務需求訊息": "&c你並沒有達到符合的任務條件。"
+    "可重複執行": true
+    "重複執行時間": 10
+    "任務觸發事件":
+    - "TRIGGER_ON_TAKE SEND_TITLE &b成功接受任務了。"
+    - "TRIGGER_STAGE_START 2 SEND_SUBTITLE &6第二階段開始。"
+    - "TRIGGER_STAGE_FINISH 1 SEND_MESSAGE &b恭喜你完成一個階段了。"
+    - "TRIGGER_STAGE_FINISH 1 COMMAND say <player>"
+    - "TRIGGER_ON_QUIT SEND_MESSAGE &c你憑甚麼給我放棄任務！"
     "任務內容":
       '1':
         '1':
           "任務種類": ITEM_DELIVER
-          "目標NPC": 0
+          "目標NPC": 1
           "物品":
             "類別": DIAMOND_SWORD
             "數量": 1
         '2':
-          "任務種類": ITEM_DELIVER
-          "目標NPC": 0
-          "物品":
-            "類別": EMERALD
-            "數量": 5
+          "任務種類": KILL_MOB
+          "怪物名稱": "小殭屍"
+          "怪物類型": ZOMBIE
+          "數量": 1
       '2':
         '1':
           "任務種類": TALK_TO_NPC
           "目標NPC": 0
         '2':
-          "任務種類": ITEM_DELIVER
-          "目標NPC": 0
-          "物品":
-            "類別": IRON_INGOT
-            "數量": 3
+          "任務種類": BREAK_BLOCK
+          "方塊": GRASS
+          "數量": 5
     "任務獎勵":
       "物品":
         '1':
@@ -44,6 +58,30 @@
           "物品":
             "類別": APPLE
             "數量": 32
+      '2':
+        '1':
+          "任務種類": TALK_TO_NPC
+          "目標NPC": 0
+    "任務獎勵":
+      "物品":
+        '1':
+          "類別": GOLD_INGOT
+          "數量": 16
+  Gold:
+    "任務名稱": "稀有的金條"
+    "任務提要": "你那裏有金條嗎？稀有的那種。"
+    "任務NPC": 0
+    "任務內容":
+      '1':
+        '1':
+          "任務種類": ITEM_DELIVER
+          "目標NPC": 0
+          "物品":
+            "類別": GOLD_INGOT
+            "數量": 32
+            "名稱": "&6貴重的金條"
+            "註解":
+            - "&e超級珍貴的唷。"
       '2':
         '1':
           "任務種類": TALK_TO_NPC

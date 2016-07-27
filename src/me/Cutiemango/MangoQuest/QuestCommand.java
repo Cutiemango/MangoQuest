@@ -5,6 +5,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import me.Cutiemango.MangoQuest.model.Quest;
+
 public class QuestCommand implements CommandExecutor{
 
 	@Override
