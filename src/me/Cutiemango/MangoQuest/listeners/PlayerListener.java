@@ -8,7 +8,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import me.Cutiemango.MangoQuest.QuestConfigLoad;
@@ -63,4 +65,19 @@ public class PlayerListener implements Listener{
 			qd.breakBlock(e.getBlock().getType());
 	}
 	
+	@EventHandler
+	public void onCosumeItem(PlayerItemConsumeEvent e){
+		Player p = e.getPlayer();
+		QuestPlayerData qd = QuestUtil.getData(p);
+		if (e.getItem() != null)
+			qd.consumeItem(e.getItem());
+	}
+	
+	@EventHandler
+	public void onMove(PlayerMoveEvent e){
+		Player p = e.getPlayer();
+		QuestPlayerData qd = QuestUtil.getData(p);
+		if (qd != null && e.getTo() != null)
+		qd.reachLocation(e.getTo());
+	}
 }

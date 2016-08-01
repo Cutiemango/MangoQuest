@@ -17,27 +17,55 @@ public class QuestTrigger {
 		t = type;
 		o = obj;
 		value = arg;
+		if (value instanceof String)
+			value = QuestUtil.translateColor((String)value);
 	}
 	
 	public QuestTrigger(TriggerType type, TriggerObject obj, int i, Object arg){
-		if (!type.equals(TriggerType.TRIGGER_STAGE_START) && !type.equals(TriggerType.TRIGGER_STAGE_FINISH)){
-			Bukkit.getLogger().warning("解析任務事件時出現錯誤。");
-			Bukkit.getLogger().warning("ERROR: " + type.toString() + " should not use this constructor.");
-		}
+		if (!type.equals(TriggerType.TRIGGER_STAGE_START) && !type.equals(TriggerType.TRIGGER_STAGE_FINISH))
+			QuestUtil.warnCmd(this.getClass(), "ERROR: " + type.toString() + " should not use this constructor.");
+		
 		t = type;
 		count = i;
 		o = obj;
 		value = arg;
+		if (value instanceof String)
+			value = QuestUtil.translateColor((String)value);
 	}
 	
 	public enum TriggerType{
-		TRIGGER_ON_TAKE, TRIGGER_ON_QUIT, TRIGGER_ON_FINISH,
-		TRIGGER_STAGE_START, TRIGGER_STAGE_FINISH;
+		TRIGGER_ON_TAKE("接受時觸發"), TRIGGER_ON_QUIT("放棄時觸發"), TRIGGER_ON_FINISH("完成時觸發"),
+		TRIGGER_STAGE_START("第N階段開始時觸發"), TRIGGER_STAGE_FINISH("第N階段完成時觸發");
+		
+		private String name;
+		
+		TriggerType(String s){
+			name = s;
+		}
+		
+		public String toCustomString(){
+			return name;
+		}
+		
+		public String toCustomString(int i){
+			return name.replace("N", Integer.toString(i));
+		}
 	}
 	
 	public enum TriggerObject{
-		COMMAND, SEND_TITLE, SEND_SUBTITLE, SEND_MESSAGE,
-		TELEPORT;
+		COMMAND("指令"),
+		SEND_TITLE("發送標題"), SEND_SUBTITLE("發送副標題"), SEND_MESSAGE("發送訊息"),
+		TELEPORT("傳送玩家");
+		
+		private String name;
+		
+		TriggerObject(String s){
+			name = s;
+		}
+		
+		public String toCustomString(){
+			return name;
+		}
 	}
 	
 	public void trigger(Player p){
@@ -48,8 +76,7 @@ public class QuestTrigger {
 			replaced = QuestUtil.translateColor(replaced);
 		}
 		else{
-			Bukkit.getLogger().severe("觸發任務事件時出現錯誤。");
-			Bukkit.getLogger().severe("ERROR: " + t.toString() + " does not have a matched Object value.");
+			QuestUtil.warnCmd(this.getClass(), "ERROR: " + t.toString() + " does not have a matched Object value.");
 		}
 		switch(o){
 		case COMMAND:
@@ -83,6 +110,14 @@ public class QuestTrigger {
 	
 	public int getCount(){
 		return count;
+	}
+	
+	public TriggerObject getTriggerObject(){
+		return o;
+	}
+	
+	public Object getObject(){
+		return value;
 	}
 
 }

@@ -6,22 +6,25 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.QuestRequirement;
 import me.Cutiemango.MangoQuest.model.QuestReward;
 import me.Cutiemango.MangoQuest.model.QuestStage;
 import me.Cutiemango.MangoQuest.model.QuestTrigger;
-import me.Cutiemango.MangoQuest.model.QuestRequirement.RequirementType;
 import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerObject;
 import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
+import me.Cutiemango.MangoQuest.model.RequirementType;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectItemConsume;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectItemDeliver;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectKillMob;
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.CitizensAPI;
@@ -116,6 +119,21 @@ public class QuestConfigLoad {
 								qconfig.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".方塊")),
 								qconfig.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".數量"));
 						break;
+					case "CONSUME_ITEM":
+						obj = new QuestObjectItemConsume(QuestUtil.getItemStack(qconfig, "任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品"),
+								qconfig.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品.數量"));
+						break;
+					case "REACH_LOCATION":
+						String[] splited = qconfig.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".地點").split(":");
+						Location loc = new Location(
+								Bukkit.getWorld(splited[0]),
+								Double.parseDouble(splited[1]),
+								Double.parseDouble(splited[2]),
+								Double.parseDouble(splited[3]));
+						obj = new QuestObjectReachLocation(loc,
+								qconfig.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".範圍"),
+								qconfig.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".名稱"));
+						break;
 					default:
 						break;
 					}
@@ -138,22 +156,30 @@ public class QuestConfigLoad {
 					Quest quest = new Quest(internal, questname, questoutline, reward, stages, npc);
 					if (qconfig.getString("任務列表." + internal + ".不符合任務需求訊息") != null)
 						quest.setFailMessage(qconfig.getString("任務列表." + internal + ".不符合任務需求訊息"));
+					
+					//Requirements
 					if (qconfig.isConfigurationSection("任務列表." + internal + ".任務需求")){
-						List<QuestRequirement> list = new ArrayList<>();
 						if (qconfig.getInt("任務列表." + internal + ".任務需求.Level") != 0)
-							list.add(new QuestRequirement(RequirementType.LEVEL, qconfig.getInt(qconfig.getString("任務列表." + internal + ".任務需求.Level"))));
+							quest.getRequirements().put(RequirementType.LEVEL, qconfig.getInt(qconfig.getString("任務列表." + internal + ".任務需求.Level")));
 						if (qconfig.getStringList("任務列表." + internal + ".任務需求.Quest") != null){
-							for (String q : qconfig.getStringList("任務列表." + internal + ".任務需求.Quest")){
-								list.add(new QuestRequirement(RequirementType.QUEST, q));
-							}
+							quest.getRequirements().put(RequirementType.QUEST, qconfig.getStringList("任務列表." + internal + ".任務需求.Quest"));
 						}
 						if (qconfig.isConfigurationSection("任務列表." + internal + ".任務需求.Item")){
+							List<ItemStack> l = new ArrayList<>();
 							for (String i : qconfig.getConfigurationSection("任務列表." + internal + ".任務需求.Item").getKeys(false)) {
-								list.add(new QuestRequirement(RequirementType.ITEM, QuestUtil.getItemStack(qconfig, "任務列表." + internal + ".任務需求.Item." + i)));
+								l.add(QuestUtil.getItemStack(qconfig, "任務列表." + internal + ".任務需求.Item." + i));
 							}
+							quest.getRequirements().put(RequirementType.ITEM, l);
 						}
-						quest.setRequirements(list);
+						if (qconfig.getStringList("任務列表." + internal + ".任務需求.Scoreboard") != null){
+							quest.getRequirements().put(RequirementType.SCOREBOARD, qconfig.getStringList("任務列表." + internal + ".任務需求.Scoreboard"));
+						}
+						if (qconfig.getStringList("任務列表." + internal + ".任務需求.NBTTag") != null){
+							quest.getRequirements().put(RequirementType.NBTTAG, qconfig.getStringList("任務列表." + internal + ".任務需求.NBTTag"));
+						}
 					}
+					
+					//Triggers
 					if (qconfig.getStringList("任務列表." + internal + ".任務觸發事件") != null){
 						List<QuestTrigger> list = new ArrayList<>();
 						for (String tri : qconfig.getStringList("任務列表." + internal + ".任務觸發事件")){
@@ -166,16 +192,26 @@ public class QuestConfigLoad {
 							case TRIGGER_STAGE_FINISH:
 								obj = TriggerObject.valueOf(Stri[2]);
 								String s = Stri[3];
-								if (Stri.length > 4){
-									for (int k = 4; k < Stri.length; k++){
-										s += Stri[k];
+								if (obj.equals(TriggerObject.COMMAND)){
+									if (Stri.length > 4){
+										for (int k = 4; k < Stri.length; k++){
+											s += " " + Stri[k];
+										}
 									}
 								}
 								trigger = new QuestTrigger(type, obj, Integer.parseInt(Stri[1]), s);
 								break;
 							default:
 								obj = TriggerObject.valueOf(Stri[1]);
-								trigger = new QuestTrigger(type, obj, Stri[2]);
+								String t = Stri[2];
+								if (obj.equals(TriggerObject.COMMAND)){
+									if (Stri.length > 3){
+										for (int k = 3; k < Stri.length; k++){
+											t += " " + Stri[k];
+										}
+									}
+								}
+								trigger = new QuestTrigger(type, obj, t);
 								break;
 							}
 							list.add(trigger);

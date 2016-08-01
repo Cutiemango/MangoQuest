@@ -5,7 +5,7 @@ import org.bukkit.entity.EntityType;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class QuestObjectKillMob extends SimpleQuestObject{
+public class QuestObjectKillMob extends NumerableObject{
 	
 	public QuestObjectKillMob(EntityType t, int i, String customname){
 		type = t;
@@ -15,17 +15,12 @@ public class QuestObjectKillMob extends SimpleQuestObject{
 	}
 	
 	private EntityType type;
-	private int amount;
 	private String CustomName;
 	
 	public EntityType getType(){
 		return type;
 	}
-	
-	public int getAmount(){
-		return amount;
-	}
-	
+
 	public boolean hasCustomName(){
 		return !(CustomName == null);
 	}

@@ -5,3 +5,5 @@ depend: [Vault, Citizens]
 commands:
    mq:
       description: command
+   mqe:
+      description: command

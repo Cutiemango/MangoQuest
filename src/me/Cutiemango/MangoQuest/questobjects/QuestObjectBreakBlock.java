@@ -6,7 +6,7 @@ import org.bukkit.Material;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class QuestObjectBreakBlock extends SimpleQuestObject{
+public class QuestObjectBreakBlock extends NumerableObject{
 	
 	public QuestObjectBreakBlock(Material m, int i){
 		if (!m.isBlock()){
@@ -18,7 +18,6 @@ public class QuestObjectBreakBlock extends SimpleQuestObject{
 	}
 	
 	private Material block;
-	private int amount;
 
 	@Override
 	public TextComponent toTextComponent(boolean isFinished) {
@@ -38,9 +37,5 @@ public class QuestObjectBreakBlock extends SimpleQuestObject{
 	
 	public Material getType(){
 		return block;
-	}
-	
-	public int getAmount(){
-		return amount;
 	}
 }

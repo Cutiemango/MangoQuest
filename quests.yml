@@ -11,6 +11,12 @@
         '1':
           "類別": DIAMOND_SWORD
           "數量": 1
+      Scoreboard:
+      - "obj01 <= 8"
+      NBTTag:
+      - "QuestTag001"
+      - "QuestTag002"
+      - "QuestTag003"
     "不符合任務需求訊息": "&c你並沒有達到符合的任務條件。"
     "可重複執行": true
     "重複執行時間": 10
@@ -36,11 +42,22 @@
       '2':
         '1':
           "任務種類": TALK_TO_NPC
-          "目標NPC": 0
+          "目標NPC": 1
         '2':
           "任務種類": BREAK_BLOCK
           "方塊": GRASS
           "數量": 5
+      '3':
+        '1':
+          "任務種類": CONSUME_ITEM
+          "物品":
+            "類別": POTATO_ITEM
+            "數量": 1
+        '2':
+          "任務種類": REACH_LOCATION
+          "地點": world:0:80:0
+          "名稱": "&d&l超級遙遠的地方"
+          "範圍": 5
     "任務獎勵":
       "物品":
         '1':
@@ -54,7 +71,7 @@
       '1':
         '1':
           "任務種類": ITEM_DELIVER
-          "目標NPC": 0
+          "目標NPC": 1
           "物品":
             "類別": APPLE
             "數量": 32
@@ -75,7 +92,7 @@
       '1':
         '1':
           "任務種類": ITEM_DELIVER
-          "目標NPC": 0
+          "目標NPC": 1
           "物品":
             "類別": GOLD_INGOT
             "數量": 32

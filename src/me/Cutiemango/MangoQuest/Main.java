@@ -8,7 +8,10 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import me.Cutiemango.MangoQuest.commands.QuestCommand;
+import me.Cutiemango.MangoQuest.commands.QuestEditorCommand;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import me.Cutiemango.MangoQuest.editor.QuestEditorListener;
 import me.Cutiemango.MangoQuest.listeners.PlayerListener;
 import me.Cutiemango.MangoQuest.listeners.QuestListener;
 import net.citizensnpcs.api.CitizensPlugin;
@@ -18,7 +21,7 @@ import net.milkbowl.vault.economy.Economy;
 public class Main extends JavaPlugin{
 	
 	public static Main instance;
-	public static Economy economy = null;
+	public static Economy economy;
 	public CitizensPlugin citizens;
 	public Vault vault = null;
 	
@@ -28,13 +31,15 @@ public class Main extends JavaPlugin{
 	public void onEnable(){
 		instance = this;
 		
-		linkOtherPlugins();
-		
 		getCommand("mq").setExecutor(new QuestCommand());
+		getCommand("mqe").setExecutor(new QuestEditorCommand());
+
 		getServer().getPluginManager().registerEvents(new QuestListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+		getServer().getPluginManager().registerEvents(new QuestEditorListener(), this);
 		cfg = new QuestConfigLoad(this);
 		
+		linkOtherPlugins();
 		
 		new BukkitRunnable(){
 			@Override
@@ -66,18 +71,26 @@ public class Main extends JavaPlugin{
 			if (getServer().getPluginManager().getPlugin("Citizens") != null) {
 				citizens = (CitizensPlugin) getServer().getPluginManager().getPlugin("Citizens");
 			}
+			if (setupEconomy())
+				getLogger().log(Level.INFO, "金錢插件已經連結成功。");
+			else
+				getLogger().log(Level.INFO, "未連結金錢插件。");
+			if (getServer().getPluginManager().getPlugin("Vault") != null) {
+				vault = (Vault) getServer().getPluginManager().getPlugin("Vault");
+			}
 			getLogger().log(Level.INFO, "Citizens插件已經連結成功。");
 		} catch (Exception e) {
-			getLogger().log(Level.WARNING, "沒有符合版本的Citizens插件。NPC功能將不會啟動。");
-
+			e.printStackTrace();
 		}
-
-		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager()
-				.getRegistration(net.milkbowl.vault.economy.Economy.class);
+	}
+	
+	private boolean setupEconomy() {
+		RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServicesManager().getRegistration(Economy.class);
 		if (economyProvider != null) {
 			economy = economyProvider.getProvider();
-			getLogger().log(Level.INFO, "Vault插件已經連結成功。");
 		}
+
+		return (economy != null);
 	}
 
 }

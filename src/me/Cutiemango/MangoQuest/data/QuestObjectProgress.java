@@ -1,9 +1,6 @@
 package me.Cutiemango.MangoQuest.data;
 
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectItemDeliver;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectKillMob;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
+import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 
 public class QuestObjectProgress {
@@ -18,20 +15,12 @@ public class QuestObjectProgress {
 	}
 	
 	public void checkIfFinished(){
-		if (obj instanceof QuestObjectItemDeliver){
-			if (((QuestObjectItemDeliver)obj).getDeliverAmount() == i)
+		if (obj instanceof NumerableObject){
+			if (((NumerableObject)obj).getAmount() == i)
 				isFinished = true;
 		}
-		else if (obj instanceof QuestObjectTalkToNPC){
+		else if (obj instanceof SimpleQuestObject){
 			if (i == 1)
-				isFinished = true;
-		}
-		else if (obj instanceof QuestObjectKillMob){
-			if (((QuestObjectKillMob)obj).getAmount() == i)
-				isFinished = true;
-		}
-		else if (obj instanceof QuestObjectBreakBlock){
-			if (((QuestObjectBreakBlock)obj).getAmount() == i)
 				isFinished = true;
 		}
 	}

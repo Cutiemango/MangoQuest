@@ -1,15 +1,13 @@
 package me.Cutiemango.MangoQuest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -17,12 +15,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
-import net.citizensnpcs.api.npc.NPC;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.HoverEvent.Action;
-import net.minecraft.server.v1_10_R1.NBTTagCompound;
 import net.minecraft.server.v1_10_R1.PacketPlayOutTitle;
 import net.minecraft.server.v1_10_R1.IChatBaseComponent.ChatSerializer;
 import net.minecraft.server.v1_10_R1.PacketPlayOutTitle.EnumTitleAction;
@@ -31,34 +23,6 @@ public class QuestUtil {
 	
 	public static String translateColor(String s){
 		return ChatColor.translateAlternateColorCodes('&', s);
-	}
-	
-	public static TextComponent convertItemStacktoHoverEvent(boolean f, ItemStack it) {
-		TextComponent itemname = new TextComponent();
-		ItemStack is = it.clone();
-		if (!is.getItemMeta().hasDisplayName()) {
-			ItemMeta im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + translate(is.getType()));
-			is.setItemMeta(im);
-			if (f)
-				itemname = new TextComponent(QuestUtil.translateColor("&8&m&o") + translate(is.getType()));
-			else
-				itemname = new TextComponent(ChatColor.BLACK + translate(is.getType()));
-		} else {
-			if (f)
-				itemname = new TextComponent(QuestUtil.translateColor("&8&m&o") + translate(is.getType()));
-			else
-				itemname = new TextComponent(is.getItemMeta().getDisplayName());
-		}
-		
-		net.minecraft.server.v1_10_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
-		NBTTagCompound tag = i.save(new NBTTagCompound());
-		String itemJson = tag.toString();
-		
-		BaseComponent[] hoverEventComponents = new BaseComponent[] { new TextComponent(itemJson) };
-		itemname.setHoverEvent(new HoverEvent(Action.SHOW_ITEM, hoverEventComponents));
-
-		return itemname;
 	}
 	
 	public static ItemStack getItemStack(FileConfiguration config, String path) {
@@ -77,34 +41,6 @@ public class QuestUtil {
 			is.setItemMeta(im);
 		}
 		return is;
-	}
-	
-	public static TextComponent convertNPCtoHoverEvent(boolean f, NPC npc) {
-		TextComponent name = new TextComponent();
-		if (npc == null)
-			return name;
-		ItemStack is = new ItemStack(Material.SIGN);
-		ItemMeta im = is.getItemMeta();
-		Location loc = npc.getEntity().getLocation();
-		im.setDisplayName(npc.getName());
-		im.setLore(Arrays.asList(new String[] { ChatColor.GOLD + "目前位於：",
-				ChatColor.WHITE + "- 世界： " + loc.getWorld().getName(), ChatColor.WHITE + "- 座標： ("
-						+ Math.floor(loc.getX()) + " , " + loc.getY() + " , " + Math.floor(loc.getZ()) + ")" }));
-		is.setItemMeta(im);
-		
-		if (f)
-			name = new TextComponent(QuestUtil.translateColor("&8&m&o") + ChatColor.stripColor(npc.getName()));
-		else
-			name = new TextComponent(npc.getName());
-
-		net.minecraft.server.v1_10_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
-		NBTTagCompound tag = i.save(new NBTTagCompound());
-		String itemJson = tag.toString();
-
-		BaseComponent[] hoverEventComponents = new BaseComponent[] { new TextComponent(itemJson) };
-		name.setHoverEvent(new HoverEvent(Action.SHOW_ITEM, hoverEventComponents));
-
-		return name;
 	}
 	
 	public static void sendTitle(Player p, Integer fadeIn, Integer stay, Integer fadeOut, String title,
@@ -155,6 +91,12 @@ public class QuestUtil {
 	public static void error(Player p, String s){
 		p.sendMessage(translateColor("&cError> " + s));
 		return;
+	}
+	
+	public static void warnCmd(Class<?> clazz, String s){
+		Bukkit.getLogger().warning("解析 " + clazz.getClass().getName() + ".class 時發生錯誤，請檢查設定檔。");
+		Bukkit.getLogger().warning("若您確認這是個BUG，請回報開發者。");
+		Bukkit.getLogger().warning(s);
 	}
 	
 	public static String convertTime(long l){

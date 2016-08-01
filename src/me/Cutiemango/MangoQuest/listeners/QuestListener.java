@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 
 public class QuestListener implements Listener{
@@ -14,6 +15,8 @@ public class QuestListener implements Listener{
 	@EventHandler
 	public void onNPCRightClick(NPCRightClickEvent e){
 		Player p = e.getClicker();
+		if (QuestEditorManager.isInEditorMode(p))
+			return;
 		QuestPlayerData pd = QuestUtil.getData(p);
 		if (p.getInventory().getItemInMainHand().getType().equals(Material.AIR))
 			pd.talkToNPC(e.getNPC());

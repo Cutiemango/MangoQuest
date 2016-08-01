@@ -3,75 +3,64 @@ package me.Cutiemango.MangoQuest.questobjects;
 import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.TextComponentFactory;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class QuestObjectItemDeliver extends SimpleQuestObject{
+public class QuestObjectItemDeliver extends NumerableObject{
 	
-	public QuestObjectItemDeliver(NPC npc, ItemStack is, int deliveramount) {
-		this.TargetNPC = npc;
-		this.DeliverItem = is;
-		this.DeliverAmount = deliveramount;
+	public QuestObjectItemDeliver(NPC n, ItemStack is, int deliveramount) {
+		npc = n;
+		item = is;
+		amount = deliveramount;
 	}
 
-	private NPC TargetNPC;
-	private ItemStack DeliverItem;
-	private int DeliverAmount;
+	private NPC npc;
+	private ItemStack item;
 
 	public NPC getTargetNPC() {
-		return TargetNPC;
+		return npc;
 	}
 
 	public void setTargetNPC(NPC targetNPC) {
-		TargetNPC = targetNPC;
+		npc = targetNPC;
 	}
 
 	public ItemStack getDeliverItem() {
-		return DeliverItem;
+		return item;
 	}
 
 	public void setDeliverItem(ItemStack deliverItem) {
-		DeliverItem = deliverItem;
-	}
-
-	public int getDeliverAmount() {
-		return this.DeliverAmount;
-	}
-
-	public void setDeliverAmount(int i) {
-		this.DeliverAmount = i;
+		item = deliverItem;
 	}
 
 	@Override
 	public TextComponent toTextComponent(boolean isFinished) {
 		TextComponent text = new TextComponent();
 		if (isFinished){
-			text = new TextComponent(QuestUtil.translateColor("&8&m&o提交 "));
-			text.addExtra(QuestUtil.translateColor("&8&m&o"));
-			text.addExtra(QuestUtil.convertItemStacktoHoverEvent(true, DeliverItem));
+			text = new TextComponent(QuestUtil.translateColor("&8&m&o提交 &8&m&o"));
+			text.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(isFinished, item));
 			TextComponent suffix = new TextComponent(
-					QuestUtil.translateColor(" &8&m&o" + DeliverAmount + " &8&m&o個 給 "));
+					QuestUtil.translateColor(" &8&m&o" + amount + " &8&m&o個 給 "));
 			text.addExtra(suffix);
-			text.addExtra(QuestUtil.convertNPCtoHoverEvent(isFinished, TargetNPC));
-			return text;
 		}
 		else{
 			text = new TextComponent(QuestUtil.translateColor("&0提交 "));
-			text.addExtra(QuestUtil.convertItemStacktoHoverEvent(false, DeliverItem));
+			text.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(isFinished, item));
 			TextComponent suffix = new TextComponent(
-					QuestUtil.translateColor(" &0&l" + DeliverAmount + " &0個 給 "));
+					QuestUtil.translateColor(" &0&l" + amount + " &0個 給 "));
 			text.addExtra(suffix);
-			text.addExtra(QuestUtil.convertNPCtoHoverEvent(isFinished, TargetNPC));
-			return text;
 		}
+		text.addExtra(TextComponentFactory.convertLocationtoHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
+		return text;
 	}
 
 	@Override
 	public String toPlainText() {
-		if (DeliverItem.getItemMeta().hasDisplayName())
-			return QuestUtil.translateColor("&a提交 " + DeliverItem.getItemMeta().getDisplayName() + " &f" + DeliverAmount + " &a個 給 " + TargetNPC.getName());
+		if (item.getItemMeta().hasDisplayName())
+			return QuestUtil.translateColor("&a提交 " + item.getItemMeta().getDisplayName() + " &f" + item + " &a個 給 " + npc.getName());
 		else
-			return QuestUtil.translateColor("&a提交 &f" + QuestUtil.translate(DeliverItem.getType()) + " &f" + DeliverAmount + " &a個 給 " + TargetNPC.getName());
+			return QuestUtil.translateColor("&a提交 &f" + QuestUtil.translate(item.getType()) + " &f" + amount + " &a個 給 " + npc.getName());
 	}
 	
 	
