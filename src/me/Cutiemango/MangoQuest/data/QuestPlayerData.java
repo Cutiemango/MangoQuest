@@ -37,20 +37,20 @@ public class QuestPlayerData {
 	
 	public QuestPlayerData(Player p, FileConfiguration c){
 		this.p = p;
-		c.set("ª±®a¸ê®Æ." + p.getUniqueId() + ".ª±®aID", p.getName());
-		if (c.getConfigurationSection("ª±®a¸ê®Æ." + p.getUniqueId() + ".¥ô°È¶i«×") != null){
-			for (String index : c.getConfigurationSection("ª±®a¸ê®Æ." + p.getUniqueId() + ".¥ô°È¶i«×").getKeys(false)){
+		c.set("ç©å®¶è³‡æ–™." + p.getUniqueId() + ".ç©å®¶ID", p.getName());
+		if (c.getConfigurationSection("ç©å®¶è³‡æ–™." + p.getUniqueId() + ".ä»»å‹™é€²åº¦") != null){
+			for (String index : c.getConfigurationSection("ç©å®¶è³‡æ–™." + p.getUniqueId() + ".ä»»å‹™é€²åº¦").getKeys(false)){
 				if (QuestStorage.Quests.get(index) == null){
-					QuestUtil.error(p, "±zªºª±®a¸ê®Æ¦³¤£¦s¦b©Î¸g³Q²¾°£ªº¥ô°È¡A¤w¸g¿ò¥¢¸ê®Æ¡I"
-							+ "¿ò¥¢ªº¥ô°È¤º³¡½X¡G " + index + "¡A­Y±zÄ±±o³o¤£À³¸Óµo¥Í¡A½Ğ¦^³øºŞ²z­û¡C");
+					QuestUtil.error(p, "æ‚¨çš„ç©å®¶è³‡æ–™æœ‰ä¸å­˜åœ¨æˆ–ç¶“è¢«ç§»é™¤çš„ä»»å‹™ï¼Œå·²ç¶“éºå¤±è³‡æ–™ï¼"
+							+ "éºå¤±çš„ä»»å‹™å…§éƒ¨ç¢¼ï¼š " + index + "ï¼Œè‹¥æ‚¨è¦ºå¾—é€™ä¸æ‡‰è©²ç™¼ç”Ÿï¼Œè«‹å›å ±ç®¡ç†å“¡ã€‚");
 					continue;
 				}
 				Quest q = QuestStorage.Quests.get(index);
 				int t = 0;
-				int s = c.getInt("ª±®a¸ê®Æ." + p.getUniqueId() + ".¥ô°È¶i«×." + index + ".QuestStage");
+				int s = c.getInt("ç©å®¶è³‡æ–™." + p.getUniqueId() + ".ä»»å‹™é€²åº¦." + index + ".QuestStage");
 				List<QuestObjectProgress> qplist = new ArrayList<>();
 				for (SimpleQuestObject ob : q.getStage(s).getObjects()){
-					QuestObjectProgress qp = new QuestObjectProgress(ob, c.getInt("ª±®a¸ê®Æ." + p.getUniqueId() + ".¥ô°È¶i«×." + index + ".QuestObjectProgress." + t));
+					QuestObjectProgress qp = new QuestObjectProgress(ob, c.getInt("ç©å®¶è³‡æ–™." + p.getUniqueId() + ".ä»»å‹™é€²åº¦." + index + ".QuestObjectProgress." + t));
 					qp.checkIfFinished();
 					qplist.add(qp);
 					t++;
@@ -59,20 +59,20 @@ public class QuestPlayerData {
 			}
 		}
 		
-		if (c.isConfigurationSection("ª±®a¸ê®Æ." + p.getUniqueId() + ".¤w§¹¦¨ªº¥ô°È")){
-			for (String s : c.getConfigurationSection("ª±®a¸ê®Æ." + p.getUniqueId() + ".¤w§¹¦¨ªº¥ô°È").getKeys(false)){
+		if (c.isConfigurationSection("ç©å®¶è³‡æ–™." + p.getUniqueId() + ".å·²å®Œæˆçš„ä»»å‹™")){
+			for (String s : c.getConfigurationSection("ç©å®¶è³‡æ–™." + p.getUniqueId() + ".å·²å®Œæˆçš„ä»»å‹™").getKeys(false)){
 				if (QuestStorage.Quests.get(s) == null){
-					QuestUtil.error(p, "±zªºª±®a¸ê®Æ¦³¤£¦s¦b©Î¸g³Q²¾°£ªº¥ô°È¡A¤w¸g¿ò¥¢¸ê®Æ¡I"
-							+ "¿ò¥¢ªº¥ô°È¤º³¡½X¡G " + s + "¡A­Y±zÄ±±o³o¤£À³¸Óµo¥Í¡A½Ğ¦^³øºŞ²z­û¡C");
+					QuestUtil.error(p, "æ‚¨çš„ç©å®¶è³‡æ–™æœ‰ä¸å­˜åœ¨æˆ–ç¶“è¢«ç§»é™¤çš„ä»»å‹™ï¼Œå·²ç¶“éºå¤±è³‡æ–™ï¼"
+							+ "éºå¤±çš„ä»»å‹™å…§éƒ¨ç¢¼ï¼š " + s + "ï¼Œè‹¥æ‚¨è¦ºå¾—é€™ä¸æ‡‰è©²ç™¼ç”Ÿï¼Œè«‹å›å ±ç®¡ç†å“¡ã€‚");
 					continue;
 				}
 				QuestFinishData qd = new QuestFinishData(QuestStorage.Quests.get(s) 
-						,c.getInt("ª±®a¸ê®Æ." + p.getUniqueId() + ".¤w§¹¦¨ªº¥ô°È." + s + ".FinishedTimes")
-						,c.getLong("ª±®a¸ê®Æ." + p.getUniqueId() + ".¤w§¹¦¨ªº¥ô°È." + s + ".LastFinishTime"));
+						,c.getInt("ç©å®¶è³‡æ–™." + p.getUniqueId() + ".å·²å®Œæˆçš„ä»»å‹™." + s + ".FinishedTimes")
+						,c.getLong("ç©å®¶è³‡æ–™." + p.getUniqueId() + ".å·²å®Œæˆçš„ä»»å‹™." + s + ".LastFinishTime"));
 				FinishedQuest.add(qd);
 			}
 		}
-		QuestUtil.info(p, "&aª±®a¥ô°È¸ê®ÆÅª¨ú§¹¦¨¡I");
+		QuestUtil.info(p, "&aç©å®¶ä»»å‹™è³‡æ–™è®€å–å®Œæˆï¼");
 	}
 
 	private Player p;
@@ -80,14 +80,14 @@ public class QuestPlayerData {
 	private List<QuestFinishData> FinishedQuest = new ArrayList<>();
 
 	public void save() {
-		QuestConfigLoad.pconfig.set("ª±®a¸ê®Æ." + p.getUniqueId() + ".ª±®aID", p.getName());
+		QuestConfigLoad.pconfig.set("ç©å®¶è³‡æ–™." + p.getUniqueId() + ".ç©å®¶ID", p.getName());
 		for (QuestFinishData q : FinishedQuest) {
 			String id = q.getQuest().getInternalID();
-			QuestConfigLoad.pconfig.set("ª±®a¸ê®Æ." + p.getUniqueId() + ".¤w§¹¦¨ªº¥ô°È." + id + ".FinishedTimes", q.getFinishedTimes());
-			QuestConfigLoad.pconfig.set("ª±®a¸ê®Æ." + p.getUniqueId() + ".¤w§¹¦¨ªº¥ô°È." + id + ".LastFinishTime", q.getLastFinish());
+			QuestConfigLoad.pconfig.set("ç©å®¶è³‡æ–™." + p.getUniqueId() + ".å·²å®Œæˆçš„ä»»å‹™." + id + ".FinishedTimes", q.getFinishedTimes());
+			QuestConfigLoad.pconfig.set("ç©å®¶è³‡æ–™." + p.getUniqueId() + ".å·²å®Œæˆçš„ä»»å‹™." + id + ".LastFinishTime", q.getLastFinish());
 		}
 		
-		QuestConfigLoad.pconfig.set("ª±®a¸ê®Æ." + p.getUniqueId() + ".¥ô°È¶i«×", "");
+		QuestConfigLoad.pconfig.set("ç©å®¶è³‡æ–™." + p.getUniqueId() + ".ä»»å‹™é€²åº¦", "");
 		
 		if (!CurrentQuest.isEmpty()){
 			for (QuestProgress qp : CurrentQuest) {
@@ -167,9 +167,9 @@ public class QuestPlayerData {
 						qop.setProgress(qop.getProgress() + 1);
 						qop.checkIfFinished();
 						if (qop.getProgress() == o.getAmount())
-							QuestUtil.info(p, o.toPlainText() + " &a(¤w§¹¦¨)");
+							QuestUtil.info(p, o.toPlainText() + " &a(å·²å®Œæˆ)");
 						else
-							QuestUtil.info(p, o.toPlainText() + " &6¶i«×¡G (" + qop.getProgress() + "/" + o.getAmount() + ")");
+							QuestUtil.info(p, o.toPlainText() + " &6é€²åº¦ï¼š (" + qop.getProgress() + "/" + o.getAmount() + ")");
 						qp.checkIfnextStage();
 						return;
 					}
@@ -188,7 +188,7 @@ public class QuestPlayerData {
 						QuestObjectTalkToNPC o = (QuestObjectTalkToNPC)qop.getObject();
 						qop.finish();
 						qop.setProgress(1);
-						QuestUtil.info(p, o.toPlainText() + " &a(¤w§¹¦¨)");
+						QuestUtil.info(p, o.toPlainText() + " &a(å·²å®Œæˆ)");
 						qp.checkIfnextStage();
 						return;
 					}
@@ -210,7 +210,7 @@ public class QuestPlayerData {
 									p.getInventory().getItemInMainHand().getAmount() - (o.getAmount() - qop.getProgress()));
 							qop.setProgress(o.getAmount());
 							qop.checkIfFinished();
-							QuestUtil.info(p, o.toPlainText() + " &a(¤w§¹¦¨)");
+							QuestUtil.info(p, o.toPlainText() + " &a(å·²å®Œæˆ)");
 							qp.checkIfnextStage();
 							return;
 						}
@@ -218,7 +218,7 @@ public class QuestPlayerData {
 							p.getInventory().setItemInMainHand(null);
 							qop.setProgress(o.getAmount());
 							qop.checkIfFinished();
-							QuestUtil.info(p, o.toPlainText() + " &a(¤w§¹¦¨)");
+							QuestUtil.info(p, o.toPlainText() + " &a(å·²å®Œæˆ)");
 							qp.checkIfnextStage();
 							return;
 						}
@@ -226,7 +226,7 @@ public class QuestPlayerData {
 							qop.checkIfFinished();
 							qop.setProgress(qop.getProgress() + p.getInventory().getItemInMainHand().getAmount());
 							p.getInventory().setItemInMainHand(null);
-							QuestUtil.info(p, o.toPlainText() + " &6¶i«×¡G (" + qop.getProgress() + "/" + o.getAmount() + ")");
+							QuestUtil.info(p, o.toPlainText() + " &6é€²åº¦ï¼š (" + qop.getProgress() + "/" + o.getAmount() + ")");
 							qp.checkIfnextStage();
 							return;
 						}
@@ -251,9 +251,9 @@ public class QuestPlayerData {
 							qop.checkIfFinished();
 							qp.checkIfnextStage();
 							if (qop.getProgress() == o.getAmount())
-								QuestUtil.info(p, o.toPlainText() + " &a(¤w§¹¦¨)");
+								QuestUtil.info(p, o.toPlainText() + " &a(å·²å®Œæˆ)");
 							else
-								QuestUtil.info(p, o.toPlainText() + " &6¶i«×¡G (" + qop.getProgress() + "/" + o.getAmount() + ")");
+								QuestUtil.info(p, o.toPlainText() + " &6é€²åº¦ï¼š (" + qop.getProgress() + "/" + o.getAmount() + ")");
 							return;
 						}
 					}
@@ -263,9 +263,9 @@ public class QuestPlayerData {
 							qop.checkIfFinished();
 							qp.checkIfnextStage();
 							if (qop.getProgress() == o.getAmount())
-								QuestUtil.info(p, o.toPlainText() + " &a(¤w§¹¦¨)");
+								QuestUtil.info(p, o.toPlainText() + " &a(å·²å®Œæˆ)");
 							else
-								QuestUtil.info(p, o.toPlainText() + " &6¶i«×¡G (" + qop.getProgress() + "/" + o.getAmount() + ")");
+								QuestUtil.info(p, o.toPlainText() + " &6é€²åº¦ï¼š (" + qop.getProgress() + "/" + o.getAmount() + ")");
 							return;
 						}
 					}
@@ -286,9 +286,9 @@ public class QuestPlayerData {
 						qop.checkIfFinished();
 						qp.checkIfnextStage();
 						if (qop.getProgress() == o.getAmount())
-							QuestUtil.info(p, o.toPlainText() + " &a(¤w§¹¦¨)");
+							QuestUtil.info(p, o.toPlainText() + " &a(å·²å®Œæˆ)");
 						else
-							QuestUtil.info(p, o.toPlainText() + " &6¶i«×¡G (" + qop.getProgress() + "/" + o.getAmount() + ")");
+							QuestUtil.info(p, o.toPlainText() + " &6é€²åº¦ï¼š (" + qop.getProgress() + "/" + o.getAmount() + ")");
 						return;
 					}
 				}
@@ -308,7 +308,7 @@ public class QuestPlayerData {
 							if (l.getZ() < (o.getLocation().getZ() + o.getRadius()) && l.getZ() > (o.getLocation().getZ() - o.getRadius())) {
 								qop.finish();
 								qop.setProgress(1);
-								QuestUtil.info(p, o.toPlainText() + " &a(¤w§¹¦¨)");
+								QuestUtil.info(p, o.toPlainText() + " &a(å·²å®Œæˆ)");
 								qp.checkIfnextStage();
 								return;
 							}
@@ -355,13 +355,13 @@ public class QuestPlayerData {
 	public boolean canTake(Quest q, boolean m){
 		if (CurrentQuest.size() + 1 > 4){
 			if (m)
-				QuestUtil.info(p, "&c§Aªº¥ô°È¦Cªí¤wº¡¡A¤£¯à¦A±µ¨ü¥ô°È¤F¡C");
+				QuestUtil.info(p, "&cä½ çš„ä»»å‹™åˆ—è¡¨å·²æ»¿ï¼Œä¸èƒ½å†æ¥å—ä»»å‹™äº†ã€‚");
 			return false;
 		}
 		for (QuestProgress qp : CurrentQuest){
 			if (q.getInternalID().equals(qp.getQuest().getInternalID())) {
 				if (m)
-					QuestUtil.info(p, "&c§Aªº¥ô°È¦Cªí¤w¦³¦¹¥ô°È¡A¤£¯à¦A±µ¨ü¥ô°È¤F¡C");
+					QuestUtil.info(p, "&cä½ çš„ä»»å‹™åˆ—è¡¨å·²æœ‰æ­¤ä»»å‹™ï¼Œä¸èƒ½å†æ¥å—ä»»å‹™äº†ã€‚");
 				return false;
 			}
 		}
@@ -376,7 +376,7 @@ public class QuestPlayerData {
 			long d = getDelay(getFinishData(q).getLastFinish(), q.getRedoDelay());
 			if (d > 0){
 				if (m)
-					QuestUtil.info(p, "&c§A¥²¶·¦Aµ¥«İ " + QuestUtil.convertTime(d) + " ¤~¯à¦A«×±µ¨ú³o­Ó¥ô°È¡C");
+					QuestUtil.info(p, "&cä½ å¿…é ˆå†ç­‰å¾… " + QuestUtil.convertTime(d) + " æ‰èƒ½å†åº¦æ¥å–é€™å€‹ä»»å‹™ã€‚");
 				return false;
 			}
 		}
@@ -384,7 +384,7 @@ public class QuestPlayerData {
 	}
 	
 	public static boolean hasConfigData(Player p){
-		return !(QuestConfigLoad.pconfig.getString("ª±®a¸ê®Æ." + p.getUniqueId() + ".ª±®aID") == null);
+		return !(QuestConfigLoad.pconfig.getString("ç©å®¶è³‡æ–™." + p.getUniqueId() + ".ç©å®¶ID") == null);
 	}
 	
 	private long getDelay(long last, long quest){

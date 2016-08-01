@@ -30,16 +30,16 @@ import net.minecraft.server.v1_10_R1.PacketPlayOutCustomPayload;
 public class QuestGUIManager {
 
 	public static void openGUI(Player p, QuestProgress q){
-		TextComponent p1 = new TextComponent(ChatColor.BOLD + "•Ù∞»¶W∫Ÿ°G ");
+		TextComponent p1 = new TextComponent(ChatColor.BOLD + "‰ªªÂãôÂêçÁ®±Ôºö ");
 		p1.addExtra(q.getQuest().getQuestName() + "\n");
 		if (q.getQuest().getQuestNPC() != null){
-			p1.addExtra(ChatColor.BOLD + "•Ù∞»NPC°G ");
+			p1.addExtra(ChatColor.BOLD + "‰ªªÂãôNPCÔºö ");
 			NPC npc = q.getQuest().getQuestNPC();
 			p1.addExtra(TextComponentFactory.convertLocationtoHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
 			p1.addExtra("\n\n");
 		}
 		
-		p1.addExtra(ChatColor.BOLD + "•Ù∞»§∫Æe°G \n");
+		p1.addExtra(ChatColor.BOLD + "‰ªªÂãôÂÖßÂÆπÔºö \n");
 		for (int i = 0; i < q.getQuest().getStages().size(); i++){
 			if (q.getCurrentStage() > i){
 				for (SimpleQuestObject obj : q.getQuest().getStage(i).getObjects()){
@@ -66,28 +66,28 @@ public class QuestGUIManager {
 			}
 			else{
 				for (int j = 0; j < q.getQuest().getStage(i).getObjects().size(); j++){
-					p1.addExtra(new TextComponent(QuestUtil.translateColor("&8&l°H°H°H")));
+					p1.addExtra(new TextComponent(QuestUtil.translateColor("&8&lÔºüÔºüÔºü")));
 					p1.addExtra("\n");
 				}
 			}
 		}
 
-		TextComponent p2 = new TextComponent(ChatColor.BOLD + "•Ù∞»¥£≠n°G \n");
+		TextComponent p2 = new TextComponent(ChatColor.BOLD + "‰ªªÂãôÊèêË¶ÅÔºö \n");
 		p2.addExtra(q.getQuest().getQuestOutline());
 
-		TextComponent p3 = new TextComponent(ChatColor.BOLD + "•Ù∞»º˙¿y°G");
+		TextComponent p3 = new TextComponent(ChatColor.BOLD + "‰ªªÂãôÁçéÂãµÔºö");
 
 		if (q.getQuest().getQuestReward().hasItem()){
 			for (ItemStack is : q.getQuest().getQuestReward().getItems()){
 				p3.addExtra("\n");
 				p3.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(false, is));
-				TextComponent suffix = new TextComponent(ChatColor.translateAlternateColorCodes('&' , " &l" + is.getAmount() + " &0≠”"));
+				TextComponent suffix = new TextComponent(ChatColor.translateAlternateColorCodes('&' , " &l" + is.getAmount() + " &0ÂÄã"));
 				p3.addExtra(suffix);
 			}
 		}
 		
 		if (q.getQuest().getQuestReward().hasMoney()){
-			p3.addExtra(ChatColor.GOLD + "™˜ø˙ " + ChatColor.BLACK + q.getQuest().getQuestReward().getMoney() + ChatColor.GOLD + " §∏");
+			p3.addExtra(ChatColor.GOLD + "ÈáëÈå¢ " + ChatColor.BLACK + q.getQuest().getQuestReward().getMoney() + ChatColor.GOLD + " ÂÖÉ");
 		}
 
 		openBook(p, p1, p2, p3);
@@ -95,12 +95,12 @@ public class QuestGUIManager {
 	
 	public static void openJourney(Player p){
 		QuestPlayerData qd = QuestUtil.getData(p);
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&l[∂i¶Ê§§™∫•Ù∞»]"));
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&l[ÈÄ≤Ë°å‰∏≠ÁöÑ‰ªªÂãô]"));
 		p1.addExtra("\n");
 		for (QuestProgress qp : qd.getProgresses()){
 			p1.addExtra("\n");
 			p1.addExtra(TextComponentFactory.convertViewQuest(qp.getQuest()));
-			p1.addExtra("°G\n");
+			p1.addExtra("Ôºö\n");
 			for (QuestObjectProgress qop : qp.getCurrentObjects()){
 				p1.addExtra("- ");
 				if (qop.isFinished()){
@@ -117,7 +117,7 @@ public class QuestGUIManager {
 			}
 		}
 
-		TextComponent p2 = new TextComponent(QuestUtil.translateColor("&0&l[•i∂i¶Ê™∫•Ù∞»]"));
+		TextComponent p2 = new TextComponent(QuestUtil.translateColor("&0&l[ÂèØÈÄ≤Ë°åÁöÑ‰ªªÂãô]"));
 		p2.addExtra("\n");
 		for (Quest q : QuestStorage.Quests.values()){
 			if (!qd.canTake(q, false))
@@ -129,12 +129,12 @@ public class QuestGUIManager {
 			}
 		}
 
-		TextComponent p3 = new TextComponent(QuestUtil.translateColor("&0&l[§wßπ¶®™∫•Ù∞»]"));
+		TextComponent p3 = new TextComponent(QuestUtil.translateColor("&0&l[Â∑≤ÂÆåÊàêÁöÑ‰ªªÂãô]"));
 		p3.addExtra("\n");
 		for (QuestFinishData qfd : qd.getFinishQuests()){
 			p3.addExtra("- ");
 			p3.addExtra(TextComponentFactory.convertViewQuest(qfd.getQuest()));
-			p3.addExtra("°G §wßπ¶® " + qfd.getFinishedTimes() + " ¶∏\n");
+			p3.addExtra("Ôºö Â∑≤ÂÆåÊàê " + qfd.getFinishedTimes() + " Ê¨°\n");
 		}
 
 		openBook(p, p1, p2, p3);

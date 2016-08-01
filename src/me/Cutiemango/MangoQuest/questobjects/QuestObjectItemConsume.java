@@ -23,14 +23,14 @@ public class QuestObjectItemConsume extends NumerableObject{
 	public TextComponent toTextComponent(boolean isFinished) {
 		TextComponent text = new TextComponent();
 		if (isFinished){
-			text = new TextComponent(QuestUtil.translateColor("&8&m&o¨Ï¥Î "));
-			text.addExtra(QuestUtil.translateColor(amount + " &8&m&o­Ó "));
+			text = new TextComponent(QuestUtil.translateColor("&8&m&oä½¿ç”¨ "));
+			text.addExtra(QuestUtil.translateColor(amount + " &8&m&oå€‹ "));
 			text.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(true, item));
 			return text;
 		}
 		else{
-			text = new TextComponent(QuestUtil.translateColor("&0¨Ï¥Î "));
-			text.addExtra(QuestUtil.translateColor(amount + " &0­Ó "));
+			text = new TextComponent(QuestUtil.translateColor("&0ä½¿ç”¨ "));
+			text.addExtra(QuestUtil.translateColor(amount + " &0å€‹ "));
 			text.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(false, item));
 			return text;
 		}
@@ -39,9 +39,9 @@ public class QuestObjectItemConsume extends NumerableObject{
 	@Override
 	public String toPlainText() {
 		if (item.getItemMeta().hasDisplayName())
-			return QuestUtil.translateColor("&a­¹¥Î " + amount + " ­Ó " + item.getItemMeta().getDisplayName());
+			return QuestUtil.translateColor("&aé£Ÿç”¨ " + amount + " å€‹ " + item.getItemMeta().getDisplayName());
 		else
-			return QuestUtil.translateColor("&a­¹¥Î " + amount + " ­Ó " + QuestUtil.translate(item.getType()));
+			return QuestUtil.translateColor("&aé£Ÿç”¨ " + amount + " å€‹ " + QuestUtil.translate(item.getType()));
 	}
 	
 	public ItemStack getItem(){

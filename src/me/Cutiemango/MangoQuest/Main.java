@@ -54,15 +54,15 @@ public class Main extends JavaPlugin{
 			}
 		}.runTaskLater(this, 5L);
 		
-		getLogger().info("¤w¸g¶}±Ò¡I");
+		getLogger().info("å·²ç¶“é–‹å•Ÿï¼");
 	}
 	
 	@Override
 	public void onDisable(){
-		getLogger().info("¤w¸gÃö³¬¡I");
+		getLogger().info("å·²ç¶“é—œé–‰ï¼");
 		for (Player p : Bukkit.getOnlinePlayers()){
 			QuestUtil.getData(p).save();
-			QuestUtil.info(p, "&bª±®a¸ê®ÆÀx¦s¤¤...");
+			QuestUtil.info(p, "&bç©å®¶è³‡æ–™å„²å­˜ä¸­...");
 		}
 	}
 	
@@ -72,13 +72,13 @@ public class Main extends JavaPlugin{
 				citizens = (CitizensPlugin) getServer().getPluginManager().getPlugin("Citizens");
 			}
 			if (setupEconomy())
-				getLogger().log(Level.INFO, "ª÷¿ú´¡¥ó¤w¸g³sµ²¦¨¥\¡C");
+				getLogger().log(Level.INFO, "é‡‘éŒ¢æ’ä»¶å·²ç¶“é€£çµæˆåŠŸã€‚");
 			else
-				getLogger().log(Level.INFO, "¥¼³sµ²ª÷¿ú´¡¥ó¡C");
+				getLogger().log(Level.INFO, "æœªé€£çµé‡‘éŒ¢æ’ä»¶ã€‚");
 			if (getServer().getPluginManager().getPlugin("Vault") != null) {
 				vault = (Vault) getServer().getPluginManager().getPlugin("Vault");
 			}
-			getLogger().log(Level.INFO, "Citizens´¡¥ó¤w¸g³sµ²¦¨¥\¡C");
+			getLogger().log(Level.INFO, "Citizensæ’ä»¶å·²ç¶“é€£çµæˆåŠŸã€‚");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -33,9 +33,9 @@ public class QuestObjectKillMob extends NumerableObject{
 	public TextComponent toTextComponent(boolean isFinished) {
 		TextComponent text = new TextComponent();
 		if (isFinished)
-			text = new TextComponent(QuestUtil.translateColor("&8&m&o±þ¦º " + amount + " &8&m&o­Ó "));
+			text = new TextComponent(QuestUtil.translateColor("&8&m&oæ®ºæ­» " + amount + " &8&m&oå€‹ "));
 		else
-			text = new TextComponent(QuestUtil.translateColor("&0±þ¦º " + amount + " &0­Ó "));
+			text = new TextComponent(QuestUtil.translateColor("&0æ®ºæ­» " + amount + " &0å€‹ "));
 		if (CustomName != null)
 			text.addExtra(QuestUtil.translateColor(CustomName));
 		else
@@ -46,9 +46,9 @@ public class QuestObjectKillMob extends NumerableObject{
 	@Override
 	public String toPlainText() {
 		if (CustomName != null)
-			return QuestUtil.translateColor("&a±þ¦º " + amount + " &a­Ó " + QuestUtil.translateColor(CustomName));
+			return QuestUtil.translateColor("&aæ®ºæ­» " + amount + " &aå€‹ " + QuestUtil.translateColor(CustomName));
 		else
-			return QuestUtil.translateColor("&a±þ¦º " + amount + " &a­Ó " + QuestUtil.translate(type));
+			return QuestUtil.translateColor("&aæ®ºæ­» " + amount + " &aå€‹ " + QuestUtil.translate(type));
 	}
 
 }

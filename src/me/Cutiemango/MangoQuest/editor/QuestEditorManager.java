@@ -44,50 +44,50 @@ public class QuestEditorManager {
 	
 	public static void editQuest(Player p){
 		if (!QuestEditorManager.isInEditorMode(p)){
-			QuestUtil.error(p, "§A¤£¦b½s¿è¼Ò¦¡¤¤¡I");
+			QuestUtil.error(p, "ä½ ä¸åœ¨ç·¨è¼¯æ¨¡å¼ä¸­ï¼");
 			return;
 		}
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&l½s¿è¥ô°È¡G " + q.getQuestName()));
-		TextComponent p2 = new TextComponent(QuestUtil.translateColor("&0¥ô°È´£­n¡G \n" + q.getQuestOutline()));
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&lç·¨è¼¯ä»»å‹™ï¼š " + q.getQuestName()));
+		TextComponent p2 = new TextComponent(QuestUtil.translateColor("&0ä»»å‹™æè¦ï¼š \n" + q.getQuestOutline()));
 		p1.addExtra("\n");
-		p1.addExtra(QuestUtil.translateColor("&0¥ô°È¤º³¡½X¡G " + q.getInternalID()));
+		p1.addExtra(QuestUtil.translateColor("&0ä»»å‹™å…§éƒ¨ç¢¼ï¼š " + q.getInternalID()));
 		p1.addExtra("\n");
-		p1.addExtra(QuestUtil.translateColor("&0¥ô°È¦WºÙ¡G " + q.getQuestName()));
-		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[½s¿è]", "/mqe edit name"));
+		p1.addExtra(QuestUtil.translateColor("&0ä»»å‹™åç¨±ï¼š " + q.getQuestName()));
+		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç·¨è¼¯]", "/mqe edit name"));
 		p1.addExtra("\n");
-		p1.addExtra(QuestUtil.translateColor("&0¥ô°ÈNPC¡G "));
+		p1.addExtra(QuestUtil.translateColor("&0ä»»å‹™NPCï¼š "));
 		p1.addExtra(TextComponentFactory.convertLocationtoHoverEvent(q.getQuestNPC().getName(), q.getQuestNPC().getEntity().getLocation(), false));
-		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[½s¿è]", "/mqe edit npc"));
+		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç·¨è¼¯]", "/mqe edit npc"));
 		p1.addExtra("\n");
-		p1.addExtra(QuestUtil.translateColor("&0¥ô°È»İ¨D¡G "));
-		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[½s¿è]", "/mqe edit req"));
+		p1.addExtra(QuestUtil.translateColor("&0ä»»å‹™éœ€æ±‚ï¼š "));
+		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç·¨è¼¯]", "/mqe edit req"));
 		p1.addExtra("\n");
-		p1.addExtra(QuestUtil.translateColor("&0¥ô°È¨Æ¥ó¡G "));
-		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[½s¿è]", "/mqe edit evt"));
+		p1.addExtra(QuestUtil.translateColor("&0ä»»å‹™äº‹ä»¶ï¼š "));
+		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç·¨è¼¯]", "/mqe edit evt"));
 		p1.addExtra("\n");
-		p1.addExtra(QuestUtil.translateColor("&0¬O§_¥i­«½Æ°õ¦æ¡G " + Boolean.toString(q.isRedoable())));
-		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[½s¿è]", "/mqe edit redo"));
+		p1.addExtra(QuestUtil.translateColor("&0æ˜¯å¦å¯é‡è¤‡åŸ·è¡Œï¼š " + Boolean.toString(q.isRedoable())));
+		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç·¨è¼¯]", "/mqe edit redo"));
 		p1.addExtra("\n");
 		if (q.isRedoable()){
-			p1.addExtra(QuestUtil.translateColor("&0­«´_°õ¦æCD®É¶¡¡G \n" + QuestUtil.convertTime(q.getRedoDelay())));
-			p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[½s¿è]", "/mqe edit redodelay"));
+			p1.addExtra(QuestUtil.translateColor("&0é‡è¤‡åŸ·è¡Œéœ€ç­‰å¾…æ™‚é–“ï¼š \n" + QuestUtil.convertTime(q.getRedoDelay())));
+			p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç·¨è¼¯]", "/mqe edit redodelay"));
 			p1.addExtra("\n");
 		}
 		
 		
 		p2.addExtra("\n");
-		p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[½s¿è]", "/mqe edit outline"));
+		p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç·¨è¼¯]", "/mqe edit outline"));
 		QuestGUIManager.openBook(p, p1, p2);
 	}
 	
 	public static void editQuestTrigger(Player p){
 		if (!QuestEditorManager.isInEditorMode(p)){
-			QuestUtil.error(p, "§A¤£¦b½s¿è¼Ò¦¡¤¤¡I");
+			QuestUtil.error(p, "ä½ ä¸åœ¨ç·¨è¼¯æ¨¡å¼ä¸­ï¼");
 			return;
 		}
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&l½s¿è¥ô°È¨Æ¥ó¡G " + q.getQuestName()));
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&lç·¨è¼¯ä»»å‹™äº‹ä»¶ï¼š " + q.getQuestName()));
 		p1.addExtra("\n");
 		int index = 0;
 		for (QuestTrigger qt : q.getTriggers()){
@@ -95,106 +95,106 @@ public class QuestEditorManager {
 			if (qt.getType().equals(TriggerType.TRIGGER_STAGE_START)
 					|| qt.getType().equals(TriggerType.TRIGGER_STAGE_FINISH)) {
 				p1.addExtra(TextComponentFactory.registerHoverStringEvent(qt.getTriggerObject().toCustomString(),
-						"Ä²µo®É¾÷¡G " + qt.getType().toCustomString(qt.getCount()) + "\nÄ²µoª«¥ó¤º®e¡G "
+						"è§¸ç™¼æ™‚æ©Ÿï¼š " + qt.getType().toCustomString(qt.getCount()) + "\nè§¸ç™¼ç‰©ä»¶å…§å®¹ï¼š "
 								+ qt.getObject().toString()));
-				p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[½s¿è]", "/mqe edit evt " + index + " "
+				p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç·¨è¼¯]", "/mqe edit evt " + index + " "
 						+ qt.getType().toString() + " " + qt.getCount() + " " + qt.getTriggerObject().toString()));
 			} else {
 				p1.addExtra(TextComponentFactory.registerHoverStringEvent(qt.getTriggerObject().toCustomString(),
-						"Ä²µo®É¾÷¡G " + qt.getType().toCustomString() + "\nÄ²µoª«¥ó¤º®e¡G " + qt.getObject().toString()));
-				p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[½s¿è]", "/mqe edit evt " + index + " "
+						"è§¸ç™¼æ™‚æ©Ÿï¼š " + qt.getType().toCustomString() + "\nè§¸ç™¼ç‰©ä»¶å…§å®¹ï¼š " + qt.getObject().toString()));
+				p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç·¨è¼¯]", "/mqe edit evt " + index + " "
 						+ qt.getType().toString() + " " + qt.getTriggerObject().toString()));
 			}
-			p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[²¾°£]", "/mqe remove evt " + index));
+			p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç§»é™¤]", "/mqe remove evt " + index));
 			p1.addExtra("\n");
 			index++;
 		}
-		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[·s¼W]", "/mqe addnew evt"));
+		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[æ–°å¢]", "/mqe addnew evt"));
 		QuestGUIManager.openBook(p, p1);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public static void editQuestRequirement(Player p){
 		if (!QuestEditorManager.isInEditorMode(p)){
-			QuestUtil.error(p, "§A¤£¦b½s¿è¼Ò¦¡¤¤¡I");
+			QuestUtil.error(p, "ä½ ä¸åœ¨ç·¨è¼¯æ¨¡å¼ä¸­ï¼");
 			return;
 		}
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&l½s¿è¥ô°È»İ¨D¡G " + q.getQuestName()));
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&lç·¨è¼¯ä»»å‹™éœ€æ±‚ï¼š " + q.getQuestName()));
 		TextComponent p2 = new TextComponent(QuestUtil.translateColor(""));
 		p1.addExtra("\n");
 		for (RequirementType t : RequirementType.values()){
 			switch(t){
 			case ITEM:
-				p1.addExtra("ª««~»İ¨D¡G");
+				p1.addExtra("ç‰©å“éœ€æ±‚ï¼š");
 				p1.addExtra("\n");
 				int i = 0;
 				for (ItemStack item : (List<ItemStack>)q.getRequirements().get(t)){
 					p1.addExtra("- ");
 					p1.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(false, item));
-					p1.addExtra(QuestUtil.translateColor(" &0&l" + item.getAmount() + "&0 ­Ó"));
-					p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[½s¿è]", "/mqe edit req ITEM " + i));
-					p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[²¾°£]", "/mqe remove req ITEM " + i));
+					p1.addExtra(QuestUtil.translateColor(" &0&l" + item.getAmount() + "&0 å€‹"));
+					p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç·¨è¼¯]", "/mqe edit req ITEM " + i));
+					p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç§»é™¤]", "/mqe remove req ITEM " + i));
 					p1.addExtra("\n");
 					i++;
 				}
-				p1.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[·s¼W]", "/mqe addnew req ITEM " + i));
+				p1.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[æ–°å¢]", "/mqe addnew req ITEM " + i));
 				p1.addExtra("\n");
 				break;
 			case LEVEL:
-				p1.addExtra("µ¥¯Å»İ¨D¡G " + q.getRequirements().get(t).toString() + " ");
-				p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[½s¿è]", "/mqe edit req LEVEL"));
+				p1.addExtra("ç­‰ç´šéœ€æ±‚ï¼š " + q.getRequirements().get(t).toString() + " ");
+				p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç·¨è¼¯]", "/mqe edit req LEVEL"));
 				p1.addExtra("\n");
 				break;
 			case MONEY:
-				p1.addExtra("ª÷¿ú»İ¨D¡G " + q.getRequirements().get(t).toString() + " ");
-				p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[½s¿è]", "/mqe edit req MONEY"));
+				p1.addExtra("é‡‘éŒ¢éœ€æ±‚ï¼š " + q.getRequirements().get(t).toString() + " ");
+				p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç·¨è¼¯]", "/mqe edit req MONEY"));
 				p1.addExtra("\n");
 				break;
 				
 			case NBTTAG:
-				p2.addExtra("NBT¼ĞÅÒ»İ¨D¡G");
+				p2.addExtra("NBTæ¨™ç±¤éœ€æ±‚ï¼š");
 				p2.addExtra("\n");
 				i = 0;
 				for (String s : (List<String>)q.getRequirements().get(t)){
 					p2.addExtra("- ");
 					p2.addExtra(s);
-					p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[½s¿è]", "/mqe edit req NBTTAG " + i));
-					p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[²¾°£]", "/mqe remove req NBTTAG " + i));
+					p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç·¨è¼¯]", "/mqe edit req NBTTAG " + i));
+					p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç§»é™¤]", "/mqe remove req NBTTAG " + i));
 					p2.addExtra("\n");
 					i++;
 				}
-				p2.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[·s¼W]", "/mqe addnew req NBTTAG " + i));
+				p2.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[æ–°å¢]", "/mqe addnew req NBTTAG " + i));
 				p2.addExtra("\n");
 				break;
 			case QUEST:
-				p2.addExtra("¥ô°È»İ¨D¡G");
+				p2.addExtra("ä»»å‹™éœ€æ±‚ï¼š");
 				p2.addExtra("\n");
 				i = 0;
 				for (String s : (List<String>)q.getRequirements().get(t)){
 					p2.addExtra("- ");
 					p2.addExtra(s);
-					p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[½s¿è]", "/mqe edit req QUEST " + i));
-					p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[²¾°£]", "/mqe remove req QUEST " + i));
+					p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç·¨è¼¯]", "/mqe edit req QUEST " + i));
+					p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç§»é™¤]", "/mqe remove req QUEST " + i));
 					p2.addExtra("\n");
 					i++;
 				}
-				p2.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[·s¼W]", "/mqe addnew req QUEST " + i));
+				p2.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[æ–°å¢]", "/mqe addnew req QUEST " + i));
 				p2.addExtra("\n");
 				break;
 			case SCOREBOARD:
-				p2.addExtra("°O¤ÀªO»İ¨D¡G");
+				p2.addExtra("è¨˜åˆ†æ¿éœ€æ±‚ï¼š");
 				p2.addExtra("\n");
 				i = 0;
 				for (String s : (List<String>)q.getRequirements().get(t)){
 					p2.addExtra("- ");
 					p2.addExtra(s);
-					p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[½s¿è]", "/mqe edit req SCOREBOARD " + i));
-					p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[²¾°£]", "/mqe remove req SCOREBOARD " + i));
+					p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç·¨è¼¯]", "/mqe edit req SCOREBOARD " + i));
+					p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[ç§»é™¤]", "/mqe remove req SCOREBOARD " + i));
 					p2.addExtra("\n");
 					i++;
 				}
-				p2.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[·s¼W]", "/mqe addnew req SCOREBOARD " + i));
+				p2.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[æ–°å¢]", "/mqe addnew req SCOREBOARD " + i));
 				p2.addExtra("\n");
 				break;
 			}
@@ -204,7 +204,7 @@ public class QuestEditorManager {
 	}
 	
 	public static void selectTriggerType(Player p){
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&l¿ï¾ÜÄ²µo¨Æ¥ó®É¾÷¡G \n"));
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&lé¸æ“‡è§¸ç™¼äº‹ä»¶æ™‚æ©Ÿï¼š \n"));
 		for (TriggerType t : TriggerType.values()){
 			p1.addExtra(TextComponentFactory.registerClickCommandEvent("- [" + t.toCustomString() + "]", "/mqe addnew evt " + t.toString()));
 			p1.addExtra("\n");
@@ -213,17 +213,17 @@ public class QuestEditorManager {
 	}
 	
 	public static void selectStage(Player p, TriggerType t){
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&l¿ï¾ÜÄ²µo¨Æ¥ó¶¥¬q¡G \n"));
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&lé¸æ“‡è§¸ç™¼äº‹ä»¶éšæ®µï¼š \n"));
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 		for (int s = 1; s <= q.getStages().size(); s++){
-			p1.addExtra(TextComponentFactory.registerClickCommandEvent("- [¶¥¬q" + s + "]", "/mqe addnew evt " + t.toString() + " " + s));
+			p1.addExtra(TextComponentFactory.registerClickCommandEvent("- [éšæ®µ" + s + "]", "/mqe addnew evt " + t.toString() + " " + s));
 			p1.addExtra("\n");
 		}
 		QuestGUIManager.openBook(p, p1);
 	}
 	
 	public static void selectTriggerObject(Player p, TriggerType t, int s){
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&l¿ï¾ÜÄ²µoª«¥ó¡G \n"));
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&lé¸æ“‡è§¸ç™¼ç‰©ä»¶ï¼š \n"));
 		for (TriggerObject o : TriggerObject.values()){
 			if (t.equals(TriggerType.TRIGGER_STAGE_START) || t.equals(TriggerType.TRIGGER_STAGE_FINISH)){
 				p1.addExtra(TextComponentFactory.registerClickCommandEvent("- [" + o.toCustomString() + "]", "/mqe addnew evt " + t.toString() + " " + s + " " + o.toString()));

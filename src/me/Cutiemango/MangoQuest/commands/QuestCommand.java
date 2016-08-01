@@ -35,7 +35,7 @@ public class QuestCommand implements CommandExecutor{
 				return false;
 			}
 			if (QuestStorage.Quests.get(args[1]) == null){
-				QuestUtil.error(p, "§A©Ò­n§äªº¥ô°È¤£¦s¦b¡I");
+				QuestUtil.error(p, "ä½ æ‰€è¦æ‰¾çš„ä»»å‹™ä¸å­˜åœ¨ï¼");
 				return false;
 			}
 			Quest quest = QuestStorage.Quests.get(args[1]);
@@ -57,8 +57,8 @@ public class QuestCommand implements CommandExecutor{
 				case "editor":
 					if (QuestEditorManager.isInEditorMode(p)){
 						if (!confirm.contains(p.getName())){
-							QuestUtil.error(p, "¥Ø«eµo²{±z¤w¸g¦³¥¿¦b½s¿èªº¥ô°È¡A¶}©l³o­Ó«ü©wªº¥ô°È¨Ã°h¥X¶Ü¡H");
-							QuestUtil.error(p, "­Y&a&l½T©w&c½Ğ¦A«×¿é¤J¤@¦¸¡C");
+							QuestUtil.error(p, "ç›®å‰ç™¼ç¾æ‚¨å·²ç¶“æœ‰æ­£åœ¨ç·¨è¼¯çš„ä»»å‹™ï¼Œé–‹å§‹é€™å€‹æŒ‡å®šçš„ä»»å‹™ä¸¦é€€å‡ºå—ï¼Ÿ");
+							QuestUtil.error(p, "è‹¥&a&lç¢ºå®š&cè«‹å†åº¦è¼¸å…¥ä¸€æ¬¡ã€‚");
 							return false;
 						}
 					}
@@ -71,12 +71,12 @@ public class QuestCommand implements CommandExecutor{
 	}
 	
 	private void sendHelp(Player p){
-		QuestUtil.info(p, "«ü¥OÀ°§U¡G");
-		QuestUtil.info(p, "/mq list - ¬d¬İ¥ô°È²M³æ");
-		QuestUtil.info(p, "/mq view [¥ô°È¤º³¡¦WºÙ] - ¬d¬İ¥ô°È¸ê®Æ");
-		QuestUtil.info(p, "/mq take [¥ô°È¤º³¡¦WºÙ] - ±µ¨ú«ü©w¥ô°È");
-		QuestUtil.info(p, "/mq quit [¥ô°È¤º³¡¦WºÙ] - ©ñ±ó«ü©w¥ô°È");
-		QuestUtil.info(p, "/mq editor [¥ô°È¤º³¡¦WºÙ] - ½s¿è«ü©w¥ô°È(¶i¤J½s¿è¼Ò¦¡)");
+		QuestUtil.info(p, "æŒ‡ä»¤å¹«åŠ©ï¼š");
+		QuestUtil.info(p, "/mq list - æŸ¥çœ‹ä»»å‹™æ¸…å–®");
+		QuestUtil.info(p, "/mq view [ä»»å‹™å…§éƒ¨åç¨±] - æŸ¥çœ‹ä»»å‹™è³‡æ–™");
+		QuestUtil.info(p, "/mq take [ä»»å‹™å…§éƒ¨åç¨±] - æ¥å–æŒ‡å®šä»»å‹™");
+		QuestUtil.info(p, "/mq quit [ä»»å‹™å…§éƒ¨åç¨±] - æ”¾æ£„æŒ‡å®šä»»å‹™");
+		QuestUtil.info(p, "/mq editor [ä»»å‹™å…§éƒ¨åç¨±] - ç·¨è¼¯æŒ‡å®šä»»å‹™(é€²å…¥ç·¨è¼¯æ¨¡å¼)");
 	}
 	
 

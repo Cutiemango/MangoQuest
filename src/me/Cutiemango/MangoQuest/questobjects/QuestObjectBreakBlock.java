@@ -23,16 +23,16 @@ public class QuestObjectBreakBlock extends NumerableObject{
 	public TextComponent toTextComponent(boolean isFinished) {
 		TextComponent text = new TextComponent();
 		if (isFinished)
-			text = new TextComponent(QuestUtil.translateColor("&8&m&o«õ±¸ " + amount + " &8&m&o­Ó "));
+			text = new TextComponent(QuestUtil.translateColor("&8&m&oæŒ–æŽ˜ " + amount + " &8&m&oå€‹ "));
 		else
-			text = new TextComponent(QuestUtil.translateColor("&0«õ±¸ " + amount + " &0­Ó "));
+			text = new TextComponent(QuestUtil.translateColor("&0æŒ–æŽ˜ " + amount + " &0å€‹ "));
 		text.addExtra(QuestUtil.translate(block));
 		return text;
 	}
 
 	@Override
 	public String toPlainText() {
-		return QuestUtil.translateColor("&a«õ±¸ " + amount + " &a­Ó " + QuestUtil.translate(block));
+		return QuestUtil.translateColor("&aæŒ–æŽ˜ " + amount + " &aå€‹ " + QuestUtil.translate(block));
 	}
 	
 	public Material getType(){

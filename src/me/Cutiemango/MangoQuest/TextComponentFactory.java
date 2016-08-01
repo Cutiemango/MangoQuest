@@ -76,8 +76,8 @@ public class TextComponentFactory {
 		ItemStack is = new ItemStack(Material.SIGN);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(name);
-		im.setLore(Arrays.asList(new String[] { ChatColor.GOLD + "¦aÂI¦ì©ó¡G",
-				ChatColor.WHITE + "- ¥@¬É¡G " + loc.getWorld().getName(), ChatColor.WHITE + "- ®y¼Ğ¡G ("
+		im.setLore(Arrays.asList(new String[] { ChatColor.GOLD + "åœ°é»ä½æ–¼ï¼š",
+				ChatColor.WHITE + "- ä¸–ç•Œï¼š " + loc.getWorld().getName(), ChatColor.WHITE + "- åº§æ¨™ï¼š ("
 						+ Math.floor(loc.getX()) + " , " + loc.getY() + " , " + Math.floor(loc.getZ()) + ")" }));
 		is.setItemMeta(im);
 		if (isFinished)
@@ -97,7 +97,7 @@ public class TextComponentFactory {
 	
 	public static TextComponent convertViewQuest(Quest q){
 		TextComponent t = new TextComponent(ChatColor.BOLD + q.getQuestName());
-		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,  new BaseComponent[]{new TextComponent(QuestUtil.translateColor("&7&lÂIÀ»¥H¬d¬İ " + q.getQuestName() + " &7&lªº¸Ô²Ó¸ê®Æ"))}));
+		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,  new BaseComponent[]{new TextComponent(QuestUtil.translateColor("&7&lé»æ“Šä»¥æŸ¥çœ‹ " + q.getQuestName() + " &7&lçš„è©³ç´°è³‡æ–™"))}));
 		t.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mq view " + q.getInternalID()));
 		return t;
 	}

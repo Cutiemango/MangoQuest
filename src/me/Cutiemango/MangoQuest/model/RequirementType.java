@@ -1,8 +1,8 @@
 package me.Cutiemango.MangoQuest.model;
 
 public enum RequirementType{
-	LEVEL("µ¥¯Å»İ¨D", false), MONEY("ª÷¿ú»İ¨D", false),
-	QUEST("¥ô°È»İ¨D", true), ITEM("ª««~»İ¨D", true), SCOREBOARD("°O¤ÀªO¤À¼Æ»İ¨D", true), NBTTAG("°O¤ÀªOTag»İ¨D", true);
+	LEVEL("ç­‰ç´šéœ€æ±‚", false), MONEY("é‡‘éŒ¢éœ€æ±‚", false),
+	QUEST("ä»»å‹™éœ€æ±‚", true), ITEM("ç‰©å“éœ€æ±‚", true), SCOREBOARD("è¨˜åˆ†æ¿åˆ†æ•¸éœ€æ±‚", true), NBTTAG("è¨˜åˆ†æ¿Tagéœ€æ±‚", true);
 	
 	private String name;
 	private boolean index;

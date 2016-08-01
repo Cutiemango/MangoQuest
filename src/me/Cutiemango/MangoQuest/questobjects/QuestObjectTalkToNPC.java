@@ -25,20 +25,20 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject{
 	public TextComponent toTextComponent(boolean isFinished) {
 		TextComponent text = new TextComponent();
 		if (isFinished) {
-			text = new TextComponent(QuestUtil.translateColor("&8&m&oªP "));
+			text = new TextComponent(QuestUtil.translateColor("&8&m&oËàá "));
 			text.addExtra(TextComponentFactory.convertLocationtoHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
-			text.addExtra(QuestUtil.translateColor(" &8&m&oπÔ∏‹"));
+			text.addExtra(QuestUtil.translateColor(" &8&m&oÂ∞çË©±"));
 		} else {
-			text = new TextComponent(QuestUtil.translateColor("&0ªP "));
+			text = new TextComponent(QuestUtil.translateColor("&0Ëàá "));
 			text.addExtra(TextComponentFactory.convertLocationtoHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
-			text.addExtra(QuestUtil.translateColor(" &0πÔ∏‹"));
+			text.addExtra(QuestUtil.translateColor(" &0Â∞çË©±"));
 		}
 		return text;
 	}
 
 	@Override
 	public String toPlainText() {
-		return QuestUtil.translateColor("&aªP " + getTargetNPC().getName() + " &aπÔ∏‹");
+		return QuestUtil.translateColor("&aËàá " + getTargetNPC().getName() + " &aÂ∞çË©±");
 	}
 
 }

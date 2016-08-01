@@ -22,16 +22,16 @@ public class QuestObjectReachLocation extends SimpleQuestObject{
 	public TextComponent toTextComponent(boolean isFinished) {
 		TextComponent text = new TextComponent();
 		if (isFinished)
-			text = new TextComponent(QuestUtil.translateColor("&8&m&o¨ì¹F¦aÂI "));
+			text = new TextComponent(QuestUtil.translateColor("&8&m&oåˆ°é”åœ°é» "));
 		else
-			text = new TextComponent(QuestUtil.translateColor("&0¨ì¹F¦aÂI "));
+			text = new TextComponent(QuestUtil.translateColor("&0åˆ°é”åœ°é» "));
 		text.addExtra(TextComponentFactory.convertLocationtoHoverEvent(name, loc, isFinished));
 		return text;
 	}
 
 	@Override
 	public String toPlainText() {
-		return QuestUtil.translateColor("&a¨ì¹F¦aÂI " + name);
+		return QuestUtil.translateColor("&aåˆ°é”åœ°é» " + name);
 	}
 	
 	public Location getLocation(){

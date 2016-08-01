@@ -66,23 +66,23 @@ public class QuestReward {
 		if (this.hasItem()) {
 			for (ItemStack is : items) {
 				if (p.getInventory().firstEmpty() == -1) {
-					p.sendMessage(QuestStorage.prefix + ChatColor.RED + "­I¥]ª««~¹L¦h¡A§Aªº¥ô°È¼úÀy "
-							+ is.getItemMeta().getDisplayName() + ChatColor.RED + " ±¼¸¨¦a­±¡I");
+					p.sendMessage(QuestStorage.prefix + ChatColor.RED + "èƒŒåŒ…ç‰©å“éå¤šï¼Œä½ çš„ä»»å‹™çå‹µ "
+							+ is.getItemMeta().getDisplayName() + ChatColor.RED + " æ‰è½åœ°é¢ï¼");
 					p.getWorld().dropItem(p.getLocation(), is);
 					return;
 				} else {
 					p.getInventory().addItem(is);
 					if (is.getItemMeta().hasDisplayName())
-						QuestUtil.info(p, "&e&l§A±o¨ì¤F¥ô°È¼úÀy " + is.getItemMeta().getDisplayName() + " &f" + is.getAmount() + " &e&l­Ó");
+						QuestUtil.info(p, "&e&lä½ å¾—åˆ°äº†ä»»å‹™çå‹µ " + is.getItemMeta().getDisplayName() + " &f" + is.getAmount() + " &e&lå€‹");
 					else
-						QuestUtil.info(p, "&e&l§A±o¨ì¤F¥ô°È¼úÀy " + QuestUtil.translate(is.getType()) + " &f" + is.getAmount() + " &e&l­Ó");
+						QuestUtil.info(p, "&e&lä½ å¾—åˆ°äº†ä»»å‹™çå‹µ " + QuestUtil.translate(is.getType()) + " &f" + is.getAmount() + " &e&lå€‹");
 				}
 			}
 		}
 
 		if (this.hasMoney()) {
 			Main.economy.depositPlayer(p, money);
-			QuestUtil.info(p, "&e&l§A±o¨ì¤F¥ô°È¼úÀy  &f" + money + " &e&l¤¸");
+			QuestUtil.info(p, "&e&lä½ å¾—åˆ°äº†ä»»å‹™çå‹µ  &f" + money + " &e&lå…ƒ");
 		}
 	}
 }

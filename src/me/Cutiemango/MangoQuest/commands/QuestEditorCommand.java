@@ -35,7 +35,7 @@ public class QuestEditorCommand implements CommandExecutor {
 			switch (args[0]) {
 			case "select":
 				if (QuestUtil.getQuest(args[1]) == null) {
-					QuestUtil.error(p, "§A©Ò­n§äªº¥ô°È¤£¦s¦b¡I");
+					QuestUtil.error(p, "æ‰¾ä¸åˆ°æŒ‡å®šçš„ä»»å‹™ã€‚");
 					return false;
 				}
 				QuestEditorManager.edit(p, QuestUtil.getQuest(args[1]));
@@ -51,13 +51,13 @@ public class QuestEditorCommand implements CommandExecutor {
 						case NBTTAG:
 							QuestEditorListener.registerListeningObject(p,
 									"mqe edit req " + t.toString() + " " + Integer.parseInt(args[3]) + " ");
-							QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¥´¶}²á¤Ñµ¡¿é¤J»İ¨D¼Æ­È\n&7(½Ğ¨Ì·Ó¹ïÀ³ªºÃş§O¿é¤J¤º®e)");
+							QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œ\n&cä¸¦æ‰“é–‹èŠå¤©çª—è¼¸å…¥éœ€æ±‚æ•¸å€¼\n&7(è«‹ä¾ç…§å°æ‡‰çš„é¡åˆ¥è¼¸å…¥å…§å®¹)");
 							((List<String>) q.getRequirements().get(t)).add("");
 							break;
 						case ITEM:
 							QuestEditorListener.registerListeningObject(p,
 									"mqe edit req " + t.toString() + " " + Integer.parseInt(args[3]));
-							QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¶}±Òª««~Äæ¡A±N»İ¨Dª««~®³¦b¥D¤â¤WÂIÀ»¥kÁä¡A\n&c¨t²Î±N·|¦Û°ÊÅª¨úª««~¤º®e¡C");
+							QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œä¸¦é–‹å•Ÿç‰©å“æ¬„ï¼Œ\n&cå°‡éœ€æ±‚ç‰©å“æ‹¿åœ¨ä¸»æ‰‹ä¸Šé»æ“Šå³éµï¼Œ\n&cç³»çµ±å°‡æœƒè‡ªå‹•è®€å–ç‰©å“å…§å®¹ã€‚");
 							((List<ItemStack>) q.getRequirements().get(t)).add(new ItemStack(Material.GRASS));
 							break;
 						default:
@@ -67,11 +67,11 @@ public class QuestEditorCommand implements CommandExecutor {
 						switch (t) {
 						case LEVEL:
 							QuestEditorListener.registerListeningObject(p, "mqe edit req " + t.toString() + " ");
-							QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¥´¶}²á¤Ñµ¡¿é¤J»İ¨D¼Æ­È\n&7(½Ğ¨Ì·Ó¹ïÀ³ªºÃş§O¿é¤J¤º®e)");
+							QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œ\n&cä¸¦æ‰“é–‹èŠå¤©çª—è¼¸å…¥éœ€æ±‚æ•¸å€¼\n&7(è«‹ä¾ç…§å°æ‡‰çš„é¡åˆ¥è¼¸å…¥å…§å®¹)");
 							break;
 						case MONEY:
 							QuestEditorListener.registerListeningObject(p, "mqe edit req " + t.toString() + " ");
-							QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¥´¶}²á¤Ñµ¡¿é¤J»İ¨D¼Æ­È\n&7(½Ğ¨Ì·Ó¹ïÀ³ªºÃş§O¿é¤J¤º®e)");
+							QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œ\n&cä¸¦æ‰“é–‹èŠå¤©çª—è¼¸å…¥éœ€æ±‚æ•¸å€¼\n&7(è«‹ä¾ç…§å°æ‡‰çš„é¡åˆ¥è¼¸å…¥å…§å®¹)");
 							break;
 						default:
 							break;
@@ -101,7 +101,7 @@ public class QuestEditorCommand implements CommandExecutor {
 						TriggerObject obj = TriggerObject.valueOf(args[3]);
 						QuestEditorListener.registerListeningObject(p, "mqe edit evt " + q.getTriggers().size() + " "
 								+ type.toString() + " " + obj.toString() + " ");
-						QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¥´¶}²á¤Ñµ¡¿é¤J»İ¨D¼Æ­È\n&7(½Ğ¨Ì·Ó¹ïÀ³ªºÃş§O¿é¤J¤º®e)");
+						QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œ\n&cä¸¦æ‰“é–‹èŠå¤©çª—è¼¸å…¥éœ€æ±‚æ•¸å€¼\n&7(è«‹ä¾ç…§å°æ‡‰çš„é¡åˆ¥è¼¸å…¥å…§å®¹)");
 						return false;
 					} else if (args.length == 5) {
 						TriggerType type = TriggerType.valueOf(args[2]);
@@ -111,7 +111,7 @@ public class QuestEditorCommand implements CommandExecutor {
 							QuestEditorListener.registerListeningObject(p,
 									"mqe edit evt " + q.getTriggers().size() + " " + type.toString() + " "
 											+ Integer.parseInt(args[3]) + " " + obj.toString() + " ");
-							QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¥´¶}²á¤Ñµ¡¿é¤J»İ¨D¼Æ­È\n&7(½Ğ¨Ì·Ó¹ïÀ³ªºÃş§O¿é¤J¤º®e)");
+							QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œ\n&cä¸¦æ‰“é–‹èŠå¤©çª—è¼¸å…¥éœ€æ±‚æ•¸å€¼\n&7(è«‹ä¾ç…§å°æ‡‰çš„é¡åˆ¥è¼¸å…¥å…§å®¹)");
 							return false;
 						}
 					}
@@ -122,7 +122,7 @@ public class QuestEditorCommand implements CommandExecutor {
 				case "name":
 					if (args.length == 2) {
 						QuestEditorListener.registerListeningObject(p, "mqe edit name ");
-						QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¥´¶}²á¤Ñµ¡¿é¤J»İ¨D¼Æ­È\n&7(½Ğ¨Ì·Ó¹ïÀ³ªºÃş§O¿é¤J¤º®e)");
+						QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œ\n&cä¸¦æ‰“é–‹èŠå¤©çª—è¼¸å…¥éœ€æ±‚æ•¸å€¼\n&7(è«‹ä¾ç…§å°æ‡‰çš„é¡åˆ¥è¼¸å…¥å…§å®¹)");
 						return false;
 					} else if (args.length == 3) {
 						q.setQuestName(args[2]);
@@ -132,7 +132,7 @@ public class QuestEditorCommand implements CommandExecutor {
 				case "outline":
 					if (args.length == 2) {
 						QuestEditorListener.registerListeningObject(p, "mqe edit outline ");
-						QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¥´¶}²á¤Ñµ¡¿é¤J»İ¨D¼Æ­È\n&7(½Ğ¨Ì·Ó¹ïÀ³ªºÃş§O¿é¤J¤º®e)");
+						QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œ\n&cä¸¦æ‰“é–‹èŠå¤©çª—è¼¸å…¥éœ€æ±‚æ•¸å€¼\n&7(è«‹ä¾ç…§å°æ‡‰çš„é¡åˆ¥è¼¸å…¥å…§å®¹)");
 						return false;
 					} else if (args.length >= 3) {
 						String s = "";
@@ -146,7 +146,7 @@ public class QuestEditorCommand implements CommandExecutor {
 				case "redo":
 					if (args.length == 2) {
 						QuestEditorListener.registerListeningObject(p, "mqe edit redo ");
-						QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¥´¶}²á¤Ñµ¡¿é¤J»İ¨D¼Æ­È\n&7(½Ğ¨Ì·Ó¹ïÀ³ªºÃş§O¿é¤J¤º®e)");
+						QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œ\n&cä¸¦æ‰“é–‹èŠå¤©çª—è¼¸å…¥éœ€æ±‚æ•¸å€¼\n&7(è«‹ä¾ç…§å°æ‡‰çš„é¡åˆ¥è¼¸å…¥å…§å®¹)");
 						return false;
 					} else if (args.length == 3) {
 						q.setRedoable(Boolean.parseBoolean(args[2]));
@@ -156,7 +156,7 @@ public class QuestEditorCommand implements CommandExecutor {
 				case "redodelay":
 					if (args.length == 2) {
 						QuestEditorListener.registerListeningObject(p, "mqe edit redodelay ");
-						QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¥´¶}²á¤Ñµ¡¿é¤J»İ¨D¼Æ­È\n&7(½Ğ¨Ì·Ó¹ïÀ³ªºÃş§O¿é¤J¤º®e)");
+						QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œ\n&cä¸¦æ‰“é–‹èŠå¤©çª—è¼¸å…¥éœ€æ±‚æ•¸å€¼\n&7(è«‹ä¾ç…§å°æ‡‰çš„é¡åˆ¥è¼¸å…¥å…§å®¹)");
 						return false;
 					} else if (args.length == 3) {
 						q.setRedoDelay(Long.parseLong(args[2]));
@@ -166,7 +166,7 @@ public class QuestEditorCommand implements CommandExecutor {
 				case "npc":
 					if (args.length == 2) {
 						QuestEditorListener.registerListeningObject(p, "mqe edit npc ");
-						QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¥kÁäÂIÀ»¥Ø¼ĞNPC¡C");
+						QuestGUIManager.openInfo(p, "&cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½A\n&cï¿½Ã¥kï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½Ø¼ï¿½NPCï¿½C");
 						return false;
 					} else if (args.length == 3) {
 						q.setQuestNPC(CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[2])));
@@ -190,13 +190,13 @@ public class QuestEditorCommand implements CommandExecutor {
 							if (p.getInventory().getItemInMainHand().getType() != Material.AIR) {
 								if (((List<ItemStack>) q.getRequirements().get(t))
 										.contains(p.getInventory().getItemInMainHand())) {
-									QuestUtil.error(p, "¥ô°È»İ¨D¤¤¤w¸g¦³³o­Óª«¥ó¤F¡I");
+									QuestUtil.error(p, "ä»»å‹™éœ€æ±‚ä¸­å·²ç¶“æœ‰é€™å€‹ç‰©ä»¶äº†ï¼");
 									break;
 								}
 								((List<ItemStack>) q.getRequirements().get(t)).remove(Integer.parseInt(args[3]));
 								itemlist.add(p.getInventory().getItemInMainHand());
 							} else {
-								QuestUtil.error(p, "ª««~¤£¥i¬°ªÅ¡I");
+								QuestUtil.error(p, "ç‰©å“ä¸å¯ç‚ºç©ºï¼");
 								break;
 							}
 							break;
@@ -208,7 +208,7 @@ public class QuestEditorCommand implements CommandExecutor {
 							break;
 						case NBTTAG:
 							if (((List<String>) q.getRequirements().get(t)).contains(args[4])) {
-								QuestUtil.error(p, "¥ô°È»İ¨D¤¤¤w¸g¦³³o­Óª«¥ó¤F¡I");
+								QuestUtil.error(p, "ä»»å‹™éœ€æ±‚ä¸­å·²ç¶“æœ‰é€™å€‹ç‰©ä»¶äº†ï¼");
 								break;
 							}
 							((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[3]));
@@ -217,19 +217,19 @@ public class QuestEditorCommand implements CommandExecutor {
 						case QUEST:
 							if (QuestUtil.getQuest(args[4]) != null) {
 								if (((List<String>) q.getRequirements().get(t)).contains(args[4])) {
-									QuestUtil.error(p, "¥ô°È»İ¨D¤¤¤w¸g¦³³o­Óª«¥ó¤F¡I");
+									QuestUtil.error(p, "ä»»å‹™éœ€æ±‚ä¸­å·²ç¶“æœ‰é€™å€‹ç‰©ä»¶äº†ï¼");
 									break;
 								}
 								((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[3]));
 								((List<String>) q.getRequirements().get(t)).add(args[4]);
 								break;
 							} else {
-								QuestUtil.error(p, "§ä¤£¨ì«ü©wªº¥ô°È¡C");
+								QuestUtil.error(p, "æ‰¾ä¸åˆ°æŒ‡å®šçš„ä»»å‹™ã€‚");
 								break;
 							}
 						case SCOREBOARD:
 							if (((List<String>) q.getRequirements().get(t)).contains(args[4])) {
-								QuestUtil.error(p, "¥ô°È»İ¨D¤¤¤w¸g¦³³o­Óª«¥ó¤F¡I");
+								QuestUtil.error(p, "ä»»å‹™éœ€æ±‚ä¸­å·²ç¶“æœ‰é€™å€‹ç‰©ä»¶äº†ï¼");
 								break;
 							}
 							((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[3]));
@@ -254,12 +254,12 @@ public class QuestEditorCommand implements CommandExecutor {
 						case NBTTAG:
 							QuestEditorListener.registerListeningObject(p,
 									"mqe edit req " + t.toString() + " " + Integer.parseInt(args[3]) + " ");
-							QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¥´¶}²á¤Ñµ¡¿é¤J»İ¨D¼Æ­È\n&7(½Ğ¨Ì·Ó¹ïÀ³ªºÃş§O¿é¤J¤º®e)");
+							QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œ\n&cä¸¦æ‰“é–‹èŠå¤©çª—è¼¸å…¥éœ€æ±‚æ•¸å€¼\n&7(è«‹ä¾ç…§å°æ‡‰çš„é¡åˆ¥è¼¸å…¥å…§å®¹)");
 							break;
 						case ITEM:
 							QuestEditorListener.registerListeningObject(p,
 									"mqe edit req " + t.toString() + " " + Integer.parseInt(args[3]) + " ");
-							QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A¨Ã¶}±Òª««~Äæ¡A\n&c±N»İ¨Dª««~®³¦b¥D¤â¤WÂIÀ»¥kÁä¡A\n&c¨t²Î±N·|¦Û°ÊÅª¨úª««~¤º®e¡C");
+							QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œä¸¦é–‹å•Ÿç‰©å“æ¬„ï¼Œ\n&cå°‡éœ€æ±‚ç‰©å“æ‹¿åœ¨ä¸»æ‰‹ä¸Šé»æ“Šå³éµï¼Œ\n&cç³»çµ±å°‡æœƒè‡ªå‹•è®€å–ç‰©å“å…§å®¹ã€‚");
 							break;
 						}
 						return false;
@@ -267,11 +267,11 @@ public class QuestEditorCommand implements CommandExecutor {
 						switch (t) {
 						case LEVEL:
 							QuestEditorListener.registerListeningObject(p, "mqe edit req " + t.toString() + " ");
-							QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¥´¶}²á¤Ñµ¡¿é¤J»İ¨D¼Æ­È\n&7(½Ğ¨Ì·Ó¹ïÀ³ªºÃş§O¿é¤J¤º®e)");
+							QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œ\n&cä¸¦æ‰“é–‹èŠå¤©çª—è¼¸å…¥éœ€æ±‚æ•¸å€¼\n&7(è«‹ä¾ç…§å°æ‡‰çš„é¡åˆ¥è¼¸å…¥å…§å®¹)");
 							break;
 						case MONEY:
 							QuestEditorListener.registerListeningObject(p, "mqe edit req " + t.toString() + " ");
-							QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¥´¶}²á¤Ñµ¡¿é¤J»İ¨D¼Æ­È\n&7(½Ğ¨Ì·Ó¹ïÀ³ªºÃş§O¿é¤J¤º®e)");
+							QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œ\n&cä¸¦æ‰“é–‹èŠå¤©çª—è¼¸å…¥éœ€æ±‚æ•¸å€¼\n&7(è«‹ä¾ç…§å°æ‡‰çš„é¡åˆ¥è¼¸å…¥å…§å®¹)");
 							break;
 						default:
 							break;
@@ -319,7 +319,7 @@ public class QuestEditorCommand implements CommandExecutor {
 							TriggerObject obj = TriggerObject.valueOf(args[5]);
 							QuestEditorListener.registerListeningObject(p, "mqe edit evt " + index + " "
 									+ type.toString() + " " + i + " " + obj.toString() + " ");
-							QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¥´¶}²á¤Ñµ¡¿é¤J»İ¨D¼Æ­È\n&7(½Ğ¨Ì·Ó¹ïÀ³ªºÃş§O¿é¤J¤º®e)");
+							QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œ\n&cä¸¦æ‰“é–‹èŠå¤©çª—è¼¸å…¥éœ€æ±‚æ•¸å€¼\n&7(è«‹ä¾ç…§å°æ‡‰çš„é¡åˆ¥è¼¸å…¥å…§å®¹)");
 							return false;
 						default:
 							obj = TriggerObject.valueOf(args[4]);
@@ -335,7 +335,7 @@ public class QuestEditorCommand implements CommandExecutor {
 						TriggerObject obj = TriggerObject.valueOf(args[4]);
 						QuestEditorListener.registerListeningObject(p,
 								"mqe edit evt " + index + " " + type.toString() + " " + obj.toString() + " ");
-						QuestGUIManager.openInfo(p, "&c½ĞÃö³¬®Ñ¥»µøµ¡¡A\n&c¨Ã¥´¶}²á¤Ñµ¡¿é¤J»İ¨D¼Æ­È\n&7(½Ğ¨Ì·Ó¹ïÀ³ªºÃş§O¿é¤J¤º®e)");
+						QuestGUIManager.openInfo(p, "&cè«‹é—œé–‰æ›¸æœ¬è¦–çª—ï¼Œ\n&cä¸¦æ‰“é–‹èŠå¤©çª—è¼¸å…¥éœ€æ±‚æ•¸å€¼\n&7(è«‹ä¾ç…§å°æ‡‰çš„é¡åˆ¥è¼¸å…¥å…§å®¹)");
 						return false;
 					}
 				}
@@ -359,7 +359,7 @@ public class QuestEditorCommand implements CommandExecutor {
 							break;
 						}
 						QuestEditorManager.editQuestRequirement(p);
-						QuestUtil.info(p, "«ü©wªºª«¥ó¤w¸g²¾°£¡C");
+						QuestUtil.info(p, "æŒ‡å®šçš„ç‰©ä»¶å·²ç¶“ç§»é™¤ã€‚");
 						return false;
 					}
 				case "evt":
@@ -367,7 +367,7 @@ public class QuestEditorCommand implements CommandExecutor {
 					if (args.length == 3) {
 						q.getTriggers().remove(index);
 						QuestEditorManager.editQuestTrigger(p);
-						QuestUtil.info(p, "«ü©wªºª«¥ó¤w¸g²¾°£¡C");
+						QuestUtil.info(p, "æŒ‡å®šçš„ç‰©ä»¶å·²ç¶“ç§»é™¤ã€‚");
 						return false;
 					}
 				}

@@ -24,9 +24,9 @@ public class QuestEditorListener implements Listener{
 			p.performCommand(CurrentListening.get(p.getName()) + e.getMessage());
 			e.setCancelled(true);
 			if (e.getMessage().contains("cancel"))
-				QuestUtil.info(p, "&d¤w¨ú®ø¿é¤J¡C");
+				QuestUtil.info(p, "&då·²å–æ¶ˆè¼¸å…¥ã€‚");
 			else
-				QuestUtil.info(p, "&7±zªº¿é¤J¡G " + e.getMessage());
+				QuestUtil.info(p, "&7æ‚¨çš„è¼¸å…¥ï¼š " + e.getMessage());
 			CurrentListening.remove(p.getName());
 		}
 		else return;
@@ -52,7 +52,7 @@ public class QuestEditorListener implements Listener{
 		Player p = e.getClicker();
 		if (CurrentListening.containsKey(p.getName())){
 			p.performCommand(CurrentListening.get(p.getName()) + e.getNPC().getId());
-			QuestUtil.info(p, "&a§A¿ï¨ú¤F " + e.getNPC().getName() + " &a¡I");
+			QuestUtil.info(p, "&aä½ é¸å–äº† " + e.getNPC().getName() + " &aï¼");
 			CurrentListening.remove(p.getName());
 			e.setCancelled(true);
 			return;

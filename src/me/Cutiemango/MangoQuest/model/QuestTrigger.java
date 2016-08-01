@@ -34,8 +34,8 @@ public class QuestTrigger {
 	}
 	
 	public enum TriggerType{
-		TRIGGER_ON_TAKE("╠╣╗Э╝ид╡╣o"), TRIGGER_ON_QUIT("╘Я╠С╝ид╡╣o"), TRIGGER_ON_FINISH("╖╧╕╗╝ид╡╣o"),
-		TRIGGER_STAGE_START("╡дN╤╔╛q╤}╘l╝ид╡╣o"), TRIGGER_STAGE_FINISH("╡дN╤╔╛q╖╧╕╗╝ид╡╣o");
+		TRIGGER_ON_TAKE("Ф▌╔Е▐≈Ф≥┌Х╖╦Г≥╪"), TRIGGER_ON_QUIT("Ф■╬Фё└Ф≥┌Х╖╦Г≥╪"), TRIGGER_ON_FINISH("Е╝▄Ф┬░Ф≥┌Х╖╦Г≥╪"),
+		TRIGGER_STAGE_START("Г╛╛NИ ▌Ф╝╣И√▀Е╖▀Ф≥┌Х╖╦Г≥╪"), TRIGGER_STAGE_FINISH("Г╛╛NИ ▌Ф╝╣Е╝▄Ф┬░Ф≥┌Х╖╦Г≥╪");
 		
 		private String name;
 		
@@ -53,9 +53,9 @@ public class QuestTrigger {
 	}
 	
 	public enum TriggerObject{
-		COMMAND("╚Э╔O"),
-		SEND_TITLE("╣o╟e╪пцD"), SEND_SUBTITLE("╣o╟e╟ф╪пцD"), SEND_MESSAGE("╣o╟e╟T╝╖"),
-		TELEPORT("╤г╟e╙╠╝a");
+		COMMAND("Ф▄┤Д╩╓"),
+		SEND_TITLE("Г≥╪И─│Ф╗≥И║▄"), SEND_SUBTITLE("Г≥╪И─│Е┴╞Ф╗≥И║▄"), SEND_MESSAGE("Г≥╪И─│Х╗┼Ф│╞"),
+		TELEPORT("Е┌ЁИ─│Г▌╘Е╝╤");
 		
 		private String name;
 		

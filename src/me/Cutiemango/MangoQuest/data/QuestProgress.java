@@ -51,14 +51,14 @@ public class QuestProgress {
 		pd.removeProgress(quest);
 		quest.getQuestReward().giveRewardTo(owner);
 		QuestUtil.sendQuestTitle(owner, quest, QuestTitleEnum.FINISH);
-		QuestUtil.info(owner, "&b&l¥ô°È &f" + quest.getQuestName() + " &b&l§¹¦¨¡I");
+		QuestUtil.info(owner, "&b&lä»»å‹™ &f" + quest.getQuestName() + " &b&lå®Œæˆï¼");
 	}
 	
 	public void save(FileConfiguration c){
-		c.set("ª±®a¸ê®Æ." + owner.getUniqueId() + ".¥ô°È¶i«×." + quest.getInternalID() + ".QuestStage", CurrentStage);
+		c.set("ç©å®¶è³‡æ–™." + owner.getUniqueId() + ".ä»»å‹™é€²åº¦." + quest.getInternalID() + ".QuestStage", CurrentStage);
 		int t = 0;
 		for (QuestObjectProgress qop : objlist){
-			c.set("ª±®a¸ê®Æ." + owner.getUniqueId() + ".¥ô°È¶i«×." + quest.getInternalID() + ".QuestObjectProgress." + t, qop.getProgress());
+			c.set("ç©å®¶è³‡æ–™." + owner.getUniqueId() + ".ä»»å‹™é€²åº¦." + quest.getInternalID() + ".QuestObjectProgress." + t, qop.getProgress());
 			t++;
 		}
 	}
@@ -91,7 +91,7 @@ public class QuestProgress {
 		if (CurrentStage + 1 < quest.getStages().size()){
 			CurrentStage++;
 			owner.sendMessage(ChatColor.translateAlternateColorCodes('&',
-					QuestStorage.prefix + " &d&l¥ô°È &f" + quest.getQuestName() + " &d&l¤w§¹¦¨¶i«×¡G (" + CurrentStage + "/" + quest.getStages().size() + ")"));
+					QuestStorage.prefix + " &d&lä»»å‹™ &f" + quest.getQuestName() + " &d&lå·²å®Œæˆé€²åº¦ï¼š (" + CurrentStage + "/" + quest.getStages().size() + ")"));
 			objlist = new ArrayList<>();
 			for (SimpleQuestObject o : quest.getStage(CurrentStage).getObjects()){
 				objlist.add(new QuestObjectProgress(o, 0));

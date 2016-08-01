@@ -52,7 +52,7 @@ public class QuestConfigLoad {
 			EntityType t = EntityType.valueOf(e);
 			QuestStorage.EntityTypeMap.put(t, tconfig.getString("EntityType." + e.toString()));
 		}
-		Bukkit.getLogger().log(Level.INFO, "[MangoQuest] Â½Ä¶ÀÉ®×Åª¨ú§¹¦¨¡I");
+		Bukkit.getLogger().log(Level.INFO, "[MangoQuest] ç¿»è­¯æª”æ¡ˆè®€å–å®Œæˆï¼");
 	}
 
 	private void init(){
@@ -60,14 +60,14 @@ public class QuestConfigLoad {
 		
 		if (!file.exists()){
 			plugin.saveResource("players.yml", true);
-			Bukkit.getLogger().log(Level.SEVERE, "[MangoQuest] §ä¤£¨ìplayers.yml¡A«Ø¥ß·sÀÉ®×¡I");
+			Bukkit.getLogger().log(Level.SEVERE, "[MangoQuest] æ‰¾ä¸åˆ°players.ymlï¼Œå»ºç«‹æ–°æª”æ¡ˆï¼");
 		}
 		pconfig = YamlConfiguration.loadConfiguration(file);
 		
 		file = new File(plugin.getDataFolder(), "translations.yml");
 		if (!file.exists()){
 			plugin.saveResource("translations.yml", true);
-			Bukkit.getLogger().log(Level.SEVERE, "[MangoQuest] §ä¤£¨ìtranslations.yml¡A«Ø¥ß·sÀÉ®×¡I");
+			Bukkit.getLogger().log(Level.SEVERE, "[MangoQuest] æ‰¾ä¸åˆ°translations.ymlï¼Œå»ºç«‹æ–°æª”æ¡ˆï¼");
 		}
 		
 		tconfig = YamlConfiguration.loadConfiguration(file);
@@ -75,64 +75,64 @@ public class QuestConfigLoad {
 		file = new File(this.plugin.getDataFolder(), "quests.yml");
 		if (!file.exists()){
 			plugin.saveResource("quests.yml", true);
-			Bukkit.getLogger().log(Level.SEVERE, "[MangoQuest] §ä¤£¨ìquests.yml¡A«Ø¥ß·sÀÉ®×¡I");
+			Bukkit.getLogger().log(Level.SEVERE, "[MangoQuest] æ‰¾ä¸åˆ°quests.ymlï¼Œå»ºç«‹æ–°æª”æ¡ˆï¼");
 		}
 		
 		qconfig = YamlConfiguration.loadConfiguration(file);
 	}
 	
 	public void loadQuests(){
-		if (qconfig.getConfigurationSection("¥ô°È¦Cªí") == null)
+		if (qconfig.getConfigurationSection("ä»»å‹™åˆ—è¡¨") == null)
 			return;
-		for (String internal : qconfig.getConfigurationSection("¥ô°È¦Cªí").getKeys(false)) {
-			String questname = qconfig.getString("¥ô°È¦Cªí." + internal + ".¥ô°È¦WºÙ");
-			String questoutline = qconfig.getString("¥ô°È¦Cªí." + internal + ".¥ô°È´£­n");
+		for (String internal : qconfig.getConfigurationSection("ä»»å‹™åˆ—è¡¨").getKeys(false)) {
+			String questname = qconfig.getString("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™åç¨±");
+			String questoutline = qconfig.getString("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™æè¦");
 			List<QuestStage> stages = new ArrayList<>();
-			for (String stagecount : qconfig.getConfigurationSection("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e").getKeys(false)) {
+			for (String stagecount : qconfig.getConfigurationSection("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹").getKeys(false)) {
 				List<SimpleQuestObject> objs = new ArrayList<>();
 				int scount = Integer.parseInt(stagecount);
-				for (String objcount : qconfig.getConfigurationSection("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount).getKeys(false)) {
+				for (String objcount : qconfig.getConfigurationSection("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount).getKeys(false)) {
 					int ocount = Integer.parseInt(objcount);
-					String s = qconfig.getString("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".¥ô°ÈºØÃş");
+					String s = qconfig.getString("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".ä»»å‹™ç¨®é¡");
 					SimpleQuestObject obj = null;
 					switch (s) {
 					case "ITEM_DELIVER":
 						obj = new QuestObjectItemDeliver(CitizensAPI.getNPCRegistry()
-								.getById(qconfig.getInt("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".¥Ø¼ĞNPC")),
-						QuestUtil.getItemStack(qconfig, "¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".ª««~"),
-						qconfig.getInt("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".ª««~.¼Æ¶q"));
+								.getById(qconfig.getInt("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".ç›®æ¨™NPC")),
+						QuestUtil.getItemStack(qconfig, "ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".ç‰©å“"),
+						qconfig.getInt("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".ç‰©å“.æ•¸é‡"));
 						break;
 					case "TALK_TO_NPC":
 						obj = new QuestObjectTalkToNPC(CitizensAPI.getNPCRegistry()
-								.getById(qconfig.getInt("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".¥Ø¼ĞNPC")));
+								.getById(qconfig.getInt("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".ç›®æ¨™NPC")));
 						break;
 					case "KILL_MOB":
 						String name = null;
-						if (qconfig.getString("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".©Çª«¦WºÙ") != null)
-							name = qconfig.getString("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".©Çª«¦WºÙ");
+						if (qconfig.getString("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".æ€ªç‰©åç¨±") != null)
+							name = qconfig.getString("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".æ€ªç‰©åç¨±");
 						obj = new QuestObjectKillMob(
-								EntityType.valueOf(qconfig.getString("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".©Çª«Ãş«¬")),
-								qconfig.getInt("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".¼Æ¶q"), name);
+								EntityType.valueOf(qconfig.getString("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".æ€ªç‰©é¡å‹")),
+								qconfig.getInt("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".æ•¸é‡"), name);
 						break;
 					case "BREAK_BLOCK":
 						obj = new QuestObjectBreakBlock(Material.getMaterial(
-								qconfig.getString("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".¤è¶ô")),
-								qconfig.getInt("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".¼Æ¶q"));
+								qconfig.getString("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".æ–¹å¡Š")),
+								qconfig.getInt("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".æ•¸é‡"));
 						break;
 					case "CONSUME_ITEM":
-						obj = new QuestObjectItemConsume(QuestUtil.getItemStack(qconfig, "¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".ª««~"),
-								qconfig.getInt("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".ª««~.¼Æ¶q"));
+						obj = new QuestObjectItemConsume(QuestUtil.getItemStack(qconfig, "ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".ç‰©å“"),
+								qconfig.getInt("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".ç‰©å“.æ•¸é‡"));
 						break;
 					case "REACH_LOCATION":
-						String[] splited = qconfig.getString("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".¦aÂI").split(":");
+						String[] splited = qconfig.getString("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".åœ°é»").split(":");
 						Location loc = new Location(
 								Bukkit.getWorld(splited[0]),
 								Double.parseDouble(splited[1]),
 								Double.parseDouble(splited[2]),
 								Double.parseDouble(splited[3]));
 						obj = new QuestObjectReachLocation(loc,
-								qconfig.getInt("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".½d³ò"),
-								qconfig.getString("¥ô°È¦Cªí." + internal + ".¥ô°È¤º®e." + scount + "." + ocount + ".¦WºÙ"));
+								qconfig.getInt("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".ç¯„åœ"),
+								qconfig.getString("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™å…§å®¹." + scount + "." + ocount + ".åç¨±"));
 						break;
 					default:
 						break;
@@ -142,47 +142,47 @@ public class QuestConfigLoad {
 				QuestStage qs = new QuestStage(null, null, objs);
 				stages.add(qs);
 			}
-			QuestReward reward = new QuestReward(QuestUtil.getItemStack(qconfig, "¥ô°È¦Cªí." + internal + ".¥ô°È¼úÀy.ª««~.1"));
-			for (String temp : qconfig.getConfigurationSection("¥ô°È¦Cªí." + internal + ".¥ô°È¼úÀy.ª««~").getKeys(false)) {
+			QuestReward reward = new QuestReward(QuestUtil.getItemStack(qconfig, "ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™çå‹µ.ç‰©å“.1"));
+			for (String temp : qconfig.getConfigurationSection("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™çå‹µ.ç‰©å“").getKeys(false)) {
 				int count = Integer.parseInt(temp);
 				if (count == 1)
 					continue;
-				reward.add(QuestUtil.getItemStack(qconfig, "¥ô°È¦Cªí." + internal + ".¥ô°È¼úÀy.ª««~." + count));
+				reward.add(QuestUtil.getItemStack(qconfig, "ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™çå‹µ.ç‰©å“." + count));
 			}
 			
-			if (plugin.citizens != null && qconfig.contains("¥ô°È¦Cªí." + internal + ".¥ô°ÈNPC")){
+			if (plugin.citizens != null && qconfig.contains("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™NPC")){
 				if (CitizensAPI.getNPCRegistry().getById(0) != null){
 					NPC npc = CitizensAPI.getNPCRegistry().getById(0);
 					Quest quest = new Quest(internal, questname, questoutline, reward, stages, npc);
-					if (qconfig.getString("¥ô°È¦Cªí." + internal + ".¤£²Å¦X¥ô°È»İ¨D°T®§") != null)
-						quest.setFailMessage(qconfig.getString("¥ô°È¦Cªí." + internal + ".¤£²Å¦X¥ô°È»İ¨D°T®§"));
+					if (qconfig.getString("ä»»å‹™åˆ—è¡¨." + internal + ".ä¸ç¬¦åˆä»»å‹™éœ€æ±‚è¨Šæ¯") != null)
+						quest.setFailMessage(qconfig.getString("ä»»å‹™åˆ—è¡¨." + internal + ".ä¸ç¬¦åˆä»»å‹™éœ€æ±‚è¨Šæ¯"));
 					
 					//Requirements
-					if (qconfig.isConfigurationSection("¥ô°È¦Cªí." + internal + ".¥ô°È»İ¨D")){
-						if (qconfig.getInt("¥ô°È¦Cªí." + internal + ".¥ô°È»İ¨D.Level") != 0)
-							quest.getRequirements().put(RequirementType.LEVEL, qconfig.getInt(qconfig.getString("¥ô°È¦Cªí." + internal + ".¥ô°È»İ¨D.Level")));
-						if (qconfig.getStringList("¥ô°È¦Cªí." + internal + ".¥ô°È»İ¨D.Quest") != null){
-							quest.getRequirements().put(RequirementType.QUEST, qconfig.getStringList("¥ô°È¦Cªí." + internal + ".¥ô°È»İ¨D.Quest"));
+					if (qconfig.isConfigurationSection("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™éœ€æ±‚")){
+						if (qconfig.getInt("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™éœ€æ±‚.Level") != 0)
+							quest.getRequirements().put(RequirementType.LEVEL, qconfig.getInt(qconfig.getString("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™éœ€æ±‚.Level")));
+						if (qconfig.getStringList("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™éœ€æ±‚.Quest") != null){
+							quest.getRequirements().put(RequirementType.QUEST, qconfig.getStringList("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™éœ€æ±‚.Quest"));
 						}
-						if (qconfig.isConfigurationSection("¥ô°È¦Cªí." + internal + ".¥ô°È»İ¨D.Item")){
+						if (qconfig.isConfigurationSection("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™éœ€æ±‚.Item")){
 							List<ItemStack> l = new ArrayList<>();
-							for (String i : qconfig.getConfigurationSection("¥ô°È¦Cªí." + internal + ".¥ô°È»İ¨D.Item").getKeys(false)) {
-								l.add(QuestUtil.getItemStack(qconfig, "¥ô°È¦Cªí." + internal + ".¥ô°È»İ¨D.Item." + i));
+							for (String i : qconfig.getConfigurationSection("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™éœ€æ±‚.Item").getKeys(false)) {
+								l.add(QuestUtil.getItemStack(qconfig, "ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™éœ€æ±‚.Item." + i));
 							}
 							quest.getRequirements().put(RequirementType.ITEM, l);
 						}
-						if (qconfig.getStringList("¥ô°È¦Cªí." + internal + ".¥ô°È»İ¨D.Scoreboard") != null){
-							quest.getRequirements().put(RequirementType.SCOREBOARD, qconfig.getStringList("¥ô°È¦Cªí." + internal + ".¥ô°È»İ¨D.Scoreboard"));
+						if (qconfig.getStringList("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™éœ€æ±‚.Scoreboard") != null){
+							quest.getRequirements().put(RequirementType.SCOREBOARD, qconfig.getStringList("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™éœ€æ±‚.Scoreboard"));
 						}
-						if (qconfig.getStringList("¥ô°È¦Cªí." + internal + ".¥ô°È»İ¨D.NBTTag") != null){
-							quest.getRequirements().put(RequirementType.NBTTAG, qconfig.getStringList("¥ô°È¦Cªí." + internal + ".¥ô°È»İ¨D.NBTTag"));
+						if (qconfig.getStringList("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™éœ€æ±‚.NBTTag") != null){
+							quest.getRequirements().put(RequirementType.NBTTAG, qconfig.getStringList("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™éœ€æ±‚.NBTTag"));
 						}
 					}
 					
 					//Triggers
-					if (qconfig.getStringList("¥ô°È¦Cªí." + internal + ".¥ô°ÈÄ²µo¨Æ¥ó") != null){
+					if (qconfig.getStringList("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™è§¸ç™¼äº‹ä»¶") != null){
 						List<QuestTrigger> list = new ArrayList<>();
-						for (String tri : qconfig.getStringList("¥ô°È¦Cªí." + internal + ".¥ô°ÈÄ²µo¨Æ¥ó")){
+						for (String tri : qconfig.getStringList("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™è§¸ç™¼äº‹ä»¶")){
 							String[] Stri = tri.split(" ");
 							QuestTrigger trigger = null;
 							TriggerType type = TriggerType.valueOf(Stri[0]);
@@ -218,21 +218,21 @@ public class QuestConfigLoad {
 						}
 						quest.setTriggers(list);
 					}
-					if (qconfig.getBoolean("¥ô°È¦Cªí." + internal + ".¥i­«½Æ°õ¦æ")){
+					if (qconfig.getBoolean("ä»»å‹™åˆ—è¡¨." + internal + ".å¯é‡è¤‡åŸ·è¡Œ")){
 						quest.setRedoable(true);
-						quest.setRedoDelay(qconfig.getInt("¥ô°È¦Cªí." + internal + ".­«½Æ°õ¦æ®É¶¡") * 1000);
+						quest.setRedoDelay(qconfig.getInt("ä»»å‹™åˆ—è¡¨." + internal + ".é‡è¤‡åŸ·è¡Œæ™‚é–“") * 1000);
 					}
 					QuestStorage.Quests.put(internal, quest);
-					Bukkit.getLogger().log(Level.INFO, "¥ô°È " + questname + " ¤w¸gÅª¨ú¦¨¥\¡I");
+					Bukkit.getLogger().log(Level.INFO, "ä»»å‹™ " + questname + " å·²ç¶“è®€å–æˆåŠŸï¼");
 				}else{
-					Bukkit.getLogger().log(Level.SEVERE, "¥ô°È " + questname + " ªºNPC ID µLªkÅª¨ú¡I");
-					Bukkit.getLogger().log(Level.SEVERE, "¥ô°È " + questname + " ¤w¸g¸õ¹LÅª¨ú¡C");
+					Bukkit.getLogger().log(Level.SEVERE, "ä»»å‹™ " + questname + " çš„NPC ID ç„¡æ³•è®€å–ï¼");
+					Bukkit.getLogger().log(Level.SEVERE, "ä»»å‹™ " + questname + " å·²ç¶“è·³éè®€å–ã€‚");
 					continue;
 				}
 			}else{
-				Bukkit.getLogger().log(Level.SEVERE, qconfig.getInt("¥ô°È¦Cªí." + internal + ".¥ô°ÈNPC") + "");
-				Bukkit.getLogger().log(Level.SEVERE, "¥ô°È " + questname + " ªºNPC ID ¤£¥¿½T¡I½Ğ­«·s½T»{¡I");
-				Bukkit.getLogger().log(Level.SEVERE, "¥ô°È " + questname + " ¤w¸g¸õ¹LÅª¨ú¡C");
+				Bukkit.getLogger().log(Level.SEVERE, qconfig.getInt("ä»»å‹™åˆ—è¡¨." + internal + ".ä»»å‹™NPC") + "");
+				Bukkit.getLogger().log(Level.SEVERE, "ä»»å‹™ " + questname + " çš„NPC ID ä¸æ­£ç¢ºï¼è«‹é‡æ–°ç¢ºèªï¼");
+				Bukkit.getLogger().log(Level.SEVERE, "ä»»å‹™ " + questname + " å·²ç¶“è·³éè®€å–ã€‚");
 				continue;
 			}
 		}

@@ -26,13 +26,13 @@ public class QuestUtil {
 	}
 	
 	public static ItemStack getItemStack(FileConfiguration config, String path) {
-		Material m = Material.getMaterial(config.getString(path + ".Ãş§O"));
-		int amount = config.getInt(path + ".¼Æ¶q");
+		Material m = Material.getMaterial(config.getString(path + ".é¡åˆ¥"));
+		int amount = config.getInt(path + ".æ•¸é‡");
 		ItemStack is = new ItemStack(m, amount);
-		if (config.getString(path + ".¦WºÙ") != null) {
-			String name = ChatColor.translateAlternateColorCodes('&', config.getString(path + ".¦WºÙ"));
+		if (config.getString(path + ".åç¨±") != null) {
+			String name = ChatColor.translateAlternateColorCodes('&', config.getString(path + ".åç¨±"));
 			List<String> lore = new ArrayList<>();
-			for (String s : config.getStringList(path + ".µù¸Ñ")) {
+			for (String s : config.getStringList(path + ".è¨»è§£")) {
 				lore.add(ChatColor.translateAlternateColorCodes('&', s));
 			}
 			ItemMeta im = is.getItemMeta();
@@ -64,13 +64,13 @@ public class QuestUtil {
 	public static void sendQuestTitle(Player target, Quest quest, QuestTitleEnum e) {
 		switch(e){
 			case ACCEPT:
-				sendTitle(target, 1, 3, 1, "&b&l±µ¨ü¥ô°È", quest.getQuestName());
+				sendTitle(target, 1, 3, 1, "&b&læ¥å—ä»»å‹™", quest.getQuestName());
 				break;
 			case FINISH:
-				sendTitle(target, 1, 3, 1, "&6&l§¹¦¨¥ô°È", quest.getQuestName());
+				sendTitle(target, 1, 3, 1, "&6&lå®Œæˆä»»å‹™", quest.getQuestName());
 				break;
 			case QUIT:
-				sendTitle(target, 1, 3, 1, "&c&l©ñ±ó¥ô°È", quest.getQuestName());
+				sendTitle(target, 1, 3, 1, "&c&læ”¾æ£„ä»»å‹™", quest.getQuestName());
 				break;
 		}
 	}
@@ -94,8 +94,8 @@ public class QuestUtil {
 	}
 	
 	public static void warnCmd(Class<?> clazz, String s){
-		Bukkit.getLogger().warning("¸ÑªR " + clazz.getClass().getName() + ".class ®Éµo¥Í¿ù»~¡A½ĞÀË¬d³]©wÀÉ¡C");
-		Bukkit.getLogger().warning("­Y±z½T»{³o¬O­ÓBUG¡A½Ğ¦^³ø¶}µoªÌ¡C");
+		Bukkit.getLogger().warning("è§£æ " + clazz.getClass().getName() + ".class æ™‚ç™¼ç”ŸéŒ¯èª¤ï¼Œè«‹æª¢æŸ¥è¨­å®šæª”ã€‚");
+		Bukkit.getLogger().warning("è‹¥æ‚¨ç¢ºèªé€™æ˜¯å€‹BUGï¼Œè«‹å›å ±é–‹ç™¼è€…ã€‚");
 		Bukkit.getLogger().warning(s);
 	}
 	
@@ -108,25 +108,25 @@ public class QuestUtil {
 		long seconds = (((l % 86400000) % 3600000) % 60000) / 1000;
 		
 		if (days > 0)
-			s += days + " ¤Ñ,";
+			s += days + " å¤©,";
 		if (hours > 0)
-			s += hours + " ¤p®É,";
+			s += hours + " å°æ™‚,";
 		if (minutes > 0)
-			s += minutes + " ¤ÀÄÁ,";
+			s += minutes + " åˆ†é˜,";
 		if (seconds > 0)
-			s += seconds + " ¬í";
+			s += seconds + " ç§’";
 		return s;
 	}
 	
 	public static String translate(Material m){
 		if (!QuestStorage.TranslateMap.containsKey(m))
-			return "¥¼ª¾";
+			return "æœªçŸ¥";
 		else return QuestStorage.TranslateMap.get(m);
 	}
 	
 	public static String translate(EntityType e){
 		if (!QuestStorage.EntityTypeMap.containsKey(e))
-			return "¥¼ª¾";
+			return "æœªçŸ¥";
 		else return QuestStorage.EntityTypeMap.get(e);
 	}
 }

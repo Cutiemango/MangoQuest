@@ -38,17 +38,17 @@ public class QuestObjectItemDeliver extends NumerableObject{
 	public TextComponent toTextComponent(boolean isFinished) {
 		TextComponent text = new TextComponent();
 		if (isFinished){
-			text = new TextComponent(QuestUtil.translateColor("&8&m&o¥£•Ê &8&m&o"));
+			text = new TextComponent(QuestUtil.translateColor("&8&m&oÊèê‰∫§ &8&m&o"));
 			text.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(isFinished, item));
 			TextComponent suffix = new TextComponent(
-					QuestUtil.translateColor(" &8&m&o" + amount + " &8&m&o≠” µπ "));
+					QuestUtil.translateColor(" &8&m&o" + amount + " &8&m&oÂÄã Áµ¶ "));
 			text.addExtra(suffix);
 		}
 		else{
-			text = new TextComponent(QuestUtil.translateColor("&0¥£•Ê "));
+			text = new TextComponent(QuestUtil.translateColor("&0Êèê‰∫§ "));
 			text.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(isFinished, item));
 			TextComponent suffix = new TextComponent(
-					QuestUtil.translateColor(" &0&l" + amount + " &0≠” µπ "));
+					QuestUtil.translateColor(" &0&l" + amount + " &0ÂÄã Áµ¶ "));
 			text.addExtra(suffix);
 		}
 		text.addExtra(TextComponentFactory.convertLocationtoHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
@@ -58,9 +58,9 @@ public class QuestObjectItemDeliver extends NumerableObject{
 	@Override
 	public String toPlainText() {
 		if (item.getItemMeta().hasDisplayName())
-			return QuestUtil.translateColor("&a¥£•Ê " + item.getItemMeta().getDisplayName() + " &f" + item + " &a≠” µπ " + npc.getName());
+			return QuestUtil.translateColor("&aÊèê‰∫§ " + item.getItemMeta().getDisplayName() + " &f" + item + " &aÂÄã Áµ¶ " + npc.getName());
 		else
-			return QuestUtil.translateColor("&a¥£•Ê &f" + QuestUtil.translate(item.getType()) + " &f" + amount + " &a≠” µπ " + npc.getName());
+			return QuestUtil.translateColor("&aÊèê‰∫§ &f" + QuestUtil.translate(item.getType()) + " &f" + amount + " &aÂÄã Áµ¶ " + npc.getName());
 	}
 	
 	
