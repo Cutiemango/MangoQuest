@@ -83,6 +83,7 @@ public class QuestGUIManager {
 				p3.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(false, is));
 				TextComponent suffix = new TextComponent(ChatColor.translateAlternateColorCodes('&' , " &l" + is.getAmount() + " &0個"));
 				p3.addExtra(suffix);
+				p3.addExtra("\n");
 			}
 		}
 		

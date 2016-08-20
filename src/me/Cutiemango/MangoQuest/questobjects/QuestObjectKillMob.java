@@ -10,6 +10,7 @@ public class QuestObjectKillMob extends NumerableObject{
 	public QuestObjectKillMob(EntityType t, int i, String customname){
 		type = t;
 		amount = i;
+		config = "KILL_MOB";
 		if (customname != null)
 			CustomName = customname;
 	}

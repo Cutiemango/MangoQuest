@@ -19,7 +19,7 @@
       - "QuestTag003"
     "不符合任務需求訊息": "&c你並沒有達到符合的任務條件。"
     "可重複執行": true
-    "重複執行時間": 10
+    "重複執行時間": 10000
     "任務觸發事件":
     - "TRIGGER_ON_TAKE SEND_TITLE &b成功接受任務了。"
     - "TRIGGER_STAGE_START 2 SEND_SUBTITLE &6第二階段開始。"

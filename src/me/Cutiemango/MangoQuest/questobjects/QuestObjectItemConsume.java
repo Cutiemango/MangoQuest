@@ -9,12 +9,9 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class QuestObjectItemConsume extends NumerableObject{
 	
 	public QuestObjectItemConsume(ItemStack is, int i){
-//		if (!is.getType().equals(Material.POTION) || !is.getType().isEdible()){
-//			Bukkit.getLogger().warning("ERROR: argument of QuestObjectConsume does not have a matched Material Object.");
-//			return;
-//		}
 		item = is;
 		amount = i;
+		config = "CONSUME_ITEM";
 	}
 	
 	private ItemStack item;
@@ -41,7 +38,7 @@ public class QuestObjectItemConsume extends NumerableObject{
 		if (item.getItemMeta().hasDisplayName())
 			return QuestUtil.translateColor("&a食用 " + amount + " 個 " + item.getItemMeta().getDisplayName());
 		else
-			return QuestUtil.translateColor("&a食用 " + amount + " 個 " + QuestUtil.translate(item.getType()));
+			return QuestUtil.translateColor("&a食用 " + amount + " 個 " + QuestUtil.translate(item.getType(), item.getDurability()));
 	}
 	
 	public ItemStack getItem(){

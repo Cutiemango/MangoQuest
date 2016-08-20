@@ -1,6 +1,7 @@
 package me.Cutiemango.MangoQuest;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -54,6 +55,111 @@ public class QuestConfigLoad {
 		}
 		Bukkit.getLogger().log(Level.INFO, "[MangoQuest] 翻譯檔案讀取完成！");
 	}
+	
+	@SuppressWarnings("unchecked")
+	public void saveQuest(Quest q){
+		qconfig.set("任務列表." + q.getInternalID() + ".任務名稱", q.getQuestName());
+		qconfig.set("任務列表." + q.getInternalID() + ".任務提要", q.getQuestOutline());
+		qconfig.set("任務列表." + q.getInternalID() + ".任務NPC", q.getQuestNPC().getId());
+		qconfig.set("任務列表." + q.getInternalID() + ".任務需求.Level", q.getRequirements().get(RequirementType.LEVEL));
+		qconfig.set("任務列表." + q.getInternalID() + ".任務需求.Quest", q.getRequirements().get(RequirementType.QUEST));
+		int i = 0;
+		for (ItemStack is : (List<ItemStack>)q.getRequirements().get(RequirementType.ITEM)){
+			i++;
+			qconfig.set("任務列表." + q.getInternalID() + ".任務需求.Item." + i + ".類別", is.getType().toString());
+			qconfig.set("任務列表." + q.getInternalID() + ".任務需求.Item." + i + ".數量", is.getAmount());
+			if (is.hasItemMeta() && is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()){
+				qconfig.set("任務列表." + q.getInternalID() + ".任務需求.Item." + i + ".名稱", is.getItemMeta().getDisplayName());
+				qconfig.set("任務列表." + q.getInternalID() + ".任務需求.Item." + i + ".註解", is.getItemMeta().getLore());
+			}
+		}
+		qconfig.set("任務列表." + q.getInternalID() + ".任務需求.Scoreboard", q.getRequirements().get(RequirementType.SCOREBOARD));
+		qconfig.set("任務列表." + q.getInternalID() + ".任務需求.NBTTag", q.getRequirements().get(RequirementType.NBTTAG));
+		if (q.getFailMessage() != null)
+			qconfig.set("任務列表." + q.getInternalID() + ".不符合任務需求訊息", q.getFailMessage());
+		qconfig.set("任務列表." + q.getInternalID() + ".可重複執行", q.isRedoable());
+		if (q.isRedoable())
+			qconfig.set("任務列表." + q.getInternalID() + ".重複執行時間", q.getRedoDelay());
+		List<String> list = new ArrayList<>();
+		for (QuestTrigger qt : q.getTriggers()){
+			if (qt.getType().equals(TriggerType.TRIGGER_STAGE_START) || qt.getType().equals(TriggerType.TRIGGER_STAGE_FINISH)){
+				list.add(qt.getType() + " " + qt.getCount() + " " + qt.getTriggerObject().toString() + " " + qt.getObject().toString());
+				continue;
+			}
+			list.add(qt.getType() + " " + qt.getTriggerObject().toString() + " " + qt.getObject().toString());
+		}
+		qconfig.set("任務列表." + q.getInternalID() + ".任務觸發事件", list);
+		i = 0;
+		int j = 0;
+		for (QuestStage s : q.getStages()){
+			i++;
+			for (SimpleQuestObject obj : s.getObjects()){
+				j++;
+				qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".任務種類", obj.getConfigString());
+				switch(obj.getConfigString()){
+				case "DELIVER_ITEM":
+					QuestObjectItemDeliver o = (QuestObjectItemDeliver)obj;
+					qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".目標NPC", o.getTargetNPC().getId());
+					qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.類別", o.getDeliverItem().getType().toString());
+					qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.數量", o.getDeliverItem().getAmount());
+					if (o.getDeliverItem().hasItemMeta() && o.getDeliverItem().getItemMeta().hasDisplayName() && o.getDeliverItem().getItemMeta().hasLore()){
+						qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.名稱", o.getDeliverItem().getItemMeta().getDisplayName());
+						qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.註解", o.getDeliverItem().getItemMeta().getLore());
+					}
+					break;
+				case "TALK_TO_NPC":
+					QuestObjectTalkToNPC on = (QuestObjectTalkToNPC)obj;
+					qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".目標NPC", on.getTargetNPC().getId());
+					break;
+				case "KILL_MOB":
+					QuestObjectKillMob om = (QuestObjectKillMob)obj;
+					qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".怪物類型", om.getType().toString());
+					qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".數量", om.getAmount());
+					if (om.hasCustomName())
+						qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".怪物名稱", om.getCustomName());
+					break;
+				case "BREAK_BLOCK":
+					QuestObjectBreakBlock ob = (QuestObjectBreakBlock)obj;
+					qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".方塊", ob.getType().toString());
+					qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".數量", ob.getAmount());
+					break;
+				case "CONSUME_ITEM":
+					QuestObjectItemConsume oi = (QuestObjectItemConsume)obj;
+					qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.類別", oi.getItem().getType().toString());
+					qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.數量", oi.getItem().getAmount());
+					break;
+				case "REACH_LOCATION":
+					QuestObjectReachLocation or = (QuestObjectReachLocation)obj;
+					String loc = or.getLocation().getWorld().getName() + ":" + or.getLocation().getX() + ":" + or.getLocation().getY() + ":" + or.getLocation().getZ();
+					qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".地點", loc);
+					qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".名稱", or.getName());
+					qconfig.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".範圍", or.getRadius());
+					break;
+				}
+				continue;
+			}
+			j = 0;
+		}
+		if (q.getQuestReward().hasItem()){
+			int c = 0;
+			for (ItemStack is : q.getQuestReward().getItems()){
+				c++;
+				qconfig.set("任務列表." + q.getInternalID() + ".任務獎勵.物品." + c + ".類別", is.getType().toString());
+				qconfig.set("任務列表." + q.getInternalID() + ".任務獎勵.物品." + c + ".數量", is.getAmount());
+			}
+		}
+		if (q.getQuestReward().hasMoney())
+			qconfig.set("任務列表." + q.getInternalID() + ".任務獎勵.金錢", q.getQuestReward().getMoney());
+		
+		System.out.println("任務 " + q.getQuestName() + " 已經儲存完成！");
+		
+		try{
+			qconfig.save(new File(plugin.getDataFolder(), "quests.yml"));
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+		
+	}
 
 	private void init(){
 		File file = new File(plugin.getDataFolder(), "players.yml");
@@ -96,7 +202,7 @@ public class QuestConfigLoad {
 					String s = qconfig.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".任務種類");
 					SimpleQuestObject obj = null;
 					switch (s) {
-					case "ITEM_DELIVER":
+					case "DELIVER_ITEM":
 						obj = new QuestObjectItemDeliver(CitizensAPI.getNPCRegistry()
 								.getById(qconfig.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".目標NPC")),
 						QuestUtil.getItemStack(qconfig, "任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品"),
@@ -142,13 +248,14 @@ public class QuestConfigLoad {
 				QuestStage qs = new QuestStage(null, null, objs);
 				stages.add(qs);
 			}
-			QuestReward reward = new QuestReward(QuestUtil.getItemStack(qconfig, "任務列表." + internal + ".任務獎勵.物品.1"));
-			for (String temp : qconfig.getConfigurationSection("任務列表." + internal + ".任務獎勵.物品").getKeys(false)) {
-				int count = Integer.parseInt(temp);
-				if (count == 1)
-					continue;
-				reward.add(QuestUtil.getItemStack(qconfig, "任務列表." + internal + ".任務獎勵.物品." + count));
+			QuestReward reward = new QuestReward();
+			if (qconfig.isConfigurationSection("任務列表." + internal + ".任務獎勵.物品")){
+				for (String temp : qconfig.getConfigurationSection("任務列表." + internal + ".任務獎勵.物品").getKeys(false)) {
+					reward.add(QuestUtil.getItemStack(qconfig, "任務列表." + internal + ".任務獎勵.物品." + Integer.parseInt(temp)));
+				}
 			}
+			if (qconfig.getDouble("任務列表." + internal + ".任務獎勵.金錢") != 0)
+				reward.add(qconfig.getDouble("任務列表." + internal + ".任務獎勵.金錢"));
 			
 			if (plugin.citizens != null && qconfig.contains("任務列表." + internal + ".任務NPC")){
 				if (CitizensAPI.getNPCRegistry().getById(0) != null){
@@ -160,7 +267,7 @@ public class QuestConfigLoad {
 					//Requirements
 					if (qconfig.isConfigurationSection("任務列表." + internal + ".任務需求")){
 						if (qconfig.getInt("任務列表." + internal + ".任務需求.Level") != 0)
-							quest.getRequirements().put(RequirementType.LEVEL, qconfig.getInt(qconfig.getString("任務列表." + internal + ".任務需求.Level")));
+							quest.getRequirements().put(RequirementType.LEVEL, qconfig.getInt("任務列表." + internal + ".任務需求.Level"));
 						if (qconfig.getStringList("任務列表." + internal + ".任務需求.Quest") != null){
 							quest.getRequirements().put(RequirementType.QUEST, qconfig.getStringList("任務列表." + internal + ".任務需求.Quest"));
 						}
@@ -220,7 +327,7 @@ public class QuestConfigLoad {
 					}
 					if (qconfig.getBoolean("任務列表." + internal + ".可重複執行")){
 						quest.setRedoable(true);
-						quest.setRedoDelay(qconfig.getInt("任務列表." + internal + ".重複執行時間") * 1000);
+						quest.setRedoDelay(qconfig.getLong("任務列表." + internal + ".重複執行時間"));
 					}
 					QuestStorage.Quests.put(internal, quest);
 					Bukkit.getLogger().log(Level.INFO, "任務 " + questname + " 已經讀取成功！");

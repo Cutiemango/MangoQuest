@@ -48,15 +48,15 @@ public class TextComponentFactory {
 		ItemStack is = it.clone();
 		if (!is.getItemMeta().hasDisplayName()) {
 			ItemMeta im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + QuestUtil.translate(is.getType()));
+			im.setDisplayName(ChatColor.WHITE + QuestUtil.translate(is.getType() , it.getDurability()));
 			is.setItemMeta(im);
 			if (f)
-				itemname = new TextComponent(QuestUtil.translateColor("&8&m&o") + QuestUtil.translate(is.getType()));
+				itemname = new TextComponent(QuestUtil.translateColor("&8&m&o") + QuestUtil.translate(is.getType(), is.getDurability()));
 			else
-				itemname = new TextComponent(ChatColor.BLACK + QuestUtil.translate(is.getType()));
+				itemname = new TextComponent(ChatColor.BLACK + QuestUtil.translate(is.getType(), is.getDurability()));
 		} else {
 			if (f)
-				itemname = new TextComponent(QuestUtil.translateColor("&8&m&o") + QuestUtil.translate(is.getType()));
+				itemname = new TextComponent(QuestUtil.translateColor("&8&m&o") + QuestUtil.translate(is.getType(), is.getDurability()));
 			else
 				itemname = new TextComponent(is.getItemMeta().getDisplayName());
 		}
@@ -67,7 +67,7 @@ public class TextComponentFactory {
 		
 		BaseComponent[] hoverEventComponents = new BaseComponent[] { new TextComponent(itemJson) };
 		itemname.setHoverEvent(new HoverEvent(Action.SHOW_ITEM, hoverEventComponents));
-
+		
 		return itemname;
 	}
 	

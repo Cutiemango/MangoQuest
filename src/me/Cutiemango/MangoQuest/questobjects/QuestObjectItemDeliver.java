@@ -13,6 +13,7 @@ public class QuestObjectItemDeliver extends NumerableObject{
 		npc = n;
 		item = is;
 		amount = deliveramount;
+		config = "DELIVER_ITEM";
 	}
 
 	private NPC npc;
@@ -60,7 +61,7 @@ public class QuestObjectItemDeliver extends NumerableObject{
 		if (item.getItemMeta().hasDisplayName())
 			return QuestUtil.translateColor("&a提交 " + item.getItemMeta().getDisplayName() + " &f" + item + " &a個 給 " + npc.getName());
 		else
-			return QuestUtil.translateColor("&a提交 &f" + QuestUtil.translate(item.getType()) + " &f" + amount + " &a個 給 " + npc.getName());
+			return QuestUtil.translateColor("&a提交 &f" + QuestUtil.translate(item.getType(), item.getDurability()) + " &f" + amount + " &a個 給 " + npc.getName());
 	}
 	
 	

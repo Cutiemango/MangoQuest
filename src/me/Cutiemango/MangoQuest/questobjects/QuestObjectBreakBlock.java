@@ -15,6 +15,7 @@ public class QuestObjectBreakBlock extends NumerableObject{
 		}
 		block = m;
 		amount = i;
+		config = "BREAK_BLOCK";
 	}
 	
 	private Material block;
@@ -26,13 +27,13 @@ public class QuestObjectBreakBlock extends NumerableObject{
 			text = new TextComponent(QuestUtil.translateColor("&8&m&o挖掘 " + amount + " &8&m&o個 "));
 		else
 			text = new TextComponent(QuestUtil.translateColor("&0挖掘 " + amount + " &0個 "));
-		text.addExtra(QuestUtil.translate(block));
+		text.addExtra(QuestUtil.translate(block, (byte)0));
 		return text;
 	}
 
 	@Override
 	public String toPlainText() {
-		return QuestUtil.translateColor("&a挖掘 " + amount + " &a個 " + QuestUtil.translate(block));
+		return QuestUtil.translateColor("&a挖掘 " + amount + " &a個 " + QuestUtil.translate(block, (byte)0));
 	}
 	
 	public Material getType(){

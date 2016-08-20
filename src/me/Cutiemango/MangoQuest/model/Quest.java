@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -190,6 +191,7 @@ public class Quest {
 				break;
 			case SCOREBOARD:
 				for (String s : (List<String>)value){
+					s = s.replace(" ", "");
 					String[] split;
 					if (s.contains(">=")) {
 						split = s.split(">=");
@@ -218,5 +220,46 @@ public class Quest {
 			}
 		}
 		return true;
+	}
+	
+	@Override
+	public Quest clone(){
+		return new Quest(InternalID, QuestName, QuestOutline, reward, AllStages, QuestNPC);
+	}
+	
+	@Override
+	public boolean equals(Object o){
+		if (!(o instanceof Quest))
+			return false;
+		Quest q = (Quest)o;
+		if (!q.getInternalID().equals(InternalID))
+			return false;
+		// Unnecessary conditions
+//		if (!q.getQuestName().equals(QuestName))
+//			return false;
+//		if (!q.getQuestNPC().equals(QuestNPC))
+//			return false;
+//		if (!q.getQuestReward().equals(reward))
+//			return false;
+//		if (!q.getStages().equals(AllStages))
+//			return false;
+//		if (!q.getTriggers().equals(Triggers))
+//			return false;
+//		if (!q.getRequirements().equals(Requirements))
+//			return false;
+		return true;
+	}
+	
+	public void synchronizeLocal(Quest q){
+		if (!this.equals(q))
+			return;
+		for (Player p : Bukkit.getOnlinePlayers()){
+			QuestPlayerData pd = QuestUtil.getData(p);
+			for (QuestProgress qp : pd.getProgresses()){
+				if (qp.getQuest().equals(this))
+					pd.forceQuit(q);
+				else continue;
+			}
+		}
 	}
 }

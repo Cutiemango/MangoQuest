@@ -36,7 +36,7 @@ public class QuestEditorListener implements Listener{
 	public void onRightClick(PlayerInteractEvent e){
 		Player p = e.getPlayer();
 		if (e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
-			if (!e.getItem().getType().equals(Material.AIR)){
+			if (e.getItem() != null && !e.getItem().getType().equals(Material.AIR)){
 				if (CurrentListening.containsKey(p.getName())){
 					p.performCommand(CurrentListening.get(p.getName()) + " hand");
 					CurrentListening.remove(p.getName());

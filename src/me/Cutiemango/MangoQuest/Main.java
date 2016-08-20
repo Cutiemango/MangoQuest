@@ -25,7 +25,7 @@ public class Main extends JavaPlugin{
 	public CitizensPlugin citizens;
 	public Vault vault = null;
 	
-	private QuestConfigLoad cfg;
+	public QuestConfigLoad cfg;
 	
 	@Override
 	public void onEnable(){

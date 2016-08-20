@@ -145,6 +145,12 @@ public class QuestPlayerData {
 		QuestUtil.sendQuestTitle(p, q, QuestTitleEnum.ACCEPT);
 	}
 	
+	public void forceQuit(Quest q){
+		removeProgress(q);
+		QuestUtil.error(p, "由於系統管理員重設了任務 " + q.getQuestName() + " 的任務內容，你被強制退出執行這個任務，所有任務紀錄將不會被保留。");
+		return;
+	}
+	
 	public void quitQuest(Quest q){
 		for (QuestTrigger t : q.getTriggers()){
 			if (t.getType().equals(TriggerType.TRIGGER_ON_QUIT)){
@@ -364,6 +370,11 @@ public class QuestPlayerData {
 					QuestUtil.info(p, "&c你的任務列表已有此任務，不能再接受任務了。");
 				return false;
 			}
+		}
+		if (!q.isRedoable() && hasFinished(q)){
+			if (m)
+				QuestUtil.info(p, "&c此為一次性任務。");
+			return false;
 		}
 		if (q.hasRequirement()){
 			if (!q.meetRequirementWith(p)){

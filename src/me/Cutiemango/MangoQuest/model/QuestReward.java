@@ -15,6 +15,10 @@ public class QuestReward {
 
 	private double money;
 	private List<ItemStack> items = new ArrayList<>();
+	
+	public QuestReward(){
+		
+	}
 
 	public QuestReward(ItemStack is) {
 		items.add(is);
@@ -28,8 +32,8 @@ public class QuestReward {
 		items.add(is);
 	}
 
-	public void add(double money) {
-		money += money;
+	public void add(double d) {
+		money += d;
 	}
 
 	public void remove(ItemStack is) {
@@ -61,6 +65,10 @@ public class QuestReward {
 	public double getMoney() {
 		return money;
 	}
+	
+	public boolean isEmpty(){
+		return items.isEmpty() && money == 0.0D;
+	}
 
 	public void giveRewardTo(Player p) {
 		if (this.hasItem()) {
@@ -73,16 +81,16 @@ public class QuestReward {
 				} else {
 					p.getInventory().addItem(is);
 					if (is.getItemMeta().hasDisplayName())
-						QuestUtil.info(p, "&e&l你得到了任務獎勵 " + is.getItemMeta().getDisplayName() + " &f" + is.getAmount() + " &e&l個");
+						QuestUtil.info(p, "&e任務獎勵 - 給予 " + is.getItemMeta().getDisplayName() + " &f" + is.getAmount() + " &e個");
 					else
-						QuestUtil.info(p, "&e&l你得到了任務獎勵 " + QuestUtil.translate(is.getType()) + " &f" + is.getAmount() + " &e&l個");
+						QuestUtil.info(p, "&e任務獎勵 - 給予 " + QuestUtil.translate(is.getType(), is.getDurability()) + " &f" + is.getAmount() + " &e個");
 				}
 			}
 		}
 
 		if (this.hasMoney()) {
 			Main.economy.depositPlayer(p, money);
-			QuestUtil.info(p, "&e&l你得到了任務獎勵  &f" + money + " &e&l元");
+			QuestUtil.info(p, "&e任務獎勵 - 給予 &f" + money + " &e元");
 		}
 	}
 }

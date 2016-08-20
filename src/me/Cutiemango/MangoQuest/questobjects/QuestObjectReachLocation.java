@@ -12,6 +12,7 @@ public class QuestObjectReachLocation extends SimpleQuestObject{
 		loc = l;
 		radius = i;
 		name = QuestUtil.translateColor(s);
+		config = "REACH_LOCATION";
 	}
 	
 	private Location loc;

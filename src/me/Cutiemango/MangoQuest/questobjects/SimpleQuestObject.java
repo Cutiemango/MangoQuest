@@ -7,5 +7,15 @@ public abstract class SimpleQuestObject {
 	public abstract TextComponent toTextComponent(boolean isFinished);
 
 	public abstract String toPlainText();
+	
+	protected String config;
+	
+	public String getConfigString(){
+		return config;
+	}
+	
+	public void setConfigString(String s){
+		config = s;
+	}
 
 }

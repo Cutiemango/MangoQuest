@@ -9,6 +9,7 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject{
 	
 	public QuestObjectTalkToNPC(NPC n) {
 		npc = n;
+		config = "TALK_TO_NPC";
 	}
 
 	private NPC npc;

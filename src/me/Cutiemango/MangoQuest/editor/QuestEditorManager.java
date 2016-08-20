@@ -49,32 +49,37 @@ public class QuestEditorManager {
 		}
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&l編輯任務： " + q.getQuestName()));
-		TextComponent p2 = new TextComponent(QuestUtil.translateColor("&0任務提要： \n" + q.getQuestOutline()));
+		TextComponent p2 = new TextComponent(QuestUtil.translateColor("&0&l任務提要： \n" + q.getQuestOutline()));
 		p1.addExtra("\n");
-		p1.addExtra(QuestUtil.translateColor("&0任務內部碼： " + q.getInternalID()));
+		p1.addExtra(QuestUtil.translateColor("&0&l任務編碼： &0" + q.getInternalID()));
 		p1.addExtra("\n");
-		p1.addExtra(QuestUtil.translateColor("&0任務名稱： " + q.getQuestName()));
-		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[編輯]", "/mqe edit name"));
+		p1.addExtra(TextComponentFactory.registerHoverStringEvent(
+				TextComponentFactory.registerClickCommandEvent("&6&l任務名稱", "/mqe edit name"), "&f點擊以編輯 任務名稱"));
+		p1.addExtra(QuestUtil.translateColor("： &0" + q.getQuestName()));
 		p1.addExtra("\n");
-		p1.addExtra(QuestUtil.translateColor("&0任務NPC： "));
+		p1.addExtra(TextComponentFactory.registerHoverStringEvent(
+				TextComponentFactory.registerClickCommandEvent("&0&l任務NPC ", "/mqe edit npc"), "&f點擊以編輯 任務NPC"));
+		p1.addExtra(QuestUtil.translateColor("&0&l： "));
 		p1.addExtra(TextComponentFactory.convertLocationtoHoverEvent(q.getQuestNPC().getName(), q.getQuestNPC().getEntity().getLocation(), false));
-		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[編輯]", "/mqe edit npc"));
 		p1.addExtra("\n");
-		p1.addExtra(QuestUtil.translateColor("&0任務需求： "));
+		p1.addExtra(QuestUtil.translateColor("&0&l任務需求： "));
 		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[編輯]", "/mqe edit req"));
 		p1.addExtra("\n");
-		p1.addExtra(QuestUtil.translateColor("&0任務事件： "));
+		p1.addExtra(QuestUtil.translateColor("&0&l任務事件： "));
 		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[編輯]", "/mqe edit evt"));
 		p1.addExtra("\n");
-		p1.addExtra(QuestUtil.translateColor("&0是否可重複執行： " + Boolean.toString(q.isRedoable())));
-		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[編輯]", "/mqe edit redo"));
-		p1.addExtra("\n");
+		p1.addExtra(TextComponentFactory.registerHoverStringEvent(
+				TextComponentFactory.registerClickCommandEvent("&0&l重複執行", "/mqe edit redo"), "&f點擊以編輯 是否可重複執行"));
 		if (q.isRedoable()){
-			p1.addExtra(QuestUtil.translateColor("&0重複執行需等待時間： \n" + QuestUtil.convertTime(q.getRedoDelay())));
-			p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[編輯]", "/mqe edit redodelay"));
+			p1.addExtra(QuestUtil.translateColor("&0&l： &a是"));
+			p1.addExtra("\n");
+			p1.addExtra(TextComponentFactory.registerHoverStringEvent(
+					TextComponentFactory.registerClickCommandEvent("&0&l等待時間", "/mqe edit redodelay"), "&f點擊以編輯 重複執行等待時間"));
+			p1.addExtra(QuestUtil.translateColor("&0&l： " + QuestUtil.convertTime(q.getRedoDelay())));
 			p1.addExtra("\n");
 		}
-		
+		else
+			p1.addExtra(QuestUtil.translateColor("&0&l： &c否"));
 		
 		p2.addExtra("\n");
 		p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[編輯]", "/mqe edit outline"));

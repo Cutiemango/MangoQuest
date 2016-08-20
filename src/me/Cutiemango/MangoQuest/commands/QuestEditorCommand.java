@@ -9,7 +9,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestGUIManager;
+import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.editor.QuestEditorListener;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
@@ -29,6 +31,11 @@ public class QuestEditorCommand implements CommandExecutor {
 			return false;
 		Player p = (Player) sender;
 		if (cmd.getName().equals("mqe")) {
+			if (args.length >= 1 && args[0].equals("exit")){
+				QuestEditorManager.exit(p);
+				QuestUtil.info(p, "&a已經退出了編輯模式。");
+				return false;
+			}
 			Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 			if (args.length < 2)
 				return false;
@@ -38,7 +45,8 @@ public class QuestEditorCommand implements CommandExecutor {
 					QuestUtil.error(p, "找不到指定的任務。");
 					return false;
 				}
-				QuestEditorManager.edit(p, QuestUtil.getQuest(args[1]));
+				QuestEditorManager.edit(p, QuestUtil.getQuest(args[1]).clone());
+				QuestUtil.info(p, "&c已經進入了編輯模式。在這個模式中將不能與NPC交談或交付物品。");
 				return false;
 			case "addnew":
 				switch (args[1]) {
@@ -57,7 +65,7 @@ public class QuestEditorCommand implements CommandExecutor {
 						case ITEM:
 							QuestEditorListener.registerListeningObject(p,
 									"mqe edit req " + t.toString() + " " + Integer.parseInt(args[3]));
-							QuestGUIManager.openInfo(p, "&c請關閉書本視窗，並開啟物品欄，\n&c將需求物品拿在主手上點擊右鍵，\n&c系統將會自動讀取物品內容。");
+							QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c將需求物品拿在主手上，\n&c並點擊右鍵，\n&c系統會自動讀取物品內容。");
 							((List<ItemStack>) q.getRequirements().get(t)).add(new ItemStack(Material.GRASS));
 							break;
 						default:
@@ -166,7 +174,7 @@ public class QuestEditorCommand implements CommandExecutor {
 				case "npc":
 					if (args.length == 2) {
 						QuestEditorListener.registerListeningObject(p, "mqe edit npc ");
-						QuestGUIManager.openInfo(p, "&c�������ѥ������A\n&c�åk���I���ؼ�NPC�C");
+						QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並左鍵打擊指定的NPC。");
 						return false;
 					} else if (args.length == 3) {
 						q.setQuestNPC(CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[2])));
@@ -188,12 +196,15 @@ public class QuestEditorCommand implements CommandExecutor {
 						case ITEM:
 							List<ItemStack> itemlist = (List<ItemStack>) q.getRequirements().get(t);
 							if (p.getInventory().getItemInMainHand().getType() != Material.AIR) {
-								if (((List<ItemStack>) q.getRequirements().get(t))
-										.contains(p.getInventory().getItemInMainHand())) {
-									QuestUtil.error(p, "任務需求中已經有這個物件了！");
-									break;
+								for (ItemStack is : itemlist){
+									if (is.isSimilar(p.getInventory().getItemInMainHand())) {
+										itemlist.remove(Integer.parseInt(args[3]));
+										QuestUtil.error(p, "任務需求中已經有這個物件了！");
+										QuestEditorManager.editQuestRequirement(p);
+										return false;
+									}
 								}
-								((List<ItemStack>) q.getRequirements().get(t)).remove(Integer.parseInt(args[3]));
+								itemlist.remove(Integer.parseInt(args[3]));
 								itemlist.add(p.getInventory().getItemInMainHand());
 							} else {
 								QuestUtil.error(p, "物品不可為空！");
@@ -201,14 +212,12 @@ public class QuestEditorCommand implements CommandExecutor {
 							}
 							break;
 						case LEVEL:
-							q.getRequirements().put(t, Integer.parseInt(args[4]));
-							break;
 						case MONEY:
-							q.getRequirements().put(t, Double.parseDouble(args[4]));
 							break;
 						case NBTTAG:
 							if (((List<String>) q.getRequirements().get(t)).contains(args[4])) {
 								QuestUtil.error(p, "任務需求中已經有這個物件了！");
+								((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[3]));
 								break;
 							}
 							((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[3]));
@@ -218,6 +227,7 @@ public class QuestEditorCommand implements CommandExecutor {
 							if (QuestUtil.getQuest(args[4]) != null) {
 								if (((List<String>) q.getRequirements().get(t)).contains(args[4])) {
 									QuestUtil.error(p, "任務需求中已經有這個物件了！");
+									((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[3]));
 									break;
 								}
 								((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[3]));
@@ -230,6 +240,7 @@ public class QuestEditorCommand implements CommandExecutor {
 						case SCOREBOARD:
 							if (((List<String>) q.getRequirements().get(t)).contains(args[4])) {
 								QuestUtil.error(p, "任務需求中已經有這個物件了！");
+								((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[3]));
 								break;
 							}
 							((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[3]));
@@ -245,9 +256,11 @@ public class QuestEditorCommand implements CommandExecutor {
 						switch (t) {
 						case LEVEL:
 							q.getRequirements().put(t, Integer.parseInt(args[3]));
+							QuestEditorManager.editQuestRequirement(p);
 							break;
 						case MONEY:
 							q.getRequirements().put(t, Double.parseDouble(args[3]));
+							QuestEditorManager.editQuestRequirement(p);
 							break;
 						case QUEST:
 						case SCOREBOARD:
@@ -259,7 +272,7 @@ public class QuestEditorCommand implements CommandExecutor {
 						case ITEM:
 							QuestEditorListener.registerListeningObject(p,
 									"mqe edit req " + t.toString() + " " + Integer.parseInt(args[3]) + " ");
-							QuestGUIManager.openInfo(p, "&c請關閉書本視窗，並開啟物品欄，\n&c將需求物品拿在主手上點擊右鍵，\n&c系統將會自動讀取物品內容。");
+							QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c將需求物品拿在主手上，\n&c並點擊右鍵，\n&c系統會自動讀取物品內容。");
 							break;
 						}
 						return false;
@@ -371,6 +384,22 @@ public class QuestEditorCommand implements CommandExecutor {
 						return false;
 					}
 				}
+			case "sa":
+			case "saveall":
+				Main.instance.cfg.saveQuest(q);
+				QuestStorage.Quests.put(q.getInternalID(), q);
+				QuestUtil.info(p, "&a任務 " + q.getQuestName() + " 已經成功儲存至設定檔案！");
+				QuestUtil.info(p, "&b任務 " + q.getQuestName() + " 已經設定與伺服器資料中的任務同步！");
+				break;
+			case "sc":
+			case "savecfg":
+				Main.instance.cfg.saveQuest(q);
+				QuestUtil.info(p, "&a任務 " + q.getQuestName() + " 已經成功儲存至設定檔案！");
+				break;
+			case "sl":
+			case "savelocal":
+				QuestStorage.Quests.put(q.getInternalID(), q);
+				QuestUtil.info(p, "&b任務 " + q.getQuestName() + " 已經設定與伺服器資料中的任務同步！");
 				break;
 			}
 		}
