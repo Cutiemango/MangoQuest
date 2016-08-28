@@ -147,7 +147,8 @@ public class QuestPlayerData {
 	
 	public void forceQuit(Quest q){
 		removeProgress(q);
-		QuestUtil.error(p, "由於系統管理員重設了任務 " + q.getQuestName() + " 的任務內容，你被強制退出執行這個任務，所有任務紀錄將不會被保留。");
+		QuestUtil.error(p, "&e由於系統管理員重設了任務 " + q.getQuestName() + " &e的任務內容，");
+		QuestUtil.error(p, "&e你被&4&l強制退出&e執行這個任務，所有任務紀錄將不會被保留。");
 		return;
 	}
 	

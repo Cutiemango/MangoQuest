@@ -46,12 +46,15 @@ public class QuestConfigLoad {
 	
 	private void loadTranslation() {
 		for (String s : tconfig.getConfigurationSection("Material").getKeys(false)){
-			Material m = Material.getMaterial(s);
-			QuestStorage.TranslateMap.put(m, tconfig.getString("Material." + m.toString()));
+			if (Material.getMaterial(s) != null)
+				QuestStorage.TranslateMap.put(Material.getMaterial(s), tconfig.getString("Material." + s));
 		}
 		for (String e : tconfig.getConfigurationSection("EntityType").getKeys(false)){
-			EntityType t = EntityType.valueOf(e);
-			QuestStorage.EntityTypeMap.put(t, tconfig.getString("EntityType." + e.toString()));
+			try{
+				QuestStorage.EntityTypeMap.put(EntityType.valueOf(e), tconfig.getString("EntityType." + e));
+			} catch(IllegalArgumentException ex){
+				continue;
+			}
 		}
 		Bukkit.getLogger().log(Level.INFO, "[MangoQuest] 翻譯檔案讀取完成！");
 	}
@@ -241,6 +244,7 @@ public class QuestConfigLoad {
 								qconfig.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".名稱"));
 						break;
 					default:
+						QuestUtil.warnCmd("錯誤：任務 " + internal + " 沒有正確的任務內容類別，請檢查設定檔案。");
 						break;
 					}
 					objs.add(obj);
@@ -330,7 +334,7 @@ public class QuestConfigLoad {
 						quest.setRedoDelay(qconfig.getLong("任務列表." + internal + ".重複執行時間"));
 					}
 					QuestStorage.Quests.put(internal, quest);
-					Bukkit.getLogger().log(Level.INFO, "任務 " + questname + " 已經讀取成功！");
+					Bukkit.getLogger().log(Level.INFO, "任務 " + questname + " 已經讀取完畢。");
 				}else{
 					Bukkit.getLogger().log(Level.SEVERE, "任務 " + questname + " 的NPC ID 無法讀取！");
 					Bukkit.getLogger().log(Level.SEVERE, "任務 " + questname + " 已經跳過讀取。");

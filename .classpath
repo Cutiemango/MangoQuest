@@ -2,8 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="C:/Users/USER/Desktop/bukkit 1.8/spigot 1.10/spigot-1.10.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/USER/Desktop/bukkit 1.8/spigot 1.10/plugins/Citizens.jar"/>
 	<classpathentry kind="lib" path="C:/Users/USER/Desktop/插件、程式、java相關/Vault.jar"/>
+	<classpathentry kind="lib" path="C:/Users/USER/Desktop/插件、程式、java相關/開服核心/spigot/spigot-1.10.2(v1_10_R1).jar"/>
+	<classpathentry kind="lib" path="C:/Users/USER/Desktop/插件、程式、java相關/開服核心/spigot/spigot-1.9(v1_9_R1).jar"/>
+	<classpathentry kind="lib" path="C:/Users/USER/Desktop/插件、程式、java相關/開服核心/spigot/spigot-1.9.4-R0.1-SNAPSHOT(v1_9_R2).jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

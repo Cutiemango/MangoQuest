@@ -23,7 +23,7 @@ public class QuestTrigger {
 	
 	public QuestTrigger(TriggerType type, TriggerObject obj, int i, Object arg){
 		if (!type.equals(TriggerType.TRIGGER_STAGE_START) && !type.equals(TriggerType.TRIGGER_STAGE_FINISH))
-			QuestUtil.warnCmd(this.getClass(), "ERROR: " + type.toString() + " should not use this constructor.");
+			QuestUtil.warnCmd("ERROR: " + type.toString() + " should not use this constructor.");
 		
 		t = type;
 		count = i;
@@ -76,7 +76,7 @@ public class QuestTrigger {
 			replaced = QuestUtil.translateColor(replaced);
 		}
 		else{
-			QuestUtil.warnCmd(this.getClass(), "ERROR: " + t.toString() + " does not have a matched Object value.");
+			QuestUtil.warnCmd("ERROR: " + t.toString() + " does not have a matched Object value.");
 		}
 		switch(o){
 		case COMMAND:

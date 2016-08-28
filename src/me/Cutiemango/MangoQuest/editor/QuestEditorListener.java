@@ -2,6 +2,7 @@ package me.Cutiemango.MangoQuest.editor;
 
 import java.util.HashMap;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,7 +12,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import me.Cutiemango.MangoQuest.QuestUtil;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
-import net.minecraft.server.v1_10_R1.Material;
 
 public class QuestEditorListener implements Listener{
 	

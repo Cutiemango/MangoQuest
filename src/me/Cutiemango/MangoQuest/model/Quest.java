@@ -2,14 +2,15 @@ package me.Cutiemango.MangoQuest.model;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
@@ -25,6 +26,8 @@ public class Quest {
 		this.reward = reward;
 		this.AllStages = stages;
 		this.QuestNPC = npc;
+		this.FailRequirementMessage = "&c你並沒有達到指定的任務條件。";
+		
 		
 		for (RequirementType t : RequirementType.values()){
 			switch(t){
@@ -163,6 +166,10 @@ public class Quest {
 		RedoDelay = delay;
 	}
 	
+	public void setRequirements(EnumMap<RequirementType, Object> m){
+		Requirements = m;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public boolean meetRequirementWith(Player p){
 		QuestPlayerData pd = QuestUtil.getData(p);
@@ -213,7 +220,7 @@ public class Quest {
 				break;
 			case NBTTAG:
 				for (String n : (List<String>)value){
-					if (!((CraftPlayer)p).getHandle().P().contains(n))
+					if (!Main.instance.handler.hasTag(p, n))
 						return false;
 				}
 				break;
@@ -224,7 +231,12 @@ public class Quest {
 	
 	@Override
 	public Quest clone(){
-		return new Quest(InternalID, QuestName, QuestOutline, reward, AllStages, QuestNPC);
+		Quest q = new Quest(InternalID, QuestName, QuestOutline, reward, AllStages, QuestNPC);
+		q.setRequirements(Requirements);
+		q.setRedoable(isRedoable);
+		q.setRedoDelay(RedoDelay);
+		q.setFailMessage(FailRequirementMessage);
+		return q;
 	}
 	
 	@Override
@@ -250,16 +262,19 @@ public class Quest {
 		return true;
 	}
 	
-	public void synchronizeLocal(Quest q){
-		if (!this.equals(q))
-			return;
+	public static void synchronizeLocal(Quest q){
 		for (Player p : Bukkit.getOnlinePlayers()){
 			QuestPlayerData pd = QuestUtil.getData(p);
-			for (QuestProgress qp : pd.getProgresses()){
-				if (qp.getQuest().equals(this))
+			Iterator<QuestProgress> it = pd.getProgresses().iterator();
+			while (it.hasNext()) {
+				QuestProgress qp = it.next();
+				if (qp.getQuest().equals(q)){
 					pd.forceQuit(q);
+					break;
+				}
 				else continue;
 			}
 		}
+		QuestStorage.Quests.put(q.getInternalID(), q);
 	}
 }

@@ -29,7 +29,7 @@
     "任務內容":
       '1':
         '1':
-          "任務種類": ITEM_DELIVER
+          "任務種類": DELIVER_ITEM
           "目標NPC": 1
           "物品":
             "類別": DIAMOND_SWORD
@@ -70,7 +70,7 @@
     "任務內容":
       '1':
         '1':
-          "任務種類": ITEM_DELIVER
+          "任務種類": DELIVER_ITEM
           "目標NPC": 1
           "物品":
             "類別": APPLE
@@ -91,7 +91,7 @@
     "任務內容":
       '1':
         '1':
-          "任務種類": ITEM_DELIVER
+          "任務種類": DELIVER_ITEM
           "目標NPC": 1
           "物品":
             "類別": GOLD_INGOT

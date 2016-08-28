@@ -136,7 +136,7 @@ public class QuestEditorManager {
 				int i = 0;
 				for (ItemStack item : (List<ItemStack>)q.getRequirements().get(t)){
 					p1.addExtra("- ");
-					p1.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(false, item));
+					p1.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(item, false));
 					p1.addExtra(QuestUtil.translateColor(" &0&l" + item.getAmount() + "&0 個"));
 					p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[編輯]", "/mqe edit req ITEM " + i));
 					p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[移除]", "/mqe remove req ITEM " + i));

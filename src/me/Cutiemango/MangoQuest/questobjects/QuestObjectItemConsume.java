@@ -22,13 +22,13 @@ public class QuestObjectItemConsume extends NumerableObject{
 		if (isFinished){
 			text = new TextComponent(QuestUtil.translateColor("&8&m&o使用 "));
 			text.addExtra(QuestUtil.translateColor(amount + " &8&m&o個 "));
-			text.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(true, item));
+			text.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(item, true));
 			return text;
 		}
 		else{
 			text = new TextComponent(QuestUtil.translateColor("&0使用 "));
 			text.addExtra(QuestUtil.translateColor(amount + " &0個 "));
-			text.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(false, item));
+			text.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(item, false));
 			return text;
 		}
 	}

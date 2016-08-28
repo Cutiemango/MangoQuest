@@ -1,8 +1,5 @@
 package me.Cutiemango.MangoQuest.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,12 +10,9 @@ import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
-import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 
 public class QuestCommand implements CommandExecutor{
-	
-	private List<String> confirm = new ArrayList<>();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -54,16 +48,6 @@ public class QuestCommand implements CommandExecutor{
 				case "quit":
 					qd.quitQuest(quest);
 					return true;
-				case "editor":
-					if (QuestEditorManager.isInEditorMode(p)){
-						if (!confirm.contains(p.getName())){
-							QuestUtil.error(p, "目前發現您已經有正在編輯的任務，開始這個指定的任務並退出嗎？");
-							QuestUtil.error(p, "若&a&l確定&c請再度輸入一次。");
-							return false;
-						}
-					}
-					QuestEditorManager.edit(p, quest);
-					
 				}
 		
 		}
@@ -76,8 +60,6 @@ public class QuestCommand implements CommandExecutor{
 		QuestUtil.info(p, "/mq view [任務內部名稱] - 查看任務資料");
 		QuestUtil.info(p, "/mq take [任務內部名稱] - 接取指定任務");
 		QuestUtil.info(p, "/mq quit [任務內部名稱] - 放棄指定任務");
-		QuestUtil.info(p, "/mq editor [任務內部名稱] - 編輯指定任務(進入編輯模式)");
 	}
-	
 
 }

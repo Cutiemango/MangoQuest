@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -15,9 +14,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
-import net.minecraft.server.v1_10_R1.PacketPlayOutTitle;
-import net.minecraft.server.v1_10_R1.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_10_R1.PacketPlayOutTitle.EnumTitleAction;
 
 public class QuestUtil {
 	
@@ -45,16 +41,7 @@ public class QuestUtil {
 	
 	public static void sendTitle(Player p, Integer fadeIn, Integer stay, Integer fadeOut, String title,
 			String subtitle) {
-		if (title != null) {
-			title = ChatColor.translateAlternateColorCodes('&', title);
-			PacketPlayOutTitle ppot = new PacketPlayOutTitle(EnumTitleAction.TITLE, ChatSerializer.a("{\"text\":\"" + title + "\"}"), fadeIn, stay, fadeOut);
-			((CraftPlayer) p).getHandle().playerConnection.sendPacket(ppot);
-		}
-		if (subtitle != null) {
-			subtitle = ChatColor.translateAlternateColorCodes('&', subtitle);
-			PacketPlayOutTitle ppot = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, ChatSerializer.a("{\"text\":\"" + subtitle + "\"}"), fadeIn, stay, fadeOut);
-			((CraftPlayer) p).getHandle().playerConnection.sendPacket(ppot);
-		}
+		Main.instance.handler.sendTitle(p, fadeIn, stay, fadeOut, title, subtitle);
 	}
 
 	public enum QuestTitleEnum{
@@ -89,12 +76,12 @@ public class QuestUtil {
 	}
 	
 	public static void error(Player p, String s){
-		p.sendMessage(translateColor("&cError> " + s));
+		p.sendMessage(translateColor("&c&lError> " + s));
 		return;
 	}
 	
-	public static void warnCmd(Class<?> clazz, String s){
-		Bukkit.getLogger().warning("解析 " + clazz.getClass().getName() + ".class 時發生錯誤，請檢查設定檔。");
+	public static void warnCmd(String s){
+		Bukkit.getLogger().warning("解析插件內容時發生錯誤，請檢查設定檔。");
 		Bukkit.getLogger().warning("若您確認這是個BUG，請回報開發者。");
 		Bukkit.getLogger().warning(s);
 	}

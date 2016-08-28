@@ -1,5 +1,6 @@
 package me.Cutiemango.MangoQuest.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
@@ -11,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestGUIManager;
-import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.editor.QuestEditorListener;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
@@ -23,6 +23,8 @@ import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerObject;
 import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
 
 public class QuestEditorCommand implements CommandExecutor {
+	
+	private List<String> confirm = new ArrayList<>();
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -30,11 +32,44 @@ public class QuestEditorCommand implements CommandExecutor {
 		if (!(sender instanceof Player))
 			return false;
 		Player p = (Player) sender;
+		if (!p.isOp())
+			return false;
 		if (cmd.getName().equals("mqe")) {
-			if (args.length >= 1 && args[0].equals("exit")){
+			if (args.length == 1) {
+				if (!QuestEditorManager.isInEditorMode(p)){
+					QuestUtil.error(p, "你不在編輯模式中！");
+					return false;
+				}
+				Quest q = QuestEditorManager.getCurrentEditingQuest(p);
+				switch (args[0]) {
+				case "exit":
+					QuestEditorManager.exit(p);
+					QuestUtil.info(p, "&a已經退出了編輯模式。");
+					return false;
+				case "gui":
+					QuestEditorManager.editQuest(p);
+					return false;
+				case "sa":
+				case "saveall":
+					Main.instance.cfg.saveQuest(q);
+					Quest.synchronizeLocal(q);
+					QuestUtil.info(p, "&a任務 " + q.getQuestName() + " 已經成功儲存至設定檔案！");
+					QuestUtil.info(p, "&b任務 " + q.getQuestName() + " 已經設定與伺服器資料中的任務同步！");
+					break;
+				case "sc":
+				case "savecfg":
+					Main.instance.cfg.saveQuest(q);
+					QuestUtil.info(p, "&a任務 " + q.getQuestName() + " 已經成功儲存至設定檔案！");
+					break;
+				case "sl":
+				case "savelocal":
+					Quest.synchronizeLocal(q);
+					QuestUtil.info(p, "&b任務 " + q.getQuestName() + " 已經設定與伺服器資料中的任務同步！");
+					break;
+				default:
+					return false;
+				}
 				QuestEditorManager.exit(p);
-				QuestUtil.info(p, "&a已經退出了編輯模式。");
-				return false;
 			}
 			Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 			if (args.length < 2)
@@ -45,7 +80,16 @@ public class QuestEditorCommand implements CommandExecutor {
 					QuestUtil.error(p, "找不到指定的任務。");
 					return false;
 				}
+				if (QuestEditorManager.isInEditorMode(p)){
+					if (!confirm.contains(p.getName())){
+						QuestUtil.error(p, "目前發現您已經有正在編輯的任務，開始這個指定的任務並退出嗎？");
+						QuestUtil.error(p, "若&a&l確定&c請再度輸入一次。");
+						confirm.add(p.getName());
+						return false;
+					}
+				}
 				QuestEditorManager.edit(p, QuestUtil.getQuest(args[1]).clone());
+				confirm.remove(p.getName());
 				QuestUtil.info(p, "&c已經進入了編輯模式。在這個模式中將不能與NPC交談或交付物品。");
 				return false;
 			case "addnew":
@@ -59,13 +103,13 @@ public class QuestEditorCommand implements CommandExecutor {
 						case NBTTAG:
 							QuestEditorListener.registerListeningObject(p,
 									"mqe edit req " + t.toString() + " " + Integer.parseInt(args[3]) + " ");
-							QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並打開聊天窗輸入需求數值\n&7(請依照對應的類別輸入內容)");
+							QuestGUIManager.openInfo(p, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 							((List<String>) q.getRequirements().get(t)).add("");
 							break;
 						case ITEM:
 							QuestEditorListener.registerListeningObject(p,
 									"mqe edit req " + t.toString() + " " + Integer.parseInt(args[3]));
-							QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c將需求物品拿在主手上，\n&c並點擊右鍵，\n&c系統會自動讀取物品內容。");
+							QuestGUIManager.openInfo(p, "&c並將物品拿在手上點擊右鍵，\n&c系統將會自動讀取。");
 							((List<ItemStack>) q.getRequirements().get(t)).add(new ItemStack(Material.GRASS));
 							break;
 						default:
@@ -75,11 +119,11 @@ public class QuestEditorCommand implements CommandExecutor {
 						switch (t) {
 						case LEVEL:
 							QuestEditorListener.registerListeningObject(p, "mqe edit req " + t.toString() + " ");
-							QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並打開聊天窗輸入需求數值\n&7(請依照對應的類別輸入內容)");
+							QuestGUIManager.openInfo(p, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 							break;
 						case MONEY:
 							QuestEditorListener.registerListeningObject(p, "mqe edit req " + t.toString() + " ");
-							QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並打開聊天窗輸入需求數值\n&7(請依照對應的類別輸入內容)");
+							QuestGUIManager.openInfo(p, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 							break;
 						default:
 							break;
@@ -109,7 +153,7 @@ public class QuestEditorCommand implements CommandExecutor {
 						TriggerObject obj = TriggerObject.valueOf(args[3]);
 						QuestEditorListener.registerListeningObject(p, "mqe edit evt " + q.getTriggers().size() + " "
 								+ type.toString() + " " + obj.toString() + " ");
-						QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並打開聊天窗輸入需求數值\n&7(請依照對應的類別輸入內容)");
+						QuestGUIManager.openInfo(p, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 						return false;
 					} else if (args.length == 5) {
 						TriggerType type = TriggerType.valueOf(args[2]);
@@ -119,7 +163,7 @@ public class QuestEditorCommand implements CommandExecutor {
 							QuestEditorListener.registerListeningObject(p,
 									"mqe edit evt " + q.getTriggers().size() + " " + type.toString() + " "
 											+ Integer.parseInt(args[3]) + " " + obj.toString() + " ");
-							QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並打開聊天窗輸入需求數值\n&7(請依照對應的類別輸入內容)");
+							QuestGUIManager.openInfo(p, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 							return false;
 						}
 					}
@@ -130,7 +174,7 @@ public class QuestEditorCommand implements CommandExecutor {
 				case "name":
 					if (args.length == 2) {
 						QuestEditorListener.registerListeningObject(p, "mqe edit name ");
-						QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並打開聊天窗輸入需求數值\n&7(請依照對應的類別輸入內容)");
+						QuestGUIManager.openInfo(p, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 						return false;
 					} else if (args.length == 3) {
 						q.setQuestName(args[2]);
@@ -140,7 +184,7 @@ public class QuestEditorCommand implements CommandExecutor {
 				case "outline":
 					if (args.length == 2) {
 						QuestEditorListener.registerListeningObject(p, "mqe edit outline ");
-						QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並打開聊天窗輸入需求數值\n&7(請依照對應的類別輸入內容)");
+						QuestGUIManager.openInfo(p, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 						return false;
 					} else if (args.length >= 3) {
 						String s = "";
@@ -154,7 +198,7 @@ public class QuestEditorCommand implements CommandExecutor {
 				case "redo":
 					if (args.length == 2) {
 						QuestEditorListener.registerListeningObject(p, "mqe edit redo ");
-						QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並打開聊天窗輸入需求數值\n&7(請依照對應的類別輸入內容)");
+						QuestGUIManager.openInfo(p, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 						return false;
 					} else if (args.length == 3) {
 						q.setRedoable(Boolean.parseBoolean(args[2]));
@@ -164,7 +208,7 @@ public class QuestEditorCommand implements CommandExecutor {
 				case "redodelay":
 					if (args.length == 2) {
 						QuestEditorListener.registerListeningObject(p, "mqe edit redodelay ");
-						QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並打開聊天窗輸入需求數值\n&7(請依照對應的類別輸入內容)");
+						QuestGUIManager.openInfo(p, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 						return false;
 					} else if (args.length == 3) {
 						q.setRedoDelay(Long.parseLong(args[2]));
@@ -174,7 +218,7 @@ public class QuestEditorCommand implements CommandExecutor {
 				case "npc":
 					if (args.length == 2) {
 						QuestEditorListener.registerListeningObject(p, "mqe edit npc ");
-						QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並左鍵打擊指定的NPC。");
+						QuestGUIManager.openInfo(p, "&c並左鍵打擊指定的NPC。");
 						return false;
 					} else if (args.length == 3) {
 						q.setQuestNPC(CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[2])));
@@ -267,12 +311,12 @@ public class QuestEditorCommand implements CommandExecutor {
 						case NBTTAG:
 							QuestEditorListener.registerListeningObject(p,
 									"mqe edit req " + t.toString() + " " + Integer.parseInt(args[3]) + " ");
-							QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並打開聊天窗輸入需求數值\n&7(請依照對應的類別輸入內容)");
+							QuestGUIManager.openInfo(p, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 							break;
 						case ITEM:
 							QuestEditorListener.registerListeningObject(p,
 									"mqe edit req " + t.toString() + " " + Integer.parseInt(args[3]) + " ");
-							QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c將需求物品拿在主手上，\n&c並點擊右鍵，\n&c系統會自動讀取物品內容。");
+							QuestGUIManager.openInfo(p, "&c並將物品拿在手上點擊右鍵，\n&c系統將會自動讀取。");
 							break;
 						}
 						return false;
@@ -280,11 +324,11 @@ public class QuestEditorCommand implements CommandExecutor {
 						switch (t) {
 						case LEVEL:
 							QuestEditorListener.registerListeningObject(p, "mqe edit req " + t.toString() + " ");
-							QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並打開聊天窗輸入需求數值\n&7(請依照對應的類別輸入內容)");
+							QuestGUIManager.openInfo(p, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 							break;
 						case MONEY:
 							QuestEditorListener.registerListeningObject(p, "mqe edit req " + t.toString() + " ");
-							QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並打開聊天窗輸入需求數值\n&7(請依照對應的類別輸入內容)");
+							QuestGUIManager.openInfo(p, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 							break;
 						default:
 							break;
@@ -332,7 +376,7 @@ public class QuestEditorCommand implements CommandExecutor {
 							TriggerObject obj = TriggerObject.valueOf(args[5]);
 							QuestEditorListener.registerListeningObject(p, "mqe edit evt " + index + " "
 									+ type.toString() + " " + i + " " + obj.toString() + " ");
-							QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並打開聊天窗輸入需求數值\n&7(請依照對應的類別輸入內容)");
+							QuestGUIManager.openInfo(p, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 							return false;
 						default:
 							obj = TriggerObject.valueOf(args[4]);
@@ -348,7 +392,7 @@ public class QuestEditorCommand implements CommandExecutor {
 						TriggerObject obj = TriggerObject.valueOf(args[4]);
 						QuestEditorListener.registerListeningObject(p,
 								"mqe edit evt " + index + " " + type.toString() + " " + obj.toString() + " ");
-						QuestGUIManager.openInfo(p, "&c請關閉書本視窗，\n&c並打開聊天窗輸入需求數值\n&7(請依照對應的類別輸入內容)");
+						QuestGUIManager.openInfo(p, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 						return false;
 					}
 				}
@@ -386,20 +430,35 @@ public class QuestEditorCommand implements CommandExecutor {
 				}
 			case "sa":
 			case "saveall":
+				if (!QuestEditorManager.isInEditorMode(p)){
+					QuestUtil.error(p, "你不在編輯模式中！");
+					return false;
+				}
 				Main.instance.cfg.saveQuest(q);
-				QuestStorage.Quests.put(q.getInternalID(), q);
+				Quest.synchronizeLocal(q);
 				QuestUtil.info(p, "&a任務 " + q.getQuestName() + " 已經成功儲存至設定檔案！");
 				QuestUtil.info(p, "&b任務 " + q.getQuestName() + " 已經設定與伺服器資料中的任務同步！");
+				QuestEditorManager.exit(p);
 				break;
 			case "sc":
 			case "savecfg":
+				if (!QuestEditorManager.isInEditorMode(p)){
+					QuestUtil.error(p, "你不在編輯模式中！");
+					return false;
+				}
 				Main.instance.cfg.saveQuest(q);
 				QuestUtil.info(p, "&a任務 " + q.getQuestName() + " 已經成功儲存至設定檔案！");
+				QuestEditorManager.exit(p);
 				break;
 			case "sl":
 			case "savelocal":
-				QuestStorage.Quests.put(q.getInternalID(), q);
+				if (!QuestEditorManager.isInEditorMode(p)){
+					QuestUtil.error(p, "你不在編輯模式中！");
+					return false;
+				}
+				Quest.synchronizeLocal(q);
 				QuestUtil.info(p, "&b任務 " + q.getQuestName() + " 已經設定與伺服器資料中的任務同步！");
+				QuestEditorManager.exit(p);
 				break;
 			}
 		}

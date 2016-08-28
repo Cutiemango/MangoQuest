@@ -1,15 +1,7 @@
 package me.Cutiemango.MangoQuest;
 
-import java.util.List;
-
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftMetaBook;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
-
-import io.netty.buffer.Unpooled;
 import me.Cutiemango.MangoQuest.data.QuestFinishData;
 import me.Cutiemango.MangoQuest.data.QuestObjectProgress;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
@@ -20,12 +12,6 @@ import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
-import net.minecraft.server.v1_10_R1.EnumHand;
-import net.minecraft.server.v1_10_R1.IChatBaseComponent;
-import net.minecraft.server.v1_10_R1.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_10_R1.PacketDataSerializer;
-import net.minecraft.server.v1_10_R1.PacketPlayOutCustomPayload;
 
 public class QuestGUIManager {
 
@@ -80,7 +66,7 @@ public class QuestGUIManager {
 		if (q.getQuest().getQuestReward().hasItem()){
 			for (ItemStack is : q.getQuest().getQuestReward().getItems()){
 				p3.addExtra("\n");
-				p3.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(false, is));
+				p3.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(is, false));
 				TextComponent suffix = new TextComponent(ChatColor.translateAlternateColorCodes('&' , " &l" + is.getAmount() + " &0個"));
 				p3.addExtra(suffix);
 				p3.addExtra("\n");
@@ -142,35 +128,14 @@ public class QuestGUIManager {
 	}
 	
 	public static void openInfo(Player p, String msg){
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor(msg));
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&c請關閉書本視窗，\n"));
+		p1.addExtra(QuestUtil.translateColor(msg));
+		p1.addExtra(ChatColor.GRAY + "(取消請輸入cancel。)");
 		openBook(p, p1);
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	public static void openBook(Player p, TextComponent... texts){
-		List<IChatBaseComponent> pages = null;
-		
-		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
-		BookMeta bookMeta = (BookMeta) book.getItemMeta();
-		try {
-			pages = (List<IChatBaseComponent>) CraftMetaBook.class.getDeclaredField("pages").get(bookMeta);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		for (TextComponent t : texts){
-			pages.add(ChatSerializer.a(ComponentSerializer.toString(t)));
-		}
-		
-		book.setItemMeta(bookMeta);
-		
-		int slot = p.getInventory().getHeldItemSlot();
-		ItemStack old = p.getInventory().getItem(slot);
-		p.getInventory().setItem(slot, book);
-		PacketDataSerializer packetdataserializer = new PacketDataSerializer(Unpooled.buffer());
-		packetdataserializer.a(EnumHand.MAIN_HAND);
-		((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|BOpen", packetdataserializer));
-		p.getInventory().setItem(slot, old);
+		Main.instance.handler.openBook(p, texts);
 	}
 
 }
