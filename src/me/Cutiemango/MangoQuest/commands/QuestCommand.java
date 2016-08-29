@@ -44,9 +44,11 @@ public class QuestCommand implements CommandExecutor{
 					return true;
 				case "take":
 					qd.takeQuest(quest);
+					QuestGUIManager.openGUI(p, qd.getProgress(quest));
 					return true;
 				case "quit":
 					qd.quitQuest(quest);
+					QuestGUIManager.openJourney(p);
 					return true;
 				}
 		

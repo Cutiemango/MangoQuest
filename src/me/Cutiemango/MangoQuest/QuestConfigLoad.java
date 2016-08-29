@@ -255,11 +255,13 @@ public class QuestConfigLoad {
 			QuestReward reward = new QuestReward();
 			if (qconfig.isConfigurationSection("任務列表." + internal + ".任務獎勵.物品")){
 				for (String temp : qconfig.getConfigurationSection("任務列表." + internal + ".任務獎勵.物品").getKeys(false)) {
-					reward.add(QuestUtil.getItemStack(qconfig, "任務列表." + internal + ".任務獎勵.物品." + Integer.parseInt(temp)));
+					reward.addItem(QuestUtil.getItemStack(qconfig, "任務列表." + internal + ".任務獎勵.物品." + Integer.parseInt(temp)));
 				}
 			}
 			if (qconfig.getDouble("任務列表." + internal + ".任務獎勵.金錢") != 0)
-				reward.add(qconfig.getDouble("任務列表." + internal + ".任務獎勵.金錢"));
+				reward.addMoney(qconfig.getDouble("任務列表." + internal + ".任務獎勵.金錢"));
+			if (qconfig.getInt("任務列表." + internal + ".任務獎勵.經驗值") != 0)
+				reward.addExp(qconfig.getInt("任務列表." + internal + ".任務獎勵.經驗值"));
 			
 			if (plugin.citizens != null && qconfig.contains("任務列表." + internal + ".任務NPC")){
 				if (CitizensAPI.getNPCRegistry().getById(0) != null){

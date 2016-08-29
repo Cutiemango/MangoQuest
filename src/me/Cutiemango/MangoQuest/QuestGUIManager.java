@@ -75,6 +75,12 @@ public class QuestGUIManager {
 		
 		if (q.getQuest().getQuestReward().hasMoney()){
 			p3.addExtra(ChatColor.GOLD + "金錢 " + ChatColor.BLACK + q.getQuest().getQuestReward().getMoney() + ChatColor.GOLD + " 元");
+			p3.addExtra("\n");
+		}
+		
+		if (q.getQuest().getQuestReward().hasExp()){
+			p3.addExtra(ChatColor.GREEN + "經驗值 " + ChatColor.BLACK + q.getQuest().getQuestReward().getExp() + ChatColor.GREEN + " 點");
+			p3.addExtra("\n");
 		}
 
 		openBook(p, p1, p2, p3);
@@ -136,6 +142,35 @@ public class QuestGUIManager {
 
 	public static void openBook(Player p, TextComponent... texts){
 		Main.instance.handler.openBook(p, texts);
+	}
+	
+	public static void openNPCInfo(Player p, NPC npc){
+		QuestPlayerData qd = QuestUtil.getData(p);
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&5&lNPC介面 &0&l| "));
+		p1.addExtra(TextComponentFactory.convertLocationtoHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
+		p1.addExtra("\n\n");
+		p1.addExtra(QuestUtil.translateColor("&0&l[任務列表]"));
+		p1.addExtra("\n");
+		for (Quest q : QuestUtil.getGivenNPCQuests(npc)){
+			if (qd.canTake(q, false)){
+				if (qd.hasFinished(q))
+					p1.addExtra(QuestUtil.translateColor("&0- &8&l！ &0"));
+				else
+					p1.addExtra(QuestUtil.translateColor("&0- &6&l！ &0"));
+				p1.addExtra(TextComponentFactory.convertViewQuest(q));
+				p1.addExtra(TextComponentFactory.registerClickCommandEvent("&2&l【接受】", "/mq take " + q.getInternalID()));
+				p1.addExtra("\n");
+				continue;
+			}
+			else{
+				p1.addExtra(QuestUtil.translateColor("&0- &8&l？ &0"));
+				p1.addExtra(TextComponentFactory.convertViewQuest(q));
+				p1.addExtra(TextComponentFactory.registerClickCommandEvent("&c&l【放棄】", "/mq quit " + q.getInternalID()));
+				p1.addExtra("\n");
+				continue;
+			}
+		}
+		openBook(p, p1);
 	}
 
 }

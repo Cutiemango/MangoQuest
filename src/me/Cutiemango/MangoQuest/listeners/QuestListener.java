@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import me.Cutiemango.MangoQuest.QuestGUIManager;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
@@ -18,8 +19,12 @@ public class QuestListener implements Listener{
 		if (QuestEditorManager.isInEditorMode(p))
 			return;
 		QuestPlayerData pd = QuestUtil.getData(p);
-		if (p.getInventory().getItemInMainHand().getType().equals(Material.AIR))
-			pd.talkToNPC(e.getNPC());
+		if (p.getInventory().getItemInMainHand().getType().equals(Material.AIR) || p.getInventory().getItemInMainHand() == null){
+			if (pd.hasNPCtoTalkWith(e.getNPC()))
+				pd.talkToNPC(e.getNPC());
+			else
+				QuestGUIManager.openNPCInfo(p, e.getNPC());
+		}
 		else
 			pd.deliverItem(e.getNPC());
 	}

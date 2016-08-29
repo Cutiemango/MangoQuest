@@ -129,6 +129,10 @@ public class QuestPlayerData {
 	public void takeQuest(Quest q){
 		if (!canTake(q, true))
 			return;
+		if (!isNearNPC(q.getQuestNPC())){
+			QuestUtil.error(p, "你不在NPC的周圍，或是你離NPC太遠了，靠近他再嘗試看看接取任務吧！");
+			return;
+		}
 		if (q.hasTrigger()){
 			for (QuestTrigger t : q.getTriggers()){
 				if (t.getType().equals(TriggerType.TRIGGER_ON_TAKE)){
@@ -161,6 +165,25 @@ public class QuestPlayerData {
 		}
 		removeProgress(q);
 		QuestUtil.sendQuestTitle(p, q, QuestTitleEnum.QUIT);
+	}
+	
+	public boolean hasNPCtoTalkWith(NPC npc){
+		for (QuestProgress qp : CurrentQuest){
+			for (QuestObjectProgress qop : qp.getCurrentObjects()){
+				if (qop.getObject() instanceof QuestObjectTalkToNPC &&
+						((QuestObjectTalkToNPC)qop.getObject()).getTargetNPC().equals(npc))
+					return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isNearNPC(NPC npc){
+		for (Entity e : p.getNearbyEntities(5, 5, 5)){
+			if (npc.getEntity().equals(e))
+				return true;
+		}
+		return false;
 	}
 	
 	public void breakBlock(Material m){

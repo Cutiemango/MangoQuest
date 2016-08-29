@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
+import net.citizensnpcs.api.npc.NPC;
 
 public class QuestUtil {
 	
@@ -42,6 +43,16 @@ public class QuestUtil {
 	public static void sendTitle(Player p, Integer fadeIn, Integer stay, Integer fadeOut, String title,
 			String subtitle) {
 		Main.instance.handler.sendTitle(p, fadeIn, stay, fadeOut, title, subtitle);
+	}
+	
+	public static List<Quest> getGivenNPCQuests(NPC npc){
+		List<Quest> l = new ArrayList<>();
+		for (Quest q : QuestStorage.Quests.values()){
+			if (q.getQuestNPC().equals(npc))
+				l.add(q);
+			else continue;
+		}
+		return l;
 	}
 
 	public enum QuestTitleEnum{

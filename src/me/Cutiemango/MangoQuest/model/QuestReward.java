@@ -15,6 +15,7 @@ public class QuestReward {
 
 	private double money;
 	private List<ItemStack> items = new ArrayList<>();
+	private int experience;
 	
 	public QuestReward(){
 		
@@ -27,27 +28,42 @@ public class QuestReward {
 	public QuestReward(double amount) {
 		money = amount;
 	}
+	
+	public QuestReward(int exp){
+		experience = exp;
+	}
 
-	public void add(ItemStack is) {
+	public void addItem(ItemStack is) {
 		items.add(is);
 	}
 
-	public void add(double d) {
+	public void addMoney(double d) {
 		money += d;
 	}
+	
+	public void addExp(int i){
+		experience += i;
+	}
 
-	public void remove(ItemStack is) {
+	public void removeItem(ItemStack is) {
 		if (items.contains(is))
 			items.remove(is);
 		else
 			return;
 	}
 
-	public void remove(double d) {
+	public void removeMoney(double d) {
 		if (money < d)
 			money = 0;
 		else
 			money -= d;
+	}
+	
+	public void removeExp(int i){
+		if (experience < i)
+			experience = 0;
+		else
+			experience -= i;
 	}
 
 	public boolean hasItem() {
@@ -57,6 +73,10 @@ public class QuestReward {
 	public boolean hasMoney() {
 		return !(money == 0.0D);
 	}
+	
+	public boolean hasExp(){
+		return !(experience == 0);
+	}
 
 	public List<ItemStack> getItems() {
 		return items;
@@ -64,6 +84,10 @@ public class QuestReward {
 
 	public double getMoney() {
 		return money;
+	}
+	
+	public int getExp() {
+		return experience;
 	}
 	
 	public boolean isEmpty(){
@@ -91,6 +115,11 @@ public class QuestReward {
 		if (this.hasMoney()) {
 			Main.economy.depositPlayer(p, money);
 			QuestUtil.info(p, "&e任務獎勵 - 給予 &f" + money + " &e元");
+		}
+		
+		if (this.hasExp()) {
+			p.giveExp(experience);
+			QuestUtil.info(p, "&e任務獎勵 - 給予 &f" + experience + " &e點 &a經驗值");
 		}
 	}
 }
