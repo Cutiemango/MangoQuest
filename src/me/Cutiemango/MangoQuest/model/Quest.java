@@ -105,6 +105,10 @@ public class Quest {
 		QuestNPC = npc;
 	}
 	
+	public boolean isCommandQuest(){
+		return QuestNPC == null;
+	}
+	
 	public List<QuestStage> getStages(){
 		return AllStages;
 	}
@@ -202,16 +206,28 @@ public class Quest {
 					String[] split;
 					if (s.contains(">=")) {
 						split = s.split(">=");
+						if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]) == null){
+							QuestUtil.warnCmd("任務 " + InternalID + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
+							return false;
+						}
 						if (!(Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0])
 								.getScore(p.getName()).getScore() >= Integer.parseInt(split[1])))
 							return false;
 					} else if (s.contains("<=")) {
 						split = s.split("<=");
+						if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]) == null){
+							QuestUtil.warnCmd("任務 " + InternalID + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
+							return false;
+						}
 						if (!(Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0])
 								.getScore(p.getName()).getScore() <= Integer.parseInt(split[1])))
 							return false;
 					} else if (s.contains("==")) {
 						split = s.split("==");
+						if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]) == null){
+							QuestUtil.warnCmd("任務 " + InternalID + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
+							return false;
+						}
 						if (!(Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0])
 								.getScore(p.getName()).getScore() == Integer.parseInt(split[1])))
 							return false;

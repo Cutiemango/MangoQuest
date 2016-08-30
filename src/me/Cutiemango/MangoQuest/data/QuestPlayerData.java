@@ -129,9 +129,11 @@ public class QuestPlayerData {
 	public void takeQuest(Quest q){
 		if (!canTake(q, true))
 			return;
-		if (!isNearNPC(q.getQuestNPC())){
-			QuestUtil.error(p, "你不在NPC的周圍，或是你離NPC太遠了，靠近他再嘗試看看接取任務吧！");
-			return;
+		if (!q.isCommandQuest()){
+			if (!isNearNPC(q.getQuestNPC())){
+				QuestUtil.error(p, "你不在NPC的周圍，或是你離NPC太遠了，靠近他再嘗試看看接取任務吧！");
+				return;
+			}
 		}
 		if (q.hasTrigger()){
 			for (QuestTrigger t : q.getTriggers()){
@@ -382,27 +384,27 @@ public class QuestPlayerData {
 		return;
 	}
 	
-	public boolean canTake(Quest q, boolean m){
+	public boolean canTake(Quest q, boolean sendmsg){
 		if (CurrentQuest.size() + 1 > 4){
-			if (m)
+			if (sendmsg)
 				QuestUtil.info(p, "&c你的任務列表已滿，不能再接受任務了。");
 			return false;
 		}
 		for (QuestProgress qp : CurrentQuest){
 			if (q.getInternalID().equals(qp.getQuest().getInternalID())) {
-				if (m)
+				if (sendmsg)
 					QuestUtil.info(p, "&c你的任務列表已有此任務，不能再接受任務了。");
 				return false;
 			}
 		}
 		if (!q.isRedoable() && hasFinished(q)){
-			if (m)
+			if (sendmsg)
 				QuestUtil.info(p, "&c此為一次性任務。");
 			return false;
 		}
 		if (q.hasRequirement()){
 			if (!q.meetRequirementWith(p)){
-				if (m)
+				if (sendmsg)
 					QuestUtil.info(p, q.getFailMessage());
 				return false;
 			}
@@ -410,7 +412,7 @@ public class QuestPlayerData {
 		if (hasFinished(q)){
 			long d = getDelay(getFinishData(q).getLastFinish(), q.getRedoDelay());
 			if (d > 0){
-				if (m)
+				if (sendmsg)
 					QuestUtil.info(p, "&c你必須再等待 " + QuestUtil.convertTime(d) + " 才能再度接取這個任務。");
 				return false;
 			}

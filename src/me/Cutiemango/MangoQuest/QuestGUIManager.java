@@ -18,7 +18,7 @@ public class QuestGUIManager {
 	public static void openGUI(Player p, QuestProgress q){
 		TextComponent p1 = new TextComponent(ChatColor.BOLD + "任務名稱： ");
 		p1.addExtra(q.getQuest().getQuestName() + "\n");
-		if (q.getQuest().getQuestNPC() != null){
+		if (!q.getQuest().isCommandQuest()){
 			p1.addExtra(ChatColor.BOLD + "任務NPC： ");
 			NPC npc = q.getQuest().getQuestNPC();
 			p1.addExtra(TextComponentFactory.convertLocationtoHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
@@ -118,6 +118,8 @@ public class QuestGUIManager {
 			else{
 				p2.addExtra("- ");
 				p2.addExtra(TextComponentFactory.convertViewQuest(q));
+				if (q.isCommandQuest())
+					p2.addExtra(TextComponentFactory.registerClickCommandEvent("&2&l【接受】", "/mq take " + q.getInternalID()));
 				p2.addExtra("\n");
 			}
 		}

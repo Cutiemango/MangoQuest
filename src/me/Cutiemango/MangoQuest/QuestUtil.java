@@ -48,7 +48,9 @@ public class QuestUtil {
 	public static List<Quest> getGivenNPCQuests(NPC npc){
 		List<Quest> l = new ArrayList<>();
 		for (Quest q : QuestStorage.Quests.values()){
-			if (q.getQuestNPC().equals(npc))
+			if (q.isCommandQuest())
+				continue;
+			else if (q.getQuestNPC().equals(npc))
 				l.add(q);
 			else continue;
 		}

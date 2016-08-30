@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.QuestGUIManager;
+import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.TextComponentFactory;
 import me.Cutiemango.MangoQuest.model.Quest;
@@ -42,6 +43,57 @@ public class QuestEditorManager {
 			isEditing.remove(p.getName());
 	}
 	
+	public static void mainGUI(Player p){
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&9&l任務線上編輯器系統 &0&l：\n"));
+		QuestEditorManager.exit(p);
+//		p1.addExtra(TextComponentFactory.registerHoverStringEvent(
+//				TextComponentFactory.registerClickCommandEvent(QuestUtil.translateColor("&0&l- 《新建任務》"), "/mqe newquest"), "&f點擊進入新增任務介面"));
+		p1.addExtra(TextComponentFactory.registerHoverStringEvent(QuestUtil.translateColor("&0&l- 《新建任務》"), "&e功能將在未來開啟！"));
+		p1.addExtra("\n\n");
+		p1.addExtra(TextComponentFactory.registerHoverStringEvent(
+				TextComponentFactory.registerClickCommandEvent(QuestUtil.translateColor("&0&l- 《編輯任務》"), "/mqe edit"), "&f點擊進入編輯任務介面"));
+		p1.addExtra("\n\n");
+		p1.addExtra(TextComponentFactory.registerHoverStringEvent(
+				TextComponentFactory.registerClickCommandEvent(QuestUtil.translateColor("&0&l- 《移除任務》"), "/mqe remove"), "&f點擊進入移除任務介面"));
+		p1.addExtra("\n");
+		QuestGUIManager.openBook(p, p1);
+	}
+	
+	public static void editGUI(Player p){
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&9&l任務線上編輯器系統&0&l： 選擇要&2&l編輯&0&l的任務\n"));
+		for (Quest q : QuestStorage.Quests.values()){
+			p1.addExtra(TextComponentFactory.registerClickCommandEvent(
+					QuestUtil.translateColor("&0- &l" + q.getQuestName() + "&0(" + q.getInternalID() + ")"), "/mqe select " + q.getInternalID()));
+			p1.addExtra("\n");
+		}
+		p1.addExtra("\n");
+		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[返回編輯器選單]", "/mqe"));
+		QuestGUIManager.openBook(p, p1);
+	}
+	
+	public static void removeGUI(Player p){
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&9&l任務線上編輯器系統&0&l： 選擇要&c&l移除&0&l的任務\n"));
+		for (Quest q : QuestStorage.Quests.values()){
+			p1.addExtra(TextComponentFactory.registerClickCommandEvent(
+					QuestUtil.translateColor("&0- &l" + q.getQuestName() + "&0(" + q.getInternalID() + ")"), "/mqe remove confirm " + q.getInternalID()));
+			p1.addExtra("\n");
+		}
+		p1.addExtra("\n");
+		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[返回編輯器選單]", "/mqe"));
+		QuestGUIManager.openBook(p, p1);
+	}
+	
+	public static void removeConfirmGUI(Player p, Quest q){
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&4&l你確定要刪除任務 "));
+		p1.addExtra(QuestUtil.translateColor("\n&0&l" + q.getQuestName() + " &4&l的所有資料嗎？"));
+		p1.addExtra(QuestUtil.translateColor("\n&8&l(不可回復，請審慎考慮)"));
+		p1.addExtra("\n\n  ");
+		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&2&l【確定】", "/mqe remove quest " + q.getInternalID()));
+		p1.addExtra(QuestUtil.translateColor(" &8&l/ "));
+		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&c&l【取消】", "/mqe"));
+		QuestGUIManager.openBook(p, p1);
+	}
+	
 	public static void editQuest(Player p){
 		if (!QuestEditorManager.isInEditorMode(p)){
 			QuestUtil.error(p, "你不在編輯模式中！");
@@ -60,7 +112,10 @@ public class QuestEditorManager {
 		p1.addExtra(TextComponentFactory.registerHoverStringEvent(
 				TextComponentFactory.registerClickCommandEvent("&0&l任務NPC ", "/mqe edit npc"), "&f點擊以編輯 任務NPC"));
 		p1.addExtra(QuestUtil.translateColor("&0&l： "));
-		p1.addExtra(TextComponentFactory.convertLocationtoHoverEvent(q.getQuestNPC().getName(), q.getQuestNPC().getEntity().getLocation(), false));
+		if (q.isCommandQuest())
+			p1.addExtra(QuestUtil.translateColor("&c&l無"));
+		else
+			p1.addExtra(TextComponentFactory.convertLocationtoHoverEvent(q.getQuestNPC().getName(), q.getQuestNPC().getEntity().getLocation(), false));
 		p1.addExtra("\n");
 		p1.addExtra(QuestUtil.translateColor("&0&l任務需求： "));
 		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&7[編輯]", "/mqe edit req"));
@@ -80,6 +135,18 @@ public class QuestEditorManager {
 		}
 		else
 			p1.addExtra(QuestUtil.translateColor("&0&l： &c否"));
+		
+		p1.addExtra("\n");
+		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[返回編輯器選單]", "/mqe"));
+		p1.addExtra("\n");
+		p1.addExtra(TextComponentFactory.registerHoverStringEvent(
+				TextComponentFactory.registerClickCommandEvent("&2&l【同步伺服器與設定檔】", "/mqe sa"), "&c&l注意： 目前持有此任務的玩家都會遺失任務進度。"));
+		p1.addExtra("\n");
+		p1.addExtra(TextComponentFactory.registerHoverStringEvent(
+				TextComponentFactory.registerClickCommandEvent("&5&l【同步伺服器】", "/mqe sl"), "&c&l注意： 目前持有此任務的玩家都會遺失任務進度。"));
+		p1.addExtra("\n");
+		p1.addExtra(TextComponentFactory.registerHoverStringEvent(
+				TextComponentFactory.registerClickCommandEvent("&9&l【同步設定檔】", "/mqe sc"), "&c&l注意： 目前持有此任務的玩家都會遺失任務進度。"));
 		
 		p2.addExtra("\n");
 		p2.addExtra(TextComponentFactory.registerClickCommandEvent("&7[編輯]", "/mqe edit outline"));
@@ -115,6 +182,8 @@ public class QuestEditorManager {
 			index++;
 		}
 		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[新增]", "/mqe addnew evt"));
+		p1.addExtra("\n");
+		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[返回任務選單]", "/mqe gui"));
 		QuestGUIManager.openBook(p, p1);
 	}
 	
@@ -204,7 +273,8 @@ public class QuestEditorManager {
 				break;
 			}
 		}
-		
+		p1.addExtra("\n");
+		p1.addExtra(TextComponentFactory.registerClickCommandEvent("&0&l[返回任務選單]", "/mqe gui"));
 		QuestGUIManager.openBook(p, p1, p2);
 	}
 	

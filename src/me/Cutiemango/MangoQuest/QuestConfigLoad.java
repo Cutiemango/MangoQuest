@@ -59,6 +59,16 @@ public class QuestConfigLoad {
 		Bukkit.getLogger().log(Level.INFO, "[MangoQuest] 翻譯檔案讀取完成！");
 	}
 	
+	public void removeQuest(Quest q){
+		qconfig.set("任務列表." + q.getInternalID(), null);
+		Bukkit.getLogger().log(Level.WARNING, "[任務讀取] 任務 " + q.getInternalID() + " 已經刪除所有yml相關資料。");
+		try{
+			qconfig.save(new File(plugin.getDataFolder(), "quests.yml"));
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void saveQuest(Quest q){
 		qconfig.set("任務列表." + q.getInternalID() + ".任務名稱", q.getQuestName());
@@ -264,8 +274,10 @@ public class QuestConfigLoad {
 				reward.addExp(qconfig.getInt("任務列表." + internal + ".任務獎勵.經驗值"));
 			
 			if (plugin.citizens != null && qconfig.contains("任務列表." + internal + ".任務NPC")){
-				if (CitizensAPI.getNPCRegistry().getById(0) != null){
-					NPC npc = CitizensAPI.getNPCRegistry().getById(0);
+				NPC npc = null;
+				if (!(qconfig.getInt("任務列表." + internal + ".任務NPC") == -1)
+						&& CitizensAPI.getNPCRegistry().getById(qconfig.getInt("任務列表." + internal + ".任務NPC")) != null)
+					npc = CitizensAPI.getNPCRegistry().getById(0);
 					Quest quest = new Quest(internal, questname, questoutline, reward, stages, npc);
 					if (qconfig.getString("任務列表." + internal + ".不符合任務需求訊息") != null)
 						quest.setFailMessage(qconfig.getString("任務列表." + internal + ".不符合任務需求訊息"));
@@ -336,16 +348,10 @@ public class QuestConfigLoad {
 						quest.setRedoDelay(qconfig.getLong("任務列表." + internal + ".重複執行時間"));
 					}
 					QuestStorage.Quests.put(internal, quest);
-					Bukkit.getLogger().log(Level.INFO, "任務 " + questname + " 已經讀取完畢。");
-				}else{
-					Bukkit.getLogger().log(Level.SEVERE, "任務 " + questname + " 的NPC ID 無法讀取！");
-					Bukkit.getLogger().log(Level.SEVERE, "任務 " + questname + " 已經跳過讀取。");
-					continue;
-				}
+					Bukkit.getLogger().log(Level.INFO, "[任務讀取] 任務 " + questname + " 已經讀取完畢。");
 			}else{
-				Bukkit.getLogger().log(Level.SEVERE, qconfig.getInt("任務列表." + internal + ".任務NPC") + "");
-				Bukkit.getLogger().log(Level.SEVERE, "任務 " + questname + " 的NPC ID 不正確！請重新確認！");
-				Bukkit.getLogger().log(Level.SEVERE, "任務 " + questname + " 已經跳過讀取。");
+				Bukkit.getLogger().log(Level.SEVERE, "[任務讀取] 任務 " + questname + " 的NPC有誤，請重新設定！");
+				Bukkit.getLogger().log(Level.SEVERE, "[任務讀取] 任務 " + questname + " 已經跳過讀取。");
 				continue;
 			}
 		}
