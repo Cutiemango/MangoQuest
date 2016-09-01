@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.editor;
+package me.Cutiemango.MangoQuest.listeners;
 
 import java.util.HashMap;
 

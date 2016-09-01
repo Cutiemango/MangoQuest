@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.editor;
+package me.Cutiemango.MangoQuest.manager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import me.Cutiemango.MangoQuest.QuestGUIManager;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.TextComponentFactory;

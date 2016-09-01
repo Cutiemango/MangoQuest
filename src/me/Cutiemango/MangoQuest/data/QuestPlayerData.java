@@ -1,19 +1,17 @@
 package me.Cutiemango.MangoQuest.data;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestConfigLoad;
+import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.QuestUtil.QuestTitleEnum;
@@ -35,11 +33,11 @@ public class QuestPlayerData {
 		this.p = p;
 	}
 	
-	public QuestPlayerData(Player p, FileConfiguration c){
+	public QuestPlayerData(Player p, QuestIO io){
 		this.p = p;
-		c.set("玩家資料." + p.getUniqueId() + ".玩家ID", p.getName());
-		if (c.getConfigurationSection("玩家資料." + p.getUniqueId() + ".任務進度") != null){
-			for (String index : c.getConfigurationSection("玩家資料." + p.getUniqueId() + ".任務進度").getKeys(false)){
+		io.set("玩家資料." + p.getUniqueId() + ".玩家ID", p.getName());
+		if (io.isSection("玩家資料." + p.getUniqueId() + ".任務進度")){
+			for (String index : io.getSection("玩家資料." + p.getUniqueId() + ".任務進度")){
 				if (QuestStorage.Quests.get(index) == null){
 					QuestUtil.error(p, "您的玩家資料有不存在或經被移除的任務，已經遺失資料！"
 							+ "遺失的任務內部碼： " + index + "，若您覺得這不應該發生，請回報管理員。");
@@ -47,10 +45,10 @@ public class QuestPlayerData {
 				}
 				Quest q = QuestStorage.Quests.get(index);
 				int t = 0;
-				int s = c.getInt("玩家資料." + p.getUniqueId() + ".任務進度." + index + ".QuestStage");
+				int s = io.getInt("玩家資料." + p.getUniqueId() + ".任務進度." + index + ".QuestStage");
 				List<QuestObjectProgress> qplist = new ArrayList<>();
 				for (SimpleQuestObject ob : q.getStage(s).getObjects()){
-					QuestObjectProgress qp = new QuestObjectProgress(ob, c.getInt("玩家資料." + p.getUniqueId() + ".任務進度." + index + ".QuestObjectProgress." + t));
+					QuestObjectProgress qp = new QuestObjectProgress(ob, io.getInt("玩家資料." + p.getUniqueId() + ".任務進度." + index + ".QuestObjectProgress." + t));
 					qp.checkIfFinished();
 					qplist.add(qp);
 					t++;
@@ -59,46 +57,56 @@ public class QuestPlayerData {
 			}
 		}
 		
-		if (c.isConfigurationSection("玩家資料." + p.getUniqueId() + ".已完成的任務")){
-			for (String s : c.getConfigurationSection("玩家資料." + p.getUniqueId() + ".已完成的任務").getKeys(false)){
+		if (io.isSection("玩家資料." + p.getUniqueId() + ".已完成的任務")){
+			for (String s : io.getSection("玩家資料." + p.getUniqueId() + ".已完成的任務")){
 				if (QuestStorage.Quests.get(s) == null){
 					QuestUtil.error(p, "您的玩家資料有不存在或經被移除的任務，已經遺失資料！"
 							+ "遺失的任務內部碼： " + s + "，若您覺得這不應該發生，請回報管理員。");
 					continue;
 				}
 				QuestFinishData qd = new QuestFinishData(QuestStorage.Quests.get(s) 
-						,c.getInt("玩家資料." + p.getUniqueId() + ".已完成的任務." + s + ".FinishedTimes")
-						,c.getLong("玩家資料." + p.getUniqueId() + ".已完成的任務." + s + ".LastFinishTime"));
+						,io.getInt("玩家資料." + p.getUniqueId() + ".已完成的任務." + s + ".FinishedTimes")
+						,io.getLong("玩家資料." + p.getUniqueId() + ".已完成的任務." + s + ".LastFinishTime"));
 				FinishedQuest.add(qd);
 			}
 		}
+		
+		if (io.isSection("玩家資料." + p.getUniqueId() + ".NPC友好度")){
+			for (String s : io.getSection("玩家資料." + p.getUniqueId() + ".NPC友好度")){
+				NPCfp.put(Integer.parseInt(s), io.getInt("玩家資料." + p.getUniqueId() + ".NPC友好度." + s));
+			}
+		}
+		
 		QuestUtil.info(p, "&a玩家任務資料讀取完成！");
 	}
 
 	private Player p;
 	private List<QuestProgress> CurrentQuest = new ArrayList<>();
 	private List<QuestFinishData> FinishedQuest = new ArrayList<>();
+	
+	private HashMap<Integer, Integer> NPCfp = new HashMap<>();
 
 	public void save() {
-		QuestConfigLoad.pconfig.set("玩家資料." + p.getUniqueId() + ".玩家ID", p.getName());
+		Main.instance.configManager.getPlayerIO().set("玩家資料." + p.getUniqueId() + ".玩家ID", p.getName());
 		for (QuestFinishData q : FinishedQuest) {
 			String id = q.getQuest().getInternalID();
-			QuestConfigLoad.pconfig.set("玩家資料." + p.getUniqueId() + ".已完成的任務." + id + ".FinishedTimes", q.getFinishedTimes());
-			QuestConfigLoad.pconfig.set("玩家資料." + p.getUniqueId() + ".已完成的任務." + id + ".LastFinishTime", q.getLastFinish());
+			Main.instance.configManager.getPlayerIO().set("玩家資料." + p.getUniqueId() + ".已完成的任務." + id + ".FinishedTimes", q.getFinishedTimes());
+			Main.instance.configManager.getPlayerIO().set("玩家資料." + p.getUniqueId() + ".已完成的任務." + id + ".LastFinishTime", q.getLastFinish());
 		}
 		
-		QuestConfigLoad.pconfig.set("玩家資料." + p.getUniqueId() + ".任務進度", "");
+		Main.instance.configManager.getPlayerIO().set("玩家資料." + p.getUniqueId() + ".任務進度", "");
 		
 		if (!CurrentQuest.isEmpty()){
 			for (QuestProgress qp : CurrentQuest) {
-				qp.save(QuestConfigLoad.pconfig);
+				qp.save(Main.instance.configManager.getPlayerIO());
 			}
 		}
-		try {
-			QuestConfigLoad.pconfig.save(new File(Main.instance.getDataFolder(), "players.yml"));
-		} catch (IOException e) {
-			e.printStackTrace();
+		
+		for (int i : NPCfp.keySet()){
+			Main.instance.configManager.getPlayerIO().set("玩家資料." + p.getUniqueId() + ".NPC友好度." + i, NPCfp.get(i));
 		}
+
+		Main.instance.configManager.getPlayerIO().save();
 	}
 
 	public Player getPlayer() {
@@ -126,6 +134,16 @@ public class QuestPlayerData {
 		return CurrentQuest;
 	}
 	
+	public int getNPCfp(int id){
+		if (!NPCfp.containsKey(id))
+			NPCfp.put(id, 0);
+		return NPCfp.get(id);
+	}
+	
+	public void addNPCfp(int id, int value){
+		NPCfp.put(id, NPCfp.get(id) + value);
+	}
+	
 	public void takeQuest(Quest q){
 		if (!canTake(q, true))
 			return;
@@ -134,6 +152,10 @@ public class QuestPlayerData {
 				QuestUtil.error(p, "你不在NPC的周圍，或是你離NPC太遠了，靠近他再嘗試看看接取任務吧！");
 				return;
 			}
+		}
+		if (CurrentQuest.size() + 1 > 4){
+			QuestUtil.info(p, "&c你的任務列表已滿，不能再接受任務了。");
+			return;
 		}
 		if (q.hasTrigger()){
 			for (QuestTrigger t : q.getTriggers()){
@@ -385,11 +407,6 @@ public class QuestPlayerData {
 	}
 	
 	public boolean canTake(Quest q, boolean sendmsg){
-		if (CurrentQuest.size() + 1 > 4){
-			if (sendmsg)
-				QuestUtil.info(p, "&c你的任務列表已滿，不能再接受任務了。");
-			return false;
-		}
 		for (QuestProgress qp : CurrentQuest){
 			if (q.getInternalID().equals(qp.getQuest().getInternalID())) {
 				if (sendmsg)
@@ -421,7 +438,7 @@ public class QuestPlayerData {
 	}
 	
 	public static boolean hasConfigData(Player p){
-		return !(QuestConfigLoad.pconfig.getString("玩家資料." + p.getUniqueId() + ".玩家ID") == null);
+		return Main.instance.configManager.getPlayerIO().contains("玩家資料." + p.getUniqueId() + ".玩家ID");
 	}
 	
 	private long getDelay(long last, long quest){

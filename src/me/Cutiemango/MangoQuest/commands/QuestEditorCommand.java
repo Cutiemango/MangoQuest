@@ -13,12 +13,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestGUIManager;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
-import me.Cutiemango.MangoQuest.editor.QuestEditorListener;
-import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
+import me.Cutiemango.MangoQuest.listeners.QuestEditorListener;
+import me.Cutiemango.MangoQuest.manager.QuestEditorManager;
+import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import me.Cutiemango.MangoQuest.model.RequirementType;
 import net.citizensnpcs.api.CitizensAPI;
 import me.Cutiemango.MangoQuest.model.Quest;
@@ -67,14 +67,14 @@ public class QuestEditorCommand implements CommandExecutor {
 					return false;
 				case "sa":
 				case "saveall":
-					Main.instance.cfg.saveQuest(q);
+					Main.instance.configManager.saveQuest(q);
 					Quest.synchronizeLocal(q);
 					QuestUtil.info(p, "&a任務 " + q.getQuestName() + " 已經成功儲存至設定檔案！");
 					QuestUtil.info(p, "&b任務 " + q.getQuestName() + " 已經設定與伺服器資料中的任務同步！");
 					break;
 				case "sc":
 				case "savecfg":
-					Main.instance.cfg.saveQuest(q);
+					Main.instance.configManager.saveQuest(q);
 					QuestUtil.info(p, "&a任務 " + q.getQuestName() + " 已經成功儲存至設定檔案！");
 					break;
 				case "sl":
@@ -492,7 +492,7 @@ public class QuestEditorCommand implements CommandExecutor {
 										else continue;
 									}
 								}
-								Main.instance.cfg.removeQuest(target);
+								Main.instance.configManager.removeQuest(target);
 								QuestUtil.info(p, "&c任務 " + target.getQuestName() + " 已經移除。");
 								QuestStorage.Quests.remove(args[2]);
 								return false;
@@ -505,7 +505,7 @@ public class QuestEditorCommand implements CommandExecutor {
 					QuestUtil.error(p, "你不在編輯模式中！");
 					return false;
 				}
-				Main.instance.cfg.saveQuest(q);
+				Main.instance.configManager.saveQuest(q);
 				Quest.synchronizeLocal(q);
 				QuestUtil.info(p, "&a任務 " + q.getQuestName() + " 已經成功儲存至設定檔案！");
 				QuestUtil.info(p, "&b任務 " + q.getQuestName() + " 已經設定與伺服器資料中的任務同步！");
@@ -516,7 +516,7 @@ public class QuestEditorCommand implements CommandExecutor {
 					QuestUtil.error(p, "你不在編輯模式中！");
 					return false;
 				}
-				Main.instance.cfg.saveQuest(q);
+				Main.instance.configManager.saveQuest(q);
 				QuestUtil.info(p, "&a任務 " + q.getQuestName() + " 已經成功儲存至設定檔案！");
 				break;
 			case "sl":

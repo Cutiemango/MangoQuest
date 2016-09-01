@@ -22,6 +22,8 @@ public class QuestStorage {
 	public static Map<Material, String> TranslateMap = new EnumMap<Material, String>(Material.class);
 	public static Map<EntityType, String> EntityTypeMap = new EnumMap<EntityType, String>(EntityType.class);
 	
+	public static HashMap<Integer, QuestNPC> NPCMap = new HashMap<>();
+	
 	public static final String prefix = ChatColor.GOLD + "MangoQuest>";
 
 }

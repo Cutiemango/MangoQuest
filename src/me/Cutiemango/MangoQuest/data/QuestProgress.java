@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.QuestUtil.QuestTitleEnum;
@@ -54,11 +54,11 @@ public class QuestProgress {
 		QuestUtil.info(owner, "&b&l任務 &f" + quest.getQuestName() + " &b&l完成！");
 	}
 	
-	public void save(FileConfiguration c){
-		c.set("玩家資料." + owner.getUniqueId() + ".任務進度." + quest.getInternalID() + ".QuestStage", CurrentStage);
+	public void save(QuestIO io){
+		io.set("玩家資料." + owner.getUniqueId() + ".任務進度." + quest.getInternalID() + ".QuestStage", CurrentStage);
 		int t = 0;
 		for (QuestObjectProgress qop : objlist){
-			c.set("玩家資料." + owner.getUniqueId() + ".任務進度." + quest.getInternalID() + ".QuestObjectProgress." + t, qop.getProgress());
+			io.set("玩家資料." + owner.getUniqueId() + ".任務進度." + quest.getInternalID() + ".QuestObjectProgress." + t, qop.getProgress());
 			t++;
 		}
 	}

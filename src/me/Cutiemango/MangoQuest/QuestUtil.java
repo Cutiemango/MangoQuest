@@ -79,6 +79,12 @@ public class QuestUtil {
 		return QuestStorage.Players.get(p.getName());
 	}
 	
+	public static String getNPCMessage(int id, int fp){
+		if (!QuestStorage.NPCMap.containsKey(id))
+			QuestStorage.NPCMap.put(id, new QuestNPC());
+		return QuestStorage.NPCMap.get(id).getNPCMessage(fp);
+	}
+	
 	public static Quest getQuest(String s){
 		return QuestStorage.Quests.get(s);
 	}

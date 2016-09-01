@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import me.Cutiemango.MangoQuest.QuestConfigLoad;
+import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
@@ -26,7 +26,7 @@ public class PlayerListener implements Listener{
 		Player p = e.getPlayer();
 		QuestPlayerData qd = new QuestPlayerData(p);
 		if (QuestPlayerData.hasConfigData(p))
-			qd = new QuestPlayerData(p, QuestConfigLoad.pconfig);
+			qd = new QuestPlayerData(p, Main.instance.configManager.getPlayerIO());
 		QuestStorage.Players.put(p.getName(), qd);
 	}
 	

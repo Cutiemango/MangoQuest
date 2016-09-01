@@ -9,9 +9,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import me.Cutiemango.MangoQuest.commands.QuestCommand;
 import me.Cutiemango.MangoQuest.commands.QuestEditorCommand;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
-import me.Cutiemango.MangoQuest.editor.QuestEditorListener;
 import me.Cutiemango.MangoQuest.listeners.PlayerListener;
+import me.Cutiemango.MangoQuest.listeners.QuestEditorListener;
 import me.Cutiemango.MangoQuest.listeners.QuestListener;
+import me.Cutiemango.MangoQuest.manager.QuestConfigManager;
 import me.Cutiemango.MangoQuest.versions.QuestVersionHandler;
 import me.Cutiemango.MangoQuest.versions.Version_v1_10_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_9_R1;
@@ -29,8 +30,7 @@ public class Main extends JavaPlugin{
 	public Vault vault;
 	
 	public QuestVersionHandler handler;
-	
-	public QuestConfigLoad cfg;
+	public QuestConfigManager configManager;
 	
 	@Override
 	public void onEnable(){
@@ -42,7 +42,7 @@ public class Main extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new QuestListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new QuestEditorListener(), this);
-		cfg = new QuestConfigLoad(this);
+		configManager = new QuestConfigManager(this);
 		
 		linkOtherPlugins();
 		
@@ -69,11 +69,12 @@ public class Main extends JavaPlugin{
 		new BukkitRunnable(){
 			@Override
 			public void run() {
-				cfg.loadQuests();
+				configManager.loadQuests();
+				configManager.loadNPC();
 				for (Player p : Bukkit.getOnlinePlayers()){
 					QuestPlayerData qd = new QuestPlayerData(p);
 					if (QuestPlayerData.hasConfigData(p))
-						qd = new QuestPlayerData(p, QuestConfigLoad.pconfig);
+						qd = new QuestPlayerData(p, configManager.getPlayerIO());
 					QuestStorage.Players.put(p.getName(), qd);
 				}
 			}
@@ -105,7 +106,12 @@ public class Main extends JavaPlugin{
 			else
 				getLogger().severe("未連結Vault，請重新安裝否則插件無法運作！");
 			
-			if (setupEconomy())
+			RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServicesManager().getRegistration(Economy.class);
+			if (economyProvider != null) {
+				economy = economyProvider.getProvider();
+			}
+			
+			if (economy != null)
 				getLogger().info("經濟插件已經連結成功。");
 			else
 				getLogger().severe("未連結金錢插件，請安裝iEconomy等經濟插件！");
@@ -114,14 +120,4 @@ public class Main extends JavaPlugin{
 			e.printStackTrace();
 		}
 	}
-	
-	private boolean setupEconomy() {
-		RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServicesManager().getRegistration(Economy.class);
-		if (economyProvider != null) {
-			economy = economyProvider.getProvider();
-		}
-
-		return (economy != null);
-	}
-
 }

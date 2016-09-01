@@ -1,6 +1,7 @@
 package me.Cutiemango.MangoQuest.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.entity.Player;
@@ -9,6 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import net.citizensnpcs.api.CitizensAPI;
 import net.md_5.bungee.api.ChatColor;
 
 public class QuestReward {
@@ -16,23 +19,8 @@ public class QuestReward {
 	private double money;
 	private List<ItemStack> items = new ArrayList<>();
 	private int experience;
+	private HashMap<Integer, Integer> npcfp = new HashMap<>();
 	
-	public QuestReward(){
-		
-	}
-
-	public QuestReward(ItemStack is) {
-		items.add(is);
-	}
-
-	public QuestReward(double amount) {
-		money = amount;
-	}
-	
-	public QuestReward(int exp){
-		experience = exp;
-	}
-
 	public void addItem(ItemStack is) {
 		items.add(is);
 	}
@@ -43,6 +31,10 @@ public class QuestReward {
 	
 	public void addExp(int i){
 		experience += i;
+	}
+	
+	public void addFriendPoint(int id, int value){
+		npcfp.put(id, value);
 	}
 
 	public void removeItem(ItemStack is) {
@@ -67,7 +59,7 @@ public class QuestReward {
 	}
 
 	public boolean hasItem() {
-		return !(items.isEmpty());
+		return !items.isEmpty();
 	}
 
 	public boolean hasMoney() {
@@ -76,6 +68,10 @@ public class QuestReward {
 	
 	public boolean hasExp(){
 		return !(experience == 0);
+	}
+	
+	public boolean hasFriendPoint(){
+		return !npcfp.isEmpty();
 	}
 
 	public List<ItemStack> getItems() {
@@ -88,6 +84,10 @@ public class QuestReward {
 	
 	public int getExp() {
 		return experience;
+	}
+	
+	public HashMap<Integer, Integer> getFp(){
+		return npcfp;
 	}
 	
 	public boolean isEmpty(){
@@ -120,6 +120,14 @@ public class QuestReward {
 		if (this.hasExp()) {
 			p.giveExp(experience);
 			QuestUtil.info(p, "&e任務獎勵 - 給予 &f" + experience + " &e點 &a經驗值");
+		}
+		
+		if (this.hasFriendPoint()){
+			QuestPlayerData qd = QuestUtil.getData(p);
+			for (Integer id : npcfp.keySet()){
+				qd.addNPCfp(id, npcfp.get(id));
+				QuestUtil.info(p, "&e任務獎勵 - " + CitizensAPI.getNPCRegistry().getById(id).getName() + " &e非常感激你的所作所為！");
+			}
 		}
 	}
 }

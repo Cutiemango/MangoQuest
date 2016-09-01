@@ -1,7 +1,12 @@
-package me.Cutiemango.MangoQuest;
+package me.Cutiemango.MangoQuest.manager;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestStorage;
+import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.TextComponentFactory;
 import me.Cutiemango.MangoQuest.data.QuestFinishData;
 import me.Cutiemango.MangoQuest.data.QuestObjectProgress;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
@@ -9,6 +14,7 @@ import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
+import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -61,7 +67,7 @@ public class QuestGUIManager {
 		TextComponent p2 = new TextComponent(ChatColor.BOLD + "任務提要： \n");
 		p2.addExtra(q.getQuest().getQuestOutline());
 
-		TextComponent p3 = new TextComponent(ChatColor.BOLD + "任務獎勵：");
+		TextComponent p3 = new TextComponent(ChatColor.BOLD + "任務獎勵：\n");
 
 		if (q.getQuest().getQuestReward().hasItem()){
 			for (ItemStack is : q.getQuest().getQuestReward().getItems()){
@@ -82,6 +88,15 @@ public class QuestGUIManager {
 			p3.addExtra(ChatColor.GREEN + "經驗值 " + ChatColor.BLACK + q.getQuest().getQuestReward().getExp() + ChatColor.GREEN + " 點");
 			p3.addExtra("\n");
 		}
+		
+		if (q.getQuest().getQuestReward().hasFriendPoint()){
+			for (Integer id : q.getQuest().getQuestReward().getFp().keySet()){
+				NPC npc = CitizensAPI.getNPCRegistry().getById(id);
+				p3.addExtra(TextComponentFactory.convertLocationtoHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
+				p3.addExtra(QuestUtil.translateColor(" &c將會感激你"));
+				p3.addExtra("\n");
+			}
+		}
 
 		openBook(p, p1, p2, p3);
 	}
@@ -93,7 +108,9 @@ public class QuestGUIManager {
 		for (QuestProgress qp : qd.getProgresses()){
 			p1.addExtra("\n");
 			p1.addExtra(TextComponentFactory.convertViewQuest(qp.getQuest()));
-			p1.addExtra("：\n");
+			p1.addExtra("：");
+			p1.addExtra(TextComponentFactory.registerClickCommandEvent("&c&l【放棄】", "/mq quit " + qp.getQuest().getInternalID()));
+			p1.addExtra("\n");
 			for (QuestObjectProgress qop : qp.getCurrentObjects()){
 				p1.addExtra("- ");
 				if (qop.isFinished()){
@@ -150,6 +167,10 @@ public class QuestGUIManager {
 		QuestPlayerData qd = QuestUtil.getData(p);
 		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&5&lNPC介面 &0&l| "));
 		p1.addExtra(TextComponentFactory.convertLocationtoHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
+		p1.addExtra("\n\n");
+		p1.addExtra(QuestUtil.translateColor("&0&l[" + npc.getName() + "&0&l]："));
+		p1.addExtra("\n");
+		p1.addExtra(QuestUtil.getNPCMessage(npc.getId(), qd.getNPCfp(npc.getId())));
 		p1.addExtra("\n\n");
 		p1.addExtra(QuestUtil.translateColor("&0&l[任務列表]"));
 		p1.addExtra("\n");
