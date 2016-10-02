@@ -25,17 +25,25 @@ public class QuestCommand implements CommandExecutor{
 					QuestGUIManager.openJourney(p);
 					return true;
 				}
+				else if (args[0].equalsIgnoreCase("nextconv")){
+					if (QuestUtil.getConvProgress(p) != null){
+						QuestUtil.getConvProgress(p).retrieve();
+						QuestUtil.getConvProgress(p).nextAction();
+					}
+					return true;
+				}
 				sendHelp(p);
 				return false;
 			}
-			if (QuestStorage.Quests.get(args[1]) == null){
-				QuestUtil.error(p, "你所要找的任務不存在！");
-				return false;
-			}
-			Quest quest = QuestStorage.Quests.get(args[1]);
+//			if (QuestStorage.Quests.get(args[1]) == null){
+//				QuestUtil.error(p, "你所要找的任務不存在！");
+//				return false;
+//			}
+//			Quest quest = QuestStorage.Quests.get(args[1]);
 			QuestPlayerData qd = QuestUtil.getData(p);
 			switch(args[0]){
 				case "view":
+					Quest quest = QuestStorage.Quests.get(args[1]);
 					if (qd.getProgress(quest) == null){
 						QuestGUIManager.openGUI(p, new QuestProgress(quest, p));
 						return true;
@@ -43,13 +51,29 @@ public class QuestCommand implements CommandExecutor{
 					QuestGUIManager.openGUI(p, qd.getProgress(quest));
 					return true;
 				case "take":
+					quest = QuestStorage.Quests.get(args[1]);
 					qd.takeQuest(quest);
 					QuestGUIManager.openGUI(p, qd.getProgress(quest));
 					return true;
 				case "quit":
+					quest = QuestStorage.Quests.get(args[1]);
 					qd.quitQuest(quest);
 					QuestGUIManager.openJourney(p);
 					return true;
+				case "choose":
+					if (QuestUtil.getChoice(p) != null)
+						QuestUtil.getChoice(p).choose(p, Integer.parseInt(args[1]));
+					return true;
+				case "openconv":
+					if (QuestUtil.getConvByName(args[1]) != null){
+						QuestUtil.getConvByName(args[1]).startNewConversation(p);
+						return true;
+					}
+				case "callconv":
+					if (QuestUtil.getConvProgress(p) != null){
+						QuestGUIManager.updateConversation(p, QuestUtil.getConvProgress(p));
+						return true;
+					}
 				}
 		
 		}

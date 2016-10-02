@@ -1,0 +1,31 @@
+任務對話:
+  Test001:
+    對話名稱: "初次會面"
+    對話內容:
+    - "SENTENCE#嗨！冒險者！"
+    - "WAIT#1"
+    - "BUTTON#"
+    - "SENTENCE#這是你和我的初次見面！"
+    - "CHANGE_LINE#"
+    - "BUTTON#"
+    
+選擇:
+  Choice001:
+    '1':
+      "選項名稱": "選項1"
+      "選項動作":
+      - "CHANGE_PAGE#"
+      - "SENTENCE#這是選項1"
+      - "BUTTON#"
+    '2':
+      "選項名稱": "選項2"
+      "選項動作":
+      - "CHANGE_PAGE#"
+    '3':
+      "選項名稱": "選項3"
+      "選項動作":
+      - "CHANGE_PAGE#"
+    '4':
+      "選項名稱": "選項4"
+      "選項動作":
+      - "CHANGE_PAGE#"

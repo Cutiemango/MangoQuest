@@ -35,6 +35,12 @@ public class TextComponentFactory {
 		return t;
 	}
 	
+	public static TextComponent registerChangePageEvent(String text, Integer page){
+		TextComponent t = new TextComponent(QuestUtil.translateColor(text));
+		t.setClickEvent(new ClickEvent(ClickEvent.Action.CHANGE_PAGE, page.toString()));
+		return t;
+	}
+	
 	public static TextComponent convertItemStacktoHoverEvent(ItemStack it, boolean f) {
 		return Main.instance.handler.textFactoryConvertItem(it, f);
 	}

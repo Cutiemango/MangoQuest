@@ -7,6 +7,7 @@ import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.TextComponentFactory;
+import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
 import me.Cutiemango.MangoQuest.data.QuestFinishData;
 import me.Cutiemango.MangoQuest.data.QuestObjectProgress;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
@@ -99,6 +100,18 @@ public class QuestGUIManager {
 		}
 
 		openBook(p, p1, p2, p3);
+	}
+	
+	public static void openConversation(Player p){
+		ConversationProgress cp = QuestUtil.getConvProgress(p);
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor(cp.getDefaultTitleString()));
+		p1.addExtra("\n");
+		cp.setCurrentBook(QuestUtil.createList(p1));
+		updateConversation(p, cp);
+	}
+	
+	public static void updateConversation(Player p, ConversationProgress cp){
+		openBook(p, cp.getCurrentBook().toArray(new TextComponent[cp.getCurrentBook().size()]));
 	}
 	
 	public static void openJourney(Player p){

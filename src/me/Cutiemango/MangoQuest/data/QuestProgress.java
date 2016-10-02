@@ -48,10 +48,10 @@ public class QuestProgress {
 		}
 		QuestPlayerData pd = QuestUtil.getData(owner);
 		pd.addFinishedQuest(quest);
-		pd.removeProgress(quest);
 		quest.getQuestReward().giveRewardTo(owner);
 		QuestUtil.sendQuestTitle(owner, quest, QuestTitleEnum.FINISH);
 		QuestUtil.info(owner, "&b&l任務 &f" + quest.getQuestName() + " &b&l完成！");
+		pd.removeProgress(quest);
 	}
 	
 	public void save(QuestIO io){

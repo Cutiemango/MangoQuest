@@ -7,6 +7,9 @@ import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 
+import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
+import me.Cutiemango.MangoQuest.conversation.QuestChoice;
+import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.md_5.bungee.api.ChatColor;
@@ -14,13 +17,20 @@ import net.md_5.bungee.api.ChatColor;
 public class QuestStorage {
 	
 	// Saved With InternalID
-	public static Map<String, Quest> Quests = new HashMap<String, Quest>();
+	public static Map<String, Quest> Quests = new HashMap<>();
 
 	// Saved With PlayerName
-	public static Map<String, QuestPlayerData> Players = new HashMap<String, QuestPlayerData>();
+	public static Map<String, QuestPlayerData> Players = new HashMap<>();
+	public static Map<String, ConversationProgress> ConvProgresses = new HashMap<>();
+	public static Map<String, QuestChoice> ChoiceProgresses = new HashMap<>();
 	
-	public static Map<Material, String> TranslateMap = new EnumMap<Material, String>(Material.class);
-	public static Map<EntityType, String> EntityTypeMap = new EnumMap<EntityType, String>(EntityType.class);
+	public static Map<String, QuestConversation> Conversations = new HashMap<>();
+	
+	public static Map<String, QuestChoice> Choices = new HashMap<>();
+	
+	
+	public static Map<Material, String> TranslateMap = new EnumMap<>(Material.class);
+	public static Map<EntityType, String> EntityTypeMap = new EnumMap<>(EntityType.class);
 	
 	public static HashMap<Integer, QuestNPC> NPCMap = new HashMap<>();
 	

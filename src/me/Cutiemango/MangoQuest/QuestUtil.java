@@ -12,6 +12,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
+import me.Cutiemango.MangoQuest.conversation.QuestChoice;
+import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.citizensnpcs.api.npc.NPC;
@@ -122,6 +125,31 @@ public class QuestUtil {
 		if (seconds > 0)
 			s += seconds + " 秒";
 		return s;
+	}
+	
+	@SafeVarargs
+	public static <T> List<T> createList(T... args){
+		List<T> list = new ArrayList<T>();
+		for (T obj : args){
+			list.add(obj);
+		}
+		return list;
+	}
+	
+	public static QuestConversation getConvByName(String s){
+		return QuestStorage.Conversations.get(s);
+	}
+	
+	public static ConversationProgress getConvProgress(Player p){
+		return QuestStorage.ConvProgresses.get(p.getName());
+	}
+	
+	public static QuestChoice getChoice(Player p){
+		return QuestStorage.ChoiceProgresses.get(p.getName());
+	}
+	
+	public static QuestChoice getChoiceByName(String s){
+		return QuestStorage.Choices.get(s);
 	}
 
 	public static String translate(Material material, short data) {

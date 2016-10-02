@@ -77,6 +77,7 @@ public class Main extends JavaPlugin{
 						qd = new QuestPlayerData(p, configManager.getPlayerIO());
 					QuestStorage.Players.put(p.getName(), qd);
 				}
+				this.cancel();
 			}
 		}.runTaskLater(this, 5L);
 	}
@@ -117,6 +118,7 @@ public class Main extends JavaPlugin{
 				getLogger().severe("未連結金錢插件，請安裝iEconomy等經濟插件！");
 
 		} catch (Exception e) {
+			getLogger().severe("連結前置插件時發生錯誤。請檢查是否已經安裝所有前置插件。");
 			e.printStackTrace();
 		}
 	}

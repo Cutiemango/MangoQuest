@@ -15,6 +15,11 @@ import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestNPC;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.conversation.QuestBaseAction;
+import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
+import me.Cutiemango.MangoQuest.conversation.QuestChoice;
+import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
+import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestReward;
 import me.Cutiemango.MangoQuest.model.QuestStage;
@@ -38,6 +43,8 @@ public class QuestConfigManager {
 	private QuestIO QuestsIO;
 	private QuestIO TranslateIO;
 	private QuestIO NPCIO;
+	
+	private QuestIO ConversationIO;
 
 	private Main plugin;
 	
@@ -46,10 +53,13 @@ public class QuestConfigManager {
 		QuestsIO = new QuestIO("quests.yml");
 		TranslateIO = new QuestIO("translations.yml");
 		NPCIO = new QuestIO("npc.yml");
+		ConversationIO = new QuestIO("conversations.yml");
 		
 		plugin = pl;
 
 		loadTranslation();
+		loadChoice();
+		loadConversation();
 	}
 	
 	public QuestIO getPlayerIO(){
@@ -196,6 +206,40 @@ public class QuestConfigManager {
 		
 		System.out.println("[任務讀取] 任務 " + q.getQuestName() + " 已經儲存完成！");
 		QuestsIO.save();
+	}
+	
+	public void loadConversation(){
+		if (!ConversationIO.isSection("任務對話"))
+			return;
+		int count = 0;
+		for (String id : ConversationIO.getSection("任務對話")){
+			String name = ConversationIO.getString("任務對話." + id + ".對話名稱");
+			List<String> act = ConversationIO.getStringList("任務對話." + id + ".對話內容");
+			QuestConversation conv = new QuestConversation(name, loadConvAction(act));
+			QuestStorage.Conversations.put(id, conv);
+			count++;
+		}
+		
+		System.out.println("[對話讀取] 對話已經讀取完成！讀取了 " + count + " 個對話！");
+	}
+	
+	public void loadChoice(){
+		if (!ConversationIO.isSection("選擇"))
+			return;
+		int count = 0;
+		Choice[] array = new Choice[4];
+		for (String id : ConversationIO.getSection("選擇")){
+			for (String num : ConversationIO.getSection("選擇." + id)){
+				String name = ConversationIO.getString("選擇." + id + "." + num + ".選項名稱");
+				Choice c = new Choice(name, loadConvAction(ConversationIO.getStringList("選擇." + id + "." + num + ".選項動作")));
+				array[Integer.parseInt(num) - 1] = c;
+			}
+			QuestChoice choice = new QuestChoice(array);
+			QuestStorage.Choices.put(id, choice);
+			count++;
+		}
+		
+		System.out.println("[選擇讀取] 選擇已經讀取完成！讀取了 " + count + " 個選擇！");
 	}
 	
 	public void loadQuests(){
@@ -366,6 +410,53 @@ public class QuestConfigManager {
 			}
 		}
 		Bukkit.getLogger().log(Level.INFO, "[任務讀取] 任務已經讀取完畢。讀取了 " + totalcount + " 個任務。");
+	}
+	
+	private List<QuestBaseAction> loadConvAction(List<String> fromlist){
+		List<QuestBaseAction> list = new ArrayList<>();
+		EnumAction e = null;
+		for (String s : fromlist){
+			if (s.contains("#")){
+				try{
+					e = EnumAction.valueOf(s.split("#")[0]);
+				}catch(Exception ex){
+					QuestUtil.warnCmd("不正確的對話動作(EnumAction)： " + s.split("#")[0]);
+					continue;
+				}
+				if (e != null){
+					QuestBaseAction action;
+					switch(e){
+					case CHOICE:
+						action = new QuestBaseAction(e, QuestUtil.getChoiceByName(s.split("#")[1]));
+						break;
+					case COMMAND:
+						action = new QuestBaseAction(e, s.split("#")[1]);
+						break;
+					case SENTENCE:
+						action = new QuestBaseAction(e, (String)s.split("#")[1]);
+						break;
+					case CHANGE_CONVERSATION:
+						if (QuestUtil.getConvByName(s.split("#")[1]) == null){
+							QuestUtil.warnCmd("找不到指定的對話： " + s.split("#")[1]);
+							continue;
+						}
+						action = new QuestBaseAction(e, QuestUtil.getConvByName(s.split("#")[1]));
+						break;
+					case WAIT:
+						action = new QuestBaseAction(e, Integer.parseInt(s.split("#")[1]));
+						break;
+					case BUTTON:
+					case CHANGE_LINE:
+					case CHANGE_PAGE:
+					default:
+						action = new QuestBaseAction(e, null);
+						break;
+					}
+					list.add(action);
+				}
+			}
+		}
+		return list;
 	}
 
 }
