@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.conversation.QuestChoice;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
@@ -29,6 +30,13 @@ public class QuestCommand implements CommandExecutor{
 					if (QuestUtil.getConvProgress(p) != null){
 						QuestUtil.getConvProgress(p).retrieve();
 						QuestUtil.getConvProgress(p).nextAction();
+					}
+					return true;
+				}
+				else if (args[0].equalsIgnoreCase("openchoice")){
+					QuestChoice c = QuestUtil.getChoice(p);
+					if (QuestUtil.getChoice(p) != null){
+						QuestGUIManager.openChoice(p, c.getQuestion(), c.getChoices());
 					}
 					return true;
 				}

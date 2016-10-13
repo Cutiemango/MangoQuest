@@ -36,6 +36,7 @@ import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestConfigManager {
 	
@@ -229,12 +230,13 @@ public class QuestConfigManager {
 		int count = 0;
 		Choice[] array = new Choice[4];
 		for (String id : ConversationIO.getSection("選擇")){
-			for (String num : ConversationIO.getSection("選擇." + id)){
-				String name = ConversationIO.getString("選擇." + id + "." + num + ".選項名稱");
-				Choice c = new Choice(name, loadConvAction(ConversationIO.getStringList("選擇." + id + "." + num + ".選項動作")));
+			TextComponent q = new TextComponent(QuestUtil.translateColor(ConversationIO.getString("選擇." + id + ".問題")));
+			for (String num : ConversationIO.getSection("選擇." + id + ".選項")){
+				String name = ConversationIO.getString("選擇." + id + ".選項." + num + ".選項名稱");
+				Choice c = new Choice(name, loadConvAction(ConversationIO.getStringList("選擇." + id + ".選項." + num + ".選項動作")));
 				array[Integer.parseInt(num) - 1] = c;
 			}
-			QuestChoice choice = new QuestChoice(array);
+			QuestChoice choice = new QuestChoice(q, array);
 			QuestStorage.Choices.put(id, choice);
 			count++;
 		}

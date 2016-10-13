@@ -54,7 +54,7 @@ public class QuestBaseAction {
 	public void execute(final ConversationProgress cp){
 		switch(action){
 		case BUTTON:
-			cp.getCurrentPage().addExtra(TextComponentFactory.registerClickCommandEvent("&0[▼]", "/mq nextconv"));
+			cp.getCurrentPage().addExtra(TextComponentFactory.regClickCmdEvent("&0[▼]", "/mq nextconv"));
 			cp.getCurrentPage().addExtra("\n");
 			return;
 		case CHANGE_CONVERSATION:

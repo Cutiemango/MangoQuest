@@ -26,7 +26,7 @@ public class QuestObjectReachLocation extends SimpleQuestObject{
 			text = new TextComponent(QuestUtil.translateColor("&8&m&o到達地點 "));
 		else
 			text = new TextComponent(QuestUtil.translateColor("&0到達地點 "));
-		text.addExtra(TextComponentFactory.convertLocationtoHoverEvent(name, loc, isFinished));
+		text.addExtra(TextComponentFactory.convertLocHoverEvent(name, loc, isFinished));
 		return text;
 	}
 

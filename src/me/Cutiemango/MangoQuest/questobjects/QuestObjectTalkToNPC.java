@@ -27,11 +27,11 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject{
 		TextComponent text = new TextComponent();
 		if (isFinished) {
 			text = new TextComponent(QuestUtil.translateColor("&8&m&o與 "));
-			text.addExtra(TextComponentFactory.convertLocationtoHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
+			text.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
 			text.addExtra(QuestUtil.translateColor(" &8&m&o對話"));
 		} else {
 			text = new TextComponent(QuestUtil.translateColor("&0與 "));
-			text.addExtra(TextComponentFactory.convertLocationtoHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
+			text.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
 			text.addExtra(QuestUtil.translateColor(" &0對話"));
 		}
 		return text;

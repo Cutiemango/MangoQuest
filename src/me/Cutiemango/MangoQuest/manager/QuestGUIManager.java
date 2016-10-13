@@ -1,5 +1,7 @@
 package me.Cutiemango.MangoQuest.manager;
 
+import java.util.LinkedList;
+
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -8,6 +10,7 @@ import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.TextComponentFactory;
 import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
+import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
 import me.Cutiemango.MangoQuest.data.QuestFinishData;
 import me.Cutiemango.MangoQuest.data.QuestObjectProgress;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
@@ -28,7 +31,7 @@ public class QuestGUIManager {
 		if (!q.getQuest().isCommandQuest()){
 			p1.addExtra(ChatColor.BOLD + "任務NPC： ");
 			NPC npc = q.getQuest().getQuestNPC();
-			p1.addExtra(TextComponentFactory.convertLocationtoHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
+			p1.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
 			p1.addExtra("\n\n");
 		}
 		
@@ -73,7 +76,7 @@ public class QuestGUIManager {
 		if (q.getQuest().getQuestReward().hasItem()){
 			for (ItemStack is : q.getQuest().getQuestReward().getItems()){
 				p3.addExtra("\n");
-				p3.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(is, false));
+				p3.addExtra(TextComponentFactory.convertItemHoverEvent(is, false));
 				TextComponent suffix = new TextComponent(ChatColor.translateAlternateColorCodes('&' , " &l" + is.getAmount() + " &0個"));
 				p3.addExtra(suffix);
 				p3.addExtra("\n");
@@ -93,7 +96,7 @@ public class QuestGUIManager {
 		if (q.getQuest().getQuestReward().hasFriendPoint()){
 			for (Integer id : q.getQuest().getQuestReward().getFp().keySet()){
 				NPC npc = CitizensAPI.getNPCRegistry().getById(id);
-				p3.addExtra(TextComponentFactory.convertLocationtoHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
+				p3.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
 				p3.addExtra(QuestUtil.translateColor(" &c將會感激你"));
 				p3.addExtra("\n");
 			}
@@ -106,12 +109,25 @@ public class QuestGUIManager {
 		ConversationProgress cp = QuestUtil.getConvProgress(p);
 		TextComponent p1 = new TextComponent(QuestUtil.translateColor(cp.getDefaultTitleString()));
 		p1.addExtra("\n");
-		cp.setCurrentBook(QuestUtil.createList(p1));
+		cp.setCurrentBook(new LinkedList<>(QuestUtil.createList(p1)));
 		updateConversation(p, cp);
 	}
 	
 	public static void updateConversation(Player p, ConversationProgress cp){
 		openBook(p, cp.getCurrentBook().toArray(new TextComponent[cp.getCurrentBook().size()]));
+	}
+	
+	public static void openChoice(Player p, TextComponent q, Choice[] c){
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor("       &0=》 &c&l選擇 &0《="));
+		p1.addExtra("\n");
+		p1.addExtra(q);
+		p1.addExtra("\n");
+		for (int i = 0; i < 4; i++){
+			p1.addExtra("\n");
+			p1.addExtra(TextComponentFactory.regClickCmdEvent("- " + c[i].getContent(), "/mq choose " + i));
+			p1.addExtra("\n");
+		}
+		openBook(p, p1);
 	}
 	
 	public static void openJourney(Player p){
@@ -122,7 +138,7 @@ public class QuestGUIManager {
 			p1.addExtra("\n");
 			p1.addExtra(TextComponentFactory.convertViewQuest(qp.getQuest()));
 			p1.addExtra("：");
-			p1.addExtra(TextComponentFactory.registerClickCommandEvent("&c&l【放棄】", "/mq quit " + qp.getQuest().getInternalID()));
+			p1.addExtra(TextComponentFactory.regClickCmdEvent("&c&l【放棄】", "/mq quit " + qp.getQuest().getInternalID()));
 			p1.addExtra("\n");
 			for (QuestObjectProgress qop : qp.getCurrentObjects()){
 				p1.addExtra("- ");
@@ -149,7 +165,7 @@ public class QuestGUIManager {
 				p2.addExtra("- ");
 				p2.addExtra(TextComponentFactory.convertViewQuest(q));
 				if (q.isCommandQuest())
-					p2.addExtra(TextComponentFactory.registerClickCommandEvent("&2&l【接受】", "/mq take " + q.getInternalID()));
+					p2.addExtra(TextComponentFactory.regClickCmdEvent("&2&l【接受】", "/mq take " + q.getInternalID()));
 				p2.addExtra("\n");
 			}
 		}
@@ -179,12 +195,11 @@ public class QuestGUIManager {
 	public static void openNPCInfo(Player p, NPC npc){
 		QuestPlayerData qd = QuestUtil.getData(p);
 		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&5&lNPC介面 &0&l| "));
-		p1.addExtra(TextComponentFactory.convertLocationtoHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
+		p1.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
 		p1.addExtra("\n\n");
-		p1.addExtra(QuestUtil.translateColor("&0&l[" + npc.getName() + "&0&l]："));
-		p1.addExtra("\n");
+		p1.addExtra(QuestUtil.translateColor("&0&l" + npc.getName() + "&0：「"));
 		p1.addExtra(QuestUtil.getNPCMessage(npc.getId(), qd.getNPCfp(npc.getId())));
-		p1.addExtra("\n\n");
+		p1.addExtra("」\n\n");
 		p1.addExtra(QuestUtil.translateColor("&0&l[任務列表]"));
 		p1.addExtra("\n");
 		for (Quest q : QuestUtil.getGivenNPCQuests(npc)){
@@ -194,14 +209,14 @@ public class QuestGUIManager {
 				else
 					p1.addExtra(QuestUtil.translateColor("&0- &6&l！ &0"));
 				p1.addExtra(TextComponentFactory.convertViewQuest(q));
-				p1.addExtra(TextComponentFactory.registerClickCommandEvent("&2&l【接受】", "/mq take " + q.getInternalID()));
+				p1.addExtra(TextComponentFactory.regClickCmdEvent("&2&l【接受】", "/mq take " + q.getInternalID()));
 				p1.addExtra("\n");
 				continue;
 			}
 			else{
 				p1.addExtra(QuestUtil.translateColor("&0- &8&l？ &0"));
 				p1.addExtra(TextComponentFactory.convertViewQuest(q));
-				p1.addExtra(TextComponentFactory.registerClickCommandEvent("&c&l【放棄】", "/mq quit " + q.getInternalID()));
+				p1.addExtra(TextComponentFactory.regClickCmdEvent("&c&l【放棄】", "/mq quit " + q.getInternalID()));
 				p1.addExtra("\n");
 				continue;
 			}

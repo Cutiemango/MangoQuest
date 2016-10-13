@@ -40,19 +40,19 @@ public class QuestObjectItemDeliver extends NumerableObject{
 		TextComponent text = new TextComponent();
 		if (isFinished){
 			text = new TextComponent(QuestUtil.translateColor("&8&m&o提交 &8&m&o"));
-			text.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(item, true));
+			text.addExtra(TextComponentFactory.convertItemHoverEvent(item, true));
 			TextComponent suffix = new TextComponent(
 					QuestUtil.translateColor(" &8&m&o" + amount + " &8&m&o個 給 "));
 			text.addExtra(suffix);
 		}
 		else{
 			text = new TextComponent(QuestUtil.translateColor("&0提交 "));
-			text.addExtra(TextComponentFactory.convertItemStacktoHoverEvent(item, false));
+			text.addExtra(TextComponentFactory.convertItemHoverEvent(item, false));
 			TextComponent suffix = new TextComponent(
 					QuestUtil.translateColor(" &0&l" + amount + " &0個 給 "));
 			text.addExtra(suffix);
 		}
-		text.addExtra(TextComponentFactory.convertLocationtoHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
+		text.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
 		return text;
 	}
 

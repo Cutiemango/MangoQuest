@@ -1,9 +1,6 @@
 package me.Cutiemango.MangoQuest.conversation;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
-
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -26,8 +23,8 @@ public class ConversationProgress {
 	private Player owner;
 	private QuestConversation conv;
 	private LinkedList<QuestBaseAction> actQueue;
-	private List<TextComponent> currentBook = new ArrayList<>();
-	private List<TextComponent> history = new ArrayList<>();
+	private LinkedList<TextComponent> currentBook = new LinkedList<>();
+	private LinkedList<TextComponent> history = new LinkedList<>();
 	
 	// Book Page
 	private int page;
@@ -37,26 +34,21 @@ public class ConversationProgress {
 			finish();
 			return;
 		}
-		try{
-			actQueue.getFirst().execute(this);
-			QuestGUIManager.updateConversation(owner, this);
-			System.out.println(history.get(page).toPlainText());
-			if (!(actQueue.getFirst().getActionType() == EnumAction.BUTTON ||
-					actQueue.getFirst().getActionType() == EnumAction.WAIT ||
-					actQueue.getFirst().getActionType() == EnumAction.CHOICE)){
-				new BukkitRunnable(){
-					@Override
-					public void run() {
-						update(getCurrentPage());
-						nextAction();
-						return;
-					}
-				}.runTaskLater(Main.instance, 10L);
-			}
-			actQueue.removeFirst();
-		}catch(NullPointerException e){
-			e.printStackTrace();
+		actQueue.getFirst().execute(this);
+		QuestGUIManager.updateConversation(owner, this);
+		if (!(actQueue.getFirst().getActionType() == EnumAction.BUTTON ||
+				actQueue.getFirst().getActionType() == EnumAction.WAIT ||
+				actQueue.getFirst().getActionType() == EnumAction.CHOICE)){
+			new BukkitRunnable(){
+				@Override
+				public void run() {
+					update();
+					nextAction();
+					return;
+				}
+			}.runTaskLater(Main.instance, 10L);
 		}
+		actQueue.removeFirst();
 	}
 	
 	public void finish(){
@@ -78,7 +70,7 @@ public class ConversationProgress {
 		return conv;
 	}
 	
-	public List<TextComponent> getCurrentBook(){
+	public LinkedList<TextComponent> getCurrentBook(){
 		return currentBook;
 	}
 	
@@ -88,24 +80,25 @@ public class ConversationProgress {
 		return currentBook.get(page);
 	}
 	
-	public void setCurrentBook(List<TextComponent> list){
+	public void setCurrentBook(LinkedList<TextComponent> list){
 		currentBook = list;
-		update(currentBook.get(page));
+		update();
 	}
 	
 	public void retrieve(){
-		currentBook.set(page, (TextComponent)history.get(page).duplicate());
+		currentBook.set(0, (TextComponent)history.getFirst().duplicate());
 	}
 	
-	public void update(TextComponent text){
-		history.add(page, new TextComponent(""));
-		history.get(page).addExtra(text.duplicate());
+	public void update(){
+		for (int i = 0; i <= page; i++){
+			history.add(i, new TextComponent(""));
+			history.get(i).addExtra(currentBook.get(i).duplicate());
+		}
 	}
 	
-	public int newPage(){
-		page++;
-		currentBook.add(page, new TextComponent(getDefaultTitleString()));
-		return page;
+	public void newPage(){
+		currentBook.push(new TextComponent(getDefaultTitleString()));
+		update();
 	}
 	
 	public final String getDefaultTitleString(){
