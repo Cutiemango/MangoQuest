@@ -19,11 +19,9 @@ public class QuestListener implements Listener{
 		if (QuestEditorManager.isInEditorMode(p))
 			return;
 		QuestPlayerData pd = QuestUtil.getData(p);
-		if (p.getInventory().getItemInMainHand().getType().equals(Material.AIR) || p.getInventory().getItemInMainHand() == null){
-			if (pd.hasNPCtoTalkWith(e.getNPC()))
-				pd.talkToNPC(e.getNPC());
-			else
-				QuestGUIManager.openNPCInfo(p, e.getNPC());
+		if (p.getInventory().getItemInMainHand().getType().equals(Material.AIR) ||
+				p.getInventory().getItemInMainHand() == null){
+			QuestGUIManager.openNPCInfo(p, e.getNPC());
 		}
 		else
 			pd.deliverItem(e.getNPC());

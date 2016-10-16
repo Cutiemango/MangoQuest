@@ -11,6 +11,7 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.TextComponentFactory;
 import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
+import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.data.QuestFinishData;
 import me.Cutiemango.MangoQuest.data.QuestObjectProgress;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
@@ -124,7 +125,7 @@ public class QuestGUIManager {
 		p1.addExtra("\n");
 		for (int i = 0; i < 4; i++){
 			p1.addExtra("\n");
-			p1.addExtra(TextComponentFactory.regClickCmdEvent("- " + c[i].getContent(), "/mq choose " + i));
+			p1.addExtra(TextComponentFactory.regClickCmdEvent("- " + c[i].getContent(), "/mq conv choose " + i));
 			p1.addExtra("\n");
 		}
 		openBook(p, p1);
@@ -138,7 +139,7 @@ public class QuestGUIManager {
 			p1.addExtra("\n");
 			p1.addExtra(TextComponentFactory.convertViewQuest(qp.getQuest()));
 			p1.addExtra("：");
-			p1.addExtra(TextComponentFactory.regClickCmdEvent("&c&l【放棄】", "/mq quit " + qp.getQuest().getInternalID()));
+			p1.addExtra(TextComponentFactory.regClickCmdEvent("&c&l【放棄】", "/mq quest quit " + qp.getQuest().getInternalID()));
 			p1.addExtra("\n");
 			for (QuestObjectProgress qop : qp.getCurrentObjects()){
 				p1.addExtra("- ");
@@ -165,7 +166,7 @@ public class QuestGUIManager {
 				p2.addExtra("- ");
 				p2.addExtra(TextComponentFactory.convertViewQuest(q));
 				if (q.isCommandQuest())
-					p2.addExtra(TextComponentFactory.regClickCmdEvent("&2&l【接受】", "/mq take " + q.getInternalID()));
+					p2.addExtra(TextComponentFactory.regClickCmdEvent("&2&l【接受】", "/mq quest take " + q.getInternalID()));
 				p2.addExtra("\n");
 			}
 		}
@@ -200,8 +201,14 @@ public class QuestGUIManager {
 		p1.addExtra(QuestUtil.translateColor("&0&l" + npc.getName() + "&0：「"));
 		p1.addExtra(QuestUtil.getNPCMessage(npc.getId(), qd.getNPCfp(npc.getId())));
 		p1.addExtra("」\n\n");
-		p1.addExtra(QuestUtil.translateColor("&0&l[任務列表]"));
+		p1.addExtra(QuestUtil.translateColor("&0&l[互動列表]"));
 		p1.addExtra("\n");
+		for (QuestProgress q : qd.getNPCtoTalkWith(npc)){
+			p1.addExtra(QuestUtil.translateColor("&0- &6&l？ &0"));
+			p1.addExtra(TextComponentFactory.convertViewQuest(q.getQuest()));
+			p1.addExtra(TextComponentFactory.regClickCmdEvent("&9&l【對話】", "/mq conv npc " + npc.getId()));
+			p1.addExtra("\n");
+		}
 		for (Quest q : QuestUtil.getGivenNPCQuests(npc)){
 			if (qd.canTake(q, false)){
 				if (qd.hasFinished(q))
@@ -209,17 +216,29 @@ public class QuestGUIManager {
 				else
 					p1.addExtra(QuestUtil.translateColor("&0- &6&l！ &0"));
 				p1.addExtra(TextComponentFactory.convertViewQuest(q));
-				p1.addExtra(TextComponentFactory.regClickCmdEvent("&2&l【接受】", "/mq take " + q.getInternalID()));
+				p1.addExtra(TextComponentFactory.regClickCmdEvent("&2&l【接受】", "/mq quest take " + q.getInternalID()));
+				p1.addExtra("\n");
+				continue;
+			}
+			else if (qd.isCurrentlyDoing(q)){
+				p1.addExtra(QuestUtil.translateColor("&0- &8&l？ &0"));
+				p1.addExtra(TextComponentFactory.convertViewQuest(q));
+				p1.addExtra(TextComponentFactory.regClickCmdEvent("&c&l【放棄】", "/mq quest quit " + q.getInternalID()));
 				p1.addExtra("\n");
 				continue;
 			}
 			else{
-				p1.addExtra(QuestUtil.translateColor("&0- &8&l？ &0"));
-				p1.addExtra(TextComponentFactory.convertViewQuest(q));
-				p1.addExtra(TextComponentFactory.regClickCmdEvent("&c&l【放棄】", "/mq quit " + q.getInternalID()));
-				p1.addExtra("\n");
-				continue;
+				p1.addExtra(QuestUtil.translateColor("&0- "));
+				p1.addExtra(TextComponentFactory.convertRequirement(qd, q));
 			}
+		}
+		for (QuestConversation qc : QuestUtil.getConversations(npc.getId(), qd.getNPCfp(npc.getId()))){
+			if (qd.hasFinished(qc))
+				p1.addExtra(QuestUtil.translateColor("&0- &7&l"));
+			else
+				p1.addExtra(QuestUtil.translateColor("&0- &6&l"));
+			p1.addExtra(TextComponentFactory.regClickCmdEvent(qc.getName(), "/mq conv opennew " + qc.getInternalID()));
+			p1.addExtra("\n");
 		}
 		openBook(p, p1);
 	}

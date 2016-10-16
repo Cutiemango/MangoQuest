@@ -107,6 +107,7 @@
         '1':
           "任務種類": TALK_TO_NPC
           "目標NPC": 1
+          "觸發對話": Test001
         '2':
           "任務種類": BREAK_BLOCK
           "方塊": GRASS

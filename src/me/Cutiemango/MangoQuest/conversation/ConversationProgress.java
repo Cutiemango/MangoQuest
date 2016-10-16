@@ -25,6 +25,7 @@ public class ConversationProgress {
 	private LinkedList<QuestBaseAction> actQueue;
 	private LinkedList<TextComponent> currentBook = new LinkedList<>();
 	private LinkedList<TextComponent> history = new LinkedList<>();
+	private boolean isFinished;
 	
 	// Book Page
 	private int page;
@@ -46,7 +47,7 @@ public class ConversationProgress {
 					nextAction();
 					return;
 				}
-			}.runTaskLater(Main.instance, 10L);
+			}.runTaskLater(Main.instance, 15L);
 		}
 		actQueue.removeFirst();
 	}
@@ -55,6 +56,10 @@ public class ConversationProgress {
 		getCurrentPage().addExtra("\n");
 		getCurrentPage().addExtra("對話結束。");
 		QuestGUIManager.updateConversation(owner, this);
+		isFinished = true;
+		if (conv.hasNPC())
+			owner.performCommand("mq conv npc " + conv.getNPC().getId());
+		QuestUtil.getData(owner).addFinishConversation(conv);
 	}
 
 
@@ -99,6 +104,10 @@ public class ConversationProgress {
 	public void newPage(){
 		currentBook.push(new TextComponent(getDefaultTitleString()));
 		update();
+	}
+	
+	public boolean isFinished(){
+		return isFinished;
 	}
 	
 	public final String getDefaultTitleString(){

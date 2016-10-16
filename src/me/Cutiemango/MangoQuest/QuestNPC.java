@@ -1,6 +1,10 @@
 package me.Cutiemango.MangoQuest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 
 public class QuestNPC {
 	
@@ -9,6 +13,7 @@ public class QuestNPC {
 	}
 
 	private HashMap<Integer, String> msg = new HashMap<>();
+	private HashMap<Integer, QuestConversation> convs = new HashMap<>();
 	
 	public String getNPCMessage(int value){
 		int r = 0;
@@ -25,7 +30,21 @@ public class QuestNPC {
 		return msg.get(r);
 	}
 	
+	public List<QuestConversation> getConversations(int value){
+		List<QuestConversation> list = new ArrayList<>();
+		for (int i : convs.keySet()){
+			if (value >= i)
+				list.add(convs.get(i));
+			else continue;
+		}
+		return list;
+	}
+	
 	public void put(int i, String s){
 		msg.put(i, s);
+	}
+	
+	public void put(int i, QuestConversation q){
+		convs.put(i, q);
 	}
 }

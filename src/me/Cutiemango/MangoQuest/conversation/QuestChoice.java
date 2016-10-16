@@ -54,7 +54,7 @@ public class QuestChoice {
 	public void apply(ConversationProgress cp){
 		QuestStorage.ChoiceProgresses.put(cp.getOwner().getName(), this);
 		cp.getCurrentPage().addExtra(
-				TextComponentFactory.regHoverEvent(TextComponentFactory.regClickCmdEvent((TextComponent)question.duplicate(), "/mq openchoice"),
+				TextComponentFactory.regHoverEvent(TextComponentFactory.regClickCmdEvent((TextComponent)question.duplicate(), "/mq conv openchoice"),
 						QuestUtil.translateColor("&e[點擊以前往問題介面]"))
 				);
 		QuestGUIManager.openChoice(cp.getOwner(), question, choices);

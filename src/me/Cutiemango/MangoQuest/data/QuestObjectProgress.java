@@ -1,12 +1,18 @@
 package me.Cutiemango.MangoQuest.data;
 
+import org.bukkit.entity.Player;
+
+import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
+import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 
 public class QuestObjectProgress {
 	
 	private boolean isFinished = false;
 	private SimpleQuestObject obj;
+	private ConversationProgress cp;
 	private int i;
 	
 	public QuestObjectProgress(SimpleQuestObject object, int amount){
@@ -15,6 +21,11 @@ public class QuestObjectProgress {
 	}
 	
 	public void checkIfFinished(){
+		if (obj instanceof QuestObjectTalkToNPC){
+			if (cp != null && cp.isFinished())
+				isFinished = true;
+			return;
+		}
 		if (obj instanceof NumerableObject){
 			if (((NumerableObject)obj).getAmount() == i)
 				isFinished = true;
@@ -23,6 +34,21 @@ public class QuestObjectProgress {
 			if (i == 1)
 				isFinished = true;
 		}
+	}
+	
+	public void newConversation(Player p){
+		if (obj.hasConversation()){
+			cp = obj.getConversation().startNewConversation(p);
+			return;
+		}
+	}
+	
+	public void openConversation(Player p){
+		if (cp != null)
+			QuestGUIManager.updateConversation(p, cp);
+		else
+			newConversation(p);
+		return;
 	}
 	
 	public SimpleQuestObject getObject(){

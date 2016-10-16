@@ -58,9 +58,8 @@ public class QuestConfigManager {
 		
 		plugin = pl;
 
-		loadTranslation();
 		loadChoice();
-		loadConversation();
+		loadTranslation();
 	}
 	
 	public QuestIO getPlayerIO(){
@@ -90,8 +89,11 @@ public class QuestConfigManager {
 				if (CitizensAPI.getNPCRegistry().getById(id) != null){
 					count++;
 					QuestNPC npc = new QuestNPC();
-					for (String i : NPCIO.getSection("NPC." + s)){
-						npc.put(Integer.parseInt(i), NPCIO.getString("NPC." + s + "." + i));
+					for (String i : NPCIO.getSection("NPC." + s + ".開啟介面訊息")){
+						npc.put(Integer.parseInt(i), NPCIO.getString("NPC." + s + ".開啟介面訊息." + i));
+					}
+					for (String i : NPCIO.getSection("NPC." + s + ".對話")){
+						npc.put(Integer.parseInt(i), QuestUtil.getConvByName(NPCIO.getString("NPC." + s + ".對話." + i)));
 					}
 					QuestStorage.NPCMap.put(id, npc);
 				}
@@ -216,7 +218,8 @@ public class QuestConfigManager {
 		for (String id : ConversationIO.getSection("任務對話")){
 			String name = ConversationIO.getString("任務對話." + id + ".對話名稱");
 			List<String> act = ConversationIO.getStringList("任務對話." + id + ".對話內容");
-			QuestConversation conv = new QuestConversation(name, loadConvAction(act));
+			NPC npc = CitizensAPI.getNPCRegistry().getById(ConversationIO.getInt("任務對話." + id + ".對話NPC"));
+			QuestConversation conv = new QuestConversation(name, id, npc, loadConvAction(act));
 			QuestStorage.Conversations.put(id, conv);
 			count++;
 		}
@@ -306,6 +309,15 @@ public class QuestConfigManager {
 					default:
 						QuestUtil.warnCmd("錯誤：任務 " + internal + " 沒有正確的任務內容類別，請檢查設定檔案。");
 						break;
+					}
+					if (QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".觸發對話") != null){
+						QuestConversation conv = QuestUtil.getConvByName(QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".觸發對話"));
+						if (conv != null)
+							obj.setConversation(conv);
+						else{
+							QuestUtil.warnCmd("錯誤：任務 " + internal + " 沒有輸入正確的觸發對話ID，跳過讀取該物件。");
+							continue;
+						}
 					}
 					objs.add(obj);
 				}
@@ -428,24 +440,13 @@ public class QuestConfigManager {
 				if (e != null){
 					QuestBaseAction action;
 					switch(e){
-					case CHOICE:
-						action = new QuestBaseAction(e, QuestUtil.getChoiceByName(s.split("#")[1]));
-						break;
-					case COMMAND:
-						action = new QuestBaseAction(e, s.split("#")[1]);
-						break;
-					case SENTENCE:
-						action = new QuestBaseAction(e, (String)s.split("#")[1]);
-						break;
 					case CHANGE_CONVERSATION:
-						if (QuestUtil.getConvByName(s.split("#")[1]) == null){
-							QuestUtil.warnCmd("找不到指定的對話： " + s.split("#")[1]);
-							continue;
-						}
-						action = new QuestBaseAction(e, QuestUtil.getConvByName(s.split("#")[1]));
-						break;
+					case CHOICE:
+					case NPC_TALK:
+					case COMMAND:
 					case WAIT:
-						action = new QuestBaseAction(e, Integer.parseInt(s.split("#")[1]));
+					case SENTENCE:
+						action = new QuestBaseAction(e, s.split("#")[1]);
 						break;
 					case BUTTON:
 					case CHANGE_LINE:

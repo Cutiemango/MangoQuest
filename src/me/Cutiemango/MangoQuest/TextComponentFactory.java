@@ -3,6 +3,8 @@ package me.Cutiemango.MangoQuest;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+
+import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -55,8 +57,24 @@ public class TextComponentFactory {
 	public static TextComponent convertViewQuest(Quest q){
 		TextComponent t = new TextComponent(ChatColor.BOLD + q.getQuestName());
 		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,  new BaseComponent[]{new TextComponent(QuestUtil.translateColor("&e點擊以查看 " + q.getQuestName() + " &e的詳細資料"))}));
-		t.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mq view " + q.getInternalID()));
+		t.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mq quest view " + q.getInternalID()));
 		return t;
+	}
+	
+	public static TextComponent convertRequirement(QuestPlayerData qd, Quest q){
+		TextComponent text = new TextComponent(QuestUtil.translateColor("&7&o" + q.getQuestName()));
+		if (!q.isRedoable() && qd.hasFinished(q))
+			return regHoverEvent(text, "&c此為一次性任務。");
+		else if (qd.hasFinished(q)){
+			long d = qd.getDelay(qd.getFinishData(q).getLastFinish(), q.getRedoDelay());
+			if (d > 0)
+				return regHoverEvent(text, "&c你必須再等待 " + QuestUtil.convertTime(d) + " 才能再度接取這個任務。");
+		}
+		else if (q.hasRequirement()){
+			if (!q.meetRequirementWith(qd.getPlayer()))
+				return regHoverEvent(text, q.getFailMessage());
+		}
+		return text;
 	}
 
 }

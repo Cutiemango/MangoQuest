@@ -1,10 +1,8 @@
 name: MangoQuest
 main: me.Cutiemango.MangoQuest.Main
-version: 1.4.5
+version: 1.5
 authors: [Cutiemango]
 depend: [Vault, Citizens]
 commands:
    mq:
       description: Main command for MangoQuest
-   mqe:
-      description: MangoQuest Editor Comamnd

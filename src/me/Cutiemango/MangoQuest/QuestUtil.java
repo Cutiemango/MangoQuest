@@ -88,6 +88,12 @@ public class QuestUtil {
 		return QuestStorage.NPCMap.get(id).getNPCMessage(fp);
 	}
 	
+	public static List<QuestConversation> getConversations(int id, int fp){
+		if (!QuestStorage.NPCMap.containsKey(id))
+			QuestStorage.NPCMap.put(id, new QuestNPC());
+		return QuestStorage.NPCMap.get(id).getConversations(fp);
+	}
+	
 	public static Quest getQuest(String s){
 		return QuestStorage.Quests.get(s);
 	}

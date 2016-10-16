@@ -15,6 +15,7 @@ import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.QuestUtil.QuestTitleEnum;
+import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestTrigger;
 import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
@@ -77,12 +78,22 @@ public class QuestPlayerData {
 			}
 		}
 		
+		if (io.getStringList("玩家資料." + p.getUniqueId() + ".已完成的對話") != null){
+			for (String s : io.getStringList("玩家資料." + p.getUniqueId() + ".已完成的對話")){
+				QuestConversation qc = QuestUtil.getConvByName(s);
+				if (qc != null)
+					FinishedConversation.add(qc);
+			}
+		}
+		
 		QuestUtil.info(p, "&a玩家任務資料讀取完成！");
 	}
 
 	private Player p;
 	private List<QuestProgress> CurrentQuest = new ArrayList<>();
 	private List<QuestFinishData> FinishedQuest = new ArrayList<>();
+	
+	private List<QuestConversation> FinishedConversation = new ArrayList<>();
 	
 	private HashMap<Integer, Integer> NPCfp = new HashMap<>();
 
@@ -105,6 +116,12 @@ public class QuestPlayerData {
 		for (int i : NPCfp.keySet()){
 			Main.instance.configManager.getPlayerIO().set("玩家資料." + p.getUniqueId() + ".NPC友好度." + i, NPCfp.get(i));
 		}
+		
+		List<String> list = new ArrayList<>();
+		for (QuestConversation qc : FinishedConversation){
+			list.add(qc.getInternalID());
+		}
+		Main.instance.configManager.getPlayerIO().set("玩家資料." + p.getUniqueId() + ".已完成的對話", list);
 
 		Main.instance.configManager.getPlayerIO().save();
 	}
@@ -119,6 +136,10 @@ public class QuestPlayerData {
 				return true;
 		}
 		return false;
+	}
+	
+	public boolean hasFinished(QuestConversation qc){
+		return FinishedConversation.contains(qc);
 	}
 	
 	public QuestProgress getProgress(Quest q){
@@ -142,6 +163,10 @@ public class QuestPlayerData {
 	
 	public void addNPCfp(int id, int value){
 		NPCfp.put(id, NPCfp.get(id) + value);
+	}
+
+	public void addFinishConversation(QuestConversation qc){
+		FinishedConversation.add(qc);
 	}
 	
 	public void takeQuest(Quest q){
@@ -191,17 +216,18 @@ public class QuestPlayerData {
 		QuestUtil.sendQuestTitle(p, q, QuestTitleEnum.QUIT);
 	}
 	
-	public boolean hasNPCtoTalkWith(NPC npc){
+	public List<QuestProgress> getNPCtoTalkWith(NPC npc){
+		List<QuestProgress> l = new ArrayList<>();
 		for (QuestProgress qp : CurrentQuest){
 			for (QuestObjectProgress qop : qp.getCurrentObjects()){
 				if (qop.getObject() instanceof QuestObjectTalkToNPC &&
 						((QuestObjectTalkToNPC)qop.getObject()).getTargetNPC().equals(npc))
-					return true;
+					l.add(qp);
 			}
 		}
-		return false;
+		return l;
 	}
-	
+
 	public boolean isNearNPC(NPC npc){
 		for (Entity e : p.getNearbyEntities(5, 5, 5)){
 			if (npc.getEntity().equals(e))
@@ -220,11 +246,13 @@ public class QuestPlayerData {
 					if (o.getType().equals(m)){
 						qop.setProgress(qop.getProgress() + 1);
 						qop.checkIfFinished();
-						if (qop.getProgress() == o.getAmount())
+						if (qop.isFinished()){
 							QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
+							qop.newConversation(p);
+							qp.checkIfnextStage();
+						}
 						else
 							QuestUtil.info(p, o.toPlainText() + " &6進度： (" + qop.getProgress() + "/" + o.getAmount() + ")");
-						qp.checkIfnextStage();
 						return;
 					}
 				}
@@ -239,11 +267,18 @@ public class QuestPlayerData {
 					continue;
 				if (qop.getObject() instanceof QuestObjectTalkToNPC){
 					if (((QuestObjectTalkToNPC)qop.getObject()).getTargetNPC().equals(npc)){
+						if (!isNearNPC(npc)){
+							QuestUtil.error(p, "你不在NPC的周圍，或是你離NPC太遠了。");
+							return;
+						}
 						QuestObjectTalkToNPC o = (QuestObjectTalkToNPC)qop.getObject();
-						qop.finish();
-						qop.setProgress(1);
-						QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
-						qp.checkIfnextStage();
+						qop.checkIfFinished();
+						if (!qop.isFinished())
+							qop.openConversation(p);
+						else{
+							QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
+							qp.checkIfnextStage();
+						}
 						return;
 					}
 				}
@@ -264,24 +299,30 @@ public class QuestPlayerData {
 									p.getInventory().getItemInMainHand().getAmount() - (o.getAmount() - qop.getProgress()));
 							qop.setProgress(o.getAmount());
 							qop.checkIfFinished();
-							QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
-							qp.checkIfnextStage();
+							if (qop.isFinished()){
+								qop.openConversation(p);
+								QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
+								qp.checkIfnextStage();
+							}
 							return;
 						}
 						else if (p.getInventory().getItemInMainHand().getAmount() == (o.getAmount() - qop.getProgress())){
 							p.getInventory().setItemInMainHand(null);
+							if (qop.getObject().hasConversation())
+								qop.getObject().getConversation().startNewConversation(getPlayer());
 							qop.setProgress(o.getAmount());
 							qop.checkIfFinished();
-							QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
-							qp.checkIfnextStage();
+							if (qop.isFinished()){
+								qop.openConversation(p);
+								QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
+								qp.checkIfnextStage();
+							}
 							return;
 						}
 						else{
-							qop.checkIfFinished();
 							qop.setProgress(qop.getProgress() + p.getInventory().getItemInMainHand().getAmount());
 							p.getInventory().setItemInMainHand(null);
 							QuestUtil.info(p, o.toPlainText() + " &6進度： (" + qop.getProgress() + "/" + o.getAmount() + ")");
-							qp.checkIfnextStage();
 							return;
 						}
 					}
@@ -303,9 +344,11 @@ public class QuestPlayerData {
 						else{
 							qop.setProgress(qop.getProgress() + 1);
 							qop.checkIfFinished();
-							qp.checkIfnextStage();
-							if (qop.getProgress() == o.getAmount())
+							if (qop.isFinished()){
+								qop.newConversation(p);
 								QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
+								qp.checkIfnextStage();
+							}
 							else
 								QuestUtil.info(p, o.toPlainText() + " &6進度： (" + qop.getProgress() + "/" + o.getAmount() + ")");
 							return;
@@ -315,9 +358,11 @@ public class QuestPlayerData {
 						if (e.getType().equals(o.getType())){
 							qop.setProgress(qop.getProgress() + 1);
 							qop.checkIfFinished();
-							qp.checkIfnextStage();
-							if (qop.getProgress() == o.getAmount())
+							if (qop.isFinished()){
+								qop.newConversation(p);
 								QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
+								qp.checkIfnextStage();
+							}
 							else
 								QuestUtil.info(p, o.toPlainText() + " &6進度： (" + qop.getProgress() + "/" + o.getAmount() + ")");
 							return;
@@ -338,9 +383,11 @@ public class QuestPlayerData {
 					if (is.isSimilar(o.getItem())){
 						qop.setProgress(qop.getProgress() + 1);
 						qop.checkIfFinished();
-						qp.checkIfnextStage();
-						if (qop.getProgress() == o.getAmount())
+						if (qop.isFinished()){
+							qop.newConversation(p);
 							QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
+							qp.checkIfnextStage();
+						}
 						else
 							QuestUtil.info(p, o.toPlainText() + " &6進度： (" + qop.getProgress() + "/" + o.getAmount() + ")");
 						return;
@@ -361,7 +408,7 @@ public class QuestPlayerData {
 						if (l.getY() < (o.getLocation().getY() + o.getRadius()) && l.getY() > (o.getLocation().getY() - o.getRadius())) {
 							if (l.getZ() < (o.getLocation().getZ() + o.getRadius()) && l.getZ() > (o.getLocation().getZ() - o.getRadius())) {
 								qop.finish();
-								qop.setProgress(1);
+								qop.newConversation(p);
 								QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
 								qp.checkIfnextStage();
 								return;
@@ -406,13 +453,20 @@ public class QuestPlayerData {
 		return;
 	}
 	
-	public boolean canTake(Quest q, boolean sendmsg){
+	public boolean isCurrentlyDoing(Quest q){
 		for (QuestProgress qp : CurrentQuest){
 			if (q.getInternalID().equals(qp.getQuest().getInternalID())) {
-				if (sendmsg)
-					QuestUtil.info(p, "&c你的任務列表已有此任務，不能再接受任務了。");
-				return false;
+				return true;
 			}
+		}
+		return false;
+	}
+	
+	public boolean canTake(Quest q, boolean sendmsg){
+		if (isCurrentlyDoing(q)){
+			if (sendmsg)
+				QuestUtil.info(p, "&c你的任務列表已有此任務，不能再接受任務了。");
+			return false;
 		}
 		if (!q.isRedoable() && hasFinished(q)){
 			if (sendmsg)
@@ -441,7 +495,7 @@ public class QuestPlayerData {
 		return Main.instance.configManager.getPlayerIO().contains("玩家資料." + p.getUniqueId() + ".玩家ID");
 	}
 	
-	private long getDelay(long last, long quest){
+	public long getDelay(long last, long quest){
 		return quest - (System.currentTimeMillis() - last);
 	}
 }

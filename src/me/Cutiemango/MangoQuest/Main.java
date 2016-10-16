@@ -6,8 +6,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import me.Cutiemango.MangoQuest.commands.QuestCommand;
-import me.Cutiemango.MangoQuest.commands.QuestEditorCommand;
+import me.Cutiemango.MangoQuest.commands.CommandReceiver;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.listeners.PlayerListener;
 import me.Cutiemango.MangoQuest.listeners.QuestEditorListener;
@@ -36,8 +35,7 @@ public class Main extends JavaPlugin{
 	public void onEnable(){
 		instance = this;
 		
-		getCommand("mq").setExecutor(new QuestCommand());
-		getCommand("mqe").setExecutor(new QuestEditorCommand());
+		getCommand("mq").setExecutor(new CommandReceiver());
 
 		getServer().getPluginManager().registerEvents(new QuestListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
@@ -69,6 +67,7 @@ public class Main extends JavaPlugin{
 		new BukkitRunnable(){
 			@Override
 			public void run() {
+				configManager.loadConversation();
 				configManager.loadQuests();
 				configManager.loadNPC();
 				for (Player p : Bukkit.getOnlinePlayers()){

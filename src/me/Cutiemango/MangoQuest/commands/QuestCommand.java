@@ -1,94 +1,56 @@
 package me.Cutiemango.MangoQuest.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.conversation.QuestChoice;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 
-public class QuestCommand implements CommandExecutor{
-
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!(sender instanceof Player))
-			return false;
-		Player p = (Player) sender;
-		if (cmd.getName().equals("mq")){
-			if (args.length <= 1){
-				if (args[0].equalsIgnoreCase("list")){
-					QuestGUIManager.openJourney(p);
-					return true;
-				}
-				else if (args[0].equalsIgnoreCase("nextconv")){
-					if (QuestUtil.getConvProgress(p) != null){
-						QuestUtil.getConvProgress(p).retrieve();
-						QuestUtil.getConvProgress(p).nextAction();
-					}
-					return true;
-				}
-				else if (args[0].equalsIgnoreCase("openchoice")){
-					QuestChoice c = QuestUtil.getChoice(p);
-					if (QuestUtil.getChoice(p) != null){
-						QuestGUIManager.openChoice(p, c.getQuestion(), c.getChoices());
-					}
-					return true;
-				}
-				sendHelp(p);
-				return false;
-			}
-//			if (QuestStorage.Quests.get(args[1]) == null){
-//				QuestUtil.error(p, "你所要找的任務不存在！");
-//				return false;
-//			}
-//			Quest quest = QuestStorage.Quests.get(args[1]);
-			QuestPlayerData qd = QuestUtil.getData(p);
-			switch(args[0]){
-				case "view":
-					Quest quest = QuestStorage.Quests.get(args[1]);
-					if (qd.getProgress(quest) == null){
-						QuestGUIManager.openGUI(p, new QuestProgress(quest, p));
-						return true;
-					}
-					QuestGUIManager.openGUI(p, qd.getProgress(quest));
-					return true;
-				case "take":
-					quest = QuestStorage.Quests.get(args[1]);
-					qd.takeQuest(quest);
-					QuestGUIManager.openGUI(p, qd.getProgress(quest));
-					return true;
-				case "quit":
-					quest = QuestStorage.Quests.get(args[1]);
-					qd.quitQuest(quest);
-					QuestGUIManager.openJourney(p);
-					return true;
-				case "choose":
-					if (QuestUtil.getChoice(p) != null)
-						QuestUtil.getChoice(p).choose(p, Integer.parseInt(args[1]));
-					return true;
-				case "openconv":
-					if (QuestUtil.getConvByName(args[1]) != null){
-						QuestUtil.getConvByName(args[1]).startNewConversation(p);
-						return true;
-					}
-				case "callconv":
-					if (QuestUtil.getConvProgress(p) != null){
-						QuestGUIManager.updateConversation(p, QuestUtil.getConvProgress(p));
-						return true;
-					}
-				}
-		
+public class QuestCommand{
+	
+	//Command: /mq quest args[1] args[2]
+	public static void execute(Player sender, String args[]){
+		if (args.length == 1){
+			sendHelp(sender);
+			return;
 		}
-		return false;
+		else if (args.length >= 2){
+			if (args[1].equalsIgnoreCase("list")){
+				QuestGUIManager.openJourney(sender);
+				return;
+			}
+			if (QuestStorage.Quests.get(args[2]) == null){
+				QuestUtil.error(sender, "你所要找的任務不存在！");
+				return;
+			}
+			Quest quest = QuestStorage.Quests.get(args[2]);
+			QuestPlayerData qd = QuestUtil.getData(sender);
+			switch(args[1]){
+			case "view":
+				if (qd.getProgress(quest) == null)
+					QuestGUIManager.openGUI(sender, new QuestProgress(quest, sender));
+				else
+					QuestGUIManager.openGUI(sender, qd.getProgress(quest));
+				return;
+			case "take":
+				qd.takeQuest(quest);
+				QuestGUIManager.openGUI(sender, qd.getProgress(quest));
+				return;
+			case "quit":
+				qd.quitQuest(quest);
+				QuestGUIManager.openJourney(sender);
+				return;
+			default:
+				sendHelp(sender);
+				return;
+			}
+		}
 	}
 	
-	private void sendHelp(Player p){
+	private static void sendHelp(Player p){
 		QuestUtil.info(p, "指令幫助：");
 		QuestUtil.info(p, "/mq list - 查看任務清單");
 		QuestUtil.info(p, "/mq view [任務內部名稱] - 查看任務資料");
