@@ -27,6 +27,7 @@ import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
+import net.elseland.xikage.MythicMobs.Mobs.MythicMob;
 
 public class QuestPlayerData {
 
@@ -51,6 +52,7 @@ public class QuestPlayerData {
 				for (SimpleQuestObject ob : q.getStage(s).getObjects()){
 					QuestObjectProgress qp = new QuestObjectProgress(ob, io.getInt("玩家資料." + p.getUniqueId() + ".任務進度." + index + ".QuestObjectProgress." + t));
 					qp.checkIfFinished();
+					
 					qplist.add(qp);
 					t++;
 				}
@@ -81,7 +83,7 @@ public class QuestPlayerData {
 		if (io.getStringList("玩家資料." + p.getUniqueId() + ".已完成的對話") != null){
 			for (String s : io.getStringList("玩家資料." + p.getUniqueId() + ".已完成的對話")){
 				QuestConversation qc = QuestUtil.getConvByName(s);
-				if (qc != null)
+				if (qc != null && !FinishedConversation.contains(s))
 					FinishedConversation.add(qc);
 			}
 		}
@@ -119,6 +121,8 @@ public class QuestPlayerData {
 		
 		List<String> list = new ArrayList<>();
 		for (QuestConversation qc : FinishedConversation){
+			if (FinishedConversation.contains(qc.getInternalID()))
+				continue;
 			list.add(qc.getInternalID());
 		}
 		Main.instance.configManager.getPlayerIO().set("玩家資料." + p.getUniqueId() + ".已完成的對話", list);
@@ -221,7 +225,8 @@ public class QuestPlayerData {
 		for (QuestProgress qp : CurrentQuest){
 			for (QuestObjectProgress qop : qp.getCurrentObjects()){
 				if (qop.getObject() instanceof QuestObjectTalkToNPC &&
-						((QuestObjectTalkToNPC)qop.getObject()).getTargetNPC().equals(npc))
+						((QuestObjectTalkToNPC)qop.getObject()).getTargetNPC().equals(npc) && 
+						!qop.isFinished())
 					l.add(qp);
 			}
 		}
@@ -273,12 +278,15 @@ public class QuestPlayerData {
 						}
 						QuestObjectTalkToNPC o = (QuestObjectTalkToNPC)qop.getObject();
 						qop.checkIfFinished();
-						if (!qop.isFinished())
-							qop.openConversation(p);
-						else{
-							QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
-							qp.checkIfnextStage();
+						if (qop.getObject().hasConversation()){
+							if (!qop.isFinished()){
+								qop.openConversation(p);
+								return;
+							}
 						}
+						qop.finish();
+						QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
+						qp.checkIfnextStage();
 						return;
 					}
 				}
@@ -368,6 +376,33 @@ public class QuestPlayerData {
 							return;
 						}
 					}
+				}
+			}
+		}
+	}
+	
+	public void killMythicMob(MythicMob m){
+		for (QuestProgress qp : CurrentQuest){
+			for (QuestObjectProgress qop : qp.getCurrentObjects()){
+				if (qop.isFinished())
+					continue;
+				if (qop.getObject() instanceof QuestObjectKillMob){
+					QuestObjectKillMob o = (QuestObjectKillMob)qop.getObject();
+					if (o.isMythicObject()){
+						if (o.getMythicMob().equals(m)){
+							qop.setProgress(qop.getProgress() + 1);
+							qop.checkIfFinished();
+							if (qop.isFinished()){
+								qop.newConversation(p);
+								QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
+								qp.checkIfnextStage();
+							}
+							else
+								QuestUtil.info(p, o.toPlainText() + " &6進度： (" + qop.getProgress() + "/" + o.getAmount() + ")");
+							return;
+						}
+					}
+					else continue;
 				}
 			}
 		}

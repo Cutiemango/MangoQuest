@@ -2,12 +2,12 @@ package me.Cutiemango.MangoQuest;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.Cutiemango.MangoQuest.commands.CommandReceiver;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import me.Cutiemango.MangoQuest.listeners.MythicListener;
 import me.Cutiemango.MangoQuest.listeners.PlayerListener;
 import me.Cutiemango.MangoQuest.listeners.QuestEditorListener;
 import me.Cutiemango.MangoQuest.listeners.QuestListener;
@@ -16,33 +16,30 @@ import me.Cutiemango.MangoQuest.versions.QuestVersionHandler;
 import me.Cutiemango.MangoQuest.versions.Version_v1_10_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_9_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_9_R2;
-import net.citizensnpcs.api.CitizensPlugin;
-import net.milkbowl.vault.Vault;
-import net.milkbowl.vault.economy.Economy;
 
 public class Main extends JavaPlugin{
 	
 	public static Main instance;
 	
-	public static Economy economy;
-	public CitizensPlugin citizens;
-	public Vault vault;
-	
+	public QuestInitializer initManager;
 	public QuestVersionHandler handler;
 	public QuestConfigManager configManager;
 	
 	@Override
 	public void onEnable(){
 		instance = this;
-		
 		getCommand("mq").setExecutor(new CommandReceiver());
+		
+		initManager = new QuestInitializer(this);
+		initManager.initPlugins();
 
 		getServer().getPluginManager().registerEvents(new QuestListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new QuestEditorListener(), this);
 		configManager = new QuestConfigManager(this);
 		
-		linkOtherPlugins();
+		if (initManager.hasMythicMobEnabled())
+			getServer().getPluginManager().registerEvents(new MythicListener(), this);
 		
 		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
 		switch(version){
@@ -87,38 +84,6 @@ public class Main extends JavaPlugin{
 		for (Player p : Bukkit.getOnlinePlayers()){
 			QuestUtil.getData(p).save();
 			QuestUtil.info(p, "&b玩家資料儲存中...");
-		}
-	}
-	
-	private void linkOtherPlugins() {
-		try {
-			if (getServer().getPluginManager().getPlugin("Citizens") != null) {
-				citizens = (CitizensPlugin) getServer().getPluginManager().getPlugin("Citizens");
-				getLogger().info("Citizens插件已經連結成功。");
-			}
-			else
-				getLogger().severe("未連結NPC插件，請安裝Citizens插件否則插件無法運作！");
-			
-			if (getServer().getPluginManager().getPlugin("Vault") != null) {
-				vault = (Vault) getServer().getPluginManager().getPlugin("Vault");
-				getLogger().info("Vault插件已經連結成功。");
-			}
-			else
-				getLogger().severe("未連結Vault，請重新安裝否則插件無法運作！");
-			
-			RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServicesManager().getRegistration(Economy.class);
-			if (economyProvider != null) {
-				economy = economyProvider.getProvider();
-			}
-			
-			if (economy != null)
-				getLogger().info("經濟插件已經連結成功。");
-			else
-				getLogger().severe("未連結金錢插件，請安裝iEconomy等經濟插件！");
-
-		} catch (Exception e) {
-			getLogger().severe("連結前置插件時發生錯誤。請檢查是否已經安裝所有前置插件。");
-			e.printStackTrace();
 		}
 	}
 }

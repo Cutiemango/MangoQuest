@@ -191,7 +191,7 @@ public class Quest {
 					return false;
 				break;
 			case MONEY:
-				if (!(Main.economy.getBalance(p) >= (Double)value))
+				if (!(Main.instance.initManager.getEconomy().getBalance(p) >= (Double)value))
 					return false;
 				break;
 			case ITEM:

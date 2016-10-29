@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest.questobjects;
 import org.bukkit.entity.EntityType;
 
 import me.Cutiemango.MangoQuest.QuestUtil;
+import net.elseland.xikage.MythicMobs.Mobs.MythicMob;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestObjectKillMob extends NumerableObject{
@@ -15,8 +16,16 @@ public class QuestObjectKillMob extends NumerableObject{
 			CustomName = customname;
 	}
 	
+	public QuestObjectKillMob(MythicMob mmMob, int i){
+		mtmMob = mmMob;
+		amount = i;
+		type = EntityType.valueOf(mmMob.getEntityType().toUpperCase());
+		CustomName = mmMob.getDisplayName();
+	}
+	
 	private EntityType type;
 	private String CustomName;
+	private MythicMob mtmMob;
 	
 	public EntityType getType(){
 		return type;
@@ -28,6 +37,14 @@ public class QuestObjectKillMob extends NumerableObject{
 	
 	public String getCustomName(){
 		return CustomName;
+	}
+	
+	public MythicMob getMythicMob(){
+		return mtmMob;
+	}
+	
+	public boolean isMythicObject(){
+		return mtmMob != null;
 	}
 
 	@Override

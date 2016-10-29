@@ -13,6 +13,9 @@ import me.Cutiemango.MangoQuest.QuestUtil.QuestTitleEnum;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestTrigger;
 import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
+import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 
 public class QuestProgress {
@@ -57,8 +60,17 @@ public class QuestProgress {
 	public void save(QuestIO io){
 		io.set("玩家資料." + owner.getUniqueId() + ".任務進度." + quest.getInternalID() + ".QuestStage", CurrentStage);
 		int t = 0;
+		int value = 0;
 		for (QuestObjectProgress qop : objlist){
-			io.set("玩家資料." + owner.getUniqueId() + ".任務進度." + quest.getInternalID() + ".QuestObjectProgress." + t, qop.getProgress());
+			if (qop.isFinished()){
+				if (qop.getObject() instanceof QuestObjectTalkToNPC || 
+						qop.getObject() instanceof QuestObjectReachLocation)
+					value = 1;
+				else if (qop.getObject() instanceof NumerableObject)
+					value = ((NumerableObject)qop.getObject()).getAmount();
+			}
+			else value = qop.getProgress();
+			io.set("玩家資料." + owner.getUniqueId() + ".任務進度." + quest.getInternalID() + ".QuestObjectProgress." + t, value);
 			t++;
 		}
 	}

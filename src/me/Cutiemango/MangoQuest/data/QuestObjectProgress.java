@@ -22,7 +22,7 @@ public class QuestObjectProgress {
 	
 	public void checkIfFinished(){
 		if (obj instanceof QuestObjectTalkToNPC){
-			if (cp != null && cp.isFinished())
+			if (i == 1 || (cp != null && cp.isFinished()))
 				isFinished = true;
 			return;
 		}
@@ -39,6 +39,7 @@ public class QuestObjectProgress {
 	public void newConversation(Player p){
 		if (obj.hasConversation()){
 			cp = obj.getConversation().startNewConversation(p);
+			cp.nextAction();
 			return;
 		}
 	}
@@ -46,8 +47,10 @@ public class QuestObjectProgress {
 	public void openConversation(Player p){
 		if (cp != null)
 			QuestGUIManager.updateConversation(p, cp);
-		else
+		else if (obj.hasConversation())
 			newConversation(p);
+		else
+			finish();
 		return;
 	}
 	

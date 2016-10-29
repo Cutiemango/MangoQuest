@@ -1,0 +1,21 @@
+package me.Cutiemango.MangoQuest.listeners;
+
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+
+import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import net.elseland.xikage.MythicMobs.API.Bukkit.Events.MythicMobDeathEvent;
+
+public class MythicListener implements Listener{
+	
+	@EventHandler
+	public void onMythicMobDeath(MythicMobDeathEvent e){
+		if (e.getKiller() != null && e.getKiller() instanceof Player){
+			Player attacker = (Player)e.getKiller();
+			QuestPlayerData qd = QuestUtil.getData(attacker);
+			qd.killMythicMob(e.getMobType());
+		}
+	}
+}

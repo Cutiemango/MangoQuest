@@ -36,6 +36,7 @@ import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import net.elseland.xikage.MythicMobs.API.Exceptions.InvalidMobTypeException;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestConfigManager {
@@ -280,11 +281,27 @@ public class QuestConfigManager {
 						break;
 					case "KILL_MOB":
 						String name = null;
-						if (QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".怪物名稱") != null)
+						if (QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".怪物名稱") != null){
 							name = QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".怪物名稱");
-						obj = new QuestObjectKillMob(
+							obj = new QuestObjectKillMob(
 								EntityType.valueOf(QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".怪物類型")),
 								QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".數量"), name);
+						}
+						else if (QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".自訂怪物ID") != null){
+							if (!Main.instance.initManager.hasMythicMobEnabled()){
+								Bukkit.getLogger().log(Level.SEVERE, "偵測到MythicMob的物件，但是未讀取到MythicMob插件連結，跳過讀取。");
+								return;
+							}
+							name = QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".自訂怪物ID");
+							try {
+								obj = new QuestObjectKillMob(
+											Main.instance.initManager.getMTMPlugin().getAPI().getMobAPI().getMythicMob(name),
+											QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".數量"));
+							} catch (InvalidMobTypeException e) {
+								Bukkit.getLogger().log(Level.SEVERE, "[任務讀取] 找不到代碼為 " + name + " 的自訂怪物，請重新設定！");
+								continue;
+							}
+						}
 						break;
 					case "BREAK_BLOCK":
 						obj = new QuestObjectBreakBlock(Material.getMaterial(
@@ -341,7 +358,7 @@ public class QuestConfigManager {
 				}
 			}
 			
-			if (plugin.citizens != null && QuestsIO.contains("任務列表." + internal + ".任務NPC")){
+			if (plugin.initManager.hasCitizensEnabled() && QuestsIO.contains("任務列表." + internal + ".任務NPC")){
 				NPC npc = null;
 				if (!(QuestsIO.getInt("任務列表." + internal + ".任務NPC") == -1)
 						&& CitizensAPI.getNPCRegistry().getById(QuestsIO.getInt("任務列表." + internal + ".任務NPC")) != null)
