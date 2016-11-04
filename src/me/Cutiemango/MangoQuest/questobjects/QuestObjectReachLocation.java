@@ -3,7 +3,6 @@ package me.Cutiemango.MangoQuest.questobjects;
 import org.bukkit.Location;
 
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.TextComponentFactory;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestObjectReachLocation extends SimpleQuestObject{
@@ -21,13 +20,7 @@ public class QuestObjectReachLocation extends SimpleQuestObject{
 
 	@Override
 	public TextComponent toTextComponent(boolean isFinished) {
-		TextComponent text = new TextComponent();
-		if (isFinished)
-			text = new TextComponent(QuestUtil.translateColor("&8&m&o到達地點 "));
-		else
-			text = new TextComponent(QuestUtil.translateColor("&0到達地點 "));
-		text.addExtra(TextComponentFactory.convertLocHoverEvent(name, loc, isFinished));
-		return text;
+		return super.toTextComponent("到達地點 %0%1", isFinished, name, loc);
 	}
 
 	@Override

@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestIO;
@@ -160,8 +163,8 @@ public class QuestConfigManager {
 					QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.類別", o.getDeliverItem().getType().toString());
 					QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.數量", o.getDeliverItem().getAmount());
 					if (o.getDeliverItem().hasItemMeta() && o.getDeliverItem().getItemMeta().hasDisplayName() && o.getDeliverItem().getItemMeta().hasLore()){
-						QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.名稱", o.getDeliverItem().getItemMeta().getDisplayName());
-						QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.註解", o.getDeliverItem().getItemMeta().getLore());
+						QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.物品名稱", o.getDeliverItem().getItemMeta().getDisplayName());
+						QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.物品註解", o.getDeliverItem().getItemMeta().getLore());
 					}
 					break;
 				case "TALK_TO_NPC":
@@ -268,7 +271,7 @@ public class QuestConfigManager {
 					case "DELIVER_ITEM":
 						n = QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".目標NPC");
 						obj = new QuestObjectItemDeliver(CitizensAPI.getNPCRegistry().getById(n),
-						QuestUtil.getItemStack(QuestsIO.getConfig(), "任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品"),
+						getItemStack(QuestsIO.getConfig(), "任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品"),
 						QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品.數量"));
 						if (CitizensAPI.getNPCRegistry().getById(n) == null)
 							Bukkit.getLogger().log(Level.SEVERE, "[任務讀取] 找不到代碼為 " + n + " 的NPC，請重新設定！");
@@ -309,7 +312,7 @@ public class QuestConfigManager {
 								QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".數量"));
 						break;
 					case "CONSUME_ITEM":
-						obj = new QuestObjectItemConsume(QuestUtil.getItemStack(QuestsIO.getConfig(), "任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品"),
+						obj = new QuestObjectItemConsume(getItemStack(QuestsIO.getConfig(), "任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品"),
 								QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品.數量"));
 						break;
 					case "REACH_LOCATION":
@@ -345,7 +348,7 @@ public class QuestConfigManager {
 			QuestReward reward = new QuestReward();
 			if (QuestsIO.isSection("任務列表." + internal + ".任務獎勵.物品")){
 				for (String temp : QuestsIO.getSection("任務列表." + internal + ".任務獎勵.物品")) {
-					reward.addItem(QuestUtil.getItemStack(QuestsIO.getConfig(), "任務列表." + internal + ".任務獎勵.物品." + Integer.parseInt(temp)));
+					reward.addItem(getItemStack(QuestsIO.getConfig(), "任務列表." + internal + ".任務獎勵.物品." + Integer.parseInt(temp)));
 				}
 			}
 			if (QuestsIO.getDouble("任務列表." + internal + ".任務獎勵.金錢") != 0)
@@ -377,7 +380,7 @@ public class QuestConfigManager {
 						if (QuestsIO.isSection("任務列表." + internal + ".任務需求.Item")){
 							List<ItemStack> l = new ArrayList<>();
 							for (String i : QuestsIO.getSection("任務列表." + internal + ".任務需求.Item")) {
-								l.add(QuestUtil.getItemStack(QuestsIO.getConfig(), "任務列表." + internal + ".任務需求.Item." + i));
+								l.add(getItemStack(QuestsIO.getConfig(), "任務列表." + internal + ".任務需求.Item." + i));
 							}
 							quest.getRequirements().put(RequirementType.ITEM, l);
 						}
@@ -477,6 +480,24 @@ public class QuestConfigManager {
 			}
 		}
 		return list;
+	}
+	
+	private ItemStack getItemStack(FileConfiguration config, String path) {
+		Material m = Material.getMaterial(config.getString(path + ".類別"));
+		int amount = config.getInt(path + ".數量");
+		ItemStack is = new ItemStack(m, amount);
+		if (config.getString(path + ".物品名稱") != null) {
+			String name = ChatColor.translateAlternateColorCodes('&', config.getString(path + ".物品名稱"));
+			List<String> lore = new ArrayList<>();
+			for (String s : config.getStringList(path + ".物品註解")) {
+				lore.add(ChatColor.translateAlternateColorCodes('&', s));
+			}
+			ItemMeta im = is.getItemMeta();
+			im.setDisplayName(name);
+			im.setLore(lore);
+			is.setItemMeta(im);
+		}
+		return is;
 	}
 
 }

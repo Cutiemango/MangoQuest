@@ -2,7 +2,9 @@ package me.Cutiemango.MangoQuest.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -92,10 +94,10 @@ public class QuestPlayerData {
 	}
 
 	private Player p;
-	private List<QuestProgress> CurrentQuest = new ArrayList<>();
-	private List<QuestFinishData> FinishedQuest = new ArrayList<>();
+	private Set<QuestProgress> CurrentQuest = new HashSet<>();
+	private Set<QuestFinishData> FinishedQuest = new HashSet<>();
 	
-	private List<QuestConversation> FinishedConversation = new ArrayList<>();
+	private Set<QuestConversation> FinishedConversation = new HashSet<>();
 	
 	private HashMap<Integer, Integer> NPCfp = new HashMap<>();
 
@@ -119,13 +121,7 @@ public class QuestPlayerData {
 			Main.instance.configManager.getPlayerIO().set("玩家資料." + p.getUniqueId() + ".NPC友好度." + i, NPCfp.get(i));
 		}
 		
-		List<String> list = new ArrayList<>();
-		for (QuestConversation qc : FinishedConversation){
-			if (FinishedConversation.contains(qc.getInternalID()))
-				continue;
-			list.add(qc.getInternalID());
-		}
-		Main.instance.configManager.getPlayerIO().set("玩家資料." + p.getUniqueId() + ".已完成的對話", list);
+		Main.instance.configManager.getPlayerIO().set("玩家資料." + p.getUniqueId() + ".已完成的對話", QuestUtil.convert(FinishedQuest));
 
 		Main.instance.configManager.getPlayerIO().save();
 	}
@@ -155,7 +151,7 @@ public class QuestPlayerData {
 		return null;
 	}
 
-	public List<QuestProgress> getProgresses() {
+	public Set<QuestProgress> getProgresses() {
 		return CurrentQuest;
 	}
 	
@@ -464,7 +460,7 @@ public class QuestPlayerData {
 		}
 	}
 	
-	public List<QuestFinishData> getFinishQuests(){
+	public Set<QuestFinishData> getFinishQuests(){
 		return FinishedQuest;
 	}
 	

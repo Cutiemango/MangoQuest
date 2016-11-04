@@ -232,6 +232,7 @@ public class QuestGUIManager {
 				p1.addExtra(TextComponentFactory.convertRequirement(qd, q));
 			}
 		}
+		p1.addExtra("\n");
 		for (QuestConversation qc : QuestUtil.getConversations(npc.getId(), qd.getNPCfp(npc.getId()))){
 			if (qd.hasFinished(qc))
 				p1.addExtra(QuestUtil.translateColor("&0- &7&l"));

@@ -2,16 +2,13 @@ package me.Cutiemango.MangoQuest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
@@ -23,24 +20,6 @@ public class QuestUtil {
 	
 	public static String translateColor(String s){
 		return ChatColor.translateAlternateColorCodes('&', s);
-	}
-	
-	public static ItemStack getItemStack(FileConfiguration config, String path) {
-		Material m = Material.getMaterial(config.getString(path + ".類別"));
-		int amount = config.getInt(path + ".數量");
-		ItemStack is = new ItemStack(m, amount);
-		if (config.getString(path + ".名稱") != null) {
-			String name = ChatColor.translateAlternateColorCodes('&', config.getString(path + ".名稱"));
-			List<String> lore = new ArrayList<>();
-			for (String s : config.getStringList(path + ".註解")) {
-				lore.add(ChatColor.translateAlternateColorCodes('&', s));
-			}
-			ItemMeta im = is.getItemMeta();
-			im.setDisplayName(name);
-			im.setLore(lore);
-			is.setItemMeta(im);
-		}
-		return is;
 	}
 	
 	public static void sendTitle(Player p, Integer fadeIn, Integer stay, Integer fadeOut, String title,
@@ -58,6 +37,10 @@ public class QuestUtil {
 			else continue;
 		}
 		return l;
+	}
+	
+	public static <T> List<T> convert(Set<T> set){
+		return new ArrayList<T>(set);
 	}
 
 	public enum QuestTitleEnum{

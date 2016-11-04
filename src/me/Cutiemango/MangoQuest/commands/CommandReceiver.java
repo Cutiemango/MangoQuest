@@ -5,6 +5,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.Cutiemango.MangoQuest.QuestUtil;
+
 public class CommandReceiver implements CommandExecutor{
 
 	@Override
@@ -29,6 +31,12 @@ public class CommandReceiver implements CommandExecutor{
 			break;
 		}
 		return false;
+	}
+	
+	public void sendHelp(Player p){
+		QuestUtil.info(p, "指令幫助：");
+		QuestUtil.info(p, "/mq quest (help) - 查詢關於任務的指令");
+		QuestUtil.info(p, "/mq editor (help) - 查詢關於編輯器的指令");
 	}
 	
 	

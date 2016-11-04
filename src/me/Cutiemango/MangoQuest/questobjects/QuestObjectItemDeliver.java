@@ -3,7 +3,6 @@ package me.Cutiemango.MangoQuest.questobjects;
 import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.TextComponentFactory;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -37,23 +36,7 @@ public class QuestObjectItemDeliver extends NumerableObject{
 
 	@Override
 	public TextComponent toTextComponent(boolean isFinished) {
-		TextComponent text = new TextComponent();
-		if (isFinished){
-			text = new TextComponent(QuestUtil.translateColor("&8&m&o提交 &8&m&o"));
-			text.addExtra(TextComponentFactory.convertItemHoverEvent(item, true));
-			TextComponent suffix = new TextComponent(
-					QuestUtil.translateColor(" &8&m&o" + amount + " &8&m&o個 給 "));
-			text.addExtra(suffix);
-		}
-		else{
-			text = new TextComponent(QuestUtil.translateColor("&0提交 "));
-			text.addExtra(TextComponentFactory.convertItemHoverEvent(item, false));
-			TextComponent suffix = new TextComponent(
-					QuestUtil.translateColor(" &0&l" + amount + " &0個 給 "));
-			text.addExtra(suffix);
-		}
-		text.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
-		return text;
+		return super.toTextComponent("提交 %0 個 %1 給 %2", isFinished, amount, item, npc);
 	}
 
 	@Override

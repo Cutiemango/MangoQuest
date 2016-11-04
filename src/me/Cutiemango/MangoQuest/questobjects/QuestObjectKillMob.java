@@ -49,16 +49,10 @@ public class QuestObjectKillMob extends NumerableObject{
 
 	@Override
 	public TextComponent toTextComponent(boolean isFinished) {
-		TextComponent text = new TextComponent();
-		if (isFinished)
-			text = new TextComponent(QuestUtil.translateColor("&8&m&o殺死 " + amount + " &8&m&o個 "));
+		if (hasCustomName())
+			return super.toTextComponent("殺死 %0 個 %1", isFinished, amount, CustomName);
 		else
-			text = new TextComponent(QuestUtil.translateColor("&0殺死 " + amount + " &0個 "));
-		if (CustomName != null)
-			text.addExtra(QuestUtil.translateColor(CustomName));
-		else
-			text.addExtra(QuestUtil.translate(type));
-		return text;
+			return super.toTextComponent("殺死 %0 個 %1", isFinished, amount, type);
 	}
 
 	@Override

@@ -52,10 +52,10 @@ public class QuestCommand{
 	
 	private static void sendHelp(Player p){
 		QuestUtil.info(p, "指令幫助：");
-		QuestUtil.info(p, "/mq list - 查看任務清單");
-		QuestUtil.info(p, "/mq view [任務內部名稱] - 查看任務資料");
-		QuestUtil.info(p, "/mq take [任務內部名稱] - 接取指定任務");
-		QuestUtil.info(p, "/mq quit [任務內部名稱] - 放棄指定任務");
+		QuestUtil.info(p, "/mq quest list - 查看任務清單");
+		QuestUtil.info(p, "/mq quest view [任務內部名稱] - 查看任務資料");
+		QuestUtil.info(p, "/mq quest take [任務內部名稱] - 接取指定任務");
+		QuestUtil.info(p, "/mq quest quit [任務內部名稱] - 放棄指定任務");
 	}
 
 }
