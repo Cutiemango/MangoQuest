@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 
 public class CommandReceiver implements CommandExecutor{
@@ -14,6 +15,10 @@ public class CommandReceiver implements CommandExecutor{
 		if (!(sender instanceof Player))
 			return false;
 		Player p = (Player) sender;
+		if (args.length == 0){
+			sendHelp(p);
+			return false;
+		}
 		switch(args[0]){
 		case "conv":
 		case "c":
@@ -27,8 +32,12 @@ public class CommandReceiver implements CommandExecutor{
 		case "e":
 			QuestEditorCommand.execute(p, args);
 			break;
-		default:
+		case "reload":
+			Main.instance.reload();
+			QuestUtil.info(p, "&6重新讀取資料成功。");
 			break;
+		default:
+			break; 
 		}
 		return false;
 	}

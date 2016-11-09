@@ -23,11 +23,11 @@ public class QuestEditorListener implements Listener{
 		if (CurrentListening.containsKey(p.getName())){
 			p.performCommand(CurrentListening.get(p.getName()) + e.getMessage());
 			e.setCancelled(true);
+			CurrentListening.remove(p.getName());
 			if (e.getMessage().contains("cancel"))
 				QuestUtil.info(p, "&d已取消輸入。");
 			else
 				QuestUtil.info(p, "&7您的輸入： " + e.getMessage());
-			CurrentListening.remove(p.getName());
 		}
 		else return;
 	}

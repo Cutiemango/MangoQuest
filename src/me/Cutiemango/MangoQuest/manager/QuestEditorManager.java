@@ -100,7 +100,12 @@ public class QuestEditorManager {
 		}
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&l編輯任務： " + q.getQuestName()));
-		TextComponent p2 = new TextComponent(QuestUtil.translateColor("&0&l任務提要： \n" + q.getQuestOutline()));
+		TextComponent p2 = new TextComponent(QuestUtil.translateColor("&0&l任務提要： \n"));
+		for (String out : q.getQuestOutline()){
+			p2.addExtra(QuestUtil.translateColor(out));
+			p2.addExtra("\n");
+		}
+		
 		p1.addExtra("\n");
 		p1.addExtra(QuestUtil.translateColor("&0&l任務編碼： &0" + q.getInternalID()));
 		p1.addExtra("\n");

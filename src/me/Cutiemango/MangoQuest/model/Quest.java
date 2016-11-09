@@ -19,10 +19,10 @@ import net.citizensnpcs.api.npc.NPC;
 
 public class Quest {
 	
-	public Quest(String InternalID, String name, String QuestOutline, QuestReward reward, List<QuestStage> stages, NPC npc){
+	public Quest(String InternalID, String name, List<String> QuestOutline, QuestReward reward, List<QuestStage> stages, NPC npc){
 		this.InternalID = InternalID;
 		this.QuestName = QuestUtil.translateColor(name);
-		this.QuestOutline = QuestUtil.translateColor(QuestOutline);
+		this.QuestOutline = QuestOutline;
 		this.reward = reward;
 		this.AllStages = stages;
 		this.QuestNPC = npc;
@@ -57,7 +57,9 @@ public class Quest {
 	private String InternalID;
 
 	private String QuestName;
-	private String QuestOutline;
+	
+	private List<String> QuestOutline;
+
 	private String FailRequirementMessage;
 	private List<QuestStage> AllStages = new ArrayList<>();
 	private QuestReward reward;
@@ -85,11 +87,11 @@ public class Quest {
 		QuestName = s;
 	}
 
-	public String getQuestOutline() {
+	public List<String> getQuestOutline() {
 		return QuestOutline;
 	}
 	
-	public void setQuestOutline(String s){
+	public void setQuestOutline(List<String> s){
 		QuestOutline = s;
 	}
 	

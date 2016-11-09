@@ -42,7 +42,7 @@ public abstract class SimpleQuestObject {
 				text.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
 			}
 			else if (args[1] instanceof Material)
-				text.addExtra(QuestUtil.translate((Material)args[i], (byte)0));
+				text.addExtra(color + QuestUtil.translate((Material)args[i], (byte)0));
 			
 			// QuestObjectReachLocation
 			else if (args[i] instanceof String){

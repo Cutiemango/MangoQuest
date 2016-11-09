@@ -22,6 +22,10 @@ public class QuestCommand{
 				QuestGUIManager.openJourney(sender);
 				return;
 			}
+			else if (args[1].equalsIgnoreCase("help")){
+				sendHelp(sender);
+				return;
+			}
 			if (QuestStorage.Quests.get(args[2]) == null){
 				QuestUtil.error(sender, "你所要找的任務不存在！");
 				return;

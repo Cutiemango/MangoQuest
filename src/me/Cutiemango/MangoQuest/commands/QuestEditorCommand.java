@@ -45,6 +45,10 @@ public class QuestEditorCommand{
 				QuestEditorManager.removeGUI(sender);
 				return;
 			}
+			else if (args[1].equalsIgnoreCase("help")){
+				QuestUtil.info(sender, "請使用 /mq e 來開啟介面！");
+				return;
+			}
 			if (!QuestEditorManager.isInEditorMode(sender)){
 				QuestUtil.error(sender, "你不在編輯模式中！");
 				return;
@@ -110,13 +114,13 @@ public class QuestEditorCommand{
 							case SCOREBOARD:
 							case NBTTAG:
 								QuestEditorListener.registerListeningObject(sender,
-										"mqe edit req " + t.toString() + " " + Integer.parseInt(args[4]) + " ");
+										"mq e edit req " + t.toString() + " " + Integer.parseInt(args[4]) + " ");
 								QuestGUIManager.openInfo(sender, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 								((List<String>) q.getRequirements().get(t)).add("");
 								break;
 							case ITEM:
 								QuestEditorListener.registerListeningObject(sender,
-										"mqe edit req " + t.toString() + " " + Integer.parseInt(args[4]));
+										"mq e edit req " + t.toString() + " " + Integer.parseInt(args[4]));
 								QuestGUIManager.openInfo(sender, "&c並將物品拿在手上點擊右鍵，\n&c系統將會自動讀取。");
 								((List<ItemStack>) q.getRequirements().get(t)).add(new ItemStack(Material.GRASS));
 								break;
@@ -126,11 +130,11 @@ public class QuestEditorCommand{
 						} else {
 							switch (t) {
 							case LEVEL:
-								QuestEditorListener.registerListeningObject(sender, "mqe edit req " + t.toString() + " ");
+								QuestEditorListener.registerListeningObject(sender, "mq e edit req " + t.toString() + " ");
 								QuestGUIManager.openInfo(sender, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 								break;
 							case MONEY:
-								QuestEditorListener.registerListeningObject(sender, "mqe edit req " + t.toString() + " ");
+								QuestEditorListener.registerListeningObject(sender, "mq e edit req " + t.toString() + " ");
 								QuestGUIManager.openInfo(sender, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 								break;
 							default:
@@ -159,7 +163,7 @@ public class QuestEditorCommand{
 								return;
 							}
 							TriggerObject obj = TriggerObject.valueOf(args[4]);
-							QuestEditorListener.registerListeningObject(sender, "mqe edit evt " + q.getTriggers().size() + " "
+							QuestEditorListener.registerListeningObject(sender, "mq e edit evt " + q.getTriggers().size() + " "
 									+ type.toString() + " " + obj.toString() + " ");
 							QuestGUIManager.openInfo(sender, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 							return;
@@ -169,7 +173,7 @@ public class QuestEditorCommand{
 							if (type.equals(TriggerType.TRIGGER_STAGE_START)
 									|| type.equals(TriggerType.TRIGGER_STAGE_FINISH)) {
 								QuestEditorListener.registerListeningObject(sender,
-										"mqe edit evt " + q.getTriggers().size() + " " + type.toString() + " "
+										"mq e edit evt " + q.getTriggers().size() + " " + type.toString() + " "
 												+ Integer.parseInt(args[4]) + " " + obj.toString() + " ");
 								QuestGUIManager.openInfo(sender, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 								return;
@@ -181,7 +185,7 @@ public class QuestEditorCommand{
 				switch (args[2]) {
 					case "name":
 						if (args.length == 3) {
-							QuestEditorListener.registerListeningObject(sender, "mqe edit name ");
+							QuestEditorListener.registerListeningObject(sender, "mq e edit name ");
 							QuestGUIManager.openInfo(sender, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 							return;
 						} else if (args.length == 4) {
@@ -195,25 +199,42 @@ public class QuestEditorCommand{
 						}
 					case "outline":
 						if (args.length == 3) {
-							QuestEditorListener.registerListeningObject(sender, "mqe edit outline ");
-							QuestGUIManager.openInfo(sender, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
+							QuestEditorListener.registerListeningObject(sender, "mq e edit outline ");
+							QuestGUIManager.openInfo(sender, "&c並在聊天窗輸入任務提要。\n&7(請輸入[行數][空1格][內容])\n&7(例如：1 這是第一行)");
 							return;
 						} else if (args.length >= 4) {
 							if (args[3].equalsIgnoreCase("cancel")){
 								QuestEditorManager.editQuest(sender);
 								return;
 							}
+							int line = 0;
+							try{
+								line = Integer.parseInt(args[3]) - 1;
+							}catch(NumberFormatException e){
+								QuestUtil.error(sender, "請輸入行數！");
+								QuestEditorManager.editQuest(sender);
+								return;
+							}
+							if (line < 0){
+								QuestUtil.error(sender, "行數輸入錯誤！請重新輸入！");
+								QuestEditorManager.editQuest(sender);
+								return;
+							}
 							String s = "";
-							for (int i = 2; i < args.length; i++) {
+							for (int i = 4; i < args.length; i++) {
 								s = s + args[i] + " ";
 							}
-							q.setQuestOutline(s);
+							s = s.trim();
+							if (q.getQuestOutline().size() - 1 < line)
+								q.getQuestOutline().add(line, s);
+							else
+								q.getQuestOutline().set(line, s);
 							QuestEditorManager.editQuest(sender);
 							return;
 						}
 					case "redo":
 						if (args.length == 3) {
-							QuestEditorListener.registerListeningObject(sender, "mqe edit redo ");
+							QuestEditorListener.registerListeningObject(sender, "mq e edit redo ");
 							QuestGUIManager.openInfo(sender, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 							return;
 						} else if (args.length == 4) {
@@ -227,7 +248,7 @@ public class QuestEditorCommand{
 						}
 					case "redodelay":
 						if (args.length == 3) {
-							QuestEditorListener.registerListeningObject(sender, "mqe edit redodelay ");
+							QuestEditorListener.registerListeningObject(sender, "mq e edit redodelay ");
 							QuestGUIManager.openInfo(sender, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 							return;
 						} else if (args.length == 4) {
@@ -241,7 +262,7 @@ public class QuestEditorCommand{
 						}
 					case "npc":
 						if (args.length == 3) {
-							QuestEditorListener.registerListeningObject(sender, "mqe edit npc ");
+							QuestEditorListener.registerListeningObject(sender, "mq e edit npc ");
 							QuestGUIManager.openInfo(sender, "&c並左鍵打擊指定的NPC。");
 							return;
 						} else if (args.length == 4) {
@@ -344,12 +365,12 @@ public class QuestEditorCommand{
 							case SCOREBOARD:
 							case NBTTAG:
 								QuestEditorListener.registerListeningObject(sender,
-										"mqe edit req " + t.toString() + " " + Integer.parseInt(args[4]) + " ");
+										"mq e edit req " + t.toString() + " " + Integer.parseInt(args[4]) + " ");
 								QuestGUIManager.openInfo(sender, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 								break;
 							case ITEM:
 								QuestEditorListener.registerListeningObject(sender,
-										"mqe edit req " + t.toString() + " " + Integer.parseInt(args[4]) + " ");
+										"mq e edit req " + t.toString() + " " + Integer.parseInt(args[4]) + " ");
 								QuestGUIManager.openInfo(sender, "&c並將物品拿在手上點擊右鍵，\n&c系統將會自動讀取。");
 								break;
 							}
@@ -357,11 +378,11 @@ public class QuestEditorCommand{
 						} else if (args.length == 4) {
 							switch (t) {
 							case LEVEL:
-								QuestEditorListener.registerListeningObject(sender, "mqe edit req " + t.toString() + " ");
+								QuestEditorListener.registerListeningObject(sender, "mq e edit req " + t.toString() + " ");
 								QuestGUIManager.openInfo(sender, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 								break;
 							case MONEY:
-								QuestEditorListener.registerListeningObject(sender, "mqe edit req " + t.toString() + " ");
+								QuestEditorListener.registerListeningObject(sender, "mq e edit req " + t.toString() + " ");
 								QuestGUIManager.openInfo(sender, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 								break;
 							default:
@@ -408,7 +429,7 @@ public class QuestEditorCommand{
 							case TRIGGER_STAGE_FINISH:
 								int i = Integer.parseInt(args[5]);
 								TriggerObject obj = TriggerObject.valueOf(args[6]);
-								QuestEditorListener.registerListeningObject(sender, "mqe edit evt " + index + " "
+								QuestEditorListener.registerListeningObject(sender, "mq e edit evt " + index + " "
 										+ type.toString() + " " + i + " " + obj.toString() + " ");
 								QuestGUIManager.openInfo(sender, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 								return;
@@ -428,7 +449,7 @@ public class QuestEditorCommand{
 						} else if (args.length == 6) {
 							TriggerObject obj = TriggerObject.valueOf(args[5]);
 							QuestEditorListener.registerListeningObject(sender,
-									"mqe edit evt " + index + " " + type.toString() + " " + obj.toString() + " ");
+									"mq e edit evt " + index + " " + type.toString() + " " + obj.toString() + " ");
 							QuestGUIManager.openInfo(sender, "&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 							return;
 						}

@@ -70,7 +70,10 @@ public class QuestGUIManager {
 		}
 
 		TextComponent p2 = new TextComponent(ChatColor.BOLD + "任務提要： \n");
-		p2.addExtra(q.getQuest().getQuestOutline());
+		for (String out : q.getQuest().getQuestOutline()){
+			p2.addExtra(QuestUtil.translateColor(out));
+			p2.addExtra("\n");
+		}
 
 		TextComponent p3 = new TextComponent(ChatColor.BOLD + "任務獎勵：\n");
 

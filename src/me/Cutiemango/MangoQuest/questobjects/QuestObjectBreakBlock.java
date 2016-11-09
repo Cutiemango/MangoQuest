@@ -22,7 +22,7 @@ public class QuestObjectBreakBlock extends NumerableObject{
 
 	@Override
 	public TextComponent toTextComponent(boolean isFinished) {
-		return super.toTextComponent("挖掘 %0 個 %1", isFinished, block, amount);
+		return super.toTextComponent("挖掘 %0 個 %1", isFinished, amount, block);
 	}
 
 	@Override

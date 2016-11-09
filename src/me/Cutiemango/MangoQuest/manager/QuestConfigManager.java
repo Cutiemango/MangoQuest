@@ -120,7 +120,10 @@ public class QuestConfigManager {
 	public void saveQuest(Quest q){
 		QuestsIO.set("任務列表." + q.getInternalID() + ".任務名稱", q.getQuestName());
 		QuestsIO.set("任務列表." + q.getInternalID() + ".任務提要", q.getQuestOutline());
-		QuestsIO.set("任務列表." + q.getInternalID() + ".任務NPC", q.getQuestNPC().getId());
+		if (q.isCommandQuest())
+			QuestsIO.set("任務列表." + q.getInternalID() + ".任務NPC", -1);
+		else
+			QuestsIO.set("任務列表." + q.getInternalID() + ".任務NPC", q.getQuestNPC().getId());
 		QuestsIO.set("任務列表." + q.getInternalID() + ".任務需求.Level", q.getRequirements().get(RequirementType.LEVEL));
 		QuestsIO.set("任務列表." + q.getInternalID() + ".任務需求.Quest", q.getRequirements().get(RequirementType.QUEST));
 		int i = 0;
@@ -257,7 +260,7 @@ public class QuestConfigManager {
 		int totalcount = 0;
 		for (String internal : QuestsIO.getSection("任務列表")) {
 			String questname = QuestsIO.getString("任務列表." + internal + ".任務名稱");
-			String questoutline = QuestsIO.getString("任務列表." + internal + ".任務提要");
+			List<String> questoutline = QuestsIO.getStringList("任務列表." + internal + ".任務提要");
 			List<QuestStage> stages = new ArrayList<>();
 			for (String stagecount : QuestsIO.getSection("任務列表." + internal + ".任務內容")) {
 				List<SimpleQuestObject> objs = new ArrayList<>();
@@ -270,18 +273,21 @@ public class QuestConfigManager {
 					switch (s) {
 					case "DELIVER_ITEM":
 						n = QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".目標NPC");
-						obj = new QuestObjectItemDeliver(CitizensAPI.getNPCRegistry().getById(n),
-						getItemStack(QuestsIO.getConfig(), "任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品"),
-						QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品.數量"));
-						if (CitizensAPI.getNPCRegistry().getById(n) == null)
+						if (CitizensAPI.getNPCRegistry().getById(n) == null){
 							Bukkit.getLogger().log(Level.SEVERE, "[任務讀取] 找不到代碼為 " + n + " 的NPC，請重新設定！");
+							continue;
+						}
+						obj = new QuestObjectItemDeliver(CitizensAPI.getNPCRegistry().getById(n),
+								getItemStack(QuestsIO.getConfig(), "任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品"),
+								QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品.數量"));
 						break;
 					case "TALK_TO_NPC":
 						n = QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".目標NPC");
-						obj = new QuestObjectTalkToNPC(CitizensAPI.getNPCRegistry().getById(n));
-						if (CitizensAPI.getNPCRegistry().getById(n) == null)
+						if (CitizensAPI.getNPCRegistry().getById(n) == null){
 							Bukkit.getLogger().log(Level.SEVERE, "[任務讀取] 找不到代碼為 " + n + " 的NPC，請重新設定！");
-						break;
+							continue;
+						}
+						obj = new QuestObjectTalkToNPC(CitizensAPI.getNPCRegistry().getById(n));
 					case "KILL_MOB":
 						String name = null;
 						if (QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".怪物名稱") != null){
@@ -293,7 +299,7 @@ public class QuestConfigManager {
 						else if (QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".自訂怪物ID") != null){
 							if (!Main.instance.initManager.hasMythicMobEnabled()){
 								Bukkit.getLogger().log(Level.SEVERE, "偵測到MythicMob的物件，但是未讀取到MythicMob插件連結，跳過讀取。");
-								return;
+								continue;
 							}
 							name = QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".自訂怪物ID");
 							try {
@@ -305,6 +311,10 @@ public class QuestConfigManager {
 								continue;
 							}
 						}
+						else if (QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".怪物類型") != null)
+							obj = new QuestObjectKillMob(
+									EntityType.valueOf(QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".怪物類型")),
+									QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".數量"), null);
 						break;
 					case "BREAK_BLOCK":
 						obj = new QuestObjectBreakBlock(Material.getMaterial(
@@ -328,7 +338,7 @@ public class QuestConfigManager {
 						break;
 					default:
 						QuestUtil.warnCmd("錯誤：任務 " + internal + " 沒有正確的任務內容類別，請檢查設定檔案。");
-						break;
+						continue;
 					}
 					if (QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".觸發對話") != null){
 						QuestConversation conv = QuestUtil.getConvByName(QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".觸發對話"));
@@ -369,7 +379,6 @@ public class QuestConfigManager {
 					Quest quest = new Quest(internal, questname, questoutline, reward, stages, npc);
 					if (QuestsIO.getString("任務列表." + internal + ".不符合任務需求訊息") != null)
 						quest.setFailMessage(QuestsIO.getString("任務列表." + internal + ".不符合任務需求訊息"));
-					
 					//Requirements
 					if (QuestsIO.isSection("任務列表." + internal + ".任務需求")){
 						if (QuestsIO.getInt("任務列表." + internal + ".任務需求.Level") != 0)

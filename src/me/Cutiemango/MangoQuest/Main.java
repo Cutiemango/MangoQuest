@@ -86,4 +86,25 @@ public class Main extends JavaPlugin{
 			QuestUtil.info(p, "&b玩家資料儲存中...");
 		}
 	}
+	
+	public void reload(){
+		for (Player p : Bukkit.getOnlinePlayers()){
+			QuestUtil.getData(p).save();
+			QuestUtil.info(p, "&b玩家資料儲存中...");
+		}
+		QuestStorage.clear();
+		
+		configManager = new QuestConfigManager(this);
+		
+		configManager.loadConversation();
+		configManager.loadQuests();
+		configManager.loadNPC();
+		
+		for (Player p : Bukkit.getOnlinePlayers()){
+			QuestPlayerData qd = new QuestPlayerData(p);
+			if (QuestPlayerData.hasConfigData(p))
+				qd = new QuestPlayerData(p, configManager.getPlayerIO());
+			QuestStorage.Players.put(p.getName(), qd);
+		}
+	}
 }

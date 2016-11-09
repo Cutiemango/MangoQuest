@@ -12,13 +12,13 @@ public class QuestObjectKillMob extends NumerableObject{
 		type = t;
 		amount = i;
 		config = "KILL_MOB";
-		if (customname != null)
-			CustomName = customname;
+		CustomName = customname;
 	}
 	
 	public QuestObjectKillMob(MythicMob mmMob, int i){
 		mtmMob = mmMob;
 		amount = i;
+		config = "KILL_MOB";
 		type = EntityType.valueOf(mmMob.getEntityType().toUpperCase());
 		CustomName = mmMob.getDisplayName();
 	}

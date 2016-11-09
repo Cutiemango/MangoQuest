@@ -35,5 +35,15 @@ public class QuestStorage {
 	public static HashMap<Integer, QuestNPC> NPCMap = new HashMap<>();
 	
 	public static final String prefix = ChatColor.GOLD + "MangoQuest>";
+	
+	public static void clear(){
+		Quests = new HashMap<>();
+		Players = new HashMap<>();
+		ConvProgresses = new HashMap<>();
+		ChoiceProgresses = new HashMap<>();
+		Conversations = new HashMap<>();
+		Choices = new HashMap<>();
+		NPCMap = new HashMap<>();
+	}
 
 }
