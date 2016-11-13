@@ -21,7 +21,7 @@ public class QuestBaseAction {
 	
 	public enum EnumAction{
 		CHANGE_PAGE, CHANGE_LINE, CHANGE_CONVERSATION, SENTENCE, NPC_TALK,
-		CHOICE, BUTTON, COMMAND, WAIT
+		CHOICE, BUTTON, COMMAND, WAIT, FINISH
 	}
 	
 	public void execute(final ConversationProgress cp){
@@ -70,6 +70,9 @@ public class QuestBaseAction {
 					return;
 				}
 			}.runTaskLater(Main.instance, Long.parseLong(obj.toString()));
+			return;
+		case FINISH:
+			cp.finish(Boolean.valueOf(obj));
 			return;
 		default:
 			return;

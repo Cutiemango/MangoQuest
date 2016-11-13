@@ -226,7 +226,7 @@ public class QuestConfigManager {
 			String name = ConversationIO.getString("任務對話." + id + ".對話名稱");
 			List<String> act = ConversationIO.getStringList("任務對話." + id + ".對話內容");
 			NPC npc = CitizensAPI.getNPCRegistry().getById(ConversationIO.getInt("任務對話." + id + ".對話NPC"));
-			QuestConversation conv = new QuestConversation(name, id, npc, loadConvAction(act));
+			QuestConversation conv = new QuestConversation(name, id, npc, loadConvAction(act), ConversationIO.getBoolean("任務對話." + id + ".好感度對話"));
 			QuestStorage.Conversations.put(id, conv);
 			count++;
 		}
@@ -238,15 +238,15 @@ public class QuestConfigManager {
 		if (!ConversationIO.isSection("選擇"))
 			return;
 		int count = 0;
-		Choice[] array = new Choice[4];
+		List<Choice> list = new ArrayList<>();
 		for (String id : ConversationIO.getSection("選擇")){
 			TextComponent q = new TextComponent(QuestUtil.translateColor(ConversationIO.getString("選擇." + id + ".問題")));
 			for (String num : ConversationIO.getSection("選擇." + id + ".選項")){
 				String name = ConversationIO.getString("選擇." + id + ".選項." + num + ".選項名稱");
 				Choice c = new Choice(name, loadConvAction(ConversationIO.getStringList("選擇." + id + ".選項." + num + ".選項動作")));
-				array[Integer.parseInt(num) - 1] = c;
+				list.add(Integer.parseInt(num) - 1, c);
 			}
-			QuestChoice choice = new QuestChoice(q, array);
+			QuestChoice choice = new QuestChoice(q, list);
 			QuestStorage.Choices.put(id, choice);
 			count++;
 		}
@@ -475,6 +475,7 @@ public class QuestConfigManager {
 					case COMMAND:
 					case WAIT:
 					case SENTENCE:
+					case FINISH:
 						action = new QuestBaseAction(e, s.split("#")[1]);
 						break;
 					case BUTTON:

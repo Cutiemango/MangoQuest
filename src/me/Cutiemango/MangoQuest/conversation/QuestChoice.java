@@ -32,22 +32,19 @@ public class QuestChoice {
 	}
 	
 	
-	public QuestChoice(TextComponent q, Choice[] c){
+	public QuestChoice(TextComponent q, List<Choice> c){
 		question = q;
-		for (int i = 0; i < 4; i++){
-			choices[i] = c[i];
-		}
+		choices = c;
 	}
 	
-
-	private Choice[] choices = new Choice[4];
+	private List<Choice> choices;
 	private TextComponent question;
 
 	public TextComponent getQuestion(){
 		return question;
 	}
 	
-	public Choice[] getChoices(){
+	public List<Choice> getChoices(){
 		return choices;
 	}
 	
@@ -61,11 +58,15 @@ public class QuestChoice {
 	}
 	
 	public void choose(Player p, int i){
+		if (i > choices.size()){
+			QuestUtil.error(p, "你不能選擇第 " + i + " 個選項！");
+			return;
+		}
 		int count = 0;
 		ConversationProgress cp = QuestStorage.ConvProgresses.get(p.getName());
 		cp.retrieve();
 		cp.getCurrentPage().addExtra(question);
-		for (QuestBaseAction act : choices[i].getActions()){
+		for (QuestBaseAction act : choices.get(i).getActions()){
 			QuestUtil.getConvProgress(p).getActionQueue().add(count, act);
 			count++;
 		}

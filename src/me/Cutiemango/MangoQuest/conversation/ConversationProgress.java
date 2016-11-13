@@ -1,6 +1,9 @@
 package me.Cutiemango.MangoQuest.conversation;
 
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
+
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -20,26 +23,28 @@ public class ConversationProgress {
 		actQueue = new LinkedList<>(conv.getActions());
 	}
 	
+	public static final List<EnumAction> STOP_ACTIONS = Arrays.asList(
+			new EnumAction[]{EnumAction.BUTTON, EnumAction.WAIT, EnumAction.CHOICE, EnumAction.FINISH});
+	
 	private Player owner;
 	private QuestConversation conv;
 	private LinkedList<QuestBaseAction> actQueue;
 	private LinkedList<TextComponent> currentBook = new LinkedList<>();
 	private LinkedList<TextComponent> history = new LinkedList<>();
 	private boolean isFinished;
+	private boolean reset;
 	
 	// Book Page
 	private int page;
 	
 	public void nextAction(){
 		if (actQueue.size() == 0){
-			finish();
+			finish(true);
 			return;
 		}
 		actQueue.getFirst().execute(this);
 		QuestGUIManager.updateConversation(owner, this);
-		if (!(actQueue.getFirst().getActionType() == EnumAction.BUTTON ||
-				actQueue.getFirst().getActionType() == EnumAction.WAIT ||
-				actQueue.getFirst().getActionType() == EnumAction.CHOICE)){
+		if (!(STOP_ACTIONS.contains(actQueue.getFirst().getActionType()))){
 			new BukkitRunnable(){
 				@Override
 				public void run() {
@@ -52,14 +57,17 @@ public class ConversationProgress {
 		actQueue.removeFirst();
 	}
 	
-	public void finish(){
+	public void finish(boolean questFinish){
 		getCurrentPage().addExtra("\n");
-		getCurrentPage().addExtra("對話結束。");
+		getCurrentPage().addExtra(QuestUtil.translateColor("    &8=》 &2&l對話結束 &8《="));
 		QuestGUIManager.updateConversation(owner, this);
-		isFinished = true;
-		if (conv.hasNPC())
-			owner.performCommand("mq conv npc " + conv.getNPC().getId());
-		QuestUtil.getData(owner).addFinishConversation(conv);
+		if (conv.hasNPC() && questFinish){
+			if (!conv.isFriendConv())
+				owner.performCommand("mq conv npc " + conv.getNPC().getId());
+			QuestUtil.getData(owner).addFinishConversation(conv);
+			isFinished = true;
+		}
+		reset = !questFinish;
 	}
 
 
@@ -77,6 +85,10 @@ public class ConversationProgress {
 	
 	public LinkedList<TextComponent> getCurrentBook(){
 		return currentBook;
+	}
+	
+	public boolean needReset(){
+		return reset;
 	}
 	
 	public TextComponent getCurrentPage(){

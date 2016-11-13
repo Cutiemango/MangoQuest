@@ -1,6 +1,6 @@
 name: MangoQuest
 main: me.Cutiemango.MangoQuest.Main
-version: 1.5.8
+version: 1.5.9
 authors: [Cutiemango]
 depend: [Vault, Citizens]
 commands:

@@ -15,11 +15,14 @@ public class QuestConversation {
 	private String id;
 	private NPC npc;
 	
-	public QuestConversation(String s, String internal, NPC n, List<QuestBaseAction> list){
+	private boolean isFriendConv;
+	
+	public QuestConversation(String s, String internal, NPC n, List<QuestBaseAction> list, boolean f){
 		name = s;
 		action = list;
 		id = internal;
 		npc = n;
+		isFriendConv = f;
 	}
 	
 	public ConversationProgress startNewConversation(Player p){
@@ -46,7 +49,11 @@ public class QuestConversation {
 	}
 	
 	public boolean hasNPC(){
-		return !(npc == null);
+		return npc != null;
+	}
+	
+	public boolean isFriendConv(){
+		return isFriendConv;
 	}
 
 }

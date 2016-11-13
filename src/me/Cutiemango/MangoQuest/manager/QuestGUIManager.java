@@ -1,6 +1,8 @@
 package me.Cutiemango.MangoQuest.manager;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -121,14 +123,14 @@ public class QuestGUIManager {
 		openBook(p, cp.getCurrentBook().toArray(new TextComponent[cp.getCurrentBook().size()]));
 	}
 	
-	public static void openChoice(Player p, TextComponent q, Choice[] c){
+	public static void openChoice(Player p, TextComponent q, List<Choice> c){
 		TextComponent p1 = new TextComponent(QuestUtil.translateColor("       &0=》 &c&l選擇 &0《="));
 		p1.addExtra("\n");
 		p1.addExtra(q);
 		p1.addExtra("\n");
-		for (int i = 0; i < 4; i++){
+		for (int i = 0; i < c.size(); i++){
 			p1.addExtra("\n");
-			p1.addExtra(TextComponentFactory.regClickCmdEvent("- " + c[i].getContent(), "/mq conv choose " + i));
+			p1.addExtra(TextComponentFactory.regClickCmdEvent("- " + c.get(i).getContent(), "/mq conv choose " + i));
 			p1.addExtra("\n");
 		}
 		openBook(p, p1);
@@ -199,6 +201,9 @@ public class QuestGUIManager {
 	public static void openNPCInfo(Player p, NPC npc){
 		QuestPlayerData qd = QuestUtil.getData(p);
 		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&5&lNPC介面 &0&l| "));
+		
+		List<Quest> holder = new ArrayList<>();
+		
 		p1.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
 		p1.addExtra("\n\n");
 		p1.addExtra(QuestUtil.translateColor("&0&l" + npc.getName() + "&0：「"));
@@ -209,7 +214,15 @@ public class QuestGUIManager {
 		for (QuestProgress q : qd.getNPCtoTalkWith(npc)){
 			p1.addExtra(QuestUtil.translateColor("&0- &6&l？ &0"));
 			p1.addExtra(TextComponentFactory.convertViewQuest(q.getQuest()));
-			p1.addExtra(TextComponentFactory.regClickCmdEvent("&9&l【對話】", "/mq conv npc " + npc.getId()));
+			p1.addExtra(TextComponentFactory.regHoverEvent(
+					TextComponentFactory.regClickCmdEvent("&9&l【對話】", "/mq conv npc " + npc.getId()),
+					"&9點擊&f以開始對話"));
+			if (qd.isCurrentlyDoing(q.getQuest()) && q.getQuest().getQuestNPC().equals(npc)){
+				p1.addExtra(TextComponentFactory.regHoverEvent(
+						TextComponentFactory.regClickCmdEvent("&c&l【放棄】", "/mq quest quit " + q.getQuest().getInternalID()),
+						"&c放棄任務 &f" + q.getQuest().getQuestName() + "\n&4所有的任務進度都會消失。"));
+				holder.add(q.getQuest());
+			}
 			p1.addExtra("\n");
 		}
 		for (Quest q : QuestUtil.getGivenNPCQuests(npc)){
@@ -219,29 +232,39 @@ public class QuestGUIManager {
 				else
 					p1.addExtra(QuestUtil.translateColor("&0- &6&l！ &0"));
 				p1.addExtra(TextComponentFactory.convertViewQuest(q));
-				p1.addExtra(TextComponentFactory.regClickCmdEvent("&2&l【接受】", "/mq quest take " + q.getInternalID()));
+				p1.addExtra(TextComponentFactory.regHoverEvent(
+						TextComponentFactory.regClickCmdEvent("&2&l【接受】", "/mq quest take " + q.getInternalID()),
+						"&a接受任務 &f" + q.getQuestName()));
 				p1.addExtra("\n");
 				continue;
 			}
 			else if (qd.isCurrentlyDoing(q)){
+				if (holder.contains(q))
+					continue;
 				p1.addExtra(QuestUtil.translateColor("&0- &8&l？ &0"));
 				p1.addExtra(TextComponentFactory.convertViewQuest(q));
-				p1.addExtra(TextComponentFactory.regClickCmdEvent("&c&l【放棄】", "/mq quest quit " + q.getInternalID()));
+				p1.addExtra(TextComponentFactory.regHoverEvent(
+						TextComponentFactory.regClickCmdEvent("&c&l【放棄】", "/mq quest quit " + q.getInternalID()),
+						"&c放棄任務 &f" + q.getQuestName() + "\n&4所有的任務進度都會消失。"));
 				p1.addExtra("\n");
 				continue;
 			}
 			else{
 				p1.addExtra(QuestUtil.translateColor("&0- "));
 				p1.addExtra(TextComponentFactory.convertRequirement(qd, q));
+				p1.addExtra("\n");
 			}
 		}
 		p1.addExtra("\n");
 		for (QuestConversation qc : QuestUtil.getConversations(npc.getId(), qd.getNPCfp(npc.getId()))){
-			if (qd.hasFinished(qc))
-				p1.addExtra(QuestUtil.translateColor("&0- &7&l"));
-			else
-				p1.addExtra(QuestUtil.translateColor("&0- &6&l"));
-			p1.addExtra(TextComponentFactory.regClickCmdEvent(qc.getName(), "/mq conv opennew " + qc.getInternalID()));
+			if (qd.hasFinished(qc)){
+				p1.addExtra(QuestUtil.translateColor("&0- &7&o"));
+				p1.addExtra(TextComponentFactory.regClickCmdEvent(qc.getName() + " 〈&c&o♥&7&o〉", "/mq conv opennew " + qc.getInternalID()));
+			}
+			else{
+				p1.addExtra(QuestUtil.translateColor("&0- &6&l！ &0&l"));
+				p1.addExtra(TextComponentFactory.regClickCmdEvent(qc.getName() + " 〈&c♥&0&l〉", "/mq conv opennew " + qc.getInternalID()));
+			}
 			p1.addExtra("\n");
 		}
 		openBook(p, p1);

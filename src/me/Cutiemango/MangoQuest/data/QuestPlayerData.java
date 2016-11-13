@@ -121,7 +121,11 @@ public class QuestPlayerData {
 			Main.instance.configManager.getPlayerIO().set("玩家資料." + p.getUniqueId() + ".NPC友好度." + i, NPCfp.get(i));
 		}
 		
-		Main.instance.configManager.getPlayerIO().set("玩家資料." + p.getUniqueId() + ".已完成的對話", QuestUtil.convert(FinishedQuest));
+		Set<String> s = new HashSet<>();
+		for (QuestConversation conv: FinishedConversation){
+			s.add(conv.getInternalID());
+		}
+		Main.instance.configManager.getPlayerIO().set("玩家資料." + p.getUniqueId() + ".已完成的對話", QuestUtil.convert(s));
 
 		Main.instance.configManager.getPlayerIO().save();
 	}
