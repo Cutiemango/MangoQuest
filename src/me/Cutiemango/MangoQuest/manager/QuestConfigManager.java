@@ -39,7 +39,6 @@ import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
-import net.elseland.xikage.MythicMobs.API.Exceptions.InvalidMobTypeException;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestConfigManager {
@@ -306,7 +305,7 @@ public class QuestConfigManager {
 								obj = new QuestObjectKillMob(
 											Main.instance.initManager.getMTMPlugin().getAPI().getMobAPI().getMythicMob(name),
 											QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".數量"));
-							} catch (InvalidMobTypeException e) {
+							} catch (Exception e) {
 								Bukkit.getLogger().log(Level.SEVERE, "[任務讀取] 找不到代碼為 " + name + " 的自訂怪物，請重新設定！");
 								continue;
 							}

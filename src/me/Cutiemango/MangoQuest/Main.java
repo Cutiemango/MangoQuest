@@ -14,6 +14,9 @@ import me.Cutiemango.MangoQuest.listeners.QuestListener;
 import me.Cutiemango.MangoQuest.manager.QuestConfigManager;
 import me.Cutiemango.MangoQuest.versions.QuestVersionHandler;
 import me.Cutiemango.MangoQuest.versions.Version_v1_10_R1;
+import me.Cutiemango.MangoQuest.versions.Version_v1_8_R1;
+import me.Cutiemango.MangoQuest.versions.Version_v1_8_R2;
+import me.Cutiemango.MangoQuest.versions.Version_v1_8_R3;
 import me.Cutiemango.MangoQuest.versions.Version_v1_9_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_9_R2;
 
@@ -43,23 +46,31 @@ public class Main extends JavaPlugin{
 		
 		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
 		switch(version){
+			case "v1_8_R1":
+				handler = new Version_v1_8_R1();
+				break;
+			case "v1_8_R2":
+				handler = new Version_v1_8_R2();
+				break;
+			case "v1_8_R3":
+				handler = new Version_v1_8_R3();
+				break;
 			case "v1_9_R1":
 				handler = new Version_v1_9_R1();
-				getLogger().info("成功讀取伺服器版本，插件成功開啟：NMS v1_9_R1。");
 				break;
 			case "v1_9_R2":
 				handler = new Version_v1_9_R2();
-				getLogger().info("成功讀取伺服器版本，插件成功開啟：NMS v1_9_R2。");
 				break;
 			case "v1_10_R1":
 				handler = new Version_v1_10_R1();
-				getLogger().info("成功讀取伺服器版本，插件成功開啟：NMS v1_10_R1。");
 				break;
 			default:
-				getLogger().severe("您的伺服器版本不支援此插件，可支援的版本：1.9~1.10.2。");
+				getLogger().severe("您的伺服器版本不支援此插件，可支援的版本：1.8~1.10.2。");
 				getLogger().severe("插件功能將無法運作，請考慮移除。");
 				break;
 		}
+		
+		getLogger().info("讀取伺服器版本號為：NMS " + version + "。");
 		
 		new BukkitRunnable(){
 			@Override

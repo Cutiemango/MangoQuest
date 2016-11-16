@@ -1,60 +1,60 @@
-任務對話:
+���ȹ��:
   Test001:
-    對話NPC: 1
-    對話名稱: "初次會面"
-    對話內容:
-    - "NPC_TALK#唷，冒險者，你看起來頭腦蠻聰明的嘛！@1"
+    ���NPC: 1
+    ��ܦW��: "�즸�|��"
+    ��ܤ��e:
+    - "NPC_TALK#��A�_�I�̡A�A�ݰ_���Y���Z�o�������I@1"
     - "BUTTON#"
-    - "SENTENCE#&7&o「是嗎...」"
-    - "NPC_TALK#看看你能不能答對我所出的問題！@1"
+    - "SENTENCE#&7&o�u�O��...�v"
+    - "NPC_TALK#�ݬݧA�ण�൪��کҥX�����D�I@1"
     - "BUTTON#"
-    - "SENTENCE#&7&o「等等...我還沒答應要回答啊...」"
+    - "SENTENCE#&7&o�u����...���٨S�����n�^����...�v"
     - "CHANGE_LINE#"
     - "CHOICE#Choice001"
   NPC01_20:
-    對話NPC: 1
-    對話名稱: "你的名子？"
-    對話內容:
-    - "SENTENCE#&7&o「其實我一直想問你，你這個\n&7&o名子是誰取的啊？」"
-    - "NPC_TALK#嘛，這還不是某個正在測試的人害的！@1"
+    ���NPC: 1
+    ��ܦW��: "�A���W�l�H"
+    ��ܤ��e:
+    - "SENTENCE#&7&o�u���ڤ@���Q�ݧA�A�A�o��\n&7&o�W�l�O�֨����ڡH�v"
+    - "NPC_TALK#���A�o�٤��O�Y�ӥ��b���ժ��H�`���I@1"
     - "BUTTON#"
-    - "SENTENCE#&7&o「是誰？」"
+    - "SENTENCE#&7&o�u�O�֡H�v"
     - "WAIT#20"
-    - "NPC_TALK#我不能說...說了他會把我刪除的...@1"
+    - "NPC_TALK#�ڤ��໡...���F�L�|��ڧR����...@1"
     - "BUTTON#"
-    - "SENTENCE#&7&o「...」"
+    - "SENTENCE#&7&o�u...�v"
     - "WAIT#20"
-    - "SENTENCE#&7&o(原來當一個NPC還有這樣的苦\n&7&o衷啊...)"
+    - "SENTENCE#&7&o(��ӷ��@��NPC�٦��o�˪��W\n&7&o�J��...)"
     - "BUTTON#"
-選擇:
+���:
   Choice001:
-    "問題": "「1+1等於多少？不會連這個都答不出來吧！」"
-    "選項":
+    "���D": "�u1+1����h�֡H���|�s�o�ӳ������X�ӧa�I�v"
+    "�ﶵ":
       '1':
-        "選項名稱": "我當然知道啊，答案不就是2！"
-        "選項動作":
+        "�ﶵ�W��": "�ڷ��M���D�ڡA���פ��N�O2�I"
+        "�ﶵ�ʧ@":
         - "CHANGE_PAGE#"
-        - "SENTENCE#&7&o「我當然知道啊，答案不就是2！」"
-        - "SENTENCE#&c&lNPC&0：「哈哈！上當了吧！在電腦這個只有0和1的世界，10進位都不算數！」"
+        - "SENTENCE#&7&o�u�ڷ��M���D�ڡA���פ��N�O2�I�v"
+        - "SENTENCE#&c&lNPC&0�G�u�����I�W���F�a�I�b�q���o�ӥu��0�M1���@�ɡA10�i�쳣����ơI�v"
         - "BUTTON#"
       '2':
-        "選項名稱": "哼哼，看我是87，我還不答3！"
-        "選項動作":
+        "�ﶵ�W��": "���A�ݧڬO87�A���٤���3�I"
+        "�ﶵ�ʧ@":
         - "CHANGE_PAGE#"
-        - "SENTENCE#&7&o「答案是3！」"
-        - "SENTENCE#&c&lNPC&0：「笨蛋！連1+1=2都不知道，你小學老師怎麼教的啊？」"
+        - "SENTENCE#&7&o�u���׬O3�I�v"
+        - "SENTENCE#&c&lNPC&0�G�u�³J�I�s1+1=2�������D�A�A�p�ǦѮv���Ъ��ڡH�v"
         - "BUTTON#"
       '3':
-        "選項名稱": "呃...我不知道耶，怎麼辦...？"
-        "選項動作":
+        "�ﶵ�W��": "�c...�ڤ����D�C�A����...�H"
+        "�ﶵ�ʧ@":
         - "CHANGE_PAGE#"
-        - "SENTENCE#&7&o「呃，我不知道，你可以教教我嗎？」"
-        - "SENTENCE#...&8(NPC默默地嘆氣看著你)"
+        - "SENTENCE#&7&o�u�c�A�ڤ����D�A�A�i�H�бЧڶܡH�v"
+        - "SENTENCE#...&8(NPC�q�q�a�Į�ݵۧA)"
         - "BUTTON#"
       '4':
-        "選項名稱": "二進位還是十進位？"
-        "選項動作":
+        "�ﶵ�W��": "�G�i���٬O�Q�i��H"
+        "�ﶵ�ʧ@":
         - "CHANGE_PAGE#"
-        - "SENTENCE#&7&o「這也要看你問的是二進位還是十進位決定吧。」"
-        - "SENTENCE#&c&lNPC&0：「...不錯！小子有前途，剛剛前面好幾個笨蛋被我耍了，就你沒被騙！」"
+        - "SENTENCE#&7&o�u�o�]�n�ݧA�ݪ��O�G�i���٬O�Q�i��M�w�a�C�v"
+        - "SENTENCE#&c&lNPC&0�G�u...�����I�p�l���e�~�A���e���n�X�Ӳ³J�Q�ڭA�F�A�N�A�S�Q�F�I�v"
         - "BUTTON#"
