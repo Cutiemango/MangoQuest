@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import io.netty.buffer.Unpooled;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -19,6 +20,8 @@ import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_8_R1.NBTTagList;
 import net.minecraft.server.v1_8_R1.NBTTagString;
+import net.minecraft.server.v1_8_R1.PacketDataSerializer;
+import net.minecraft.server.v1_8_R1.PacketPlayOutCustomPayload;
 import net.minecraft.server.v1_8_R1.ChatSerializer;
 import net.minecraft.server.v1_8_R1.EnumTitleAction;
 import net.minecraft.server.v1_8_R1.NBTTagCompound;
@@ -42,7 +45,8 @@ public class Version_v1_8_R1 implements QuestVersionHandler{
 
 	@Override
 	public void openBook(Player p, TextComponent... texts) {
-		net.minecraft.server.v1_8_R1.ItemStack nmsbook = CraftItemStack.asNMSCopy(new ItemStack(Material.WRITTEN_BOOK, 1));
+		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
+		net.minecraft.server.v1_8_R1.ItemStack nmsbook = CraftItemStack.asNMSCopy(book);
 		NBTTagCompound tag = new NBTTagCompound();
 		NBTTagList taglist = new NBTTagList();
 
@@ -50,8 +54,16 @@ public class Version_v1_8_R1 implements QuestVersionHandler{
 			taglist.add(new NBTTagString(CraftChatMessage.fromComponent(ChatSerializer.a(ComponentSerializer.toString(t)))));
 		}
 		tag.set("pages", taglist);
+		nmsbook.setTag(tag);
+		
+		book = CraftItemStack.asBukkitCopy(nmsbook);
 
-		((CraftPlayer) p).getHandle().openBook(nmsbook);
+		int slot = p.getInventory().getHeldItemSlot();
+		ItemStack old = p.getInventory().getItem(slot);
+		p.getInventory().setItem(slot, book);
+		PacketPlayOutCustomPayload packet = new PacketPlayOutCustomPayload("MC|BOpen", new PacketDataSerializer(Unpooled.buffer()));
+        ((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
+        p.getInventory().setItem(slot, old);
 	}
 
 	@Override

@@ -4,9 +4,9 @@ import java.util.Arrays;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_9_R2.util.CraftChatMessage;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_11_R1.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -18,17 +18,17 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.chat.ComponentSerializer;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.NBTTagList;
-import net.minecraft.server.v1_9_R2.NBTTagString;
-import net.minecraft.server.v1_9_R2.EnumHand;
-import net.minecraft.server.v1_9_R2.PacketDataSerializer;
-import net.minecraft.server.v1_9_R2.PacketPlayOutCustomPayload;
-import net.minecraft.server.v1_9_R2.PacketPlayOutTitle;
-import net.minecraft.server.v1_9_R2.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_9_R2.PacketPlayOutTitle.EnumTitleAction;
+import net.minecraft.server.v1_11_R1.EnumHand;
+import net.minecraft.server.v1_11_R1.NBTTagCompound;
+import net.minecraft.server.v1_11_R1.NBTTagList;
+import net.minecraft.server.v1_11_R1.NBTTagString;
+import net.minecraft.server.v1_11_R1.PacketDataSerializer;
+import net.minecraft.server.v1_11_R1.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
+import net.minecraft.server.v1_11_R1.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_11_R1.PacketPlayOutTitle.EnumTitleAction;
 
-public class Version_v1_9_R2 implements QuestVersionHandler{
+public class Version_v1_11_R1 implements QuestVersionHandler{
 
 	@Override
 	public void sendTitle(Player p, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle) {
@@ -47,7 +47,7 @@ public class Version_v1_9_R2 implements QuestVersionHandler{
 	@Override
 	public void openBook(Player p, TextComponent... texts) {
 		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
-		net.minecraft.server.v1_9_R2.ItemStack nmsbook = CraftItemStack.asNMSCopy(book);
+		net.minecraft.server.v1_11_R1.ItemStack nmsbook = CraftItemStack.asNMSCopy(book);
 		NBTTagCompound tag = new NBTTagCompound();
 		NBTTagList taglist = new NBTTagList();
 
@@ -84,7 +84,7 @@ public class Version_v1_9_R2 implements QuestVersionHandler{
 		else
 			t = new TextComponent(name);
 		
-		net.minecraft.server.v1_9_R2.ItemStack i = CraftItemStack.asNMSCopy(is);
+		net.minecraft.server.v1_11_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
 		NBTTagCompound tag = i.save(new NBTTagCompound());
 		String itemJson = tag.toString();
 
@@ -113,7 +113,7 @@ public class Version_v1_9_R2 implements QuestVersionHandler{
 				itemname = new TextComponent(is.getItemMeta().getDisplayName());
 		}
 		
-		net.minecraft.server.v1_9_R2.ItemStack i = CraftItemStack.asNMSCopy(is);
+		net.minecraft.server.v1_11_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
 		NBTTagCompound tag = i.save(new NBTTagCompound());
 		String itemJson = tag.toString();
 		
@@ -122,10 +122,9 @@ public class Version_v1_9_R2 implements QuestVersionHandler{
 		
 		return itemname;
 	}
-
+	
 	@Override
 	public boolean hasTag(Player p, String s){
 		return ((CraftPlayer)p).getHandle().P().contains(s);
 	}
-
 }

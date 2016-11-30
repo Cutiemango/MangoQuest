@@ -1,17 +1,14 @@
 package me.Cutiemango.MangoQuest.versions;
 
 import java.util.Arrays;
-import java.util.List;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftMetaBook;
+import org.bukkit.craftbukkit.v1_9_R1.util.CraftChatMessage;
 import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import io.netty.buffer.Unpooled;
@@ -22,8 +19,9 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_9_R1.NBTTagCompound;
+import net.minecraft.server.v1_9_R1.NBTTagList;
+import net.minecraft.server.v1_9_R1.NBTTagString;
 import net.minecraft.server.v1_9_R1.EnumHand;
-import net.minecraft.server.v1_9_R1.IChatBaseComponent;
 import net.minecraft.server.v1_9_R1.PacketDataSerializer;
 import net.minecraft.server.v1_9_R1.PacketPlayOutCustomPayload;
 import net.minecraft.server.v1_9_R1.PacketPlayOutTitle;
@@ -46,24 +44,21 @@ public class Version_v1_9_R1 implements QuestVersionHandler{
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void openBook(Player p, TextComponent... texts) {
-		List<IChatBaseComponent> pages = null;
-		
 		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
-		BookMeta bookMeta = (BookMeta) book.getItemMeta();
-		try {
-			pages = (List<IChatBaseComponent>) CraftMetaBook.class.getDeclaredField("pages").get(bookMeta);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+		net.minecraft.server.v1_9_R1.ItemStack nmsbook = CraftItemStack.asNMSCopy(book);
+		NBTTagCompound tag = new NBTTagCompound();
+		NBTTagList taglist = new NBTTagList();
+
 		for (TextComponent t : texts){
-			pages.add(ChatSerializer.a(ComponentSerializer.toString(t)));
+			taglist.add(new NBTTagString(CraftChatMessage.fromComponent(ChatSerializer.a(ComponentSerializer.toString(t)))));
 		}
 		
-		book.setItemMeta(bookMeta);
+		tag.set("pages", taglist);
+		nmsbook.setTag(tag);
+		
+		book = CraftItemStack.asBukkitCopy(nmsbook);
 		
 		int slot = p.getInventory().getHeldItemSlot();
 		ItemStack old = p.getInventory().getItem(slot);

@@ -1,141 +1,141 @@
-"���ȦC��":
-#Quest001 - ���Ȥ����X�A�i�H���ۤv���w���A���O���a�n�������ȮɫK�O�n���o�Ӥ����X�~�౵��
+"任務列表":
+#Quest001 - 任務內部碼，可以取自己喜歡的，但是玩家要接取任務時便是要打這個內部碼才能接取
   Quest001:
-#���ե��� - �������ȦW�١A��~��ܴN�O�ϥγo�ӦW�l
-    "���ȦW��": "���ե���"
-#���ȴ��n - ��K���a�F�Ѧ����Ȫ��ت��A�]�i�H��J�@�ǬG�Ƥ������C
-    "���ȴ��n":
-    - �u�O���եΪ��Ӥw�C
-#����NPC - �PNPC����䴩�A��J�������Ȫ�NPC��ID�X
-#�Y���ϥ�NPC�������ȡA�п�J-1�A�t�η|�۰ʧP�w�����O�����C
-    "����NPC": -1
-#���ȻݨD - �Y���ŦX�o�ӥ��Ȫ��ݨD�A�N�L�k������ȡC
-    "���ȻݨD":
-#Level - ���ŻݨD
+#測試任務 - 此為任務名稱，對外顯示就是使用這個名子
+    "任務名稱": "測試任務"
+#任務提要 - 方便玩家了解此任務的目的，也可以輸入一些故事之類的。
+    "任務提要":
+    - 只是測試用的而已。
+#任務NPC - 與NPC插件支援，輸入給予任務的NPC的ID碼
+#若不使用NPC接取任務，請輸入-1，系統會自動判定為指令接取。
+    "任務NPC": -1
+#任務需求 - 若不符合這個任務的需求，將無法執行任務。
+    "任務需求":
+#Level - 等級需求
       Level: 5
-#Quest - ���ȻݨD�A�������Y���Ȥ~�౵��
+#Quest - 任務需求，須完成某任務才能接取
       Quest:
 #      - "Quest002"
 #      - "Quest003"
-#Item - ���~�ݨD
-#���~�榡�p�U�A�Y�ݭn�ĤG�Ӫ��~�K�[�J'2'�G
+#Item - 物品需求
+#物品格式如下，若需要第二個物品便加入'2'：
       Item:
         '1':
-          "���O": DIAMOND_SWORD
-          "�ƶq": 1
+          "類別": DIAMOND_SWORD
+          "數量": 1
 #        '2':
-#          "���O": APPLE
-#          "�ƶq": 1
-#Scoreboard - �O���O�ݨD�A���a�ݭn�Y�Ӥ��ƨ�F���w���ƭȤ~�౵��
-#�`�N�G�ϥΦ��ݨD�����ȥ����b���A���W�w���U���O���O���ơA�_�h�p�µ��|���X���~�I
-#�榡�G [�O���O���ƦW��] [�j��(>=)/����(==)/�p��(<=)] [�ƭ�]
+#          "類別": APPLE
+#          "數量": 1
+#Scoreboard - 記分板需求，玩家需要某個分數到達指定的數值才能接取
+#注意：使用此需求的任務必須在伺服器上已註冊此記分板分數，否則小黑窗會跳出錯誤！
+#格式： [記分板分數名稱] [大於(>=)/等於(==)/小於(<=)] [數值]
       Scoreboard:
 #      - "obj01 <= 8"
-#NBTTag - NBTTag�ݨD�A���a���W���������w��tag�~�౵��
+#NBTTag - NBTTag需求，玩家身上必須有指定的tag才能接取
       NBTTag:
 #      - "QuestTag001"
-#���ŦX���ȻݨD�T�� - �o���ӫܩ���F�a...
-    "���ŦX���ȻݨD�T��": "&c�A�èS���F��ŦX�����ȱ���C"
-#�i���ư��� - �O�_���@���ʥ���(true/false)
-    "�i���ư���": true
-#���ư���ɶ� - �H�@���p��(1000ms = 1s)
-    "���ư���ɶ�": 10000
-#����Ĳ�o�ƥ�G
-#�榡�G [�ƥ�Ĳ�o�ɾ�] ([���ȶ��q]) [�ƥ�ʧ@] [�ƥ�Ĳ�o���e]
+#不符合任務需求訊息 - 這應該很明顯了吧...
+    "不符合任務需求訊息": "&c你並沒有達到符合的任務條件。"
+#可重複執行 - 是否為一次性任務(true/false)
+    "可重複執行": true
+#重複執行時間 - 以毫秒計算(1000ms = 1s)
+    "重複執行時間": 10000
+#任務觸發事件：
+#格式： [事件觸發時機] ([任務階段]) [事件動作] [事件觸發內容]
 
-#�ƥ�Ĳ�o�ɾ����G
-#TRIGGER_ON_TAKE - ������Ĳ�o
-#TRIGGER_ON_FINISH - ������Ĳ�o
-#TRIGGER_ON_QUIT - ����Ĳ�o
-#TRIGGER_STAGE_START - ���q�}�l��Ĳ�o
-#TRIGGER_STAGE_FINISH - ���q������Ĳ�o(�]�N�O�U�@���q�}�l��Ĳ�o)
+#事件觸發時機有：
+#TRIGGER_ON_TAKE - 接受時觸發
+#TRIGGER_ON_FINISH - 完成時觸發
+#TRIGGER_ON_QUIT - 放棄時觸發
+#TRIGGER_STAGE_START - 階段開始時觸發
+#TRIGGER_STAGE_FINISH - 階段結束時觸發(也就是下一階段開始時觸發)
 
-#�����q�ݨD��������J���ȶ��q�C
+#有階段需求的必須填入任務階段。
 
-#�ƥ�ʧ@���G
-#SEND_TITLE - �ǰe���D
-#SEND_SUBTITLE - �ǰe�Ƽ��D
-#COMMAND - �ϥΤp�µ�������O
-#SEND_MESSAGE - �ǰe�T��
-#TELEPORT - �ǰe���a
+#事件動作有：
+#SEND_TITLE - 傳送標題
+#SEND_SUBTITLE - 傳送副標題
+#COMMAND - 使用小黑窗執行指令
+#SEND_MESSAGE - 傳送訊息
+#TELEPORT - 傳送玩家
 
-#�ǰe���a�����e�榡���G[�@�ɦW��]:[x]:[y]:[z]
-#ex. world:0:80:0 - �ǰe��W��world���@��(0, 80, 0)����m
+#傳送玩家的內容格式為：[世界名稱]:[x]:[y]:[z]
+#ex. world:0:80:0 - 傳送到名為world的世界(0, 80, 0)的位置
 
-    "����Ĳ�o�ƥ�":
-    - "TRIGGER_ON_TAKE SEND_TITLE &b���\�������ȤF�C"
-    - "TRIGGER_STAGE_START 2 SEND_SUBTITLE &6�ĤG���q�}�l�C"
-    - "TRIGGER_STAGE_FINISH 1 SEND_MESSAGE &b���ߧA�����@�Ӷ��q�F�C"
+    "任務觸發事件":
+    - "TRIGGER_ON_TAKE SEND_TITLE &b成功接受任務了。"
+    - "TRIGGER_STAGE_START 2 SEND_SUBTITLE &6第二階段開始。"
+    - "TRIGGER_STAGE_FINISH 1 SEND_MESSAGE &b恭喜你完成一個階段了。"
     - "TRIGGER_STAGE_FINISH 1 COMMAND say <player>"
-    - "TRIGGER_ON_QUIT SEND_MESSAGE &c�A�̬ƻ򵹧ک����ȡI"
-#���Ȥ��e�G
-#�Ĥ@��'1'�N�����O���q(���Ȥ��e�U������)�A�A�U����'1'�N�������q�����Ȥ��e�A�p�G���h�ӴN��J'2'�A�H�������C
-#���Ⱥ������G
-#DELIVER_ITEM - ���檫�~�����wNPC
-#�ݭn�G�@��NPC�ѼơB�@�Ӫ��~�Ѽ�
+    - "TRIGGER_ON_QUIT SEND_MESSAGE &c你憑甚麼給我放棄任務！"
+#任務內容：
+#第一個'1'代表的是階段(任務內容下面那行)，再下面的'1'代表此階段的任務內容，如果有多個就填入'2'，以此類推。
+#任務種類有：
+#DELIVER_ITEM - 遞交物品給指定NPC
+#需要：一個NPC參數、一個物品參數
 
-#KILL_MOB - �������w�Ǫ�
-#�ݭn�G�@�өǪ��Ѽ�
+#KILL_MOB - 殺死指定怪物
+#需要：一個怪物參數
 
-#TALK_TO_NPC - �P���wNPC���
-#�ݭn�G�@��NPC�Ѽ�
+#TALK_TO_NPC - 與指定NPC對話
+#需要：一個NPC參數
 
-#BREAK_BLOCK - �}�a���w���
-#�ݭn�G�@�Ӥ���Ѽ�
+#BREAK_BLOCK - 破壞指定方塊
+#需要：一個方塊參數
 
-#CONSUME_ITEM - �A�Ϋ��w����
-#�ݭn�G�@�Ӫ��~�Ѽ�
+#CONSUME_ITEM - 服用指定食物
+#需要：一個物品參數
 
-#REACH_LOCATION - ��F���w�a�I
-#�ݭn�G�@�Ӧa�I�Ѽ�
+#REACH_LOCATION - 到達指定地點
+#需要：一個地點參數
 
-#�U�Ѽƪ��d�Ҧb�U�����Z�M�����A�Y���F�ѥi�H�b�ګ��W�o�ݡC
+#各參數的範例在下面都蠻清楚的，若不了解可以在巴哈上發問。
 
-    "���Ȥ��e":
+    "任務內容":
       '1':
         '1':
-          "���Ⱥ���": DELIVER_ITEM
-          "�ؼ�NPC": 1
-          "���~":
-            "���O": DIAMOND_SWORD
-            "�ƶq": 1
+          "任務種類": DELIVER_ITEM
+          "目標NPC": 1
+          "物品":
+            "類別": DIAMOND_SWORD
+            "數量": 1
         '2':
-          "���Ⱥ���": KILL_MOB
-          "�Ǫ��W��": "�p�L��"
-          "�Ǫ�����": ZOMBIE
-          "�ƶq": 1
+          "任務種類": KILL_MOB
+          "怪物名稱": "小殭屍"
+          "怪物類型": ZOMBIE
+          "數量": 1
       '2':
         '1':
-          "���Ⱥ���": TALK_TO_NPC
-          "�ؼ�NPC": 1
-          "Ĳ�o���": Test001
+          "任務種類": TALK_TO_NPC
+          "目標NPC": 1
+          "觸發對話": Test001
         '2':
-          "���Ⱥ���": BREAK_BLOCK
-          "���": GRASS
-          "�ƶq": 5
+          "任務種類": BREAK_BLOCK
+          "方塊": GRASS
+          "數量": 5
       '3':
         '1':
-          "���Ⱥ���": CONSUME_ITEM
-          "���~":
-            "���O": POTATO_ITEM
-            "�ƶq": 1
+          "任務種類": CONSUME_ITEM
+          "物品":
+            "類別": POTATO_ITEM
+            "數量": 1
         '2':
-          "���Ⱥ���": REACH_LOCATION
-          "�a�I": world:0:80:0
-          "�W��": "&d&l�W�Ż������a��"
-          "�d��": 5
-#���ȼ��y�A�i�H�񪫫~�B�����H�θg���
-#��L���������y�w�ﴣ�X��ĳ
-    "���ȼ��y":
-      "���~":
+          "任務種類": REACH_LOCATION
+          "地點": world:0:80:0
+          "名稱": "&d&l超級遙遠的地方"
+          "範圍": 5
+#任務獎勵，可以填物品、金錢以及經驗值
+#其他類型的獎勵歡迎提出建議
+    "任務獎勵":
+      "物品":
         '1':
-          "���O": DIAMOND
-          "�ƶq": 1
-#���~�ѼƤ]�i�H�[�J�W�ٻP���ѡA�b�P�@��ɤW�Y�i�C
-#          "���~�W��": "&b�p��"
-#          "���~����":
-#          - "&e�W�ŬöQ����C"
-      "����": 50
-      "�g���": 100
-      "�ͦn��":
+          "類別": DIAMOND
+          "數量": 1
+#物品參數也可以加入名稱與註解，在同一行補上即可。
+#          "物品名稱": "&b鑽石"
+#          "物品註解":
+#          - "&e超級珍貴的唷。"
+      "金錢": 50
+      "經驗值": 100
+      "友好度":
         '0': 20

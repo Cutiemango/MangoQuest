@@ -24,15 +24,28 @@ public class QuestInitializer {
 	public void initPlugins(){
 		try {
 			if (plugin.getServer().getPluginManager().getPlugin("Citizens") != null) {
-				citizens = (CitizensPlugin) plugin.getServer().getPluginManager().getPlugin("Citizens");
-				plugin.getLogger().info("Citizens插件已經連結成功。");
+				try{
+					citizens = (CitizensPlugin) plugin.getServer().getPluginManager().getPlugin("Citizens");
+					plugin.getLogger().severe("Citizens插件連接成功！");
+				}catch (NoClassDefFoundError error){
+					plugin.getLogger().severe("未連結NPC插件，發生此錯誤的原因可能有：");
+					plugin.getLogger().severe("- 您未安裝Citizens插件");
+					plugin.getLogger().severe("- 您安裝的Citizens插件與此伺服器端不相容。");
+					plugin.getLogger().severe("請檢查並修復此錯誤，若您確認安裝了正確的版本，請聯絡插件開發者。");
+				}
 			}
 			else
 				plugin.getLogger().severe("未連結NPC插件，請安裝Citizens插件否則插件無法運作！");
 			
 			if (plugin.getServer().getPluginManager().getPlugin("Vault") != null) {
-				vault = (Vault) plugin.getServer().getPluginManager().getPlugin("Vault");
-				plugin.getLogger().info("Vault插件已經連結成功。");
+				try{
+					vault = (Vault) plugin.getServer().getPluginManager().getPlugin("Vault");
+					plugin.getLogger().info("Vault插件已經連結成功。");
+				}catch (NoClassDefFoundError error){
+					plugin.getLogger().severe("未連結Vault插件，發生此錯誤的原因可能有：");
+					plugin.getLogger().severe("- 您未安裝Vault插件");
+					plugin.getLogger().severe("請檢查並修復此錯誤，若您確認安裝了正確的版本，請聯絡插件開發者。");
+				}
 			}
 			else
 				plugin.getLogger().severe("未連結Vault，請重新安裝否則插件無法運作！");
