@@ -33,4 +33,8 @@ public class QuestObjectBreakBlock extends NumerableObject{
 	public Material getType(){
 		return block;
 	}
+	
+	public void setType(Material m){
+		block = m;
+	}
 }

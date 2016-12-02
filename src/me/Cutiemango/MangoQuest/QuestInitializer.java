@@ -26,7 +26,7 @@ public class QuestInitializer {
 			if (plugin.getServer().getPluginManager().getPlugin("Citizens") != null) {
 				try{
 					citizens = (CitizensPlugin) plugin.getServer().getPluginManager().getPlugin("Citizens");
-					plugin.getLogger().severe("Citizens插件連接成功！");
+					plugin.getLogger().info("Citizens插件連接成功！");
 				}catch (NoClassDefFoundError error){
 					plugin.getLogger().severe("未連結NPC插件，發生此錯誤的原因可能有：");
 					plugin.getLogger().severe("- 您未安裝Citizens插件");

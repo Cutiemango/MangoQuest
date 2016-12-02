@@ -71,7 +71,7 @@ public class PlayerListener implements Listener{
 	public void onCosumeItem(PlayerItemConsumeEvent e){
 		Player p = e.getPlayer();
 		QuestPlayerData qd = QuestUtil.getData(p);
-		if (e.getItem() != null)
+		if (e.getItem() != null && !e.isCancelled())
 			qd.consumeItem(e.getItem());
 	}
 	

@@ -48,7 +48,5 @@ public class CommandReceiver implements CommandExecutor{
 		QuestUtil.info(p, "&f/mq editor (help) - 查詢關於&9&l編輯器&f的指令");
 		QuestUtil.info(p, "&f/mq reload - &c重新讀取設定檔案");
 	}
-	
-	
 
 }

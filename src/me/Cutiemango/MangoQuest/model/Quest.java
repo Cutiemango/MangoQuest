@@ -19,6 +19,11 @@ import net.citizensnpcs.api.npc.NPC;
 
 public class Quest {
 	
+	// Only Initialize with Command
+	public Quest(){
+		
+	}
+	
 	public Quest(String InternalID, String name, List<String> QuestOutline, QuestReward reward, List<QuestStage> stages, NPC npc){
 		this.InternalID = InternalID;
 		this.QuestName = QuestUtil.translateColor(name);
@@ -26,7 +31,6 @@ public class Quest {
 		this.reward = reward;
 		this.AllStages = stages;
 		this.QuestNPC = npc;
-		this.FailRequirementMessage = "&c你並沒有達到指定的任務條件。";
 		
 		
 		for (RequirementType t : RequirementType.values()){
@@ -58,11 +62,11 @@ public class Quest {
 
 	private String QuestName;
 	
-	private List<String> QuestOutline;
+	private List<String> QuestOutline = new ArrayList<>();
 
-	private String FailRequirementMessage;
+	private String FailRequirementMessage = "&c你並沒有達到指定的任務條件。";
 	private List<QuestStage> AllStages = new ArrayList<>();
-	private QuestReward reward;
+	private QuestReward reward = new QuestReward();
 	
 	private EnumMap<RequirementType, Object> Requirements = new EnumMap<>(RequirementType.class);
 	//private List<QuestRequirement> Requirements = new ArrayList<>();

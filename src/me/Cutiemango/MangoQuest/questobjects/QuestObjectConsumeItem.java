@@ -5,15 +5,13 @@ import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class QuestObjectItemConsume extends NumerableObject{
+public class QuestObjectConsumeItem extends ItemObject{
 	
-	public QuestObjectItemConsume(ItemStack is, int i){
+	public QuestObjectConsumeItem(ItemStack is, int i){
 		item = is;
 		amount = i;
 		config = "CONSUME_ITEM";
 	}
-	
-	private ItemStack item;
 
 	@Override
 	public TextComponent toTextComponent(boolean isFinished) {
@@ -26,10 +24,6 @@ public class QuestObjectItemConsume extends NumerableObject{
 			return QuestUtil.translateColor("&a食用 " + amount + " 個 " + item.getItemMeta().getDisplayName());
 		else
 			return QuestUtil.translateColor("&a食用 " + amount + " 個 " + QuestUtil.translate(item.getType(), item.getDurability()));
-	}
-	
-	public ItemStack getItem(){
-		return item;
 	}
 
 }

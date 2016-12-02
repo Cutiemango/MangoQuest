@@ -31,8 +31,8 @@ import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerObject;
 import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
 import me.Cutiemango.MangoQuest.model.RequirementType;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectItemConsume;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectItemDeliver;
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectConsumeItem;
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectDeliverItem;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectKillMob;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
@@ -92,11 +92,15 @@ public class QuestConfigManager {
 				if (CitizensAPI.getNPCRegistry().getById(id) != null){
 					count++;
 					QuestNPC npc = new QuestNPC();
-					for (String i : NPCIO.getSection("NPC." + s + ".開啟介面訊息")){
-						npc.put(Integer.parseInt(i), NPCIO.getString("NPC." + s + ".開啟介面訊息." + i));
+					if (NPCIO.isSection("NPC." + id + ".Messages")){
+						for (String i : NPCIO.getSection("NPC." + id + ".Messages")){
+							npc.put(Integer.parseInt(i), NPCIO.getString("NPC." + id + ".Messages." + i));
+						}
 					}
-					for (String i : NPCIO.getSection("NPC." + s + ".對話")){
-						npc.put(Integer.parseInt(i), QuestUtil.getConvByName(NPCIO.getString("NPC." + s + ".對話." + i)));
+					if (NPCIO.isSection("NPC." + id + ".Conversations")){
+						for (String i : NPCIO.getSection("NPC." + id + ".Conversations")){
+							npc.put(Integer.parseInt(i), QuestUtil.getConvByName(NPCIO.getString("NPC." + id + ".Conversations." + i)));
+						}
 					}
 					QuestStorage.NPCMap.put(id, npc);
 				}
@@ -110,38 +114,44 @@ public class QuestConfigManager {
 	}
 	
 	public void removeQuest(Quest q){
-		QuestsIO.getConfig().set("任務列表." + q.getInternalID(), null);
+		QuestsIO.getConfig().set("Quests." + q.getInternalID(), null);
 		Bukkit.getLogger().log(Level.WARNING, "[任務讀取] 任務 " + q.getInternalID() + " 已經刪除所有yml相關資料。");
 		QuestsIO.save();
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void saveQuest(Quest q){
-		QuestsIO.set("任務列表." + q.getInternalID() + ".任務名稱", q.getQuestName());
-		QuestsIO.set("任務列表." + q.getInternalID() + ".任務提要", q.getQuestOutline());
+		QuestsIO.set("Quests." + q.getInternalID() + ".QuestName", q.getQuestName());
+		QuestsIO.set("Quests." + q.getInternalID() + ".QuestOutline", q.getQuestOutline());
 		if (q.isCommandQuest())
-			QuestsIO.set("任務列表." + q.getInternalID() + ".任務NPC", -1);
+			QuestsIO.set("Quests." + q.getInternalID() + ".QuestNPC", -1);
 		else
-			QuestsIO.set("任務列表." + q.getInternalID() + ".任務NPC", q.getQuestNPC().getId());
-		QuestsIO.set("任務列表." + q.getInternalID() + ".任務需求.Level", q.getRequirements().get(RequirementType.LEVEL));
-		QuestsIO.set("任務列表." + q.getInternalID() + ".任務需求.Quest", q.getRequirements().get(RequirementType.QUEST));
+			QuestsIO.set("Quests." + q.getInternalID() + ".QuestNPC", q.getQuestNPC().getId());
+		if (q.getRequirements().containsKey(RequirementType.LEVEL))
+			QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Level", q.getRequirements().get(RequirementType.LEVEL));
+		if (q.getRequirements().containsKey(RequirementType.QUEST))
+			QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Quest", q.getRequirements().get(RequirementType.QUEST));
 		int i = 0;
-		for (ItemStack is : (List<ItemStack>)q.getRequirements().get(RequirementType.ITEM)){
-			i++;
-			QuestsIO.set("任務列表." + q.getInternalID() + ".任務需求.Item." + i + ".類別", is.getType().toString());
-			QuestsIO.set("任務列表." + q.getInternalID() + ".任務需求.Item." + i + ".數量", is.getAmount());
-			if (is.hasItemMeta() && is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()){
-				QuestsIO.set("任務列表." + q.getInternalID() + ".任務需求.Item." + i + ".名稱", is.getItemMeta().getDisplayName());
-				QuestsIO.set("任務列表." + q.getInternalID() + ".任務需求.Item." + i + ".註解", is.getItemMeta().getLore());
+		if (q.getRequirements().containsKey(RequirementType.ITEM)){
+			for (ItemStack is : (List<ItemStack>)q.getRequirements().get(RequirementType.ITEM)){
+				i++;
+				QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".Material", is.getType().toString());
+				QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".Amount", is.getAmount());
+				if (is.hasItemMeta() && is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()){
+					QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".ItemName", is.getItemMeta().getDisplayName());
+					QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".ItemLore", is.getItemMeta().getLore());
+				}
 			}
 		}
-		QuestsIO.set("任務列表." + q.getInternalID() + ".任務需求.Scoreboard", q.getRequirements().get(RequirementType.SCOREBOARD));
-		QuestsIO.set("任務列表." + q.getInternalID() + ".任務需求.NBTTag", q.getRequirements().get(RequirementType.NBTTAG));
+		if (q.getRequirements().containsKey(RequirementType.SCOREBOARD))
+			QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Scoreboard", q.getRequirements().get(RequirementType.SCOREBOARD));
+		if (q.getRequirements().containsKey(RequirementType.NBTTAG))
+			QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.NBTTag", q.getRequirements().get(RequirementType.NBTTAG));
 		if (q.getFailMessage() != null)
-			QuestsIO.set("任務列表." + q.getInternalID() + ".不符合任務需求訊息", q.getFailMessage());
-		QuestsIO.set("任務列表." + q.getInternalID() + ".可重複執行", q.isRedoable());
+			QuestsIO.set("Quests." + q.getInternalID() + ".MessageRequirementNotMeet", q.getFailMessage());
+		QuestsIO.set("Quests." + q.getInternalID() + ".Redoable", q.isRedoable());
 		if (q.isRedoable())
-			QuestsIO.set("任務列表." + q.getInternalID() + ".重複執行時間", q.getRedoDelay());
+			QuestsIO.set("Quests." + q.getInternalID() + ".RedoDelayMilliseconds", q.getRedoDelay());
 		List<String> list = new ArrayList<>();
 		for (QuestTrigger qt : q.getTriggers()){
 			if (qt.getType().equals(TriggerType.TRIGGER_STAGE_START) || qt.getType().equals(TriggerType.TRIGGER_STAGE_FINISH)){
@@ -150,52 +160,56 @@ public class QuestConfigManager {
 			}
 			list.add(qt.getType() + " " + qt.getTriggerObject().toString() + " " + qt.getObject().toString());
 		}
-		QuestsIO.set("任務列表." + q.getInternalID() + ".任務觸發事件", list);
+		QuestsIO.set("Quests." + q.getInternalID() + ".TriggerEvents", list);
 		i = 0;
 		int j = 0;
 		for (QuestStage s : q.getStages()){
 			i++;
 			for (SimpleQuestObject obj : s.getObjects()){
 				j++;
-				QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".任務種類", obj.getConfigString());
+				QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".ObjectType", obj.getConfigString());
 				switch(obj.getConfigString()){
 				case "DELIVER_ITEM":
-					QuestObjectItemDeliver o = (QuestObjectItemDeliver)obj;
-					QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".目標NPC", o.getTargetNPC().getId());
-					QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.類別", o.getDeliverItem().getType().toString());
-					QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.數量", o.getDeliverItem().getAmount());
-					if (o.getDeliverItem().hasItemMeta() && o.getDeliverItem().getItemMeta().hasDisplayName() && o.getDeliverItem().getItemMeta().hasLore()){
-						QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.物品名稱", o.getDeliverItem().getItemMeta().getDisplayName());
-						QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.物品註解", o.getDeliverItem().getItemMeta().getLore());
+					QuestObjectDeliverItem o = (QuestObjectDeliverItem)obj;
+					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".TargetNPC", o.getTargetNPC().getId());
+					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Item.Material", o.getItem().getType().toString());
+					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Item.Amount", o.getItem().getAmount());
+					if (o.getItem().hasItemMeta() && o.getItem().getItemMeta().hasDisplayName() && o.getItem().getItemMeta().hasLore()){
+						QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Item.ItemName", o.getItem().getItemMeta().getDisplayName());
+						QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Item.ItemLore", o.getItem().getItemMeta().getLore());
 					}
 					break;
 				case "TALK_TO_NPC":
 					QuestObjectTalkToNPC on = (QuestObjectTalkToNPC)obj;
-					QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".目標NPC", on.getTargetNPC().getId());
+					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".TargetNPC", on.getTargetNPC().getId());
 					break;
 				case "KILL_MOB":
 					QuestObjectKillMob om = (QuestObjectKillMob)obj;
-					QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".怪物類型", om.getType().toString());
-					QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".數量", om.getAmount());
+					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Amount", om.getAmount());
+					if (om.isMythicObject()){
+						QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".MythicMob", om.getMythicMob().getInternalName());
+						break;
+					}
+					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".MobType", om.getType().toString());
 					if (om.hasCustomName())
-						QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".怪物名稱", om.getCustomName());
+						QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".MobName", om.getCustomName());
 					break;
 				case "BREAK_BLOCK":
 					QuestObjectBreakBlock ob = (QuestObjectBreakBlock)obj;
-					QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".方塊", ob.getType().toString());
-					QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".數量", ob.getAmount());
+					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".BlockType", ob.getType().toString());
+					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Amount", ob.getAmount());
 					break;
 				case "CONSUME_ITEM":
-					QuestObjectItemConsume oi = (QuestObjectItemConsume)obj;
-					QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.類別", oi.getItem().getType().toString());
-					QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".物品.數量", oi.getItem().getAmount());
+					QuestObjectConsumeItem oi = (QuestObjectConsumeItem)obj;
+					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Item.Material", oi.getItem().getType().toString());
+					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Item.Amount", oi.getItem().getAmount());
 					break;
 				case "REACH_LOCATION":
 					QuestObjectReachLocation or = (QuestObjectReachLocation)obj;
 					String loc = or.getLocation().getWorld().getName() + ":" + or.getLocation().getX() + ":" + or.getLocation().getY() + ":" + or.getLocation().getZ();
-					QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".地點", loc);
-					QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".名稱", or.getName());
-					QuestsIO.set("任務列表." + q.getInternalID() + ".任務內容." + i + "." + j + ".範圍", or.getRadius());
+					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Location", loc);
+					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".LocationName", or.getName());
+					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Range", or.getRadius());
 					break;
 				}
 				continue;
@@ -206,43 +220,43 @@ public class QuestConfigManager {
 			int c = 0;
 			for (ItemStack is : q.getQuestReward().getItems()){
 				c++;
-				QuestsIO.set("任務列表." + q.getInternalID() + ".任務獎勵.物品." + c + ".類別", is.getType().toString());
-				QuestsIO.set("任務列表." + q.getInternalID() + ".任務獎勵.物品." + c + ".數量", is.getAmount());
+				QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Item." + c + ".Material", is.getType().toString());
+				QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Item." + c + ".Amount", is.getAmount());
 			}
 		}
 		if (q.getQuestReward().hasMoney())
-			QuestsIO.set("任務列表." + q.getInternalID() + ".任務獎勵.金錢", q.getQuestReward().getMoney());
+			QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Money", q.getQuestReward().getMoney());
 		
 		System.out.println("[任務讀取] 任務 " + q.getQuestName() + " 已經儲存完成！");
 		QuestsIO.save();
 	}
 	
 	public void loadConversation(){
-		if (!ConversationIO.isSection("任務對話"))
-			return;
-		int count = 0;
-		for (String id : ConversationIO.getSection("任務對話")){
-			String name = ConversationIO.getString("任務對話." + id + ".對話名稱");
-			List<String> act = ConversationIO.getStringList("任務對話." + id + ".對話內容");
-			NPC npc = CitizensAPI.getNPCRegistry().getById(ConversationIO.getInt("任務對話." + id + ".對話NPC"));
-			QuestConversation conv = new QuestConversation(name, id, npc, loadConvAction(act), ConversationIO.getBoolean("任務對話." + id + ".好感度對話"));
-			QuestStorage.Conversations.put(id, conv);
-			count++;
-		}
+		if (ConversationIO.isSection("Conversations")){
+			int count = 0;
+			for (String id : ConversationIO.getSection("Conversations")){
+				String name = ConversationIO.getString("Conversations." + id + ".ConversationName");
+				List<String> act = ConversationIO.getStringList("Conversations." + id + ".ConversationActions");
+				NPC npc = CitizensAPI.getNPCRegistry().getById(ConversationIO.getInt("Conversations." + id + ".NPC"));
+				QuestConversation conv = new QuestConversation(name, id, npc, loadConvAction(act), ConversationIO.getBoolean("Conversations." + id + ".好感度對話"));
+				QuestStorage.Conversations.put(id, conv);
+				count++;
+			}
 		
-		System.out.println("[對話讀取] 對話已經讀取完成！讀取了 " + count + " 個對話！");
+			System.out.println("[對話讀取] 對話已經讀取完成！讀取了 " + count + " 個對話！");
+		}
 	}
 	
 	public void loadChoice(){
-		if (!ConversationIO.isSection("選擇"))
+		if (!ConversationIO.isSection("Choices"))
 			return;
 		int count = 0;
 		List<Choice> list = new ArrayList<>();
-		for (String id : ConversationIO.getSection("選擇")){
-			TextComponent q = new TextComponent(QuestUtil.translateColor(ConversationIO.getString("選擇." + id + ".問題")));
-			for (String num : ConversationIO.getSection("選擇." + id + ".選項")){
-				String name = ConversationIO.getString("選擇." + id + ".選項." + num + ".選項名稱");
-				Choice c = new Choice(name, loadConvAction(ConversationIO.getStringList("選擇." + id + ".選項." + num + ".選項動作")));
+		for (String id : ConversationIO.getSection("Choices")){
+			TextComponent q = new TextComponent(QuestUtil.translateColor(ConversationIO.getString("Choices." + id + ".Question")));
+			for (String num : ConversationIO.getSection("Choices." + id + ".Options")){
+				String name = ConversationIO.getString("Choices." + id + ".Options." + num + ".OptionName");
+				Choice c = new Choice(name, loadConvAction(ConversationIO.getStringList("Choices." + id + ".Options." + num + ".OptionActions")));
 				list.add(Integer.parseInt(num) - 1, c);
 			}
 			QuestChoice choice = new QuestChoice(q, list);
@@ -254,34 +268,34 @@ public class QuestConfigManager {
 	}
 	
 	public void loadQuests(){
-		if (!QuestsIO.isSection("任務列表"))
+		if (!QuestsIO.isSection("Quests"))
 			return;
 		int totalcount = 0;
-		for (String internal : QuestsIO.getSection("任務列表")) {
-			String questname = QuestsIO.getString("任務列表." + internal + ".任務名稱");
-			List<String> questoutline = QuestsIO.getStringList("任務列表." + internal + ".任務提要");
+		for (String internal : QuestsIO.getSection("Quests")) {
+			String questname = QuestsIO.getString("Quests." + internal + ".QuestName");
+			List<String> questoutline = QuestsIO.getStringList("Quests." + internal + ".QuestOutline");
 			List<QuestStage> stages = new ArrayList<>();
-			for (String stagecount : QuestsIO.getSection("任務列表." + internal + ".任務內容")) {
+			for (String stagecount : QuestsIO.getSection("Quests." + internal + ".Stages")) {
 				List<SimpleQuestObject> objs = new ArrayList<>();
 				int scount = Integer.parseInt(stagecount);
-				for (String objcount : QuestsIO.getSection("任務列表." + internal + ".任務內容." + scount)) {
+				for (String objcount : QuestsIO.getSection("Quests." + internal + ".Stages." + scount)) {
 					int ocount = Integer.parseInt(objcount);
-					String s = QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".任務種類");
+					String s = QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".ObjectType");
 					SimpleQuestObject obj = null;
 					int n;
 					switch (s) {
 					case "DELIVER_ITEM":
-						n = QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".目標NPC");
+						n = QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".TargetNPC");
 						if (CitizensAPI.getNPCRegistry().getById(n) == null){
 							Bukkit.getLogger().log(Level.SEVERE, "[任務讀取] 找不到代碼為 " + n + " 的NPC，請重新設定！");
 							continue;
 						}
-						obj = new QuestObjectItemDeliver(CitizensAPI.getNPCRegistry().getById(n),
-								getItemStack(QuestsIO.getConfig(), "任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品"),
-								QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品.數量"));
+						obj = new QuestObjectDeliverItem(CitizensAPI.getNPCRegistry().getById(n),
+								getItemStack(QuestsIO.getConfig(), "Quests." + internal + ".Stages." + scount + "." + ocount + ".Item"),
+								QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".Item.Amount"));
 						break;
 					case "TALK_TO_NPC":
-						n = QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".目標NPC");
+						n = QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".TargetNPC");
 						if (CitizensAPI.getNPCRegistry().getById(n) == null){
 							Bukkit.getLogger().log(Level.SEVERE, "[任務讀取] 找不到代碼為 " + n + " 的NPC，請重新設定！");
 							continue;
@@ -289,58 +303,58 @@ public class QuestConfigManager {
 						obj = new QuestObjectTalkToNPC(CitizensAPI.getNPCRegistry().getById(n));
 					case "KILL_MOB":
 						String name = null;
-						if (QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".怪物名稱") != null){
-							name = QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".怪物名稱");
+						if (QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MobName") != null){
+							name = QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MobName");
 							obj = new QuestObjectKillMob(
-								EntityType.valueOf(QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".怪物類型")),
-								QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".數量"), name);
+								EntityType.valueOf(QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MobType")),
+								QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".Amount"), name);
 						}
-						else if (QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".自訂怪物ID") != null){
+						else if (QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MythicMob") != null){
 							if (!Main.instance.initManager.hasMythicMobEnabled()){
 								Bukkit.getLogger().log(Level.SEVERE, "偵測到MythicMob的物件，但是未讀取到MythicMob插件連結，跳過讀取。");
 								continue;
 							}
-							name = QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".自訂怪物ID");
+							name = QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MythicMob");
 							try {
 								obj = new QuestObjectKillMob(
 											Main.instance.initManager.getMTMPlugin().getAPI().getMobAPI().getMythicMob(name),
-											QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".數量"));
+											QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".Amount"));
 							} catch (Exception e) {
 								Bukkit.getLogger().log(Level.SEVERE, "[任務讀取] 找不到代碼為 " + name + " 的自訂怪物，請重新設定！");
 								continue;
 							}
 						}
-						else if (QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".怪物類型") != null)
+						else if (QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MobType") != null)
 							obj = new QuestObjectKillMob(
-									EntityType.valueOf(QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".怪物類型")),
-									QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".數量"), null);
+									EntityType.valueOf(QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MobType")),
+									QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".Amount"), null);
 						break;
 					case "BREAK_BLOCK":
 						obj = new QuestObjectBreakBlock(Material.getMaterial(
-								QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".方塊")),
-								QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".數量"));
+								QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".BlockType")),
+								QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".Amount"));
 						break;
 					case "CONSUME_ITEM":
-						obj = new QuestObjectItemConsume(getItemStack(QuestsIO.getConfig(), "任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品"),
-								QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".物品.數量"));
+						obj = new QuestObjectConsumeItem(getItemStack(QuestsIO.getConfig(), "Quests." + internal + ".Stages." + scount + "." + ocount + ".Item"),
+								QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".Item.Amount"));
 						break;
 					case "REACH_LOCATION":
-						String[] splited = QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".地點").split(":");
+						String[] splited = QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".Location").split(":");
 						Location loc = new Location(
 								Bukkit.getWorld(splited[0]),
 								Double.parseDouble(splited[1]),
 								Double.parseDouble(splited[2]),
 								Double.parseDouble(splited[3]));
 						obj = new QuestObjectReachLocation(loc,
-								QuestsIO.getInt("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".範圍"),
-								QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".名稱"));
+								QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".Range"),
+								QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".LocationName"));
 						break;
 					default:
-						QuestUtil.warnCmd("錯誤：任務 " + internal + " 沒有正確的任務內容類別，請檢查設定檔案。");
+						QuestUtil.warnCmd("錯誤：任務 " + internal + " 沒有正確的任務類別，請檢查設定檔案。");
 						continue;
 					}
-					if (QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".觸發對話") != null){
-						QuestConversation conv = QuestUtil.getConvByName(QuestsIO.getString("任務列表." + internal + ".任務內容." + scount + "." + ocount + ".觸發對話"));
+					if (QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".ActivateConversation") != null){
+						QuestConversation conv = QuestUtil.getConvByName(QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".ActivateConversation"));
 						if (conv != null)
 							obj.setConversation(conv);
 						else{
@@ -355,55 +369,55 @@ public class QuestConfigManager {
 				stages.add(qs);
 			}
 			QuestReward reward = new QuestReward();
-			if (QuestsIO.isSection("任務列表." + internal + ".任務獎勵.物品")){
-				for (String temp : QuestsIO.getSection("任務列表." + internal + ".任務獎勵.物品")) {
-					reward.addItem(getItemStack(QuestsIO.getConfig(), "任務列表." + internal + ".任務獎勵.物品." + Integer.parseInt(temp)));
+			if (QuestsIO.isSection("Quests." + internal + ".Rewards.Item")){
+				for (String temp : QuestsIO.getSection("Quests." + internal + ".Rewards.Item")) {
+					reward.addItem(getItemStack(QuestsIO.getConfig(), "Quests." + internal + ".Rewards.Item." + Integer.parseInt(temp)));
 				}
 			}
-			if (QuestsIO.getDouble("任務列表." + internal + ".任務獎勵.金錢") != 0)
-				reward.addMoney(QuestsIO.getDouble("任務列表." + internal + ".任務獎勵.金錢"));
-			if (QuestsIO.getInt("任務列表." + internal + ".任務獎勵.經驗值") != 0)
-				reward.addExp(QuestsIO.getInt("任務列表." + internal + ".任務獎勵.經驗值"));
-			if (QuestsIO.isSection("任務列表." + internal + ".任務獎勵.友好度")){
-				for (String s : QuestsIO.getSection("任務列表." + internal + ".任務獎勵.友好度")){
-					reward.addFriendPoint(Integer.parseInt(s), QuestsIO.getInt("任務列表." + internal + ".任務獎勵.友好度." + s));
+			if (QuestsIO.getDouble("Quests." + internal + ".Rewards.Money") != 0)
+				reward.addMoney(QuestsIO.getDouble("Quests." + internal + ".Rewards.Money"));
+			if (QuestsIO.getInt("Quests." + internal + ".Rewards.Experience") != 0)
+				reward.addExp(QuestsIO.getInt("Quests." + internal + ".Rewards.Experience"));
+			if (QuestsIO.isSection("Quests." + internal + ".Rewards.FriendlyPoint")){
+				for (String s : QuestsIO.getSection("Quests." + internal + ".Rewards.FriendlyPoint")){
+					reward.addFriendPoint(Integer.parseInt(s), QuestsIO.getInt("Quests." + internal + ".Rewards.FriendlyPoint." + s));
 				}
 			}
 			
-			if (plugin.initManager.hasCitizensEnabled() && QuestsIO.contains("任務列表." + internal + ".任務NPC")){
+			if (plugin.initManager.hasCitizensEnabled() && QuestsIO.contains("Quests." + internal + ".QuestNPC")){
 				NPC npc = null;
-				if (!(QuestsIO.getInt("任務列表." + internal + ".任務NPC") == -1)
-						&& CitizensAPI.getNPCRegistry().getById(QuestsIO.getInt("任務列表." + internal + ".任務NPC")) != null)
+				if (!(QuestsIO.getInt("Quests." + internal + ".QuestNPC") == -1)
+						&& CitizensAPI.getNPCRegistry().getById(QuestsIO.getInt("Quests." + internal + ".QuestNPC")) != null)
 					npc = CitizensAPI.getNPCRegistry().getById(0);
 					Quest quest = new Quest(internal, questname, questoutline, reward, stages, npc);
-					if (QuestsIO.getString("任務列表." + internal + ".不符合任務需求訊息") != null)
-						quest.setFailMessage(QuestsIO.getString("任務列表." + internal + ".不符合任務需求訊息"));
+					if (QuestsIO.getString("Quests." + internal + ".MessageRequirementNotMeet") != null)
+						quest.setFailMessage(QuestsIO.getString("Quests." + internal + ".MessageRequirementNotMeet"));
 					//Requirements
-					if (QuestsIO.isSection("任務列表." + internal + ".任務需求")){
-						if (QuestsIO.getInt("任務列表." + internal + ".任務需求.Level") != 0)
-							quest.getRequirements().put(RequirementType.LEVEL, QuestsIO.getInt("任務列表." + internal + ".任務需求.Level"));
-						if (QuestsIO.getStringList("任務列表." + internal + ".任務需求.Quest") != null){
-							quest.getRequirements().put(RequirementType.QUEST, QuestsIO.getStringList("任務列表." + internal + ".任務需求.Quest"));
+					if (QuestsIO.isSection("Quests." + internal + ".Requirements")){
+						if (QuestsIO.getInt("Quests." + internal + ".Requirements.Level") != 0)
+							quest.getRequirements().put(RequirementType.LEVEL, QuestsIO.getInt("Quests." + internal + ".Requirements.Level"));
+						if (QuestsIO.getStringList("Quests." + internal + ".Requirements.Quest") != null){
+							quest.getRequirements().put(RequirementType.QUEST, QuestsIO.getStringList("Quests." + internal + ".Requirements.Quest"));
 						}
-						if (QuestsIO.isSection("任務列表." + internal + ".任務需求.Item")){
+						if (QuestsIO.isSection("Quests." + internal + ".Requirements.Item")){
 							List<ItemStack> l = new ArrayList<>();
-							for (String i : QuestsIO.getSection("任務列表." + internal + ".任務需求.Item")) {
-								l.add(getItemStack(QuestsIO.getConfig(), "任務列表." + internal + ".任務需求.Item." + i));
+							for (String i : QuestsIO.getSection("Quests." + internal + ".Requirements.Item")) {
+								l.add(getItemStack(QuestsIO.getConfig(), "Quests." + internal + ".Requirements.Item." + i));
 							}
 							quest.getRequirements().put(RequirementType.ITEM, l);
 						}
-						if (QuestsIO.getStringList("任務列表." + internal + ".任務需求.Scoreboard") != null){
-							quest.getRequirements().put(RequirementType.SCOREBOARD, QuestsIO.getStringList("任務列表." + internal + ".任務需求.Scoreboard"));
+						if (QuestsIO.getStringList("Quests." + internal + ".Requirements.Scoreboard") != null){
+							quest.getRequirements().put(RequirementType.SCOREBOARD, QuestsIO.getStringList("Quests." + internal + ".Requirements.Scoreboard"));
 						}
-						if (QuestsIO.getStringList("任務列表." + internal + ".任務需求.NBTTag") != null){
-							quest.getRequirements().put(RequirementType.NBTTAG, QuestsIO.getStringList("任務列表." + internal + ".任務需求.NBTTag"));
+						if (QuestsIO.getStringList("Quests." + internal + ".Requirements.NBTTag") != null){
+							quest.getRequirements().put(RequirementType.NBTTAG, QuestsIO.getStringList("Quests." + internal + ".Requirements.NBTTag"));
 						}
 					}
 					
 					//Triggers
-					if (QuestsIO.getStringList("任務列表." + internal + ".任務觸發事件") != null){
+					if (QuestsIO.getStringList("Quests." + internal + ".TriggerEvents") != null){
 						List<QuestTrigger> list = new ArrayList<>();
-						for (String tri : QuestsIO.getStringList("任務列表." + internal + ".任務觸發事件")){
+						for (String tri : QuestsIO.getStringList("Quests." + internal + ".TriggerEvents")){
 							String[] Stri = tri.split(" ");
 							QuestTrigger trigger = null;
 							TriggerType type = TriggerType.valueOf(Stri[0]);
@@ -439,9 +453,9 @@ public class QuestConfigManager {
 						}
 						quest.setTriggers(list);
 					}
-					if (QuestsIO.getBoolean("任務列表." + internal + ".可重複執行")){
+					if (QuestsIO.getBoolean("Quests." + internal + ".Redoable")){
 						quest.setRedoable(true);
-						quest.setRedoDelay(QuestsIO.getLong("任務列表." + internal + ".重複執行時間"));
+						quest.setRedoDelay(QuestsIO.getLong("Quests." + internal + ".RedoDelayMilliseconds"));
 					}
 					QuestStorage.Quests.put(internal, quest);
 					totalcount++;
@@ -492,13 +506,13 @@ public class QuestConfigManager {
 	}
 	
 	private ItemStack getItemStack(FileConfiguration config, String path) {
-		Material m = Material.getMaterial(config.getString(path + ".類別"));
-		int amount = config.getInt(path + ".數量");
+		Material m = Material.getMaterial(config.getString(path + ".Material"));
+		int amount = config.getInt(path + ".Amount");
 		ItemStack is = new ItemStack(m, amount);
-		if (config.getString(path + ".物品名稱") != null) {
-			String name = ChatColor.translateAlternateColorCodes('&', config.getString(path + ".物品名稱"));
+		if (config.getString(path + ".ItemName") != null) {
+			String name = ChatColor.translateAlternateColorCodes('&', config.getString(path + ".ItemName"));
 			List<String> lore = new ArrayList<>();
-			for (String s : config.getStringList(path + ".物品註解")) {
+			for (String s : config.getStringList(path + ".ItemLore")) {
 				lore.add(ChatColor.translateAlternateColorCodes('&', s));
 			}
 			ItemMeta im = is.getItemMeta();

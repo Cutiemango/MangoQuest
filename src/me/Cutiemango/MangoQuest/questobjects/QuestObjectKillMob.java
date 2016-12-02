@@ -43,6 +43,19 @@ public class QuestObjectKillMob extends NumerableObject{
 		return mtmMob;
 	}
 	
+	public void setCustomName(String s){
+		CustomName = s;
+	}
+	
+	public void setMythicMob(MythicMob m){
+		mtmMob = m;
+	}
+	
+	public void setType(EntityType t){
+		type = t;
+	}
+	
+	
 	public boolean isMythicObject(){
 		return mtmMob != null;
 	}

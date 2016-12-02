@@ -93,6 +93,14 @@ public class QuestReward {
 	public boolean isEmpty(){
 		return items.isEmpty() && money == 0.0D;
 	}
+	
+	public void setMoney(double m){
+		money = m;
+	}
+	
+	public void setExp(int exp){
+		experience = exp;
+	}
 
 	public void giveRewardTo(Player p) {
 		if (this.hasItem()) {

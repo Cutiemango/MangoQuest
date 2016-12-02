@@ -6,9 +6,9 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class QuestObjectItemDeliver extends NumerableObject{
+public class QuestObjectDeliverItem extends ItemObject{
 	
-	public QuestObjectItemDeliver(NPC n, ItemStack is, int deliveramount) {
+	public QuestObjectDeliverItem(NPC n, ItemStack is, int deliveramount) {
 		npc = n;
 		item = is;
 		amount = deliveramount;
@@ -16,7 +16,6 @@ public class QuestObjectItemDeliver extends NumerableObject{
 	}
 
 	private NPC npc;
-	private ItemStack item;
 
 	public NPC getTargetNPC() {
 		return npc;
@@ -26,13 +25,6 @@ public class QuestObjectItemDeliver extends NumerableObject{
 		npc = targetNPC;
 	}
 
-	public ItemStack getDeliverItem() {
-		return item;
-	}
-
-	public void setDeliverItem(ItemStack deliverItem) {
-		item = deliverItem;
-	}
 
 	@Override
 	public TextComponent toTextComponent(boolean isFinished) {

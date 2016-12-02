@@ -39,5 +39,17 @@ public class QuestObjectReachLocation extends SimpleQuestObject{
 	public int getRadius(){
 		return radius;
 	}
+	
+	public void setLocation(Location l){
+		loc = l;
+	}
+	
+	public void setName(String s){
+		name = s;
+	}
+	
+	public void setRadius(int i){
+		radius = i;
+	}
 
 }

@@ -22,8 +22,8 @@ import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestTrigger;
 import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectItemConsume;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectItemDeliver;
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectConsumeItem;
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectDeliverItem;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectKillMob;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
@@ -299,9 +299,9 @@ public class QuestPlayerData {
 			for (QuestObjectProgress qop : qp.getCurrentObjects()){
 				if (qop.isFinished())
 					continue;
-				if (qop.getObject() instanceof QuestObjectItemDeliver){
-					QuestObjectItemDeliver o = (QuestObjectItemDeliver)qop.getObject();
-					if (o.getTargetNPC().equals(npc) && o.getDeliverItem().isSimilar(p.getInventory().getItemInMainHand())){
+				if (qop.getObject() instanceof QuestObjectDeliverItem){
+					QuestObjectDeliverItem o = (QuestObjectDeliverItem)qop.getObject();
+					if (o.getTargetNPC().equals(npc) && o.getItem().isSimilar(p.getInventory().getItemInMainHand())){
 						if (p.getInventory().getItemInMainHand().getAmount() > (o.getAmount() - qop.getProgress())){
 							p.getInventory().getItemInMainHand().setAmount(
 									p.getInventory().getItemInMainHand().getAmount() - (o.getAmount() - qop.getProgress()));
@@ -413,8 +413,8 @@ public class QuestPlayerData {
 			for (QuestObjectProgress qop : qp.getCurrentObjects()){
 				if (qop.isFinished())
 					continue;
-				if (qop.getObject() instanceof QuestObjectItemConsume){
-					QuestObjectItemConsume o = (QuestObjectItemConsume)qop.getObject();
+				if (qop.getObject() instanceof QuestObjectConsumeItem){
+					QuestObjectConsumeItem o = (QuestObjectConsumeItem)qop.getObject();
 					if (is.isSimilar(o.getItem())){
 						qop.setProgress(qop.getProgress() + 1);
 						qop.checkIfFinished();

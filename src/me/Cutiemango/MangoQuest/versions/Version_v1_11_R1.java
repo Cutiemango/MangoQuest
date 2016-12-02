@@ -6,7 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_11_R1.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -52,7 +51,7 @@ public class Version_v1_11_R1 implements QuestVersionHandler{
 		NBTTagList taglist = new NBTTagList();
 
 		for (TextComponent t : texts){
-			taglist.add(new NBTTagString(CraftChatMessage.fromComponent(ChatSerializer.a(ComponentSerializer.toString(t)))));
+			taglist.add(new NBTTagString(ComponentSerializer.toString(t)));
 		}
 		
 		tag.set("pages", taglist);

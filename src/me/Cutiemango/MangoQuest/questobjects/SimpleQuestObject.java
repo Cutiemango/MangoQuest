@@ -1,5 +1,7 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
+import java.util.HashMap;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -14,6 +16,17 @@ import net.md_5.bungee.api.chat.TextComponent;
 public abstract class SimpleQuestObject {
 	
     public abstract TextComponent toTextComponent(boolean isFinished);
+    
+    public static HashMap<String, String> ALL_OBJECTS = new HashMap<>();
+    
+    static{
+    	ALL_OBJECTS.put("BREAK_BLOCK", "挖掘方塊");
+    	ALL_OBJECTS.put("CONSUME_ITEM", "使用物品");
+    	ALL_OBJECTS.put("DELIVER_ITEM", "提交物品");
+    	ALL_OBJECTS.put("KILL_MOB", "擊殺生物");
+    	ALL_OBJECTS.put("REACH_LOCATION", "到達地點");
+    	ALL_OBJECTS.put("TALK_TO_NPC", "與NPC對話");
+    }
 	
 	protected TextComponent toTextComponent(String s, boolean isFinished, Object... args){
 		TextComponent text = new TextComponent("");
@@ -75,8 +88,8 @@ public abstract class SimpleQuestObject {
 		return config;
 	}
 	
-	public void setConfigString(String s){
-		config = s;
+	public String getObjectName(){
+		return ALL_OBJECTS.get(config);
 	}
 	
 	public QuestConversation getConversation(){
@@ -90,5 +103,5 @@ public abstract class SimpleQuestObject {
 	public void setConversation(QuestConversation qc){
 		conv = qc;
 	}
-
+	
 }

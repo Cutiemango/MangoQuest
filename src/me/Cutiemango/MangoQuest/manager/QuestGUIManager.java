@@ -188,8 +188,7 @@ public class QuestGUIManager {
 	}
 	
 	public static void openInfo(Player p, String msg){
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&c請關閉書本視窗，\n"));
-		p1.addExtra(QuestUtil.translateColor(msg));
+		TextComponent p1 = new TextComponent(QuestUtil.translateColor(msg));
 		p1.addExtra(ChatColor.GRAY + "(取消請輸入cancel。)");
 		openBook(p, p1);
 	}
