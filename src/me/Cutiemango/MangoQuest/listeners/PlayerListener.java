@@ -44,7 +44,8 @@ public class PlayerListener implements Listener{
 			Entity damager = ((EntityDamageByEntityEvent)e.getEntity().getLastDamageCause()).getDamager();
 			if (!(damager instanceof Player || damager instanceof Projectile))
 				return;
-			if (Main.instance.initManager.getMTMPlugin().getAPI().getMobAPI().isMythicMob(e.getEntity()))
+			if (Main.instance.initManager.hasMythicMobEnabled() &&
+			Main.instance.initManager.getMTMPlugin().getAPI().getMobAPI().isMythicMob(e.getEntity()))
 				return;
 			Player attacker;
 			if (damager instanceof Projectile){

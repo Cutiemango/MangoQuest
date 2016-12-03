@@ -99,7 +99,7 @@ public class CommandAddnew {
 				break;
 			case ITEM:
 				QuestEditorListener.registerListeningObject(sender,
-						"mq e edit req " + t.toString() + " " + Integer.parseInt(args[4]));
+						"mq e edit req " + t.toString() + " " + Integer.parseInt(args[4]) + " ");
 				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並將物品拿在手上點擊右鍵，\n&c系統將會自動讀取。");
 				((List<ItemStack>) q.getRequirements().get(t)).add(new ItemStack(Material.GRASS));
 				break;
@@ -143,6 +143,7 @@ public class CommandAddnew {
 				QuestUtil.error(sender, "請輸入正確的數字！");
 				return;
 			}
+			q.getStage(stage - 1).getObjects().add(q.getStage(stage - 1).getObjects().size(), new QuestObjectBreakBlock(Material.GRASS, 1));
 			QuestEditorManager.selectObjectType(sender, stage, q.getStage(stage - 1).getObjects().size());
 		}
 	}

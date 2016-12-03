@@ -183,9 +183,9 @@ public class QuestEditorManager {
 				p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[移除]", "/mq e remove reward fp " + n));
 				p4.addExtra("\n");
 			}
-			p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[新增]", "/mq e addnew reward fp"));
-			p4.addExtra("\n");
 		}
+		p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[新增]", "/mq e addnew reward fp"));
+		p4.addExtra("\n");
 		p4.addExtra(QuestUtil.translateColor("物品："));
 		p4.addExtra("\n");
 		if (q.getQuestReward().hasItem()) {
@@ -199,9 +199,9 @@ public class QuestEditorManager {
 				p4.addExtra("\n");
 				i++;
 			}
-			p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[新增]", "/mq e addnew reward item"));
-			p4.addExtra("\n");
 		}
+		p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[新增]", "/mq e addnew reward item"));
+		p4.addExtra("\n");
 		
 		
 		TextComponent p5 = new TextComponent(QuestUtil.translateColor("&c&l儲存/退出》\n"));
@@ -297,7 +297,7 @@ public class QuestEditorManager {
 			
 		}
 		p1.addExtra(TextComponentFactory.regClickCmdEvent(
-				QuestUtil.translateColor("&c&l[新增]"), "/mq e addnew object"));
+				QuestUtil.translateColor("&c&l[新增]"), "/mq e addnew object " + stage));
 		p1.addExtra("\n");
 		p1.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[返回選擇任務階段]", "/mq e edit stage"));
 		QuestGUIManager.openBook(p, p1);
@@ -313,6 +313,7 @@ public class QuestEditorManager {
 		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&l編輯：任務目標(" + stage + "-" + obj + ")"));
 		p1.addExtra("\n");
 		p1.addExtra(QuestUtil.translateColor("&c&l目標類別：&0 " + o.getObjectName()));
+		p1.addExtra("\n");
 		p1.addExtra(TextComponentFactory.regClickCmdEvent("&0 &l[編輯]", "/mq e edit object " + stage + " " + obj + " type"));
 		p1.addExtra("\n");
 		switch(o.getConfigString()){
@@ -517,7 +518,7 @@ public class QuestEditorManager {
 	public static void selectObjectType(Player p, int stage, int obj){
 		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&l選擇任務目標類別： \n"));
 		for (String s : SimpleQuestObject.ALL_OBJECTS.keySet()){
-			p1.addExtra(TextComponentFactory.regClickCmdEvent("- [" + SimpleQuestObject.ALL_OBJECTS.get(s) + "]", "/mq e edit object" + stage + " " + obj + " type " + s));
+			p1.addExtra(TextComponentFactory.regClickCmdEvent("- [" + SimpleQuestObject.ALL_OBJECTS.get(s) + "]", "/mq e edit object " + stage + " " + obj + " type " + s));
 			p1.addExtra("\n");
 		}
 		QuestGUIManager.openBook(p, p1);

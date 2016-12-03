@@ -127,26 +127,29 @@ public class QuestConfigManager {
 			QuestsIO.set("Quests." + q.getInternalID() + ".QuestNPC", -1);
 		else
 			QuestsIO.set("Quests." + q.getInternalID() + ".QuestNPC", q.getQuestNPC().getId());
-		if (q.getRequirements().containsKey(RequirementType.LEVEL))
-			QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Level", q.getRequirements().get(RequirementType.LEVEL));
-		if (q.getRequirements().containsKey(RequirementType.QUEST))
-			QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Quest", q.getRequirements().get(RequirementType.QUEST));
+		QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Level",
+				q.getRequirements().get(RequirementType.LEVEL));
+		QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Quest",
+				q.getRequirements().get(RequirementType.QUEST));
 		int i = 0;
-		if (q.getRequirements().containsKey(RequirementType.ITEM)){
-			for (ItemStack is : (List<ItemStack>)q.getRequirements().get(RequirementType.ITEM)){
-				i++;
-				QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".Material", is.getType().toString());
-				QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".Amount", is.getAmount());
-				if (is.hasItemMeta() && is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()){
-					QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".ItemName", is.getItemMeta().getDisplayName());
-					QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".ItemLore", is.getItemMeta().getLore());
-				}
+		for (ItemStack is : (List<ItemStack>) q.getRequirements().get(RequirementType.ITEM)) {
+			i++;
+			QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".Material",
+					is.getType().toString());
+			QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".Amount", is.getAmount());
+			if (is.hasItemMeta() && is.getItemMeta().hasDisplayName()) {
+				QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".ItemName",
+						is.getItemMeta().getDisplayName());
+			}
+			if (is.hasItemMeta() && is.getItemMeta().hasLore()){
+				QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".ItemLore",
+						is.getItemMeta().getLore());
 			}
 		}
-		if (q.getRequirements().containsKey(RequirementType.SCOREBOARD))
-			QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Scoreboard", q.getRequirements().get(RequirementType.SCOREBOARD));
-		if (q.getRequirements().containsKey(RequirementType.NBTTAG))
-			QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.NBTTag", q.getRequirements().get(RequirementType.NBTTAG));
+		QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Scoreboard",
+				q.getRequirements().get(RequirementType.SCOREBOARD));
+		QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.NBTTag",
+				q.getRequirements().get(RequirementType.NBTTAG));
 		if (q.getFailMessage() != null)
 			QuestsIO.set("Quests." + q.getInternalID() + ".MessageRequirementNotMeet", q.getFailMessage());
 		QuestsIO.set("Quests." + q.getInternalID() + ".Redoable", q.isRedoable());
@@ -222,10 +225,25 @@ public class QuestConfigManager {
 				c++;
 				QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Item." + c + ".Material", is.getType().toString());
 				QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Item." + c + ".Amount", is.getAmount());
+				if (is.hasItemMeta() && is.getItemMeta().hasDisplayName()) {
+					QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Item." + c + ".ItemName",
+							is.getItemMeta().getDisplayName());
+				}
+				if (is.hasItemMeta() && is.getItemMeta().hasLore()){
+					QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Item." + c + ".ItemLore",
+							is.getItemMeta().getLore());
+				}
 			}
 		}
 		if (q.getQuestReward().hasMoney())
 			QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Money", q.getQuestReward().getMoney());
+		if (q.getQuestReward().hasExp())
+			QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Experience", q.getQuestReward().getExp());
+		if (q.getQuestReward().hasFriendPoint()){
+			for (Integer npc : q.getQuestReward().getFp().keySet()){
+				QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.FriendlyPoint." + npc, q.getQuestReward().getFp().get(npc));
+			}
+		}
 		
 		System.out.println("[任務讀取] 任務 " + q.getQuestName() + " 已經儲存完成！");
 		QuestsIO.save();

@@ -21,7 +21,28 @@ public class Quest {
 	
 	// Only Initialize with Command
 	public Quest(){
-		
+		for (RequirementType t : RequirementType.values()){
+			switch(t){
+			case ITEM:
+				Requirements.put(t, new ArrayList<ItemStack>());
+				break;
+			case LEVEL:
+				Requirements.put(t, 0);
+				break;
+			case MONEY:
+				Requirements.put(t, 0.0D);
+				break;
+			case NBTTAG:
+				Requirements.put(t, new ArrayList<String>());
+				break;
+			case QUEST:
+				Requirements.put(t, new ArrayList<String>());
+				break;
+			case SCOREBOARD:
+				Requirements.put(t, new ArrayList<String>());
+				break;
+			}
+		}
 	}
 	
 	public Quest(String InternalID, String name, List<String> QuestOutline, QuestReward reward, List<QuestStage> stages, NPC npc){
