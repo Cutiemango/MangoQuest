@@ -50,22 +50,24 @@ public class QuestEditorManager {
 	
 	public static void mainGUI(Player p){
 		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&9&l任務線上編輯器系統 &0&l：\n"));
-//		p1.addExtra(TextComponentFactory.registerHoverStringEvent(
-//				TextComponentFactory.registerClickCommandEvent(QuestUtil.translateColor("&0&l- 《新建任務》"), "/mq e newquest"), "&f點擊進入新增任務介面"));
 		p1.addExtra(TextComponentFactory.regHoverEvent(
 				TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("&0&l- 《新增任務》"), "/mq e newquest"), "&f點擊以新增任務"));
 		p1.addExtra("\n\n");
 		p1.addExtra(TextComponentFactory.regHoverEvent(
 				TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("&0&l- 《編輯任務》"), "/mq e edit"), "&f點擊進入編輯任務介面"));
 		p1.addExtra("\n\n");
+		p1.addExtra(TextComponentFactory.regHoverEvent(
+				TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("&0&l- 《移除任務》"), "/mq e remove"), "&f點擊進入移除任務介面"));
+		p1.addExtra("\n\n");
+		
 		if (isInEditorMode(p) && QuestEditorManager.getCurrentEditingQuest(p).getInternalID() != null){
 			p1.addExtra(TextComponentFactory.regHoverEvent(
 					TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("&c&l- 《返回編輯》"), "/mq e gui"), "&e您還有尚未儲存的任務！"));
 			p1.addExtra("\n\n");
+			p1.addExtra(TextComponentFactory.regHoverEvent(
+					TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("&c&l- 《退出編輯》"), "/mq e exit"), "&c&l所做的任何變更都不會儲存。"));
+			p1.addExtra("\n");
 		}
-		p1.addExtra(TextComponentFactory.regHoverEvent(
-				TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("&0&l- 《移除任務》"), "/mq e remove"), "&f點擊進入移除任務介面"));
-		p1.addExtra("\n");
 		QuestGUIManager.openBook(p, p1);
 	}
 	
@@ -127,9 +129,10 @@ public class QuestEditorManager {
 		else
 			p1.addExtra(TextComponentFactory.convertLocHoverEvent(q.getQuestNPC().getName(), q.getQuestNPC().getEntity().getLocation(), false));
 		p1.addExtra("\n");
-		p1.addExtra(TextComponentFactory.regHoverEvent(
-				TextComponentFactory.regClickCmdEvent("&0&l重複執行", "/mq e edit redo"), "&f點擊以編輯 是否可重複執行"));
+		
 		if (q.isRedoable()){
+			p1.addExtra(TextComponentFactory.regHoverEvent(
+					TextComponentFactory.regClickCmdEvent("&0&l重複執行", "/mq e edit redo false"), "&f點擊以變更 &c不可重複執行"));
 			p1.addExtra(QuestUtil.translateColor("&0&l： &a是"));
 			p1.addExtra("\n");
 			p1.addExtra(TextComponentFactory.regHoverEvent(
@@ -137,8 +140,11 @@ public class QuestEditorManager {
 			p1.addExtra(QuestUtil.translateColor("&0&l： " + QuestUtil.convertTime(q.getRedoDelay())));
 			p1.addExtra("\n");
 		}
-		else
+		else{
+			p1.addExtra(TextComponentFactory.regHoverEvent(
+					TextComponentFactory.regClickCmdEvent("&0&l重複執行", "/mq e edit redo true"), "&f點擊以變更 &a可重複執行"));
 			p1.addExtra(QuestUtil.translateColor("&0&l： &c否"));
+		}
 		
 		TextComponent p2 = new TextComponent(QuestUtil.translateColor("&2&l需求/事件/階段編輯》\n"));
 		p2.addExtra(QuestUtil.translateColor("&0任務&3&l需求： "));
@@ -169,7 +175,9 @@ public class QuestEditorManager {
 		p4.addExtra(TextComponentFactory.regClickCmdEvent("&0 &l[編輯]", "/mq e edit reward exp"));
 		p4.addExtra("\n");
 
-		p4.addExtra(QuestUtil.translateColor("好感度： "));
+		p4.addExtra(TextComponentFactory.regHoverEvent(
+				TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("好感度： "),
+				"/mq e addnew reward fp"), "&f點擊以&c新增&f好感度設定"));
 		p4.addExtra("\n");
 		if (q.getQuestReward().hasFriendPoint()) {
 			for (Integer n : q.getQuestReward().getFp().keySet()) {
@@ -184,9 +192,9 @@ public class QuestEditorManager {
 				p4.addExtra("\n");
 			}
 		}
-		p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[新增]", "/mq e addnew reward fp"));
-		p4.addExtra("\n");
-		p4.addExtra(QuestUtil.translateColor("物品："));
+		p4.addExtra(TextComponentFactory.regHoverEvent(
+				TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("物品： "),
+				"/mq e addnew reward item"), "&f點擊以&c新增&f物品"));
 		p4.addExtra("\n");
 		if (q.getQuestReward().hasItem()) {
 			int i = 0;
@@ -200,7 +208,6 @@ public class QuestEditorManager {
 				i++;
 			}
 		}
-		p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[新增]", "/mq e addnew reward item"));
 		p4.addExtra("\n");
 		
 		

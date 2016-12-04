@@ -216,7 +216,7 @@ public class QuestGUIManager {
 			p1.addExtra(TextComponentFactory.regHoverEvent(
 					TextComponentFactory.regClickCmdEvent("&9&l【對話】", "/mq conv npc " + npc.getId()),
 					"&9點擊&f以開始對話"));
-			if (qd.isCurrentlyDoing(q.getQuest()) && q.getQuest().getQuestNPC().equals(npc)){
+			if (qd.isCurrentlyDoing(q.getQuest()) && !q.getQuest().isCommandQuest() && q.getQuest().getQuestNPC().equals(npc)){
 				p1.addExtra(TextComponentFactory.regHoverEvent(
 						TextComponentFactory.regClickCmdEvent("&c&l【放棄】", "/mq quest quit " + q.getQuest().getInternalID()),
 						"&c放棄任務 &f" + q.getQuest().getQuestName() + "\n&4所有的任務進度都會消失。"));

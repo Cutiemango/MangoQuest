@@ -505,7 +505,7 @@ public class CommandEdit {
 					try{
 						((QuestObjectReachLocation)o).setRadius(Integer.parseInt(args[6]));
 						Location l = sender.getLocation();
-						((QuestObjectReachLocation)o).setLocation(l);
+						((QuestObjectReachLocation)o).setLocation(new Location(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ()));
 						QuestUtil.info(sender, "座標更改成功： (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ")");
 						QuestUtil.info(sender, "距離更改成功： " + args[6]);
 					}catch(NumberFormatException e){
@@ -622,10 +622,10 @@ public class CommandEdit {
 				if (sender.getInventory().getItemInMainHand().getType() != Material.AIR) {
 					for (ItemStack is : q.getQuestReward().getItems()){
 						if (is.isSimilar(sender.getInventory().getItemInMainHand())) {
-							q.getQuestReward().getItems().remove(Integer.parseInt(args[4]));
+							q.getQuestReward().getItems().remove(index);
 							QuestUtil.error(sender, "任務需求中已經有這個物件了！");
-							QuestEditorManager.editQuestRequirement(sender);
-							break;
+							QuestEditorManager.editQuest(sender);
+							return;
 						}
 					}
 					q.getQuestReward().getItems().remove(index);

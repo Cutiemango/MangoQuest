@@ -18,22 +18,26 @@ import me.Cutiemango.MangoQuest.model.RequirementType;
 public class CommandRemove {
 	
 	public static void execute(Quest q, Player sender, String[] args){
+		if (args.length >= 3){
+			switch(args[2]){
+				case "quest":
+					removeQuest(q, sender, args);
+					return;
+				case "confirm":
+					removeConfirm(q, sender, args);
+					return;
+			}
+		}
 		if (!QuestEditorManager.isInEditorMode(sender)){
 			QuestUtil.error(sender, "你不在編輯模式中！");
 			return;
 		}
 		switch (args[2]) {
-			case "confirm":
-				removeConfirm(q, sender, args);
-				break;
 			case "req":
 				removeRequirements(q, sender, args);
 				break;
 			case "evt":
 				removeEvent(q, sender, args);
-				break;
-			case "quest":
-				removeQuest(q, sender, args);
 				break;
 			case "stage":
 				removeStage(q, sender, args);

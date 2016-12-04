@@ -1,96 +1,27 @@
 ﻿Quests:
-#Quest001 - 任務內部碼，可以取自己喜歡的，但是玩家要接取任務時便是要打這個內部碼才能接取
   Quest001:
-#測試任務 - 此為QuestName，對外顯示就是使用這個名子
     "QuestName": "測試任務"
-#QuestOutline - 方便玩家了解此任務的目的，也可以輸入一些故事之類的。
     "QuestOutline":
     - 只是測試用的而已。
-#QuestNPC - 與NPC插件支援，輸入給予任務的NPC的ID碼
-#若不使用NPC接取任務，請輸入-1，系統會自動判定為指令接取。
     "QuestNPC": -1
-#Requirements - 若不符合這個任務的需求，將無法執行任務。
     "Requirements":
-#Level - 等級需求
       Level: 5
-#Quest - Requirements，須完成某任務才能接取
       Quest:
-#      - "Quest002"
-#      - "Quest003"
-#Item - Item需求
-#Item格式如下，若需要第二個Item便加入'2'：
       Item:
         '1':
           "Material": DIAMOND_SWORD
           "Amount": 1
-#        '2':
-#          "Material": APPLE
-#          "Amount": 1
-#Scoreboard - 記分板需求，玩家需要某個分數到達指定的數值才能接取
-#注意：使用此需求的任務必須在伺服器上已註冊此記分板分數，否則小黑窗會跳出錯誤！
-#格式： [記分板分數名稱] [大於(>=)/等於(==)/小於(<=)] [數值]
       Scoreboard:
-#      - "obj01 <= 8"
-#NBTTag - NBTTag需求，玩家身上必須有指定的tag才能接取
       NBTTag:
-#      - "QuestTag001"
-#MessageRequirementNotMeet - 這應該很明顯了吧...
     "MessageRequirementNotMeet": "&c你並沒有達到符合的任務條件。"
-#Redoable - 是否為一次性任務(true/false)
     "Redoable": true
-#RedoDelayMilliseconds - 以毫秒計算(1000ms = 1s)
     "RedoDelayMilliseconds": 10000
-#TriggerEvents：
-#格式： [事件觸發時機] ([任務階段]) [事件動作] [事件觸發內容]
-
-#事件觸發時機有：
-#TRIGGER_ON_TAKE - 接受時觸發
-#TRIGGER_ON_FINISH - 完成時觸發
-#TRIGGER_ON_QUIT - 放棄時觸發
-#TRIGGER_STAGE_START - 階段開始時觸發
-#TRIGGER_STAGE_FINISH - 階段結束時觸發(也就是下一階段開始時觸發)
-
-#有階段需求的必須填入任務階段。
-
-#事件動作有：
-#SEND_TITLE - 傳送標題
-#SEND_SUBTITLE - 傳送副標題
-#COMMAND - 使用小黑窗執行指令
-#SEND_MESSAGE - 傳送訊息
-#TELEPORT - 傳送玩家
-
-#傳送玩家的內容格式為：[世界名稱]:[x]:[y]:[z]
-#ex. world:0:80:0 - 傳送到名為world的世界(0, 80, 0)的位置
-
     "TriggerEvents":
     - "TRIGGER_ON_TAKE SEND_TITLE &b成功接受任務了。"
     - "TRIGGER_STAGE_START 2 SEND_SUBTITLE &6第二階段開始。"
     - "TRIGGER_STAGE_FINISH 1 SEND_MESSAGE &b恭喜你完成一個階段了。"
     - "TRIGGER_STAGE_FINISH 1 COMMAND say <player>"
     - "TRIGGER_ON_QUIT SEND_MESSAGE &c你憑甚麼給我放棄任務！"
-#Stages：
-#第一個'1'代表的是階段(Stages下面那行)，再下面的'1'代表此階段的Stages，如果有多個就填入'2'，以此類推。
-#ObjectType有：
-#DELIVER_ITEM - 遞交Item給指定NPC
-#需要：一個NPC參數、一個Item參數
-
-#KILL_MOB - 殺死指定怪物
-#需要：一個怪物參數
-
-#TALK_TO_NPC - 與指定NPC對話
-#需要：一個NPC參數
-
-#BREAK_BLOCK - 破壞指定BlockType
-#需要：一個BlockType參數
-
-#CONSUME_ITEM - 服用指定食物
-#需要：一個Item參數
-
-#REACH_LOCATION - 到達指定Location
-#需要：一個Location參數
-
-#各參數的範例在下面都蠻清楚的，若不了解可以在巴哈上發問。
-
     "Stages":
       '1':
         '1':
@@ -124,17 +55,11 @@
           "Location": world:0:80:0
           "LocationName": "&d&l超級遙遠的地方"
           "Range": 5
-#Rewards，可以填Item、金錢以及經驗值
-#其他類型的獎勵歡迎提出建議
     "Rewards":
       "Item":
         '1':
           "Material": DIAMOND
           "Amount": 1
-#Item參數也可以加入名稱與註解，在同一行補上即可。
-#          "Item名稱": "&b鑽石"
-#          "Item註解":
-#          - "&e超級珍貴的唷。"
       "Money": 50
       "Experience": 100
       "FriendlyPoint":

@@ -36,15 +36,19 @@ public abstract class SimpleQuestObject {
 			color = QuestUtil.translateColor("&8&m&o");
 		for (int i = 0; i < args.length; i++){
 			String[] split = left.split("%" + i);
-			if (split[0].equals(left)){
-				text.addExtra(color + left);
-				return text;
+			if (split.length != 0){
+				if (split[0].equals(left)){
+					text.addExtra(color + left);
+					return text;
+				}
+				if (split.length >= 2)
+					left = split[1];
+				else
+					left = "";
+				text.addExtra(color + split[0]);
 			}
-			if (split.length >= 2)
-				left = split[1];
 			else
 				left = "";
-			text.addExtra(color + split[0]);
 			
 			if (args[i] instanceof ItemStack)
 				text.addExtra(TextComponentFactory.convertItemHoverEvent((ItemStack)args[i], isFinished));

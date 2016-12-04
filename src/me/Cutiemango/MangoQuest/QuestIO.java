@@ -1,29 +1,34 @@
 package me.Cutiemango.MangoQuest;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+
+import com.google.common.base.Charsets;
 
 public class QuestIO {
 	
 	private File file;
-	private FileConfiguration config;
+	private FileConfiguration config = new YamlConfiguration();
 	
 	public QuestIO(String name){
-		File f = new File(Main.instance.getDataFolder(), name);
+		file = new File(Main.instance.getDataFolder(), name);
 		
-		if (!f.exists()){
+		if (!file.exists()){
 			Main.instance.saveResource(name, true);
 			Bukkit.getLogger().log(Level.SEVERE, "[MangoQuest] 找不到" + name + "，建立新檔案！");
 		}
 		
-		loadFrom(f);
+		loadFrom(file);
 	}
 	
 	public FileConfiguration getConfig(){
@@ -39,8 +44,11 @@ public class QuestIO {
 	}
 	
 	public void loadFrom(File f){
-		file = f;
-		config = YamlConfiguration.loadConfiguration(f);
+		try {
+			config.load(new InputStreamReader(new FileInputStream(f), Charsets.UTF_8));
+		} catch (IOException | InvalidConfigurationException e) {
+			Bukkit.getLogger().log(Level.SEVERE, "[MangoQuest] 讀取Config檔案過程中發生問題！請聯絡開發者。");
+		}
 	}
 	
 	public Set<String> getSection(String path){

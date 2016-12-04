@@ -70,15 +70,19 @@ public class QuestConfigManager {
 	}
 	
 	private void loadTranslation() {
-		for (String s : TranslateIO.getConfig().getConfigurationSection("Material").getKeys(false)){
-			if (Material.getMaterial(s) != null)
-				QuestStorage.TranslateMap.put(Material.getMaterial(s), TranslateIO.getConfig().getString("Material." + s));
+		if (TranslateIO.isSection("Material")){
+			for (String s : TranslateIO.getSection("Material")){
+				if (Material.getMaterial(s) != null)
+					QuestStorage.TranslateMap.put(Material.getMaterial(s), TranslateIO.getConfig().getString("Material." + s));
+			}
 		}
-		for (String e : TranslateIO.getConfig().getConfigurationSection("EntityType").getKeys(false)){
-			try{
-				QuestStorage.EntityTypeMap.put(EntityType.valueOf(e), TranslateIO.getConfig().getString("EntityType." + e));
-			} catch(IllegalArgumentException ex){
-				continue;
+		if (TranslateIO.isSection("EntityType")){
+			for (String e : TranslateIO.getSection("EntityType")){
+				try{
+					QuestStorage.EntityTypeMap.put(EntityType.valueOf(e), TranslateIO.getConfig().getString("EntityType." + e));
+				} catch(IllegalArgumentException ex){
+					continue;
+				}
 			}
 		}
 		Bukkit.getLogger().info("[MangoQuest] 翻譯檔案讀取完成！");
