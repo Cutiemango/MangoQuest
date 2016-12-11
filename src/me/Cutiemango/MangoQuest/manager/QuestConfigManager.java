@@ -170,6 +170,7 @@ public class QuestConfigManager {
 		QuestsIO.set("Quests." + q.getInternalID() + ".TriggerEvents", list);
 		i = 0;
 		int j = 0;
+		QuestsIO.set("Quests." + q.getInternalID() + ".Stages", "");
 		for (QuestStage s : q.getStages()){
 			i++;
 			for (SimpleQuestObject obj : s.getObjects()){
@@ -325,13 +326,7 @@ public class QuestConfigManager {
 						obj = new QuestObjectTalkToNPC(CitizensAPI.getNPCRegistry().getById(n));
 					case "KILL_MOB":
 						String name = null;
-						if (QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MobName") != null){
-							name = QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MobName");
-							obj = new QuestObjectKillMob(
-								EntityType.valueOf(QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MobType")),
-								QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".Amount"), name);
-						}
-						else if (QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MythicMob") != null){
+						if (QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MythicMob") != null){
 							if (!Main.instance.initManager.hasMythicMobEnabled()){
 								Bukkit.getLogger().log(Level.SEVERE, "偵測到MythicMob的物件，但是未讀取到MythicMob插件連結，跳過讀取。");
 								continue;
@@ -345,6 +340,12 @@ public class QuestConfigManager {
 								Bukkit.getLogger().log(Level.SEVERE, "[任務讀取] 找不到代碼為 " + name + " 的自訂怪物，請重新設定！");
 								continue;
 							}
+						}
+						else if (QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MobName") != null){
+							name = QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MobName");
+							obj = new QuestObjectKillMob(
+								EntityType.valueOf(QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MobType")),
+								QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".Amount"), name);
 						}
 						else if (QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MobType") != null)
 							obj = new QuestObjectKillMob(

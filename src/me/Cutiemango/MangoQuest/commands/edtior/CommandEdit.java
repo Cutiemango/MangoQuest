@@ -414,7 +414,7 @@ public class CommandEdit {
 						QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並左鍵打擊目標NPC，\n&c系統將自動讀取。");
 						break;
 					case "mtmmob":
-						QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並輸入自定義怪物的ID。");
+						QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並輸入自定義怪物的ID。\n&c(或是左鍵打擊怪物)");
 						break;
 					case "mobname":
 						QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並輸入自定義怪物名稱。");
@@ -483,9 +483,10 @@ public class CommandEdit {
 					break;
 				case "mtmmob":
 					try{
-						((QuestObjectKillMob)o).setMythicMob(Main.instance.initManager.MTMplugin.getAPI().getMobAPI().getMythicMob(args[6]));
+						((QuestObjectKillMob)o).setMythicMob(Main.instance.initManager.getMythicMobsAPI().getMythicMob(args[6]));
 						QuestUtil.info(sender, "MythicMob更改成功： " + args[6]);
 					}catch(Exception e){
+						e.printStackTrace();
 						QuestUtil.error(sender, "請輸入正確以及存在的MythicMob代號！");
 					}
 					break;

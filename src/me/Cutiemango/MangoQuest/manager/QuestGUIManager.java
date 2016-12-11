@@ -81,7 +81,6 @@ public class QuestGUIManager {
 
 		if (q.getQuest().getQuestReward().hasItem()){
 			for (ItemStack is : q.getQuest().getQuestReward().getItems()){
-				p3.addExtra("\n");
 				p3.addExtra(TextComponentFactory.convertItemHoverEvent(is, false));
 				TextComponent suffix = new TextComponent(ChatColor.translateAlternateColorCodes('&' , " &l" + is.getAmount() + " &0個"));
 				p3.addExtra(suffix);

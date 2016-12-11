@@ -347,19 +347,26 @@ public class QuestEditorManager {
 				p1.addExtra("\n");
 				break;
 			case "KILL_MOB":
-				if (Main.instance.initManager.hasMythicMobEnabled() && ((QuestObjectKillMob)o).getMythicMob() != null){
+				if (Main.instance.initManager.hasMythicMobEnabled()){
 					p1.addExtra(QuestUtil.translateColor("&0自定義MTM怪物名稱： "));
-					p1.addExtra(((QuestObjectKillMob)o).getMythicMob().getDisplayName() +
-							"(" + ((QuestObjectKillMob)o).getMythicMob().getInternalName() + ")");
+					if (((QuestObjectKillMob)o).isMythicObject())
+						p1.addExtra(((QuestObjectKillMob)o).getMythicMob().getDisplayName() +
+								"(" + ((QuestObjectKillMob)o).getMythicMob().getInternalName() + ")");
+					else
+						p1.addExtra(QuestUtil.translateColor("&c未設定"));
+					p1.addExtra("\n");
 					p1.addExtra(TextComponentFactory.regClickCmdEvent("&0 &l[編輯]", "/mq e edit object " + stage + " " + obj + " mtmmob"));
 					p1.addExtra("\n");
-					break;
 				}
-				else if (((QuestObjectKillMob)o).hasCustomName()){
-					p1.addExtra(QuestUtil.translateColor("&0自定義怪物名稱： " + ((QuestObjectKillMob)o).getCustomName()));
-					p1.addExtra(TextComponentFactory.regClickCmdEvent("&0 &l[編輯]", "/mq e edit object " + stage + " " + obj + " mobname"));
-					p1.addExtra("\n");
-				}
+				p1.addExtra(QuestUtil.translateColor("&0自定義怪物名稱： "));
+				if (((QuestObjectKillMob)o).hasCustomName())
+					p1.addExtra(QuestUtil.translateColor(((QuestObjectKillMob)o).getCustomName()));
+				else
+					p1.addExtra(QuestUtil.translateColor("&c未設定"));
+				p1.addExtra("\n");
+				p1.addExtra(TextComponentFactory.regClickCmdEvent("&0 &l[編輯]", "/mq e edit object " + stage + " " + obj + " mobname"));
+				p1.addExtra("\n");
+				
 				p1.addExtra(QuestUtil.translateColor("&0怪物類別： " + QuestUtil.translate(((QuestObjectKillMob)o).getType())));
 				p1.addExtra(TextComponentFactory.regClickCmdEvent("&0 &l[編輯]", "/mq e edit object " + stage + " " + obj + " mobtype"));
 				p1.addExtra("\n");
@@ -381,7 +388,10 @@ public class QuestEditorManager {
 			case "TALK_TO_NPC":
 				p1.addExtra(QuestUtil.translateColor("&0NPC： "));
 				npc = ((QuestObjectTalkToNPC)o).getTargetNPC();
-				p1.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
+				if (npc == null)
+					p1.addExtra(TextComponentFactory.regHoverEvent("&0【未設定的NPC】", "&c請盡快更換此任務NPC，因為不存在！"));
+				else
+					p1.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
 				p1.addExtra(TextComponentFactory.regClickCmdEvent("&0 &l[編輯]", "/mq e edit object " + stage + " " + obj + " npc"));
 				p1.addExtra("\n");
 				break;

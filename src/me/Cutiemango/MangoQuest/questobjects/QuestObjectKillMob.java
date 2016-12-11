@@ -49,6 +49,8 @@ public class QuestObjectKillMob extends NumerableObject{
 	
 	public void setMythicMob(MythicMob m){
 		mtmMob = m;
+		CustomName = m.getDisplayName();
+		type = EntityType.valueOf(m.getEntityType().toUpperCase());
 	}
 	
 	public void setType(EntityType t){

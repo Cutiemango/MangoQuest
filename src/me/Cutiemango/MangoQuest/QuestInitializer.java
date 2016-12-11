@@ -5,6 +5,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 
 import net.citizensnpcs.api.CitizensPlugin;
 import net.elseland.xikage.MythicMobs.MythicMobs;
+import net.elseland.xikage.MythicMobs.API.IMobsAPI;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 
@@ -14,12 +15,12 @@ public class QuestInitializer {
 		plugin = main;
 	}
 	
-	public Main plugin;
+	private Main plugin;
 	
-	public Economy economy;
-	public CitizensPlugin citizens;
-	public Vault vault;
-	public MythicMobs MTMplugin;
+	private Economy economy;
+	private CitizensPlugin citizens;
+	private Vault vault;
+	private MythicMobs MTMplugin;
 	
 	public void initPlugins(){
 		try {
@@ -85,11 +86,19 @@ public class QuestInitializer {
 		return MTMplugin;
 	}
 	
+	public Vault getVault(){
+		return vault;
+	}
+	
 	public boolean hasMythicMobEnabled(){
 		return MTMplugin != null;
 	}
 	
 	public boolean hasCitizensEnabled(){
 		return citizens != null;
+	}
+	
+	public IMobsAPI getMythicMobsAPI(){
+		return MTMplugin.getAPI().getMobAPI();
 	}
 }

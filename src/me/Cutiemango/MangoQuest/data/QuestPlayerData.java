@@ -308,7 +308,8 @@ public class QuestPlayerData {
 							qop.setProgress(o.getAmount());
 							qop.checkIfFinished();
 							if (qop.isFinished()){
-								qop.openConversation(p);
+								if (qop.getObject().hasConversation())
+									qop.openConversation(p);
 								QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
 								qp.checkIfnextStage();
 							}
@@ -321,7 +322,8 @@ public class QuestPlayerData {
 							qop.setProgress(o.getAmount());
 							qop.checkIfFinished();
 							if (qop.isFinished()){
-								qop.openConversation(p);
+								if (qop.getObject().hasConversation())
+									qop.openConversation(p);
 								QuestUtil.info(p, o.toPlainText() + " &a(已完成)");
 								qp.checkIfnextStage();
 							}

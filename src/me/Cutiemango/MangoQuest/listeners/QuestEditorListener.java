@@ -13,6 +13,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.manager.QuestEditorManager;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
@@ -70,9 +71,22 @@ public class QuestEditorListener implements Listener{
 	public void onEntityDamage(EntityDamageByEntityEvent e){
 		if (e.getDamager() instanceof Player && e.getEntity() instanceof Damageable){
 			Player p = (Player) e.getDamager();
-			if (QuestEditorManager.isInEditorMode(p) && CurrentListening.containsKey(p.getName())){
+			if (QuestEditorManager.isInEditorMode(p)){
 				e.setCancelled(true);
-				p.performCommand(CurrentListening.get(p.getName()) + e.getEntity().getType().toString());
+				if (CurrentListening.get(p.getName()).contains("mtmmob"))
+					if (Main.instance.initManager.hasMythicMobEnabled()
+							&& Main.instance.initManager.getMythicMobsAPI().isMythicMob(e.getEntity()))
+						p.performCommand(CurrentListening.get(p.getName()) + 
+								Main.instance.initManager.getMythicMobsAPI().getMythicMobInstance(e.getEntity()).getType().getInternalName());
+					else
+						p.performCommand(CurrentListening.get(p.getName()) + e.getEntity().getType().toString());
+				else if (CurrentListening.get(p.getName()).contains("mobname"))
+					if (e.getEntity().getCustomName() != null)
+						p.performCommand(CurrentListening.get(p.getName()) + e.getEntity().getCustomName());
+					else
+						p.performCommand(CurrentListening.get(p.getName()) + QuestUtil.translate(e.getEntity().getType()));
+				else if (CurrentListening.get(p.getName()).contains("mobtype"))
+					p.performCommand(CurrentListening.get(p.getName()) + e.getEntity().getType().toString());
 				CurrentListening.remove(p.getName());
 			}
 			else return;

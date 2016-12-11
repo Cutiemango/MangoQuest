@@ -121,7 +121,7 @@ public class QuestReward {
 		}
 
 		if (this.hasMoney()) {
-			Main.instance.initManager.economy.depositPlayer(p, money);
+			Main.instance.initManager.getEconomy().depositPlayer(p, money);
 			QuestUtil.info(p, "&e任務獎勵 - 給予 &f" + money + " &e元");
 		}
 		
