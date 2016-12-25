@@ -1,6 +1,8 @@
 package me.Cutiemango.MangoQuest.listeners;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Damageable;
@@ -10,12 +12,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.manager.QuestEditorManager;
+import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.model.RequirementType;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
 
 public class QuestEditorListener implements Listener{
@@ -23,10 +31,15 @@ public class QuestEditorListener implements Listener{
 	public static HashMap<String, String> CurrentListening = new HashMap<>();
 	
 	@EventHandler
-	public void onChat(AsyncPlayerChatEvent e){
-		Player p = e.getPlayer();
+	public void onChat(final AsyncPlayerChatEvent e){
+		final Player p = e.getPlayer();
 		if (CurrentListening.containsKey(p.getName())){
-			p.performCommand(CurrentListening.get(p.getName()) + e.getMessage());
+			new BukkitRunnable(){
+				@Override
+				public void run() {
+					p.performCommand(CurrentListening.get(p.getName()) + e.getMessage());
+				}
+			}.runTaskAsynchronously(Main.instance);
 			CurrentListening.remove(p.getName());
 			if (e.getMessage().contains("cancel"))
 				QuestUtil.info(p, "&d已取消輸入。");
@@ -71,7 +84,7 @@ public class QuestEditorListener implements Listener{
 	public void onEntityDamage(EntityDamageByEntityEvent e){
 		if (e.getDamager() instanceof Player && e.getEntity() instanceof Damageable){
 			Player p = (Player) e.getDamager();
-			if (QuestEditorManager.isInEditorMode(p)){
+			if (QuestEditorManager.isInEditorMode(p) && CurrentListening.containsKey(p.getName())){
 				e.setCancelled(true);
 				if (CurrentListening.get(p.getName()).contains("mtmmob"))
 					if (Main.instance.initManager.hasMythicMobEnabled()
@@ -105,7 +118,52 @@ public class QuestEditorListener implements Listener{
 		}
 	}
 	
+	@EventHandler
+	public void onInventoryClose(InventoryCloseEvent e){
+		if (!(e.getPlayer() instanceof Player))
+			return;
+		Player p = (Player) e.getPlayer();
+		if (CurrentListening.containsKey(p.getName()) && QuestEditorManager.isInEditorMode(p)){
+			if (!CurrentListening.get(p.getName()).contains("inv"))
+				return;
+			Quest q = QuestEditorManager.getCurrentEditingQuest(p);
+			Inventory inv = e.getInventory();
+			List<ItemStack> list = new ArrayList<>();
+			for (ItemStack is : inv.getContents()){
+				if (is == null || is.getType().equals(Material.AIR))
+					continue;
+				else
+					list.add(is);
+			}
+			if (inv.getName().contains("Reward")){
+				q.getQuestReward().setItemReward(list);
+				QuestEditorManager.editQuest(p);
+			}
+			else if (inv.getName().contains("Requirement")){
+				q.getRequirements().put(RequirementType.ITEM, list);
+				QuestEditorManager.editQuestRequirement(p);
+			}
+			QuestUtil.info(p, "&a物品變更成功。");
+			CurrentListening.remove(p.getName());
+			return;
+		}
+	}
+	
 	public static void registerListeningObject(Player p, String cmd){
 		CurrentListening.put(p.getName(), cmd);
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static void registerGUI(Player p, String obj){
+		if (QuestEditorManager.isInEditorMode(p)){
+			if (obj.equalsIgnoreCase("reward"))
+				QuestEditorManager.generateEditItemGUI(p, "Reward", QuestEditorManager.getCurrentEditingQuest(p).getQuestReward().getItems());
+			else if (obj.equalsIgnoreCase("requirement"))
+				QuestEditorManager.generateEditItemGUI(p, "Requirement",
+						(List<ItemStack>)QuestEditorManager.getCurrentEditingQuest(p).getRequirements().get(RequirementType.ITEM));
+			else return;
+			CurrentListening.put(p.getName(), "inv");
+		}
+	}
+	
 }

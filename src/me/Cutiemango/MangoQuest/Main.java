@@ -29,6 +29,8 @@ public class Main extends JavaPlugin{
 	public QuestVersionHandler handler;
 	public QuestConfigManager configManager;
 	
+	private boolean oldVersion;
+	
 	@Override
 	public void onEnable(){
 		instance = this;
@@ -49,12 +51,15 @@ public class Main extends JavaPlugin{
 		switch(version){
 			case "v1_8_R1":
 				handler = new Version_v1_8_R1();
+				oldVersion = true;
 				break;
 			case "v1_8_R2":
 				handler = new Version_v1_8_R2();
+				oldVersion = true;
 				break;
 			case "v1_8_R3":
 				handler = new Version_v1_8_R3();
+				oldVersion = true;
 				break;
 			case "v1_9_R1":
 				handler = new Version_v1_9_R1();
@@ -121,5 +126,9 @@ public class Main extends JavaPlugin{
 				qd = new QuestPlayerData(p, configManager.getPlayerIO());
 			QuestStorage.Players.put(p.getName(), qd);
 		}
+	}
+	
+	public boolean isUsingOldVersion(){
+		return oldVersion;
 	}
 }

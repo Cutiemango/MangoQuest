@@ -158,23 +158,6 @@ public class CommandEdit {
 			}
 			switch (t) {
 			case ITEM:
-				List<ItemStack> itemlist = (List<ItemStack>) q.getRequirements().get(t);
-				if (sender.getInventory().getItemInMainHand().getType() != Material.AIR) {
-					for (ItemStack is : itemlist){
-						if (is.isSimilar(sender.getInventory().getItemInMainHand())) {
-							itemlist.remove(Integer.parseInt(args[4]));
-							QuestUtil.error(sender, "任務需求中已經有這個物件了！");
-							QuestEditorManager.editQuestRequirement(sender);
-							return;
-						}
-					}
-					itemlist.remove(Integer.parseInt(args[4]));
-					itemlist.add(sender.getInventory().getItemInMainHand());
-				} else {
-					QuestUtil.error(sender, "物品不可為空！");
-					break;
-				}
-				break;
 			case LEVEL:
 			case MONEY:
 				break;
@@ -234,9 +217,6 @@ public class CommandEdit {
 				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
 				break;
 			case ITEM:
-				QuestEditorListener.registerListeningObject(sender,
-						"mq e edit req " + t.toString() + " " + Integer.parseInt(args[4]) + " ");
-				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並將物品拿在手上點擊右鍵，\n&c系統將會自動讀取。");
 				break;
 			}
 			return;
@@ -249,6 +229,9 @@ public class CommandEdit {
 			case MONEY:
 				QuestEditorListener.registerListeningObject(sender, "mq e edit req " + t.toString() + " ");
 				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
+				break;
+			case ITEM:
+				QuestEditorListener.registerGUI(sender, "requirement");
 				break;
 			default:
 				break;
@@ -561,6 +544,9 @@ public class CommandEdit {
 			case "exp":
 				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並輸入經驗值量。");
 				break;
+			case "item":
+				QuestEditorListener.registerGUI(sender, "reward");
+				return;
 			}
 			QuestEditorListener.registerListeningObject(sender, "mq e edit reward " + args[3] + " ");
 			return;
@@ -586,10 +572,6 @@ public class CommandEdit {
 				}
 				q.getQuestReward().setExp(exp);
 				break;
-			case "item":
-				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並將物品拿在主手上，\n&c點擊右鍵，系統將自動讀取。");
-				QuestEditorListener.registerListeningObject(sender, "mq e edit reward item " + Integer.parseInt(args[4]) + " ");
-				return;
 			case "fp":
 				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並輸入要調整的好感度。");
 				QuestEditorListener.registerListeningObject(sender, "mq e edit reward fp " + Integer.parseInt(args[4]) + " ");
@@ -611,29 +593,6 @@ public class CommandEdit {
 					return;
 				}
 				q.getQuestReward().getFp().put(npc, fp);
-				break;
-			case "item":
-				int index = 0;
-				try{
-					index = Integer.parseInt(args[4]);
-				}catch(NumberFormatException e){
-					QuestUtil.error(sender, "請輸入正確的數字！");
-					break;
-				}
-				if (sender.getInventory().getItemInMainHand().getType() != Material.AIR) {
-					for (ItemStack is : q.getQuestReward().getItems()){
-						if (is.isSimilar(sender.getInventory().getItemInMainHand())) {
-							q.getQuestReward().getItems().remove(index);
-							QuestUtil.error(sender, "任務需求中已經有這個物件了！");
-							QuestEditorManager.editQuest(sender);
-							return;
-						}
-					}
-					q.getQuestReward().getItems().remove(index);
-					q.getQuestReward().getItems().add(sender.getInventory().getItemInMainHand());
-				}
-				else
-					QuestUtil.error(sender, "物品不可為空！");
 				break;
 			}
 			QuestEditorManager.editQuest(sender);

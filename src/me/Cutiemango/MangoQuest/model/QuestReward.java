@@ -101,6 +101,10 @@ public class QuestReward {
 	public void setExp(int exp){
 		experience = exp;
 	}
+	
+	public void setItemReward(List<ItemStack> l){
+		items = l;
+	}
 
 	public void giveRewardTo(Player p) {
 		if (this.hasItem()) {

@@ -2,7 +2,10 @@ package me.Cutiemango.MangoQuest.manager;
 
 import java.util.HashMap;
 import java.util.List;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.Main;
@@ -192,22 +195,24 @@ public class QuestEditorManager {
 				p4.addExtra("\n");
 			}
 		}
-		p4.addExtra(TextComponentFactory.regHoverEvent(
-				TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("物品： "),
-				"/mq e addnew reward item"), "&f點擊以&c新增&f物品"));
+//		p4.addExtra(TextComponentFactory.regHoverEvent(
+//				TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("物品： "),
+//				"/mq e addnew reward item"), "&f點擊以&c新增&f物品"));
+		p4.addExtra(QuestUtil.translateColor("物品： "));
 		p4.addExtra("\n");
-		if (q.getQuestReward().hasItem()) {
-			int i = 0;
-			for (ItemStack item : q.getQuestReward().getItems()) {
-				p4.addExtra("- ");
-				p4.addExtra(TextComponentFactory.convertItemHoverEvent(item, false));
-				p4.addExtra(QuestUtil.translateColor(" &0&l" + item.getAmount() + "&0 個"));
-				p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[編輯]", "/mq e edit reward item " + i));
-				p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[移除]", "/mq e remove reward item " + i));
-				p4.addExtra("\n");
-				i++;
-			}
-		}
+		p4.addExtra(TextComponentFactory.regClickCmdEvent("&7[點擊開啟GUI]", "/mq e edit reward item"));
+//		if (q.getQuestReward().hasItem()) {
+//			int i = 0;
+//			for (ItemStack item : q.getQuestReward().getItems()) {
+//				p4.addExtra("- ");
+//				p4.addExtra(TextComponentFactory.convertItemHoverEvent(item, false));
+//				p4.addExtra(QuestUtil.translateColor(" &0&l" + item.getAmount() + "&0 個"));
+//				p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[編輯]", "/mq e edit reward item " + i));
+//				p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[移除]", "/mq e remove reward item " + i));
+//				p4.addExtra("\n");
+//				i++;
+//			}
+//		}
 		p4.addExtra("\n");
 		
 		
@@ -342,7 +347,10 @@ public class QuestEditorManager {
 				p1.addExtra("\n");
 				p1.addExtra(QuestUtil.translateColor("&0提交NPC： "));
 				NPC npc = ((QuestObjectDeliverItem)o).getTargetNPC();
-				p1.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
+				if (npc == null)
+					p1.addExtra(TextComponentFactory.regHoverEvent("&0【未設定的NPC】", "&c請盡快更換此任務NPC，因為不存在！"));
+				else
+					p1.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
 				p1.addExtra(TextComponentFactory.regClickCmdEvent("&0 &l[編輯]", "/mq e edit object " + stage + " " + obj + " itemnpc"));
 				p1.addExtra("\n");
 				break;
@@ -423,17 +431,18 @@ public class QuestEditorManager {
 			case ITEM:
 				p1.addExtra("物品需求：");
 				p1.addExtra("\n");
+				p1.addExtra(TextComponentFactory.regClickCmdEvent("&7[點擊開啟GUI]", "/mq e edit req ITEM"));
 				int i = 0;
-				for (ItemStack item : (List<ItemStack>)q.getRequirements().get(t)){
-					p1.addExtra("- ");
-					p1.addExtra(TextComponentFactory.convertItemHoverEvent(item, false));
-					p1.addExtra(QuestUtil.translateColor(" &0&l" + item.getAmount() + "&0 個"));
-					p1.addExtra(TextComponentFactory.regClickCmdEvent("&7[編輯]", "/mq e edit req ITEM " + i));
-					p1.addExtra(TextComponentFactory.regClickCmdEvent("&7[移除]", "/mq e remove req ITEM " + i));
-					p1.addExtra("\n");
-					i++;
-				}
-				p1.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[新增]", "/mq e addnew req ITEM " + i));
+//				for (ItemStack item : (List<ItemStack>)q.getRequirements().get(t)){
+//					p1.addExtra("- ");
+//					p1.addExtra(TextComponentFactory.convertItemHoverEvent(item, false));
+//					p1.addExtra(QuestUtil.translateColor(" &0&l" + item.getAmount() + "&0 個"));
+//					p1.addExtra(TextComponentFactory.regClickCmdEvent("&7[編輯]", "/mq e edit req ITEM " + i));
+//					p1.addExtra(TextComponentFactory.regClickCmdEvent("&7[移除]", "/mq e remove req ITEM " + i));
+//					p1.addExtra("\n");
+//					i++;
+//				}
+//				p1.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[新增]", "/mq e addnew req ITEM " + i));
 				p1.addExtra("\n");
 				break;
 			case LEVEL:
@@ -563,5 +572,15 @@ public class QuestEditorManager {
 		p1.addExtra("\n\n");
 		p1.addExtra(TextComponentFactory.regClickCmdEvent("&2       &l【創建任務】", "/mq e newquest create"));
 		QuestGUIManager.openBook(p, p1);
+	}
+	
+	public static void generateEditItemGUI(Player p, String type, List<ItemStack> list){
+		if (QuestEditorManager.isInEditorMode(p)){
+			Quest q = QuestEditorManager.getCurrentEditingQuest(p);
+			Inventory inv = Bukkit.createInventory(null, 27, "《" + type + "》" + q.getQuestName());
+			inv.addItem(list.toArray(new ItemStack[list.size()]));
+			p.openInventory(inv);
+		}
+		else return;
 	}
 }
