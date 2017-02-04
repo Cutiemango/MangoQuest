@@ -126,4 +126,10 @@ public class Version_v1_11_R1 implements QuestVersionHandler{
 	public boolean hasTag(Player p, String s){
 		return ((CraftPlayer)p).getHandle().P().contains(s);
 	}
+	
+	@Override
+	public ItemStack getItemInMainHand(Player p) {
+		return p.getInventory().getItemInMainHand();
+	}
+
 }

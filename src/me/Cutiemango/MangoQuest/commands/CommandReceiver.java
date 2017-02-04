@@ -33,8 +33,10 @@ public class CommandReceiver implements CommandExecutor{
 			QuestEditorCommand.execute(p, args);
 			break;
 		case "reload":
-			Main.instance.reload();
-			QuestUtil.info(p, "&6重新讀取資料成功。");
+			if (p.isOp()){
+				Main.instance.reload();
+				QuestUtil.info(p, "&6重新讀取資料成功。");
+			}
 			break;
 		default:
 			break; 

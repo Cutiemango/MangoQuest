@@ -426,8 +426,10 @@ public class CommandEdit {
 				switch(args[5].toLowerCase()){
 				case "block":
 					try{
-						((QuestObjectBreakBlock)o).setType(Material.getMaterial(args[6]));
-						QuestUtil.info(sender, "方塊成功登錄： " + QuestUtil.translate(Material.getMaterial(args[6]), (short)0));
+						String[] split = args[6].split(":");
+						((QuestObjectBreakBlock)o).setType(Material.getMaterial(split[0]));
+						((QuestObjectBreakBlock)o).setSubID(Short.parseShort(split[1]));
+						QuestUtil.info(sender, "方塊成功登錄： " + QuestUtil.translate(Material.getMaterial(split[0]), Short.parseShort(split[1])));
 					}catch(Exception e){
 						QuestUtil.error(sender, "輸入了錯誤的方塊名稱！");
 					}
@@ -442,7 +444,7 @@ public class CommandEdit {
 					break;
 				case "item":
 					try{
-						((ItemObject)o).setItem(sender.getInventory().getItemInMainHand());
+						((ItemObject)o).setItem(Main.instance.handler.getItemInMainHand(sender));
 						QuestUtil.info(sender, "物品更改成功。");
 					}catch(NullPointerException e){
 						QuestUtil.error(sender, "請拿著物品在主手以利系統讀取！");
@@ -504,7 +506,7 @@ public class CommandEdit {
 					SimpleQuestObject ob = null;
 					switch(args[6].toUpperCase()){
 					case "BREAK_BLOCK":
-						ob = new QuestObjectBreakBlock(Material.GRASS, 1);
+						ob = new QuestObjectBreakBlock(Material.GRASS, (short)0, 1);
 						break;
 					case "CONSUME_ITEM":
 						ob = new QuestObjectConsumeItem(new ItemStack(Material.BREAD), 1);

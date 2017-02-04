@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -138,17 +138,7 @@ public class QuestConfigManager {
 		int i = 0;
 		for (ItemStack is : (List<ItemStack>) q.getRequirements().get(RequirementType.ITEM)) {
 			i++;
-			QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".Material",
-					is.getType().toString());
-			QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".Amount", is.getAmount());
-			if (is.hasItemMeta() && is.getItemMeta().hasDisplayName()) {
-				QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".ItemName",
-						is.getItemMeta().getDisplayName());
-			}
-			if (is.hasItemMeta() && is.getItemMeta().hasLore()){
-				QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Item." + i + ".ItemLore",
-						is.getItemMeta().getLore());
-			}
+			saveItem(QuestsIO.getConfig(), "Quests." + q.getInternalID() + ".Requirements.Item." + i, is);
 		}
 		QuestsIO.set("Quests." + q.getInternalID() + ".Requirements.Scoreboard",
 				q.getRequirements().get(RequirementType.SCOREBOARD));
@@ -180,12 +170,7 @@ public class QuestConfigManager {
 				case "DELIVER_ITEM":
 					QuestObjectDeliverItem o = (QuestObjectDeliverItem)obj;
 					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".TargetNPC", o.getTargetNPC().getId());
-					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Item.Material", o.getItem().getType().toString());
-					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Item.Amount", o.getItem().getAmount());
-					if (o.getItem().hasItemMeta() && o.getItem().getItemMeta().hasDisplayName() && o.getItem().getItemMeta().hasLore()){
-						QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Item.ItemName", o.getItem().getItemMeta().getDisplayName());
-						QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Item.ItemLore", o.getItem().getItemMeta().getLore());
-					}
+					saveItem(QuestsIO.getConfig(), "Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Item", o.getItem());
 					break;
 				case "TALK_TO_NPC":
 					QuestObjectTalkToNPC on = (QuestObjectTalkToNPC)obj;
@@ -205,12 +190,12 @@ public class QuestConfigManager {
 				case "BREAK_BLOCK":
 					QuestObjectBreakBlock ob = (QuestObjectBreakBlock)obj;
 					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".BlockType", ob.getType().toString());
+					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".SubID", ob.getShort());
 					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Amount", ob.getAmount());
 					break;
 				case "CONSUME_ITEM":
 					QuestObjectConsumeItem oi = (QuestObjectConsumeItem)obj;
-					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Item.Material", oi.getItem().getType().toString());
-					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Item.Amount", oi.getItem().getAmount());
+					saveItem(QuestsIO.getConfig(), "Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".Item", oi.getItem());
 					break;
 				case "REACH_LOCATION":
 					QuestObjectReachLocation or = (QuestObjectReachLocation)obj;
@@ -228,16 +213,7 @@ public class QuestConfigManager {
 			int c = 0;
 			for (ItemStack is : q.getQuestReward().getItems()){
 				c++;
-				QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Item." + c + ".Material", is.getType().toString());
-				QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Item." + c + ".Amount", is.getAmount());
-				if (is.hasItemMeta() && is.getItemMeta().hasDisplayName()) {
-					QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Item." + c + ".ItemName",
-							is.getItemMeta().getDisplayName());
-				}
-				if (is.hasItemMeta() && is.getItemMeta().hasLore()){
-					QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Item." + c + ".ItemLore",
-							is.getItemMeta().getLore());
-				}
+				saveItem(QuestsIO.getConfig(), "Quests." + q.getInternalID() + ".Rewards.Item." + c, is);
 			}
 		}
 		if (q.getQuestReward().hasMoney())
@@ -314,7 +290,7 @@ public class QuestConfigManager {
 							continue;
 						}
 						obj = new QuestObjectDeliverItem(CitizensAPI.getNPCRegistry().getById(n),
-								getItemStack(QuestsIO.getConfig(), "Quests." + internal + ".Stages." + scount + "." + ocount + ".Item"),
+								getItem(QuestsIO.getConfig(), "Quests." + internal + ".Stages." + scount + "." + ocount + ".Item"),
 								QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".Item.Amount"));
 						break;
 					case "TALK_TO_NPC":
@@ -355,10 +331,11 @@ public class QuestConfigManager {
 					case "BREAK_BLOCK":
 						obj = new QuestObjectBreakBlock(Material.getMaterial(
 								QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".BlockType")),
+								Short.parseShort(Integer.toString(QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".SubID"))),
 								QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".Amount"));
 						break;
 					case "CONSUME_ITEM":
-						obj = new QuestObjectConsumeItem(getItemStack(QuestsIO.getConfig(), "Quests." + internal + ".Stages." + scount + "." + ocount + ".Item"),
+						obj = new QuestObjectConsumeItem(getItem(QuestsIO.getConfig(), "Quests." + internal + ".Stages." + scount + "." + ocount + ".Item"),
 								QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".Item.Amount"));
 						break;
 					case "REACH_LOCATION":
@@ -394,7 +371,7 @@ public class QuestConfigManager {
 			QuestReward reward = new QuestReward();
 			if (QuestsIO.isSection("Quests." + internal + ".Rewards.Item")){
 				for (String temp : QuestsIO.getSection("Quests." + internal + ".Rewards.Item")) {
-					reward.addItem(getItemStack(QuestsIO.getConfig(), "Quests." + internal + ".Rewards.Item." + Integer.parseInt(temp)));
+					reward.addItem(getItem(QuestsIO.getConfig(), "Quests." + internal + ".Rewards.Item." + Integer.parseInt(temp)));
 				}
 			}
 			if (QuestsIO.getDouble("Quests." + internal + ".Rewards.Money") != 0)
@@ -411,7 +388,7 @@ public class QuestConfigManager {
 				NPC npc = null;
 				if (!(QuestsIO.getInt("Quests." + internal + ".QuestNPC") == -1)
 						&& CitizensAPI.getNPCRegistry().getById(QuestsIO.getInt("Quests." + internal + ".QuestNPC")) != null)
-					npc = CitizensAPI.getNPCRegistry().getById(0);
+					npc = CitizensAPI.getNPCRegistry().getById(QuestsIO.getInt("Quests." + internal + ".QuestNPC"));
 					Quest quest = new Quest(internal, questname, questoutline, reward, stages, npc);
 					if (QuestsIO.getString("Quests." + internal + ".MessageRequirementNotMeet") != null)
 						quest.setFailMessage(QuestsIO.getString("Quests." + internal + ".MessageRequirementNotMeet"));
@@ -425,7 +402,7 @@ public class QuestConfigManager {
 						if (QuestsIO.isSection("Quests." + internal + ".Requirements.Item")){
 							List<ItemStack> l = new ArrayList<>();
 							for (String i : QuestsIO.getSection("Quests." + internal + ".Requirements.Item")) {
-								l.add(getItemStack(QuestsIO.getConfig(), "Quests." + internal + ".Requirements.Item." + i));
+								l.add(getItem(QuestsIO.getConfig(), "Quests." + internal + ".Requirements.Item." + i));
 							}
 							quest.getRequirements().put(RequirementType.ITEM, l);
 						}
@@ -528,22 +505,54 @@ public class QuestConfigManager {
 		return list;
 	}
 	
-	private ItemStack getItemStack(FileConfiguration config, String path) {
+	private ItemStack getItem(FileConfiguration config, String path) {
 		Material m = Material.getMaterial(config.getString(path + ".Material"));
 		int amount = config.getInt(path + ".Amount");
-		ItemStack is = new ItemStack(m, amount);
+		short sub = Short.parseShort(Integer.toString(config.getInt(".SubID")));
+		ItemStack is = new ItemStack(m, amount, sub);
+		ItemMeta im = is.getItemMeta();
 		if (config.getString(path + ".ItemName") != null) {
-			String name = ChatColor.translateAlternateColorCodes('&', config.getString(path + ".ItemName"));
+			String name = QuestUtil.translateColor(config.getString(path + ".ItemName"));
+			im.setDisplayName(name);
+		}
+		if (config.getStringList(path + ".ItemLore") != null){
 			List<String> lore = new ArrayList<>();
 			for (String s : config.getStringList(path + ".ItemLore")) {
-				lore.add(ChatColor.translateAlternateColorCodes('&', s));
+				lore.add(QuestUtil.translateColor(s));
 			}
-			ItemMeta im = is.getItemMeta();
-			im.setDisplayName(name);
 			im.setLore(lore);
-			is.setItemMeta(im);
 		}
+		if (config.getStringList(path + ".Enchantment") != null){
+			List<String> l = config.getStringList(path + ".Enchantment");
+			for (String s : l){
+				String[] split = s.split(":");
+				is.addUnsafeEnchantment(Enchantment.getByName(split[0]), Integer.parseInt(split[1]));
+			}
+		}
+		is.setItemMeta(im);
 		return is;
+	}
+	
+	private boolean saveItem(FileConfiguration config, String path, ItemStack is) {
+		if (is == null)
+			return false;
+		config.set(path + ".Material", is.getType().toString());
+		config.set(path + ".SubID", is.getDurability());
+		config.set(path + ".Amount", is.getAmount());
+		if (is.hasItemMeta()){
+			if (is.getItemMeta().hasDisplayName())
+				config.set(path + ".ItemName", is.getItemMeta().getDisplayName());
+			if (is.getItemMeta().hasLore())
+				config.set(path + ".ItemLore", is.getItemMeta().getLore());
+		}
+		if (!is.getEnchantments().isEmpty()){
+			List<String> l = new ArrayList<>();
+			for (Enchantment e : is.getEnchantments().keySet()){
+				l.add(e.getName() + ":" + is.getEnchantmentLevel(e));
+			}
+			config.set(path + ".Enchantment", l);
+		}
+		return true;
 	}
 
 }

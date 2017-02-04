@@ -218,12 +218,14 @@ public class Quest {
 					return false;
 				break;
 			case MONEY:
-				if (!(Main.instance.initManager.getEconomy().getBalance(p) >= (Double)value))
-					return false;
+				if (Main.instance.initManager.hasEconomyEnabled()){
+					if (!(Main.instance.initManager.getEconomy().getBalance(p) >= (Double)value))
+						return false;
+				}
 				break;
 			case ITEM:
 				for (ItemStack i : (List<ItemStack>)value){
-					if (!p.getInventory().contains(i))
+					if (!p.getInventory().containsAtLeast(i, i.getAmount()))
 						return false;
 				}
 				break;

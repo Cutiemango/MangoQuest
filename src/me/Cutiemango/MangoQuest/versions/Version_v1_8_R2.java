@@ -127,5 +127,10 @@ public class Version_v1_8_R2 implements QuestVersionHandler{
 		return false;
 	}
 	
+	@SuppressWarnings("deprecation")
+	@Override
+	public ItemStack getItemInMainHand(Player p) {
+		return p.getItemInHand();
+	}
 
 }

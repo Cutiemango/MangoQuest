@@ -234,11 +234,9 @@ public class QuestPlayerData {
 	}
 
 	public boolean isNearNPC(NPC npc){
-		for (Entity e : p.getNearbyEntities(5, 5, 5)){
-			if (npc.getEntity().equals(e))
-				return true;
-		}
-		return false;
+		if (npc.getEntity().getLocation().distance(p.getLocation()) > 20)
+			return false;
+		else return true;
 	}
 	
 	public void breakBlock(Material m){

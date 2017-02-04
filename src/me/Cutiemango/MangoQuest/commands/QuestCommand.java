@@ -2,12 +2,18 @@ package me.Cutiemango.MangoQuest.commands;
 
 import org.bukkit.entity.Player;
 
+import com.nisovin.shopkeepers.Shopkeeper;
+
+import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestInitializer;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 
 public class QuestCommand{
 	
@@ -24,6 +30,23 @@ public class QuestCommand{
 			}
 			else if (args[1].equalsIgnoreCase("help")){
 				sendHelp(sender);
+				return;
+			}
+			else if (args[1].equalsIgnoreCase("trade")){
+				QuestInitializer im = Main.instance.initManager;
+				if (im.hasCitizensEnabled()){
+					NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[2]));
+					if (npc == null || npc.getEntity().getLocation().distance(sender.getLocation()) > 20)
+						return;
+					Shopkeeper s = Main.instance.initManager.getShopkeepers().getShopkeeperByEntity(npc.getEntity());
+					if (s == null)
+						return;
+					else{
+						sender.closeInventory();
+						s.openTradingWindow(sender);
+						return;
+					}
+				}
 				return;
 			}
 			if (QuestStorage.Quests.get(args[2]) == null){

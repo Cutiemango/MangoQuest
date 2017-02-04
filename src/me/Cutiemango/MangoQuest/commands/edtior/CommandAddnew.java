@@ -125,7 +125,7 @@ public class CommandAddnew {
 	// /mq e addnew stage
 	private static void addStage(Quest q, Player sender, String[] args){
 		List<SimpleQuestObject> l = new ArrayList<>();
-		l.add(new QuestObjectBreakBlock(Material.GRASS, 1));
+		l.add(new QuestObjectBreakBlock(Material.GRASS, (short)0, 1));
 		q.getStages().add(q.getStages().size(), new QuestStage(null, null, l));
 		QuestUtil.info(sender, "&e已經成功創建新的任務階段。");
 		QuestUtil.info(sender, "&e由於每個任務階段至少需含有&c&l一個&e任務目標，已自動&a新增預設目標&e。");
@@ -143,7 +143,7 @@ public class CommandAddnew {
 				QuestUtil.error(sender, "請輸入正確的數字！");
 				return;
 			}
-			q.getStage(stage - 1).getObjects().add(q.getStage(stage - 1).getObjects().size(), new QuestObjectBreakBlock(Material.GRASS, 1));
+			q.getStage(stage - 1).getObjects().add(q.getStage(stage - 1).getObjects().size(), new QuestObjectBreakBlock(Material.GRASS, (short)0, 1));
 			QuestEditorManager.selectObjectType(sender, stage, q.getStage(stage - 1).getObjects().size());
 		}
 	}

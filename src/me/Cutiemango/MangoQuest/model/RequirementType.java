@@ -19,28 +19,5 @@ public enum RequirementType{
 	public boolean hasIndex(){
 		return index;
 	}
-	
-//	public static boolean vertify(RequirementType t, Object o){
-//		switch (t){
-//		case QUEST:
-//			if (!(o instanceof List))
-//				return false;
-//		case LEVEL:
-//			if (!(o instanceof Integer))
-//				return false;
-//		case MONEY:
-//			if (!(o instanceof Double))
-//				return false;
-//		case ITEM:
-//			if (!(o instanceof List))
-//				return false;
-//		case SCOREBOARD:
-//			if (!(o instanceof List))
-//				return false;
-//		case NBTTAG:
-//			if (!(o instanceof List))
-//				return false;
-//		}
-//		return true;
-//	}
+
 }

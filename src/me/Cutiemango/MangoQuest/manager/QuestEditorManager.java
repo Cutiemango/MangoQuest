@@ -330,7 +330,7 @@ public class QuestEditorManager {
 		p1.addExtra("\n");
 		switch(o.getConfigString()){
 			case "BREAK_BLOCK":
-				p1.addExtra(QuestUtil.translateColor("&0破壞方塊： " + QuestUtil.translate(((QuestObjectBreakBlock)o).getType(), (short)0)));
+				p1.addExtra(QuestUtil.translateColor("&0破壞方塊： " + QuestUtil.translate(((QuestObjectBreakBlock)o).getType(), ((QuestObjectBreakBlock)o).getShort())));
 				p1.addExtra(TextComponentFactory.regClickCmdEvent("&0 &l[編輯]", "/mq e edit object " + stage + " " + obj + " block"));
 				p1.addExtra("\n");
 				break;

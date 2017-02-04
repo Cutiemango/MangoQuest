@@ -32,6 +32,7 @@ public abstract class SimpleQuestObject {
 		TextComponent text = new TextComponent("");
 		String left = s;
 		String color = QuestUtil.translateColor("&0");
+		ItemStack block = new ItemStack(Material.GRASS);
 		if (isFinished)
 			color = QuestUtil.translateColor("&8&m&o");
 		for (int i = 0; i < args.length; i++){
@@ -59,8 +60,9 @@ public abstract class SimpleQuestObject {
 				text.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
 			}
 			else if (args[1] instanceof Material)
-				text.addExtra(color + QuestUtil.translate((Material)args[i], (byte)0));
-			
+				block.setType((Material)args[i]);
+			else if (args[1] instanceof Short)
+				text.addExtra(color + QuestUtil.translate(block.getType(), (short)args[i]));
 			// QuestObjectReachLocation
 			else if (args[i] instanceof String){
 				if (args.length - 1 > i && args[i+1] instanceof Location){

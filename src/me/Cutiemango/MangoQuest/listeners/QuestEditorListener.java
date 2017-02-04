@@ -34,17 +34,18 @@ public class QuestEditorListener implements Listener{
 	public void onChat(final AsyncPlayerChatEvent e){
 		final Player p = e.getPlayer();
 		if (CurrentListening.containsKey(p.getName())){
+			final String msg = e.getMessage();
 			new BukkitRunnable(){
 				@Override
 				public void run() {
-					p.performCommand(CurrentListening.get(p.getName()) + e.getMessage());
+					p.performCommand(CurrentListening.get(p.getName()) + msg);
+					CurrentListening.remove(p.getName());
 				}
 			}.runTaskAsynchronously(Main.instance);
-			CurrentListening.remove(p.getName());
 			if (e.getMessage().contains("cancel"))
 				QuestUtil.info(p, "&d已取消輸入。");
 			else
-				QuestUtil.info(p, "&7您的輸入： " + e.getMessage());
+				QuestUtil.info(p, "&7您的輸入： " + msg);
 			e.setCancelled(true);
 		}
 		else return;
@@ -66,6 +67,7 @@ public class QuestEditorListener implements Listener{
 		return;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e){
 		Player p = e.getPlayer();
@@ -73,7 +75,7 @@ public class QuestEditorListener implements Listener{
 				&& e.getBlock() != null && e.getBlock().getType() != null){
 			if (CurrentListening.containsKey(p.getName()) && CurrentListening.get(p.getName()).contains("block")){
 				e.setCancelled(true);
-				p.performCommand(CurrentListening.get(p.getName()) + e.getBlock().getType().toString());
+				p.performCommand(CurrentListening.get(p.getName()) + e.getBlock().getType().toString() + ":" + e.getBlock().getData());
 				CurrentListening.remove(p.getName());
 			}
 			else return;

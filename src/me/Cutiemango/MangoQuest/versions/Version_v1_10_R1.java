@@ -127,4 +127,9 @@ public class Version_v1_10_R1 implements QuestVersionHandler{
 		return ((CraftPlayer)p).getHandle().P().contains(s);
 	}
 
+	@Override
+	public ItemStack getItemInMainHand(Player p) {
+		return p.getInventory().getItemInMainHand();
+	}
+
 }
