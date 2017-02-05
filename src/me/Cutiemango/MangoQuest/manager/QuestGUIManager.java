@@ -208,8 +208,10 @@ public class QuestGUIManager {
 		p1.addExtra("」\n\n");
 		p1.addExtra(QuestUtil.translateColor("&0&l[互動列表]"));
 		p1.addExtra("\n");
-		if (trade)
-			p1.addExtra(TextComponentFactory.regClickCmdEvent("&0- &e&l⇆&0【交易物品】", "/mq quest trade " + npc.getId()));
+		if (trade){
+			p1.addExtra(TextComponentFactory.regClickCmdEvent("&0- &6&l＄&0【交易物品】", "/mq quest trade " + npc.getId()));
+			p1.addExtra("\n");
+		}
 		for (QuestProgress q : qd.getNPCtoTalkWith(npc)){
 			p1.addExtra(QuestUtil.translateColor("&0- &6&l？ &0"));
 			p1.addExtra(TextComponentFactory.convertViewQuest(q.getQuest()));

@@ -59,9 +59,9 @@ public abstract class SimpleQuestObject {
 				NPC npc = (NPC)args[i];
 				text.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
 			}
-			else if (args[1] instanceof Material)
+			else if (args[i] instanceof Material)
 				block.setType((Material)args[i]);
-			else if (args[1] instanceof Short)
+			else if (args[i] instanceof Short)
 				text.addExtra(color + QuestUtil.translate(block.getType(), (short)args[i]));
 			// QuestObjectReachLocation
 			else if (args[i] instanceof String){

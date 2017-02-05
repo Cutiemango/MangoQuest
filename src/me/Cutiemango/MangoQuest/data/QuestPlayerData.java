@@ -509,7 +509,7 @@ public class QuestPlayerData {
 			return false;
 		}
 		if (q.hasRequirement()){
-			if (!q.meetRequirementWith(p)){
+			if (!q.meetRequirementWith(p).succeed()){
 				if (sendmsg)
 					QuestUtil.info(p, q.getFailMessage());
 				return false;

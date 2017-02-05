@@ -23,10 +23,11 @@ public class QuestListener implements Listener{
 		Player p = e.getPlayer();
 		if (e.getRightClicked() instanceof LivingEntity){
 			if (CitizensAPI.getNPCRegistry().getNPC(e.getRightClicked()) != null){
-				e.setCancelled(true);
 				NPC npc = CitizensAPI.getNPCRegistry().getNPC(e.getRightClicked());
-				if (QuestEditorManager.isInEditorMode(p))
+				if (QuestEditorManager.isInEditorMode(p)){
+					e.setCancelled(true);
 					return;
+				}
 				if (p.isSneaking())
 					return;
 				QuestPlayerData pd = QuestUtil.getData(p);
@@ -34,6 +35,7 @@ public class QuestListener implements Listener{
 						Main.instance.handler.getItemInMainHand(p) == null){
 					if (Main.instance.initManager.hasShopkeepersEnabled())
 						if (Main.instance.initManager.getShopkeepers().isShopkeeper(npc.getEntity())){
+							e.setCancelled(true);
 							QuestGUIManager.openNPCInfo(p, npc, true);
 							return;
 						}

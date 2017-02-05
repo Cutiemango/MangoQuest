@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.model.Quest.FailResult;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -71,8 +72,11 @@ public class TextComponentFactory {
 				return regHoverEvent(text, "&c你必須再等待 " + QuestUtil.convertTime(d) + " 才能再度接取這個任務。");
 		}
 		else if (q.hasRequirement()){
-			if (!q.meetRequirementWith(qd.getPlayer()))
-				return regHoverEvent(text, q.getFailMessage());
+			FailResult f = q.meetRequirementWith(qd.getPlayer());
+			if (!f.succeed())
+				return regHoverEvent(text, f.getMessage());
+			else
+				return convertViewQuest(q);
 		}
 		return text;
 	}

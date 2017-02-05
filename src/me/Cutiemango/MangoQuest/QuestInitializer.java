@@ -58,8 +58,10 @@ public class QuestInitializer {
 		}
 
 		RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServicesManager().getRegistration(Economy.class);
-		if (economyProvider != null && economyProvider.getProvider() != null)
+		if (economyProvider != null && economyProvider.getProvider() != null){
+			economy = economyProvider.getProvider();
 			plugin.getLogger().info("經濟插件已經連結成功。");
+		}
 		else
 			plugin.getLogger().severe("未連結金錢插件，請安裝金錢插件否則無法使用！");
 	}

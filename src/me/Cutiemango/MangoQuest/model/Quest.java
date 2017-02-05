@@ -16,6 +16,7 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
+import net.md_5.bungee.api.ChatColor;
 
 public class Quest {
 	
@@ -84,13 +85,13 @@ public class Quest {
 	private String QuestName;
 	
 	private List<String> QuestOutline = new ArrayList<>();
-
+	
+	private boolean useCustomFailMessage = false;
 	private String FailRequirementMessage = "&c你並沒有達到指定的任務條件。";
 	private List<QuestStage> AllStages = new ArrayList<>();
 	private QuestReward reward = new QuestReward();
 	
 	private EnumMap<RequirementType, Object> Requirements = new EnumMap<>(RequirementType.class);
-	//private List<QuestRequirement> Requirements = new ArrayList<>();
 	private List<QuestTrigger> Triggers = new ArrayList<>();
 	
 	private boolean isRedoable = false;
@@ -181,6 +182,14 @@ public class Quest {
 		FailRequirementMessage = s;
 	}
 	
+	public boolean useCustomFailMessage(){
+		return useCustomFailMessage;
+	}
+	
+	public void setUseCustomFailMessage(boolean b){
+		useCustomFailMessage = b;
+	}
+	
 	public boolean isRedoable(){
 		return isRedoable;
 	}
@@ -202,7 +211,7 @@ public class Quest {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public boolean meetRequirementWith(Player p){
+	public FailResult meetRequirementWith(Player p){
 		QuestPlayerData pd = QuestUtil.getData(p);
 		for (RequirementType t : Requirements.keySet()){
 			Object value = Requirements.get(t);
@@ -210,23 +219,23 @@ public class Quest {
 			case QUEST:
 				for (String q : (List<String>)value){
 					if (!pd.hasFinished(QuestUtil.getQuest(q)))
-						return false;
+						return new FailResult(RequirementType.QUEST, QuestUtil.getQuest(q));
 				}
 				break;
 			case LEVEL:
 				if (!(p.getLevel() >= (Integer)value))
-					return false;
+					return new FailResult(RequirementType.LEVEL, (Integer)value);
 				break;
 			case MONEY:
 				if (Main.instance.initManager.hasEconomyEnabled()){
 					if (!(Main.instance.initManager.getEconomy().getBalance(p) >= (Double)value))
-						return false;
+						return new FailResult(RequirementType.MONEY, (Double)value);
 				}
 				break;
 			case ITEM:
 				for (ItemStack i : (List<ItemStack>)value){
 					if (!p.getInventory().containsAtLeast(i, i.getAmount()))
-						return false;
+						return new FailResult(RequirementType.ITEM, i);
 				}
 				break;
 			case SCOREBOARD:
@@ -237,41 +246,41 @@ public class Quest {
 						split = s.split(">=");
 						if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]) == null){
 							QuestUtil.warnCmd("任務 " + InternalID + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
-							return false;
+							return new FailResult(RequirementType.SCOREBOARD, "");
 						}
 						if (!(Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0])
 								.getScore(p.getName()).getScore() >= Integer.parseInt(split[1])))
-							return false;
+							return new FailResult(RequirementType.SCOREBOARD, "");
 					} else if (s.contains("<=")) {
 						split = s.split("<=");
 						if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]) == null){
 							QuestUtil.warnCmd("任務 " + InternalID + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
-							return false;
+							return new FailResult(RequirementType.SCOREBOARD, "");
 						}
 						if (!(Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0])
 								.getScore(p.getName()).getScore() <= Integer.parseInt(split[1])))
-							return false;
+							return new FailResult(RequirementType.SCOREBOARD, "");
 					} else if (s.contains("==")) {
 						split = s.split("==");
 						if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]) == null){
 							QuestUtil.warnCmd("任務 " + InternalID + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
-							return false;
+							return new FailResult(RequirementType.SCOREBOARD, "");
 						}
 						if (!(Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0])
 								.getScore(p.getName()).getScore() == Integer.parseInt(split[1])))
-							return false;
+							return new FailResult(RequirementType.SCOREBOARD, "");
 					}
 				}
 				break;
 			case NBTTAG:
 				for (String n : (List<String>)value){
 					if (!Main.instance.handler.hasTag(p, n))
-						return false;
+						return new FailResult(RequirementType.NBTTAG, "");
 				}
 				break;
 			}
 		}
-		return true;
+		return new FailResult(null, "");
 	}
 	
 	@Override
@@ -291,19 +300,6 @@ public class Quest {
 		Quest q = (Quest)o;
 		if (!q.getInternalID().equals(InternalID))
 			return false;
-		// Unnecessary conditions
-//		if (!q.getQuestName().equals(QuestName))
-//			return false;
-//		if (!q.getQuestNPC().equals(QuestNPC))
-//			return false;
-//		if (!q.getQuestReward().equals(reward))
-//			return false;
-//		if (!q.getStages().equals(AllStages))
-//			return false;
-//		if (!q.getTriggers().equals(Triggers))
-//			return false;
-//		if (!q.getRequirements().equals(Requirements))
-//			return false;
 		return true;
 	}
 	
@@ -322,4 +318,49 @@ public class Quest {
 		}
 		QuestStorage.Quests.put(q.getInternalID(), q);
 	}
+	
+	public class FailResult{
+		Object obj;
+		RequirementType type;
+		
+		public FailResult(RequirementType t, Object o){
+			type = t;
+			obj = o;
+		}
+		
+		public boolean succeed(){
+			return type == null;
+		}
+		
+		public RequirementType getFailType(){
+			return type;
+		}
+		
+		public String getMessage(){
+			String s = "";
+			if (type == null)
+				return s;
+			switch (type){
+			case ITEM:
+				s = ChatColor.RED + "沒有指定的物品： " + ((ItemStack)obj).getItemMeta().getDisplayName();
+				break;
+			case LEVEL:
+				s = ChatColor.RED + "等級不足： " + (Integer)obj;
+				break;
+			case MONEY:
+				s = ChatColor.RED + "金錢不足： " + (Double)obj;
+				break;
+			case SCOREBOARD:
+			case NBTTAG:
+				s = ChatColor.RED + "你並沒有達到指定的任務條件。";
+				break;
+			case QUEST:
+				s = ChatColor.RED + "沒有完成任務： " + ((Quest)obj).getQuestName();
+				break;
+			}
+			return s;
+		}
+		
+	}
+	
 }
