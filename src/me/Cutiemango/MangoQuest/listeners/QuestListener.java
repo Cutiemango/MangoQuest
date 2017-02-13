@@ -24,25 +24,25 @@ public class QuestListener implements Listener{
 		if (e.getRightClicked() instanceof LivingEntity){
 			if (CitizensAPI.getNPCRegistry().getNPC(e.getRightClicked()) != null){
 				NPC npc = CitizensAPI.getNPCRegistry().getNPC(e.getRightClicked());
-				if (QuestEditorManager.isInEditorMode(p)){
-					e.setCancelled(true);
-					return;
-				}
 				if (p.isSneaking())
+					return;
+				e.setCancelled(true);
+				if (QuestEditorManager.isInEditorMode(p))
 					return;
 				QuestPlayerData pd = QuestUtil.getData(p);
 				if (Main.instance.handler.getItemInMainHand(p).getType().equals(Material.AIR) ||
 						Main.instance.handler.getItemInMainHand(p) == null){
-					if (Main.instance.initManager.hasShopkeepersEnabled())
+					if (Main.instance.initManager.hasShopkeepersEnabled()){
 						if (Main.instance.initManager.getShopkeepers().isShopkeeper(npc.getEntity())){
-							e.setCancelled(true);
 							QuestGUIManager.openNPCInfo(p, npc, true);
 							return;
 						}
+					}
 					QuestGUIManager.openNPCInfo(p, npc, false);
 					return;
 				}
 				pd.deliverItem(npc);
+				return;
 			}
 		}
 		return;

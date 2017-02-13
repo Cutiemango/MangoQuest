@@ -299,10 +299,11 @@ public class QuestPlayerData {
 					continue;
 				if (qop.getObject() instanceof QuestObjectDeliverItem){
 					QuestObjectDeliverItem o = (QuestObjectDeliverItem)qop.getObject();
-					if (o.getTargetNPC().equals(npc) && o.getItem().isSimilar(p.getInventory().getItemInMainHand())){
-						if (p.getInventory().getItemInMainHand().getAmount() > (o.getAmount() - qop.getProgress())){
-							p.getInventory().getItemInMainHand().setAmount(
-									p.getInventory().getItemInMainHand().getAmount() - (o.getAmount() - qop.getProgress()));
+					ItemStack itemtoDeliver = Main.instance.handler.getItemInMainHand(p);
+					int amountNeeded = o.getAmount() - qop.getProgress();
+					if (o.getTargetNPC().equals(npc) && QuestUtil.compareItem(o.getItem(), itemtoDeliver, true)){
+						if (itemtoDeliver.getAmount() > amountNeeded){
+							itemtoDeliver.setAmount(itemtoDeliver.getAmount() - amountNeeded);
 							qop.setProgress(o.getAmount());
 							qop.checkIfFinished();
 							if (qop.isFinished()){
@@ -313,7 +314,9 @@ public class QuestPlayerData {
 							}
 							return;
 						}
-						else if (p.getInventory().getItemInMainHand().getAmount() == (o.getAmount() - qop.getProgress())){
+						else if (itemtoDeliver.getAmount() == amountNeeded){
+							
+							// TODO Fix the version compability!
 							p.getInventory().setItemInMainHand(null);
 							if (qop.getObject().hasConversation())
 								qop.getObject().getConversation().startNewConversation(getPlayer());
@@ -328,7 +331,7 @@ public class QuestPlayerData {
 							return;
 						}
 						else{
-							qop.setProgress(qop.getProgress() + p.getInventory().getItemInMainHand().getAmount());
+							qop.setProgress(qop.getProgress() + itemtoDeliver.getAmount());
 							p.getInventory().setItemInMainHand(null);
 							QuestUtil.info(p, o.toPlainText() + " &6進度： (" + qop.getProgress() + "/" + o.getAmount() + ")");
 							return;

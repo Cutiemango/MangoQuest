@@ -150,6 +150,7 @@ public class CommandAddnew {
 	
 	// /mq e addnew reward item
 	// /mq e addnew reward fp [npc] [value]
+	// /mq e addnew reward command [value] ...
 	private static void addReward(Quest q, Player sender, String[] args){
 		if (args.length == 4){
 			switch(args[3].toLowerCase()){
@@ -163,19 +164,37 @@ public class CommandAddnew {
 				QuestEditorListener.registerListeningObject(sender, "mq e addnew reward fp ");
 				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並按照此格式輸入：\n&0[NPC代碼]:[好感度]。");
 				return;
+			case "command":
+				QuestEditorListener.registerListeningObject(sender, "mq e addnew reward command ");
+				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並輸入指令獎勵，\n&c玩家變數請使用<player>。\n&7(不須使用'/'作為開頭。)");
+				return;
 			}
 		}
-		else if (args.length == 5){
-			String[] sp = args[4].split(":");
-			try{
-				q.getQuestReward().getFp().put(Integer.parseInt(sp[0]), Integer.parseInt(sp[1]));
-			}catch(NumberFormatException e){
-				QuestUtil.error(sender, "未按照指定格式輸入！");
+		else if (args.length >= 5){
+			switch (args[3]){
+			case "fp":
+				String[] sp = args[4].split(":");
+				try{
+					q.getQuestReward().getFp().put(Integer.parseInt(sp[0]), Integer.parseInt(sp[1]));
+				}catch(NumberFormatException e){
+					QuestUtil.error(sender, "未按照指定格式輸入！");
+					QuestEditorManager.editQuest(sender);
+					return;
+				}
+				QuestEditorManager.editQuest(sender);
+				return;
+			case "command":
+				String s = "";
+				for (int i = 4; i < args.length; i++){
+					s += args[i];
+					if (!(i == args.length - 1))
+						s += " ";
+				}
+				if (!s.equals(""))
+					q.getQuestReward().addCommand(s);
 				QuestEditorManager.editQuest(sender);
 				return;
 			}
-			QuestEditorManager.editQuest(sender);
-			return;
 		}
 	}
 

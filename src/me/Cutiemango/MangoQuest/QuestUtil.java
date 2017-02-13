@@ -9,6 +9,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
@@ -114,6 +116,61 @@ public class QuestUtil {
 		if (seconds > 0)
 			s += seconds + " 秒";
 		return s;
+	}
+	
+	/**
+	 * Will compare stacks by name, amount, data, display name/lore and
+	 * enchantments
+	 * @param one
+	 *            ItemStack to compare
+	 * @param two
+	 *            ItemStack to compare to
+	 * @return true if equal, else return false
+	 */
+	public static boolean compareItem(ItemStack one, ItemStack two, boolean ignoreAmount) {
+		if (one == null && two != null || one != null && two == null) {
+			return false;
+		}
+		if (one == null && two == null) {
+			return true;
+		}
+		if (one.getType().name() != two.getType().name()) {
+			return false;
+		} else if ((one.getAmount() != two.getAmount()) && ignoreAmount == false) {
+			return false;
+		} else if (one.getData().equals(two.getData()) == false) {
+			return false;
+		}
+		if (one.hasItemMeta() || two.hasItemMeta()) {
+
+			if (one.hasItemMeta() && two.hasItemMeta() == false) {
+				return false;
+			} else if (one.hasItemMeta() == false && two.hasItemMeta()) {
+				return false;
+			} else if (one.getItemMeta().hasDisplayName() && two.getItemMeta().hasDisplayName() == false) {
+				return false;
+			} else if (one.getItemMeta().hasDisplayName() == false && two.getItemMeta().hasDisplayName()) {
+				return false;
+			} else if (one.getItemMeta().hasLore() && two.getItemMeta().hasLore() == false) {
+				return false;
+			} else if (one.getItemMeta().hasLore() == false && two.getItemMeta().hasLore()) {
+				return false;
+			} else if (one.getItemMeta().hasDisplayName() && two.getItemMeta().hasDisplayName()
+					&& ChatColor.stripColor(one.getItemMeta().getDisplayName())
+							.equals(ChatColor.stripColor(two.getItemMeta().getDisplayName())) == false) {
+				return false;
+			} else if (one.getItemMeta().hasLore() && two.getItemMeta().hasLore()
+					&& one.getItemMeta().getLore().equals(two.getItemMeta().getLore()) == false) {
+				return false;
+			}
+
+		}
+
+		if (one.getEnchantments().equals(two.getEnchantments()) == false) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
 	@SafeVarargs

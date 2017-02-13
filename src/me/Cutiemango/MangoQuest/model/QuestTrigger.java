@@ -22,7 +22,7 @@ public class QuestTrigger {
 	}
 	
 	public QuestTrigger(TriggerType type, TriggerObject obj, int i, Object arg){
-		if (!type.equals(TriggerType.TRIGGER_STAGE_START) && !type.equals(TriggerType.TRIGGER_STAGE_FINISH))
+		if (!type.hasStage())
 			QuestUtil.warnCmd("ERROR: " + type.toString() + " should not use this constructor.");
 		
 		t = type;
@@ -34,17 +34,23 @@ public class QuestTrigger {
 	}
 	
 	public enum TriggerType{
-		TRIGGER_ON_TAKE("接受時觸發"), TRIGGER_ON_QUIT("放棄時觸發"), TRIGGER_ON_FINISH("完成時觸發"),
-		TRIGGER_STAGE_START("第N階段開始時觸發"), TRIGGER_STAGE_FINISH("第N階段完成時觸發");
+		TRIGGER_ON_TAKE("接受時觸發", false), TRIGGER_ON_QUIT("放棄時觸發", false), TRIGGER_ON_FINISH("完成時觸發", false),
+		TRIGGER_STAGE_START("第N階段開始時觸發", true), TRIGGER_STAGE_FINISH("第N階段完成時觸發", true);
 		
 		private String name;
+		private boolean hasStage;
 		
-		TriggerType(String s){
+		TriggerType(String s, boolean b){
 			name = s;
+			hasStage = b;
 		}
 		
 		public String toCustomString(){
 			return name;
+		}
+		
+		public boolean hasStage(){
+			return hasStage;
 		}
 		
 		public String toCustomString(int i){

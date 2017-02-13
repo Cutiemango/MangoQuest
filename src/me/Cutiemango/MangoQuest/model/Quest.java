@@ -342,7 +342,11 @@ public class Quest {
 				return s;
 			switch (type){
 			case ITEM:
-				s = ChatColor.RED + "沒有指定的物品： " + ((ItemStack)obj).getItemMeta().getDisplayName();
+				ItemStack item = (ItemStack)obj;
+				if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+					s = ChatColor.RED + "沒有指定的物品： " + item.getItemMeta().getDisplayName();
+				else
+					s = ChatColor.RED + "沒有指定的物品： " + QuestUtil.translate(item.getType(), item.getDurability());
 				break;
 			case LEVEL:
 				s = ChatColor.RED + "等級不足： " + (Integer)obj;

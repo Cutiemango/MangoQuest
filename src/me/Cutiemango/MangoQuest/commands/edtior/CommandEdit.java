@@ -537,6 +537,7 @@ public class CommandEdit {
 	}
 	
 	// /mq e edit reward [type] [value]
+	// /mq e edit command [counter] [value]...
 	private static void editReward(Quest q, Player sender, String[] args){
 		if (args.length == 4){
 			switch(args[3].toLowerCase()){
@@ -578,10 +579,14 @@ public class CommandEdit {
 				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並輸入要調整的好感度。");
 				QuestEditorListener.registerListeningObject(sender, "mq e edit reward fp " + Integer.parseInt(args[4]) + " ");
 				return;
+			case "command":
+				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並輸入指令獎勵，\n&c玩家變數請使用<player>。\n&7(不須使用'/'作為開頭。)");
+				QuestEditorListener.registerListeningObject(sender, "mq e edit reward command " + Integer.parseInt(args[4]) + " ");
+				return;
 			}
 			QuestEditorManager.editQuest(sender);
 		}
-		else if (args.length == 6){
+		else if (args.length >= 6){
 			switch(args[3].toLowerCase()){
 			case "fp":
 				int npc = 0;
@@ -595,6 +600,17 @@ public class CommandEdit {
 					return;
 				}
 				q.getQuestReward().getFp().put(npc, fp);
+				break;
+			case "command":
+				String cmd = "";
+				int index = Integer.parseInt(args[4]);
+				for (int i = 5; i <= args.length; i++){
+					cmd += args[i];
+					if (!(i == args.length - 1))
+						cmd += " ";
+				}
+				if (!cmd.equals(""))
+					q.getQuestReward().getCommands().set(index, cmd);
 				break;
 			}
 			QuestEditorManager.editQuest(sender);

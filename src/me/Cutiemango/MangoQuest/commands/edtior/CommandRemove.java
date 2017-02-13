@@ -60,6 +60,9 @@ public class CommandRemove {
 				case "fp":
 					q.getQuestReward().getFp().remove(Integer.parseInt(args[4]));
 					break;
+				case "command":
+					q.getQuestReward().getCommands().remove(Integer.parseInt(args[4]));
+					break;
 			}
 			QuestEditorManager.editQuest(sender);
 			return;

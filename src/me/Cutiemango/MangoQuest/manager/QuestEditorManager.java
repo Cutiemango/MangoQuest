@@ -195,26 +195,24 @@ public class QuestEditorManager {
 				p4.addExtra("\n");
 			}
 		}
-//		p4.addExtra(TextComponentFactory.regHoverEvent(
-//				TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("物品： "),
-//				"/mq e addnew reward item"), "&f點擊以&c新增&f物品"));
+		p4.addExtra(TextComponentFactory.regHoverEvent(
+				TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("指令： "),
+				"/mq e addnew reward command"), "&f點擊以&c新增&f指令"));
+		p4.addExtra("\n");
+		if (q.getQuestReward().hasCommand()){
+			int counter = 1;
+			for (String s : q.getQuestReward().getCommands()){
+				p4.addExtra(TextComponentFactory.regHoverEvent(QuestUtil.translateColor("- &0指令(" + counter + ")"), "&f/" + s));
+				p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[編輯]", "/mq e edit reward command " + (counter-1)));
+				p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[移除]", "/mq e remove reward command " + (counter-1)));
+				p4.addExtra("\n");
+				counter++;
+			}
+		}
 		p4.addExtra(QuestUtil.translateColor("物品： "));
 		p4.addExtra("\n");
 		p4.addExtra(TextComponentFactory.regClickCmdEvent("&7[點擊開啟GUI]", "/mq e edit reward item"));
-//		if (q.getQuestReward().hasItem()) {
-//			int i = 0;
-//			for (ItemStack item : q.getQuestReward().getItems()) {
-//				p4.addExtra("- ");
-//				p4.addExtra(TextComponentFactory.convertItemHoverEvent(item, false));
-//				p4.addExtra(QuestUtil.translateColor(" &0&l" + item.getAmount() + "&0 個"));
-//				p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[編輯]", "/mq e edit reward item " + i));
-//				p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[移除]", "/mq e remove reward item " + i));
-//				p4.addExtra("\n");
-//				i++;
-//			}
-//		}
 		p4.addExtra("\n");
-		
 		
 		TextComponent p5 = new TextComponent(QuestUtil.translateColor("&c&l儲存/退出》\n"));
 		p5.addExtra(TextComponentFactory.regHoverEvent(

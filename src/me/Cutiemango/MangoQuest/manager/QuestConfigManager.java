@@ -225,7 +225,8 @@ public class QuestConfigManager {
 				QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.FriendlyPoint." + npc, q.getQuestReward().getFp().get(npc));
 			}
 		}
-		
+		if (q.getQuestReward().hasCommand())
+			QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Commands", q.getQuestReward().getCommands());
 		System.out.println("[任務讀取] 任務 " + q.getQuestName() + " 已經儲存完成！");
 		QuestsIO.save();
 	}
@@ -384,6 +385,13 @@ public class QuestConfigManager {
 				}
 			}
 			
+			if (QuestsIO.getStringList("Quests." + internal + ".Rewards.Commands") != null){
+				List<String> l = QuestsIO.getStringList("Quests." + internal + ".Rewards.Commands");
+				for (String s : l){
+					reward.addCommand(s);
+				}
+			}
+			
 			if (plugin.initManager.hasCitizensEnabled() && QuestsIO.contains("Quests." + internal + ".QuestNPC")){
 				NPC npc = null;
 				if (!(QuestsIO.getInt("Quests." + internal + ".QuestNPC") == -1)
@@ -522,6 +530,7 @@ public class QuestConfigManager {
 			}
 			im.setLore(lore);
 		}
+		is.setItemMeta(im);
 		if (config.getStringList(path + ".Enchantment") != null){
 			List<String> l = config.getStringList(path + ".Enchantment");
 			for (String s : l){
@@ -529,7 +538,6 @@ public class QuestConfigManager {
 				is.addUnsafeEnchantment(Enchantment.getByName(split[0]), Integer.parseInt(split[1]));
 			}
 		}
-		is.setItemMeta(im);
 		return is;
 	}
 	

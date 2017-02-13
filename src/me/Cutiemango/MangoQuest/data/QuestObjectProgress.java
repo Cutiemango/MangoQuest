@@ -45,12 +45,13 @@ public class QuestObjectProgress {
 	}
 	
 	public void openConversation(Player p){
-		if (cp == null)
+		if (cp == null){
+			if (obj.hasConversation())
+				newConversation(p);
 			return;
+		}
 		else if (cp.needReset())
 			QuestGUIManager.updateConversation(p, cp);
-		else if (obj.hasConversation() || cp.needReset())
-			newConversation(p);
 		else
 			finish();
 		return;

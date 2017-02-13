@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,6 +20,7 @@ public class QuestReward {
 	private double money;
 	private List<ItemStack> items = new ArrayList<>();
 	private int experience;
+	private List<String> command = new ArrayList<>();
 	private HashMap<Integer, Integer> npcfp = new HashMap<>();
 	
 	public void addItem(ItemStack is) {
@@ -37,6 +39,10 @@ public class QuestReward {
 		npcfp.put(id, value);
 	}
 
+	public void addCommand(String s){
+		command.add(s);
+	}
+	
 	public void removeItem(ItemStack is) {
 		if (items.contains(is))
 			items.remove(is);
@@ -73,6 +79,10 @@ public class QuestReward {
 	public boolean hasFriendPoint(){
 		return !npcfp.isEmpty();
 	}
+	
+	public boolean hasCommand(){
+		return !command.isEmpty();
+	}
 
 	public List<ItemStack> getItems() {
 		return items;
@@ -88,6 +98,10 @@ public class QuestReward {
 	
 	public HashMap<Integer, Integer> getFp(){
 		return npcfp;
+	}
+	
+	public List<String> getCommands(){
+		return command;
 	}
 	
 	public boolean isEmpty(){
@@ -139,6 +153,13 @@ public class QuestReward {
 			for (Integer id : npcfp.keySet()){
 				qd.addNPCfp(id, npcfp.get(id));
 				QuestUtil.info(p, "&e任務獎勵 - " + CitizensAPI.getNPCRegistry().getById(id).getName() + " &e非常感激你的所作所為！");
+			}
+		}
+		
+		if (this.hasCommand()){
+			for (String cmd : command){
+				cmd = cmd.replace("<player>", p.getName());
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
 			}
 		}
 	}
