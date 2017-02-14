@@ -12,7 +12,9 @@ import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.TextComponentFactory;
+import me.Cutiemango.MangoQuest.model.InteractiveText;
 import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.model.QuestBookPage;
 import me.Cutiemango.MangoQuest.model.QuestTrigger;
 import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerObject;
 import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
@@ -52,60 +54,65 @@ public class QuestEditorManager {
 	}
 	
 	public static void mainGUI(Player p){
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&9&l任務線上編輯器系統 &0&l：\n"));
-		p1.addExtra(TextComponentFactory.regHoverEvent(
-				TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("&0&l- 《新增任務》"), "/mq e newquest"), "&f點擊以新增任務"));
-		p1.addExtra("\n\n");
-		p1.addExtra(TextComponentFactory.regHoverEvent(
-				TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("&0&l- 《編輯任務》"), "/mq e edit"), "&f點擊進入編輯任務介面"));
-		p1.addExtra("\n\n");
-		p1.addExtra(TextComponentFactory.regHoverEvent(
-				TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("&0&l- 《移除任務》"), "/mq e remove"), "&f點擊進入移除任務介面"));
-		p1.addExtra("\n\n");
+		QuestBookPage p1 = new QuestBookPage();
+		p1.add("&9&l任務線上編輯器系統 &0&l：").changeLine();
+		p1.add(new InteractiveText("&0&l- 《新增任務》")
+				.clickCommand("/mq e newquest").showText("&f點擊以新增任務")).changeLine();
+		p1.changeLine();
+		p1.add(new InteractiveText("&0&l- 《編輯任務》")
+				.clickCommand("/mq e edit").showText("&f點擊進入編輯任務介面")).changeLine();
+		p1.changeLine();
+		p1.add(new InteractiveText("&0&l- 《移除任務》")
+				.clickCommand("/mq e remove").showText("&f點擊進入移除任務介面")).changeLine();
+		p1.changeLine();
 		
 		if (isInEditorMode(p) && QuestEditorManager.getCurrentEditingQuest(p).getInternalID() != null){
-			p1.addExtra(TextComponentFactory.regHoverEvent(
-					TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("&c&l- 《返回編輯》"), "/mq e gui"), "&e您還有尚未儲存的任務！"));
-			p1.addExtra("\n\n");
-			p1.addExtra(TextComponentFactory.regHoverEvent(
-					TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("&c&l- 《退出編輯》"), "/mq e exit"), "&c&l所做的任何變更都不會儲存。"));
-			p1.addExtra("\n");
+			p1.add(new InteractiveText("&c&l- 《返回編輯》")
+					.clickCommand("/mq e gui").showText("&e您還有尚未儲存的任務！")).changeLine();
+			p1.changeLine();
+			p1.add(new InteractiveText("&c&l- 《退出編輯》")
+					.clickCommand("/mq e exit").showText("&c&l所做的任何變更都不會儲存。")).changeLine();
 		}
 		QuestGUIManager.openBook(p, p1);
 	}
 	
 	public static void editGUI(Player p){
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&9&l任務線上編輯器系統&0&l： 選擇要&2&l編輯&0&l的任務\n"));
+		QuestBookPage p1 = new QuestBookPage();
+		p1.add("&9&l任務線上編輯器系統&0&l： 選擇要&2&l編輯&0&l的任務").changeLine();
 		for (Quest q : QuestStorage.Quests.values()){
-			p1.addExtra(TextComponentFactory.regClickCmdEvent(
-					QuestUtil.translateColor("&0- &l" + q.getQuestName() + "&0(" + q.getInternalID() + ")"), "/mq e select " + q.getInternalID()));
-			p1.addExtra("\n");
+			p1.add(new InteractiveText("&0- &l" + q.getQuestName() + "&0(" + q.getInternalID() + ")")
+					.clickCommand("/mq e select " + q.getInternalID()));
+			p1.changeLine();
 		}
-		p1.addExtra("\n");
-		p1.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[返回編輯器選單]", "/mq e"));
+		p1.changeLine();
+		p1.add(new InteractiveText("&0&l[返回編輯器選單]").clickCommand("/mq e"));
 		QuestGUIManager.openBook(p, p1);
 	}
 	
 	public static void removeGUI(Player p){
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&9&l任務線上編輯器系統&0&l： 選擇要&c&l移除&0&l的任務\n"));
+		QuestBookPage p1 = new QuestBookPage();
+		p1.add("&9&l任務線上編輯器系統&0&l： 選擇要&c&l移除&0&l的任務").changeLine();
 		for (Quest q : QuestStorage.Quests.values()){
-			p1.addExtra(TextComponentFactory.regClickCmdEvent(
-					QuestUtil.translateColor("&0- &l" + q.getQuestName() + "&0(" + q.getInternalID() + ")"), "/mq e remove confirm " + q.getInternalID()));
-			p1.addExtra("\n");
+			p1.add(new InteractiveText("&0- &l" + q.getQuestName() + "&0(" + q.getInternalID() + ")")
+					.clickCommand("/mq e remove confirm " + q.getInternalID()));
+			p1.changeLine();
 		}
-		p1.addExtra("\n");
-		p1.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[返回編輯器選單]", "/mq e"));
+		p1.changeLine();
+		p1.add(new InteractiveText("&0&l[返回編輯器選單]").clickCommand("/mq e"));
 		QuestGUIManager.openBook(p, p1);
 	}
 	
 	public static void removeConfirmGUI(Player p, Quest q){
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&4&l你確定要刪除任務 "));
-		p1.addExtra(QuestUtil.translateColor("\n&0&l" + q.getQuestName() + " &4&l的所有資料嗎？"));
-		p1.addExtra(QuestUtil.translateColor("\n&8&l(不可回復，請審慎考慮)"));
-		p1.addExtra("\n\n  ");
-		p1.addExtra(TextComponentFactory.regClickCmdEvent("&2&l【確定】", "/mq e remove quest " + q.getInternalID()));
-		p1.addExtra(QuestUtil.translateColor(" &8&l/ "));
-		p1.addExtra(TextComponentFactory.regClickCmdEvent("&c&l【取消】", "/mq e"));
+		QuestBookPage p1 = new QuestBookPage();
+		p1.add("&4&l你確定要刪除任務 ").changeLine();
+		p1.add("&0&l" + q.getQuestName() + " &4&l的所有資料嗎？").changeLine();
+		p1.add("&8&l(不可回復，請審慎考慮)").changeLine();
+		p1.changeLine();
+		p1.changeLine();
+		p1.add("  ");
+		p1.add(new InteractiveText("&2&l【確定】").clickCommand("/mq e remove quest " + q.getInternalID()));
+		p1.add(" &8&l/ ");
+		p1.add(new InteractiveText("&c&l【取消】").clickCommand("/mq e remove"));
 		QuestGUIManager.openBook(p, p1);
 	}
 	
@@ -116,118 +123,101 @@ public class QuestEditorManager {
 		}
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 		
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&d&l基本資料編輯》 "));
-		p1.addExtra("\n");
-		p1.addExtra(QuestUtil.translateColor("&0&l任務編碼： &0" + q.getInternalID()));
-		p1.addExtra("\n");
-		p1.addExtra(TextComponentFactory.regHoverEvent(
-				TextComponentFactory.regClickCmdEvent("&6&l任務名稱", "/mq e edit name"), "&f點擊以編輯 任務名稱"));
-		p1.addExtra(QuestUtil.translateColor("： &0" + q.getQuestName()));
-		p1.addExtra("\n");
-		p1.addExtra(TextComponentFactory.regHoverEvent(
-				TextComponentFactory.regClickCmdEvent("&0&l任務NPC ", "/mq e edit npc"), "&f點擊以編輯 任務NPC"));
-		p1.addExtra(QuestUtil.translateColor("&0&l： "));
+		QuestBookPage p1 = new QuestBookPage();
+		p1.add("&d&l基本資料編輯》 ").changeLine();
+		p1.add("&0&l任務編碼： &0" + q.getInternalID()).changeLine();
+		
+		p1.add(new InteractiveText("&6&l任務名稱： &0").clickCommand("/mq e edit name").showText("&f點擊以編輯 任務名稱"));
+		p1.add(q.getQuestName()).changeLine();
+		p1.add(new InteractiveText("&0&l任務NPC&0&l： ").clickCommand("/mq e edit npc").showText("&f點擊以編輯 任務NPC"));
 		if (q.isCommandQuest())
-			p1.addExtra(QuestUtil.translateColor("&c&l無"));
+			p1.add("&c&l無");
 		else
-			p1.addExtra(TextComponentFactory.convertLocHoverEvent(q.getQuestNPC().getName(), q.getQuestNPC().getEntity().getLocation(), false));
-		p1.addExtra("\n");
+			p1.add(TextComponentFactory.convertLocHoverEvent(q.getQuestNPC().getName(), q.getQuestNPC().getEntity().getLocation(), false));
+		p1.changeLine();
 		
 		if (q.isRedoable()){
-			p1.addExtra(TextComponentFactory.regHoverEvent(
-					TextComponentFactory.regClickCmdEvent("&0&l重複執行", "/mq e edit redo false"), "&f點擊以變更 &c不可重複執行"));
-			p1.addExtra(QuestUtil.translateColor("&0&l： &a是"));
-			p1.addExtra("\n");
-			p1.addExtra(TextComponentFactory.regHoverEvent(
-					TextComponentFactory.regClickCmdEvent("&0&l等待時間", "/mq e edit redodelay"), "&f點擊以編輯 重複執行等待時間"));
-			p1.addExtra(QuestUtil.translateColor("&0&l： " + QuestUtil.convertTime(q.getRedoDelay())));
-			p1.addExtra("\n");
+			p1.add(new InteractiveText("&0&l重複執行&0&l： ").clickCommand("/mq e edit redo false").showText("&f點擊以變更 &c不可重複執行"));
+			p1.add("&a是").changeLine();
+			p1.add(new InteractiveText("&0&l等待時間&0&l： ").clickCommand("/mq e edit redodelay").showText("&f點擊以編輯 重複執行等待時間"));
+			p1.add(QuestUtil.convertTime(q.getRedoDelay())).changeLine();
 		}
 		else{
-			p1.addExtra(TextComponentFactory.regHoverEvent(
-					TextComponentFactory.regClickCmdEvent("&0&l重複執行", "/mq e edit redo true"), "&f點擊以變更 &a可重複執行"));
-			p1.addExtra(QuestUtil.translateColor("&0&l： &c否"));
+			p1.add(new InteractiveText("&0&l重複執行&0&l： ").clickCommand("/mq e edit redo true").showText("&f點擊以變更 &c不可重複執行"));
+			p1.add("&c否").changeLine();
 		}
 		
-		TextComponent p2 = new TextComponent(QuestUtil.translateColor("&2&l需求/事件/階段編輯》\n"));
-		p2.addExtra(QuestUtil.translateColor("&0任務&3&l需求： "));
-		p2.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[編輯]", "/mq e edit req"));
-		p2.addExtra("\n");
-		p2.addExtra(QuestUtil.translateColor("&0任務&5&l事件： "));
-		p2.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[編輯]", "/mq e edit evt"));
-		p2.addExtra("\n");
-		p2.addExtra(QuestUtil.translateColor("&0任務&c&l階段： "));
-		p2.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[編輯]", "/mq e edit stage"));
-		p2.addExtra("\n");
+		QuestBookPage p2 = new QuestBookPage();
+		p2.add("&2&l需求/事件/階段編輯》").changeLine();
 		
-		TextComponent p3 = new TextComponent(QuestUtil.translateColor("&8&l任務提要》 \n"));
+		p2.add("&0任務&3&l需求：").changeLine();
+		p2.add(new InteractiveText("[前往編輯頁面]")
+				.clickCommand("/mq e edit req").showText("&f點擊以前往 &3任務需求&f編輯頁面")).changeLine();
+		p2.add("&0任務&5&l事件： ").changeLine();
+		p2.add(new InteractiveText("[前往編輯頁面]")
+				.clickCommand("/mq e edit evt").showText("&f點擊以前往 &5任務事件&f編輯頁面")).changeLine();
+		p2.add("&0任務&c&l階段： ").changeLine();
+		p2.add(new InteractiveText("[前往編輯頁面]")
+				.clickCommand("/mq e edit stage").showText("&f點擊以前往 &c任務階段&f編輯頁面")).changeLine();
+		
+		
+		QuestBookPage p3 = new QuestBookPage();
+		p3.add("&8&l任務提要》").changeLine();
 		for (String out : q.getQuestOutline()){
-			p3.addExtra(QuestUtil.translateColor(out));
-			p3.addExtra("\n");
+			p3.add(out).changeLine();
 		}
-		p3.addExtra("\n");
-		p3.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[編輯]", "/mq e edit outline"));
+		p3.changeLine();
+		p3.add(new InteractiveText("&0&l[編輯提要]").clickCommand("/mq e edit outline"));
 		
-		TextComponent p4 = new TextComponent(QuestUtil.translateColor("&6&l任務獎勵》\n"));
+		QuestBookPage p4 = new QuestBookPage();
+		p4.add("&6&l任務獎勵》").changeLine();
 
-		p4.addExtra(QuestUtil.translateColor("金錢： " + q.getQuestReward().getMoney() + " 元"));
-		p4.addExtra(TextComponentFactory.regClickCmdEvent("&0 &l[編輯]", "/mq e edit reward money"));
-		p4.addExtra("\n");
+		p4.add("金錢： " + q.getQuestReward().getMoney() + " 元");
+		p4.add(new InteractiveText("&0 &l[編輯]").clickCommand("/mq e edit reward money").showText("&f點擊以輸入 &6金錢獎勵")).changeLine();
+		
+		p4.add("經驗值： " + q.getQuestReward().getExp() + " 點");
+		p4.add(new InteractiveText("&0 &l[編輯]").clickCommand("/mq e edit reward exp").showText("&f點擊以輸入 &b經驗值獎勵")).changeLine();
 
-		p4.addExtra(QuestUtil.translateColor("經驗值： " + q.getQuestReward().getExp()));
-		p4.addExtra(TextComponentFactory.regClickCmdEvent("&0 &l[編輯]", "/mq e edit reward exp"));
-		p4.addExtra("\n");
-
-		p4.addExtra(TextComponentFactory.regHoverEvent(
-				TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("好感度： "),
-				"/mq e addnew reward fp"), "&f點擊以&c新增&f好感度設定"));
-		p4.addExtra("\n");
+		p4.add(new InteractiveText("好感度： ").clickCommand("/mq e addnew reward fp").showText("&f點擊以&c新增&f好感度設定")).changeLine();
 		if (q.getQuestReward().hasFriendPoint()) {
 			for (Integer n : q.getQuestReward().getFp().keySet()) {
 				NPC npc = CitizensAPI.getNPCRegistry().getById(n);
-				p4.addExtra(QuestUtil.translateColor("- "));
-				p4.addExtra(
-						TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
-				p4.addExtra(QuestUtil
-						.translateColor("&0 " + QuestUtil.translateColor(q.getQuestReward().getFp().get(n) + " 點")));
-				p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[編輯]", "/mq e edit reward fp " + n));
-				p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[移除]", "/mq e remove reward fp " + n));
-				p4.addExtra("\n");
+				if (npc == null)
+					continue;
+				p4.add("- ");
+				p4.add(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
+				p4.add("&0 " + q.getQuestReward().getFp().get(n) + " 點");
+				p4.add(new InteractiveText("&0&l[編輯]").clickCommand("/mq e edit reward fp " + n));
+				p4.add(new InteractiveText("&0&l[移除]").clickCommand("/mq e remove reward fp " + n));
+				p4.changeLine();
 			}
 		}
-		p4.addExtra(TextComponentFactory.regHoverEvent(
-				TextComponentFactory.regClickCmdEvent(QuestUtil.translateColor("指令： "),
-				"/mq e addnew reward command"), "&f點擊以&c新增&f指令"));
-		p4.addExtra("\n");
+		p4.add(new InteractiveText("指令： ")
+				.clickCommand("/mq e addnew reward command").showText("&f點擊以&c新增&f指令")).changeLine();
 		if (q.getQuestReward().hasCommand()){
 			int counter = 1;
 			for (String s : q.getQuestReward().getCommands()){
-				p4.addExtra(TextComponentFactory.regHoverEvent(QuestUtil.translateColor("- &0指令(" + counter + ")"), "&f/" + s));
-				p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[編輯]", "/mq e edit reward command " + (counter-1)));
-				p4.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[移除]", "/mq e remove reward command " + (counter-1)));
-				p4.addExtra("\n");
+				p4.add(new InteractiveText("- &0指令(" + counter + ")").showText("&f/" + s));
+				p4.add(new InteractiveText("&0&l[編輯]").clickCommand("/mq e edit reward command " + (counter-1)));
+				p4.add(new InteractiveText("&0&l[移除]").clickCommand("/mq e remove reward command " + (counter-1)));
+				p4.changeLine();
 				counter++;
 			}
 		}
-		p4.addExtra(QuestUtil.translateColor("物品： "));
-		p4.addExtra("\n");
-		p4.addExtra(TextComponentFactory.regClickCmdEvent("&7[點擊開啟GUI]", "/mq e edit reward item"));
-		p4.addExtra("\n");
+		p4.add("物品： ").changeLine();
+		p4.add(new InteractiveText("&7[點擊開啟GUI]").clickCommand("/mq e edit reward item").showText("&f請將物品丟入物品欄，系統將會自動讀取。")).changeLine();
 		
-		TextComponent p5 = new TextComponent(QuestUtil.translateColor("&c&l儲存/退出》\n"));
-		p5.addExtra(TextComponentFactory.regHoverEvent(
-				TextComponentFactory.regClickCmdEvent("&2&l【同步伺服器與設定檔】", "/mq e sa"), "&c&l注意： 目前持有此任務的玩家都會遺失任務進度。"));
-		p5.addExtra("\n");
-		p5.addExtra(TextComponentFactory.regHoverEvent(
-				TextComponentFactory.regClickCmdEvent("&5&l【同步伺服器】", "/mq e sl"), "&c&l注意： 目前持有此任務的玩家都會遺失任務進度。"));
-		p5.addExtra("\n");
-		p5.addExtra(TextComponentFactory.regHoverEvent(
-				TextComponentFactory.regClickCmdEvent("&9&l【同步設定檔】", "/mq e sc"), "&c&l注意： 目前持有此任務的玩家都會遺失任務進度。"));
-		p5.addExtra("\n");
-		p5.addExtra("\n");
-		p5.addExtra(TextComponentFactory.regHoverEvent(
-				TextComponentFactory.regClickCmdEvent("&0&l[退出編輯器]", "/mq e exit"), "&c&l所做的任何變更都不會儲存。"));
-		p5.addExtra("\n");
+		QuestBookPage p5 = new QuestBookPage();
+		p5.add("&c&l儲存/退出》").changeLine();
+		p5.add(new InteractiveText("&2&l【同步伺服器與設定檔】")
+				.clickCommand("/mq e sa").showText("&c&l注意： 目前持有此任務的玩家都會遺失任務進度。")).changeLine();
+		p5.add(new InteractiveText("&5&l【同步伺服器】")
+				.clickCommand("/mq e sl").showText("&c&l注意： 目前持有此任務的玩家都會遺失任務進度。")).changeLine();
+		p5.add(new InteractiveText("&9&l【同步設定檔】")
+				.clickCommand("/mq e sc").showText("&c&l注意： 目前持有此任務的玩家都會遺失任務進度。")).changeLine();
+		p5.changeLine();
+		p5.add(new InteractiveText("&0&l[退出編輯器]")
+				.clickCommand("/mq e exit").showText("&c&l所做的任何變更都不會儲存。")).changeLine();
 
 		QuestGUIManager.openBook(p, p1, p2, p3, p4, p5);
 	}
@@ -431,16 +421,6 @@ public class QuestEditorManager {
 				p1.addExtra("\n");
 				p1.addExtra(TextComponentFactory.regClickCmdEvent("&7[點擊開啟GUI]", "/mq e edit req ITEM"));
 				int i = 0;
-//				for (ItemStack item : (List<ItemStack>)q.getRequirements().get(t)){
-//					p1.addExtra("- ");
-//					p1.addExtra(TextComponentFactory.convertItemHoverEvent(item, false));
-//					p1.addExtra(QuestUtil.translateColor(" &0&l" + item.getAmount() + "&0 個"));
-//					p1.addExtra(TextComponentFactory.regClickCmdEvent("&7[編輯]", "/mq e edit req ITEM " + i));
-//					p1.addExtra(TextComponentFactory.regClickCmdEvent("&7[移除]", "/mq e remove req ITEM " + i));
-//					p1.addExtra("\n");
-//					i++;
-//				}
-//				p1.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[新增]", "/mq e addnew req ITEM " + i));
 				p1.addExtra("\n");
 				break;
 			case LEVEL:

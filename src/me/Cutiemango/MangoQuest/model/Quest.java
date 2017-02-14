@@ -81,7 +81,6 @@ public class Quest {
 	
 	private NPC QuestNPC;
 	private String InternalID;
-
 	private String QuestName;
 	
 	private List<String> QuestOutline = new ArrayList<>();
@@ -96,6 +95,8 @@ public class Quest {
 	
 	private boolean isRedoable = false;
 	private long RedoDelay;
+	
+	private QuestCache cache;
 
 	public String getInternalID() {
 		return InternalID;
@@ -127,6 +128,14 @@ public class Quest {
 
 	public NPC getQuestNPC() {
 		return QuestNPC;
+	}
+	
+	public QuestCache getCache(){
+		return cache;
+	}
+	
+	public void registerVersion(QuestCache qc){
+		cache = qc;
 	}
 	
 	public void setQuestNPC(NPC npc){
@@ -290,17 +299,8 @@ public class Quest {
 		q.setRedoable(isRedoable);
 		q.setRedoDelay(RedoDelay);
 		q.setFailMessage(FailRequirementMessage);
+		q.useCustomFailMessage = useCustomFailMessage;
 		return q;
-	}
-	
-	@Override
-	public boolean equals(Object o){
-		if (!(o instanceof Quest))
-			return false;
-		Quest q = (Quest)o;
-		if (!q.getInternalID().equals(InternalID))
-			return false;
-		return true;
 	}
 	
 	public static void synchronizeLocal(Quest q){
@@ -309,7 +309,7 @@ public class Quest {
 			Iterator<QuestProgress> it = pd.getProgresses().iterator();
 			while (it.hasNext()) {
 				QuestProgress qp = it.next();
-				if (qp.getQuest().equals(q)){
+				if (QuestCache.detailedValidate(q, qp.getQuest())){
 					pd.forceQuit(q);
 					break;
 				}

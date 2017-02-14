@@ -27,8 +27,10 @@ public class QuestListener implements Listener{
 				if (p.isSneaking())
 					return;
 				e.setCancelled(true);
-				if (QuestEditorManager.isInEditorMode(p))
+				if (QuestEditorManager.isInEditorMode(p)){
+					QuestUtil.info(p, "&c請退出編輯模式！");
 					return;
+				}
 				QuestPlayerData pd = QuestUtil.getData(p);
 				if (Main.instance.handler.getItemInMainHand(p).getType().equals(Material.AIR) ||
 						Main.instance.handler.getItemInMainHand(p) == null){

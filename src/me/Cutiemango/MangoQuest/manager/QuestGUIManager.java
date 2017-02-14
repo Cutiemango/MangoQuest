@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestBookPage;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.TextComponentFactory;
@@ -19,7 +18,9 @@ import me.Cutiemango.MangoQuest.data.QuestFinishData;
 import me.Cutiemango.MangoQuest.data.QuestObjectProgress;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
+import me.Cutiemango.MangoQuest.model.InteractiveText;
 import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.model.QuestBookPage;
 import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.CitizensAPI;
@@ -80,7 +81,7 @@ public class QuestGUIManager {
 			
 			if (q.getQuest().getQuestReward().hasItem()){
 				for (ItemStack is : q.getQuest().getQuestReward().getItems()){
-					p3.add(TextComponentFactory.convertItemHoverEvent(is, false));
+					p3.add(new InteractiveText("").showItem(is));
 					p3.add(" &l" + is.getAmount() + " &0個").changeLine();
 				}
 			}
@@ -167,7 +168,7 @@ public class QuestGUIManager {
 				p2.add("- ");
 				p2.add(TextComponentFactory.convertViewQuest(q));
 				if (q.isCommandQuest())
-					p2.add(TextComponentFactory.regClickCmdEvent("&2&l【接受】", "/mq quest take " + q.getInternalID()));
+					p2.add(new InteractiveText("&2&l【接受】").clickCommand("/mq quest take " + q.getInternalID()));
 				p2.changeLine();
 			}
 		}
@@ -218,13 +219,13 @@ public class QuestGUIManager {
 		for (QuestProgress q : qd.getNPCtoTalkWith(npc)){
 			p1.add("&0- &6&l？ &0");
 			p1.add(TextComponentFactory.convertViewQuest(q.getQuest()));
-			p1.add(TextComponentFactory.regHoverEvent(
-					TextComponentFactory.regClickCmdEvent("&9&l【對話】", "/mq conv npc " + npc.getId()),
-					"&9點擊&f以開始對話"));
+			p1.add(new InteractiveText("&9&l【對話】")
+					.clickCommand("/mq conv npc " + npc.getId())
+					.showText("&9點擊&f以開始對話"));
 			if (qd.isCurrentlyDoing(q.getQuest()) && !q.getQuest().isCommandQuest() && q.getQuest().getQuestNPC().equals(npc)){
-				p1.add(TextComponentFactory.regHoverEvent(
-						TextComponentFactory.regClickCmdEvent("&c&l【放棄】", "/mq quest quit " + q.getQuest().getInternalID()),
-						"&c放棄任務 &f" + q.getQuest().getQuestName() + "\n&4所有的任務進度都會消失。"));
+				p1.add(new InteractiveText("&c&l【放棄】")
+						.clickCommand("/mq quest quit " + q.getQuest().getInternalID())
+						.showText("&c放棄任務 &f" + q.getQuest().getQuestName() + "\n&4所有的任務進度都會消失。"));
 				holder.add(q.getQuest());
 			}
 			p1.add("\n");
@@ -236,9 +237,9 @@ public class QuestGUIManager {
 				else
 					p1.add("&0- &6&l！ &0");
 				p1.add(TextComponentFactory.convertViewQuest(q));
-				p1.add(TextComponentFactory.regHoverEvent(
-						TextComponentFactory.regClickCmdEvent("&2&l【接受】", "/mq quest take " + q.getInternalID()),
-						"&a接受任務 &f" + q.getQuestName()));
+				p1.add(new InteractiveText("&2&l【接受】")
+						.clickCommand("/mq quest take " + q.getInternalID())
+						.showText("&a接受任務 &f" + q.getQuestName()));
 				p1.changeLine();
 				continue;
 			}
@@ -247,9 +248,9 @@ public class QuestGUIManager {
 					continue;
 				p1.add("&0- &8&l？ &0");
 				p1.add(TextComponentFactory.convertViewQuest(q));
-				p1.add(TextComponentFactory.regHoverEvent(
-						TextComponentFactory.regClickCmdEvent("&c&l【放棄】", "/mq quest quit " + q.getInternalID()),
-						"&c放棄任務 &f" + q.getQuestName() + "\n&4所有的任務進度都會消失。"));
+				p1.add(new InteractiveText("&c&l【放棄】")
+						.clickCommand("/mq quest quit " + q.getInternalID())
+						.showText("&c放棄任務 &f" + q.getQuestName() + "\n&4所有的任務進度都會消失。"));
 				p1.changeLine();
 				continue;
 			}
@@ -257,17 +258,17 @@ public class QuestGUIManager {
 				p1.add("&0- ");
 				p1.add(TextComponentFactory.convertRequirement(qd, q));
 				p1.changeLine();
+				continue;
 			}
 		}
-		p1.changeLine();
 		for (QuestConversation qc : QuestUtil.getConversations(npc.getId(), qd.getNPCfp(npc.getId()))){
 			if (qd.hasFinished(qc)){
 				p1.add("&0- &7&o");
-				p1.add(TextComponentFactory.regClickCmdEvent(qc.getName() + " 〈&c&o♥&7&o〉", "/mq conv opennew " + qc.getInternalID()));
+				p1.add(new InteractiveText(qc.getName() + " 〈&c&o♥&7&o〉").clickCommand("/mq conv opennew " + qc.getInternalID()));
 			}
 			else{
 				p1.add("&0- &6&l！ &0&l");
-				p1.add(TextComponentFactory.regClickCmdEvent(qc.getName() + " 〈&c♥&0&l〉", "/mq conv opennew " + qc.getInternalID()));
+				p1.add(new InteractiveText(qc.getName() + " 〈&c♥&0&l〉").clickCommand("/mq conv opennew " + qc.getInternalID()));
 			}
 			p1.changeLine();
 		}

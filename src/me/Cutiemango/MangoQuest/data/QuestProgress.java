@@ -59,6 +59,7 @@ public class QuestProgress {
 	
 	public void save(QuestIO io){
 		io.set("玩家資料." + owner.getUniqueId() + ".任務進度." + quest.getInternalID() + ".QuestStage", CurrentStage);
+		io.set("玩家資料." + owner.getUniqueId() + ".任務進度." + quest.getInternalID() + ".Version", quest.getCache().getVersion());
 		int t = 0;
 		int value = 0;
 		for (QuestObjectProgress qop : objlist){

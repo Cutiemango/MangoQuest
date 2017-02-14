@@ -1,5 +1,6 @@
-package me.Cutiemango.MangoQuest;
+package me.Cutiemango.MangoQuest.model;
 
+import me.Cutiemango.MangoQuest.QuestUtil;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestBookPage {
@@ -21,6 +22,11 @@ public class QuestBookPage {
 	
 	public QuestBookPage add(TextComponent t){
 		page.addExtra(t);
+		return this;
+	}
+	
+	public QuestBookPage add(InteractiveText it){
+		page.addExtra(it.get());
 		return this;
 	}
 	

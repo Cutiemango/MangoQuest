@@ -40,6 +40,9 @@ public class QuestPlayerData {
 	public QuestPlayerData(Player p, QuestIO io){
 		this.p = p;
 		io.set("玩家資料." + p.getUniqueId() + ".玩家ID", p.getName());
+		
+		List<String> removeProgress = new ArrayList<>();
+		
 		if (io.isSection("玩家資料." + p.getUniqueId() + ".任務進度")){
 			for (String index : io.getSection("玩家資料." + p.getUniqueId() + ".任務進度")){
 				if (QuestStorage.Quests.get(index) == null){
@@ -48,6 +51,13 @@ public class QuestPlayerData {
 					continue;
 				}
 				Quest q = QuestStorage.Quests.get(index);
+				if (!(q.getCache().getVersion() == io.getLong("玩家資料." + p.getUniqueId() + ".任務進度." + q.getInternalID() + ".Version"))){
+					QuestUtil.error(p, "您的玩家資料有已經被修改後的任務資料，已經移除！"
+							+ "移除的任務內部碼： " + index + "，若您覺得這不應該發生，請回報管理員。");
+					removeProgress.add(q.getInternalID());
+					continue;
+				}
+					
 				int t = 0;
 				int s = io.getInt("玩家資料." + p.getUniqueId() + ".任務進度." + index + ".QuestStage");
 				List<QuestObjectProgress> qplist = new ArrayList<>();
@@ -60,6 +70,10 @@ public class QuestPlayerData {
 				}
 				CurrentQuest.add(new QuestProgress(q, p, s, qplist));
 			}
+		}
+		
+		for (String s : removeProgress){
+			io.set("玩家資料." + p.getUniqueId() + ".任務進度." + s, "");
 		}
 		
 		if (io.isSection("玩家資料." + p.getUniqueId() + ".已完成的任務")){

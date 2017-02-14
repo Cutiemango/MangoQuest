@@ -13,6 +13,7 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestEditorManager;
 import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.model.QuestCache;
 import me.Cutiemango.MangoQuest.model.RequirementType;
 
 public class CommandRemove {
@@ -121,7 +122,7 @@ public class CommandRemove {
 					Iterator<QuestProgress> it = QuestUtil.getData(pl).getProgresses().iterator();
 					while (it.hasNext()) {
 						QuestProgress qp = it.next();
-						if (qp.getQuest().equals(target)){
+						if (QuestCache.weakValidate(target, qp.getQuest())){
 							QuestUtil.getData(pl).forceQuit(target);
 							break;
 						}

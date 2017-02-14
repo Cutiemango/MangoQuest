@@ -47,8 +47,8 @@ public class TextComponentFactory {
 		return t;
 	}
 	
-	public static TextComponent convertItemHoverEvent(ItemStack it, boolean f) {
-		return Main.instance.handler.textFactoryConvertItem(it, f);
+	public static TextComponent convertItemHoverEvent(ItemStack it, boolean isFinished) {
+		return Main.instance.handler.textFactoryConvertItem(it, isFinished);
 	}
 	
 	public static TextComponent convertLocHoverEvent(String name, Location loc, boolean isFinished){
