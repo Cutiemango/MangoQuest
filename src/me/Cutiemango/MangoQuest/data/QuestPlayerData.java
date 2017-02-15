@@ -51,7 +51,7 @@ public class QuestPlayerData {
 					continue;
 				}
 				Quest q = QuestStorage.Quests.get(index);
-				if (!(q.getCache().getVersion() == io.getLong("玩家資料." + p.getUniqueId() + ".任務進度." + q.getInternalID() + ".Version"))){
+				if (!(q.getVersion().getVersion() == io.getLong("玩家資料." + p.getUniqueId() + ".任務進度." + q.getInternalID() + ".Version"))){
 					QuestUtil.error(p, "您的玩家資料有已經被修改後的任務資料，已經移除！"
 							+ "移除的任務內部碼： " + index + "，若您覺得這不應該發生，請回報管理員。");
 					removeProgress.add(q.getInternalID());

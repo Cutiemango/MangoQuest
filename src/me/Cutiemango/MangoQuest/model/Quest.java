@@ -96,7 +96,7 @@ public class Quest {
 	private boolean isRedoable = false;
 	private long RedoDelay;
 	
-	private QuestCache cache;
+	private QuestVersion version;
 
 	public String getInternalID() {
 		return InternalID;
@@ -130,12 +130,12 @@ public class Quest {
 		return QuestNPC;
 	}
 	
-	public QuestCache getCache(){
-		return cache;
+	public QuestVersion getVersion(){
+		return version;
 	}
 	
-	public void registerVersion(QuestCache qc){
-		cache = qc;
+	public void registerVersion(QuestVersion ver){
+		version = ver;
 	}
 	
 	public void setQuestNPC(NPC npc){
@@ -309,7 +309,7 @@ public class Quest {
 			Iterator<QuestProgress> it = pd.getProgresses().iterator();
 			while (it.hasNext()) {
 				QuestProgress qp = it.next();
-				if (QuestCache.detailedValidate(q, qp.getQuest())){
+				if (QuestVersion.detailedValidate(q, qp.getQuest())){
 					pd.forceQuit(q);
 					break;
 				}

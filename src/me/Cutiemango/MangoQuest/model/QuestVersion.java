@@ -1,8 +1,8 @@
 package me.Cutiemango.MangoQuest.model;
 
-public class QuestCache {
+public class QuestVersion {
 	
-	public QuestCache(long l){
+	public QuestVersion(long l){
 		questVersion = l;
 	}
 

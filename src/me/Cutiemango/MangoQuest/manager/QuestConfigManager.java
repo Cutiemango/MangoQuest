@@ -24,7 +24,7 @@ import me.Cutiemango.MangoQuest.conversation.QuestChoice;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.QuestCache;
+import me.Cutiemango.MangoQuest.model.QuestVersion;
 import me.Cutiemango.MangoQuest.model.QuestReward;
 import me.Cutiemango.MangoQuest.model.QuestStage;
 import me.Cutiemango.MangoQuest.model.QuestTrigger;
@@ -228,8 +228,8 @@ public class QuestConfigManager {
 		}
 		if (q.getQuestReward().hasCommand())
 			QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Commands", q.getQuestReward().getCommands());
-		if (!QuestCache.detailedValidate(q, QuestUtil.getQuest(q.getInternalID())))
-			QuestsIO.set("Quests." + q.getInternalID() + ".Version", q.getCache().getVersion());
+		if (!QuestVersion.detailedValidate(q, QuestUtil.getQuest(q.getInternalID())))
+			QuestsIO.set("Quests." + q.getInternalID() + ".Version", q.getVersion().getVersion());
 		System.out.println("[任務讀取] 任務 " + q.getQuestName() + " 已經儲存完成！");
 		QuestsIO.save();
 	}
@@ -470,12 +470,12 @@ public class QuestConfigManager {
 					}
 					if (QuestsIO.getLong("Quests." + internal + ".Version") == 0L){
 						long l = System.currentTimeMillis();
-						QuestCache qc = new QuestCache(l);
+						QuestVersion qc = new QuestVersion(l);
 						QuestsIO.set("Quests." + internal + ".Version", l);
 						quest.registerVersion(qc);
 					}
 					else{
-						QuestCache qc = new QuestCache(QuestsIO.getLong("Quests." + internal + ".Version"));
+						QuestVersion qc = new QuestVersion(QuestsIO.getLong("Quests." + internal + ".Version"));
 						quest.registerVersion(qc);
 					}
 					QuestStorage.Quests.put(internal, quest);

@@ -228,31 +228,31 @@ public class QuestEditorManager {
 			return;
 		}
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor("&0&l編輯任務事件： " + q.getQuestName()));
-		p1.addExtra("\n");
+		QuestBookPage p1 = new QuestBookPage();
+		p1.add("&0&l編輯任務事件： " + q.getQuestName()).changeLine();
 		int index = 0;
 		for (QuestTrigger qt : q.getTriggers()){
-			p1.addExtra("- " + index + ".");
+			p1.add("- " + index + ".");
 			if (qt.getType().equals(TriggerType.TRIGGER_STAGE_START)
 					|| qt.getType().equals(TriggerType.TRIGGER_STAGE_FINISH)) {
-				p1.addExtra(TextComponentFactory.regHoverEvent(qt.getTriggerObject().toCustomString(),
+				p1.add(new InteractiveText(qt.getTriggerObject().toCustomString()).showText(
 						"觸發時機： " + qt.getType().toCustomString(qt.getCount()) + "\n觸發物件內容： "
 								+ qt.getObject().toString()));
-				p1.addExtra(TextComponentFactory.regClickCmdEvent("&7[編輯]", "/mq e edit evt " + index + " "
+				p1.add(new InteractiveText("&7[編輯]").clickCommand("/mq e edit evt " + index + " "
 						+ qt.getType().toString() + " " + qt.getCount() + " " + qt.getTriggerObject().toString()));
 			} else {
-				p1.addExtra(TextComponentFactory.regHoverEvent(qt.getTriggerObject().toCustomString(),
+				p1.add(new InteractiveText(qt.getTriggerObject().toCustomString()).showText(
 						"觸發時機： " + qt.getType().toCustomString() + "\n觸發物件內容： " + qt.getObject().toString()));
-				p1.addExtra(TextComponentFactory.regClickCmdEvent("&7[編輯]", "/mq e edit evt " + index + " "
+				p1.add(new InteractiveText("&7[編輯]").clickCommand("/mq e edit evt " + index + " "
 						+ qt.getType().toString() + " " + qt.getTriggerObject().toString()));
 			}
-			p1.addExtra(TextComponentFactory.regClickCmdEvent("&7[移除]", "/mq e remove evt " + index));
-			p1.addExtra("\n");
+			p1.add(new InteractiveText("&7[移除]").clickCommand("/mq e remove evt " + index));
+			p1.changeLine();
 			index++;
 		}
-		p1.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[新增]", "/mq e addnew evt"));
-		p1.addExtra("\n");
-		p1.addExtra(TextComponentFactory.regClickCmdEvent("&0&l[返回任務選單]", "/mq e gui"));
+		p1.add(new InteractiveText("&0&l[新增]").clickCommand("/mq e addnew evt"));
+		p1.changeLine();
+		p1.add(new InteractiveText("&0&l[返回任務選單]").clickCommand("/mq e gui"));
 		QuestGUIManager.openBook(p, p1);
 	}
 	
