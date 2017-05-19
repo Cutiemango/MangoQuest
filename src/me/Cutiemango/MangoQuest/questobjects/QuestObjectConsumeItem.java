@@ -1,8 +1,10 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Questi18n;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestObjectConsumeItem extends ItemObject{
@@ -15,15 +17,15 @@ public class QuestObjectConsumeItem extends ItemObject{
 
 	@Override
 	public TextComponent toTextComponent(boolean isFinished) {
-		return super.toTextComponent("食用 %0 個 %1", isFinished, amount, item);
+		return super.toTextComponent(Questi18n.localizeMessage("QuestObject.ConsumeItem"), isFinished, amount, item);
 	}
 
 	@Override
 	public String toPlainText() {
 		if (item.getItemMeta().hasDisplayName())
-			return QuestUtil.translateColor("&a食用 " + amount + " 個 " + item.getItemMeta().getDisplayName());
+			return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.ConsumeItem", item.getItemMeta().getDisplayName());
 		else
-			return QuestUtil.translateColor("&a食用 " + amount + " 個 " + QuestUtil.translate(item.getType(), item.getDurability()));
+			return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.ConsumeItem", QuestUtil.translate(item.getType(), item.getDurability()));
 	}
 
 }

@@ -30,6 +30,7 @@ public abstract class SimpleQuestObject {
 	
 	protected TextComponent toTextComponent(String s, boolean isFinished, Object... args){
 		TextComponent text = new TextComponent("");
+		s = s.replace("[", "").replace("]", "");
 		String left = s;
 		String color = QuestUtil.translateColor("&0");
 		ItemStack block = new ItemStack(Material.GRASS);

@@ -9,11 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import net.citizensnpcs.api.CitizensAPI;
-import net.md_5.bungee.api.ChatColor;
 
 public class QuestReward {
 
@@ -124,35 +123,34 @@ public class QuestReward {
 		if (this.hasItem()) {
 			for (ItemStack is : items) {
 				if (p.getInventory().firstEmpty() == -1) {
-					p.sendMessage(QuestStorage.prefix + ChatColor.RED + "背包物品過多，你的任務獎勵 "
-							+ is.getItemMeta().getDisplayName() + ChatColor.RED + " 掉落地面！");
+					QuestUtil.info(p, Questi18n.localizeMessage("CommandInfo.RewardDropped"));
 					p.getWorld().dropItem(p.getLocation(), is);
 					return;
 				} else {
 					p.getInventory().addItem(is);
 					if (is.getItemMeta().hasDisplayName())
-						QuestUtil.info(p, "&e任務獎勵 - 給予 " + is.getItemMeta().getDisplayName() + " &f" + is.getAmount() + " &e個");
+						QuestUtil.info(p, Questi18n.localizeMessage("CommandInfo.GiveItemReward", is.getItemMeta().getDisplayName(), Integer.toString(is.getAmount())));
 					else
-						QuestUtil.info(p, "&e任務獎勵 - 給予 " + QuestUtil.translate(is.getType(), is.getDurability()) + " &f" + is.getAmount() + " &e個");
+						QuestUtil.info(p, Questi18n.localizeMessage("CommandInfo.GiveItemReward", QuestUtil.translate(is.getType(), is.getDurability()), Integer.toString(is.getAmount())));
 				}
 			}
 		}
 
 		if (this.hasMoney()) {
 			Main.instance.initManager.getEconomy().depositPlayer(p, money);
-			QuestUtil.info(p, "&e任務獎勵 - 給予 &f" + money + " &e元");
+			QuestUtil.info(p, Questi18n.localizeMessage("CommandInfo.GiveMoneyReward", Double.toString(money)));
 		}
 		
 		if (this.hasExp()) {
 			p.giveExp(experience);
-			QuestUtil.info(p, "&e任務獎勵 - 給予 &f" + experience + " &e點 &a經驗值");
+			QuestUtil.info(p, Questi18n.localizeMessage("CommandInfo.GiveExpReward", Double.toString(experience)));
 		}
 		
 		if (this.hasFriendPoint()){
 			QuestPlayerData qd = QuestUtil.getData(p);
 			for (Integer id : npcfp.keySet()){
 				qd.addNPCfp(id, npcfp.get(id));
-				QuestUtil.info(p, "&e任務獎勵 - " + CitizensAPI.getNPCRegistry().getById(id).getName() + " &e非常感激你的所作所為！");
+				QuestUtil.info(p, Questi18n.localizeMessage("CommandInfo.GiveFriendPoint", CitizensAPI.getNPCRegistry().getById(id).getName()));
 			}
 		}
 		

@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Questi18n;
 
 public class CommandReceiver implements CommandExecutor{
 
@@ -35,7 +36,7 @@ public class CommandReceiver implements CommandExecutor{
 		case "reload":
 			if (p.isOp()){
 				Main.instance.reload();
-				QuestUtil.info(p, "&6重新讀取資料成功。");
+				QuestUtil.info(p, "&a" + Questi18n.localizeMessage("CommandInfo.ReloadSuccessful"));
 			}
 			break;
 		default:
@@ -45,10 +46,11 @@ public class CommandReceiver implements CommandExecutor{
 	}
 	
 	public void sendHelp(Player p){
-		QuestUtil.info(p, "&e&l指令幫助：");
-		QuestUtil.info(p, "&f/mq quest (help) - 查詢關於&a&l任務&f的指令");
-		QuestUtil.info(p, "&f/mq editor (help) - 查詢關於&9&l編輯器&f的指令");
-		QuestUtil.info(p, "&f/mq reload - &c重新讀取設定檔案");
+		QuestUtil.info(p, "&e&l" + Questi18n.localizeMessage("CommandHelp.Title"));
+		QuestUtil.info(p, "&f" + Questi18n.localizeMessage("CommandHelp.Quest"));
+		QuestUtil.info(p, "&f" + Questi18n.localizeMessage("CommandHelp.Editor"));
+		QuestUtil.info(p, "&f" + Questi18n.localizeMessage("CommandHelp.Reload"));
+		QuestUtil.info(p, "&e&l" + Questi18n.localizeMessage("CommandHelp.Title"));
 	}
 
 }

@@ -1,8 +1,14 @@
 package me.Cutiemango.MangoQuest.model;
 
+import me.Cutiemango.MangoQuest.Questi18n;
+
 public enum RequirementType{
-	LEVEL("等級需求", false), MONEY("金錢需求", false),
-	QUEST("任務需求", true), ITEM("物品需求", true), SCOREBOARD("記分板分數需求", true), NBTTAG("記分板Tag需求", true);
+	LEVEL(Questi18n.localizeMessage("Requirements.Level"), false),
+	MONEY(Questi18n.localizeMessage("Requirements.Money"), false),
+	QUEST(Questi18n.localizeMessage("Requirements.Quest"), true),
+	ITEM(Questi18n.localizeMessage("Requirements.Item"), true),
+	SCOREBOARD(Questi18n.localizeMessage("Requirements.Scoreboard"), true),
+	NBTTAG(Questi18n.localizeMessage("Requirements.NBTTag"), true);
 	
 	private String name;
 	private boolean index;

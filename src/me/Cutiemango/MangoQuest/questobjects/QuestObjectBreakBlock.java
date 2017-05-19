@@ -1,9 +1,11 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Questi18n;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestObjectBreakBlock extends NumerableObject{
@@ -21,15 +23,16 @@ public class QuestObjectBreakBlock extends NumerableObject{
 	
 	private Material block;
 	private short subID = 0;
-
+	
+	// Use raw 
 	@Override
 	public TextComponent toTextComponent(boolean isFinished) {
-		return super.toTextComponent("挖掘 %0 個 %1%2", isFinished, amount, block, subID);
+		return super.toTextComponent(Questi18n.localizeMessage("QuestObject.BreakBlock"), isFinished, amount, block, subID);
 	}
 
 	@Override
 	public String toPlainText() {
-		return QuestUtil.translateColor("&a挖掘 " + amount + " &a個 " + QuestUtil.translate(block, subID));
+		return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.BreakBlock", Integer.toString(amount), QuestUtil.translate(block, subID));
 	}
 	
 	public Material getType(){

@@ -1,6 +1,8 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
-import me.Cutiemango.MangoQuest.QuestUtil;
+import org.bukkit.ChatColor;
+
+import me.Cutiemango.MangoQuest.Questi18n;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -23,12 +25,12 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject{
 
 	@Override
 	public TextComponent toTextComponent(boolean isFinished) {
-		return super.toTextComponent("與 %0 對話", isFinished, npc);
+		return super.toTextComponent(Questi18n.localizeMessage("QuestObject.TalkToNPC"), isFinished, npc);
 	}
 
 	@Override
 	public String toPlainText() {
-		return QuestUtil.translateColor("&a與 " + getTargetNPC().getName() + " &a對話");
+		return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.TalkToNPC", getTargetNPC().getName());
 	}
 
 }

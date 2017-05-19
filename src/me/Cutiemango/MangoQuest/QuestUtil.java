@@ -94,8 +94,7 @@ public class QuestUtil {
 	}
 	
 	public static void warnCmd(String s){
-		Bukkit.getLogger().warning("解析插件內容時發生錯誤，請檢查設定檔。");
-		Bukkit.getLogger().warning("若您確認這是個BUG，請回報開發者。");
+		Bukkit.getLogger().warning("解析插件內容發生錯誤，請回報開發者。");
 		Bukkit.getLogger().warning(s);
 	}
 	

@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestEditorManager;
 import me.Cutiemango.MangoQuest.model.Quest;
@@ -30,7 +31,7 @@ public class CommandRemove {
 			}
 		}
 		if (!QuestEditorManager.isInEditorMode(sender)){
-			QuestUtil.error(sender, "你不在編輯模式中！");
+			QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.NotInEditor"));
 			return;
 		}
 		switch (args[2]) {
@@ -99,7 +100,7 @@ public class CommandRemove {
 				break;
 			}
 			QuestEditorManager.editQuestRequirement(sender);
-			QuestUtil.info(sender, "指定的物件已經移除。");
+			QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRemoved"));
 			return;
 		}
 	}
@@ -109,7 +110,7 @@ public class CommandRemove {
 		if (args.length == 4) {
 			q.getTriggers().remove(index);
 			QuestEditorManager.editQuestTrigger(sender);
-			QuestUtil.info(sender, "指定的物件已經移除。");
+			QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRemoved"));
 			return;
 		}
 	}
@@ -130,7 +131,7 @@ public class CommandRemove {
 					}
 				}
 				Main.instance.configManager.removeQuest(target);
-				QuestUtil.info(sender, "&c任務 " + target.getQuestName() + " 已經移除。");
+				QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.QuestRemoved", target.getQuestName()));
 				QuestStorage.Quests.remove(args[3]);
 				return;
 			}
@@ -144,12 +145,12 @@ public class CommandRemove {
 			try{
 				stage = Integer.parseInt(args[3]);
 			}catch(NumberFormatException e){
-				QuestUtil.error(sender, "請輸入正確的數字！");
+				QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 				QuestEditorManager.editQuestStages(sender);
 				return;
 			}
 			q.getStages().remove(stage - 1);
-			QuestUtil.info(sender, "指定的任務階段已經移除。");
+			QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRemoved"));
 			QuestEditorManager.editQuestStages(sender);
 			return;
 		}
@@ -164,12 +165,12 @@ public class CommandRemove {
 				stage = Integer.parseInt(args[3]);
 				obj = Integer.parseInt(args[4]);
 			}catch(NumberFormatException e){
-				QuestUtil.error(sender, "請輸入正確的數字！");
+				QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 				QuestEditorManager.editQuestStages(sender);
 				return;
 			}
 			q.getStage(stage - 1).getObjects().remove(obj - 1);
-			QuestUtil.info(sender, "指定的任務目標已經移除。");
+			QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRemoved"));
 			QuestEditorManager.editQuestObjects(sender, stage);
 			return;
 		}

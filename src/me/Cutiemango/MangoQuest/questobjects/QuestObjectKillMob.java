@@ -1,8 +1,10 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
 
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Questi18n;
 import net.elseland.xikage.MythicMobs.Mobs.MythicMob;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -65,17 +67,17 @@ public class QuestObjectKillMob extends NumerableObject{
 	@Override
 	public TextComponent toTextComponent(boolean isFinished) {
 		if (hasCustomName())
-			return super.toTextComponent("殺死 %0 個 %1", isFinished, amount, CustomName);
+			return super.toTextComponent(Questi18n.localizeMessage("QuestObject.KillMob"), isFinished, amount, CustomName);
 		else
-			return super.toTextComponent("殺死 %0 個 %1", isFinished, amount, type);
+			return super.toTextComponent(Questi18n.localizeMessage("QuestObject.KillMob"), isFinished, amount, type);
 	}
 
 	@Override
 	public String toPlainText() {
 		if (CustomName != null)
-			return QuestUtil.translateColor("&a殺死 " + amount + " &a個 " + QuestUtil.translateColor(CustomName));
+			return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.KillMob", Integer.toString(amount), QuestUtil.translateColor(CustomName));
 		else
-			return QuestUtil.translateColor("&a殺死 " + amount + " &a個 " + QuestUtil.translate(type));
+			return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.KillMob", Integer.toString(amount), QuestUtil.translate(type));
 	}
 
 }

@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.listeners.QuestEditorListener;
 import me.Cutiemango.MangoQuest.manager.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
@@ -35,7 +36,7 @@ public class CommandEdit {
 	// Command: /mq e edit args[2] args[3]
 	public static void execute(Quest q, Player sender, String[] args){
 		if (!QuestEditorManager.isInEditorMode(sender)){
-			QuestUtil.error(sender, "你不在編輯模式中！");
+			QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.NotInEditor"));
 			return;
 		}
 		switch (args[2]) {
@@ -75,7 +76,7 @@ public class CommandEdit {
 	private static void editName(Quest q, Player sender, String args[]){
 		if (args.length == 3) {
 			QuestEditorListener.registerListeningObject(sender, "mq e edit name ");
-			QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
+			QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.EnterValue"));
 			return;
 		}
 		else if (args.length == 4) {
@@ -92,7 +93,7 @@ public class CommandEdit {
 	private static void editOutline(Quest q, Player sender, String[] args){
 		if (args.length == 3) {
 			QuestEditorListener.registerListeningObject(sender, "mq e edit outline ");
-			QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並在聊天窗輸入任務提要。\n&7(請輸入[行數][空1格][內容])\n&7(例如：1 這是第一行)");
+			QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.Outline"));
 			return;
 		}
 		else if (args.length >= 4) {
@@ -104,12 +105,12 @@ public class CommandEdit {
 			try{
 				line = Integer.parseInt(args[3]) - 1;
 			}catch(NumberFormatException e){
-				QuestUtil.error(sender, "請輸入行數！");
+				QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 				QuestEditorManager.editQuest(sender);
 				return;
 			}
 			if (line < 0){
-				QuestUtil.error(sender, "行數輸入錯誤！請重新輸入！");
+				QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 				QuestEditorManager.editQuest(sender);
 				return;
 			}
@@ -130,7 +131,7 @@ public class CommandEdit {
 	private static void editRedo(Quest q, Player sender, String[] args){
 		if (args.length == 3) {
 			QuestEditorListener.registerListeningObject(sender, "mq e edit redo ");
-			QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
+			QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.EnterValue"));
 			return;
 		}
 		else if (args.length == 4) {
@@ -163,7 +164,7 @@ public class CommandEdit {
 				break;
 			case NBTTAG:
 				if (((List<String>) q.getRequirements().get(t)).contains(args[5])) {
-					QuestUtil.error(sender, "任務需求中已經有這個物件了！");
+					QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.ObjectExist"));
 					((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
 					break;
 				}
@@ -173,7 +174,7 @@ public class CommandEdit {
 			case QUEST:
 				if (QuestUtil.getQuest(args[5]) != null) {
 					if (((List<String>) q.getRequirements().get(t)).contains(args[5])) {
-						QuestUtil.error(sender, "任務需求中已經有這個物件了！");
+						QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.ObjectExist"));
 						((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
 						break;
 					}
@@ -181,12 +182,12 @@ public class CommandEdit {
 					((List<String>) q.getRequirements().get(t)).add(args[5]);
 					break;
 				} else {
-					QuestUtil.error(sender, "找不到指定的任務。");
+					QuestUtil.error(sender, Questi18n.localizeMessage("CommandInfo.QuestNotFound"));
 					break;
 				}
 			case SCOREBOARD:
 				if (((List<String>) q.getRequirements().get(t)).contains(args[5])) {
-					QuestUtil.error(sender, "任務需求中已經有這個物件了！");
+					QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.ObjectExist"));
 					((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
 					break;
 				}
@@ -214,7 +215,7 @@ public class CommandEdit {
 			case NBTTAG:
 				QuestEditorListener.registerListeningObject(sender,
 						"mq e edit req " + t.toString() + " " + Integer.parseInt(args[4]) + " ");
-				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
+				QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.EnterValue"));
 				break;
 			case ITEM:
 				break;
@@ -224,11 +225,11 @@ public class CommandEdit {
 			switch (t) {
 			case LEVEL:
 				QuestEditorListener.registerListeningObject(sender, "mq e edit req " + t.toString() + " ");
-				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
+				QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.EnterValue"));
 				break;
 			case MONEY:
 				QuestEditorListener.registerListeningObject(sender, "mq e edit req " + t.toString() + " ");
-				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
+				QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.EnterValue"));
 				break;
 			case ITEM:
 				QuestEditorListener.registerGUI(sender, "requirement");
@@ -243,14 +244,14 @@ public class CommandEdit {
 	private static void editNPC(Quest q, Player sender, String[] args){
 		if (args.length == 3) {
 			QuestEditorListener.registerListeningObject(sender, "mq e edit npc ");
-			QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並左鍵打擊指定的NPC。");
+			QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.ClickNPC"));
 			return;
 		} 
 		else if (args.length == 4) {
 			if (args[3].equalsIgnoreCase("-1")){
 				q.setQuestNPC(null);
 				QuestEditorManager.editQuest(sender);
-				QuestUtil.info(sender, "&c請關閉書本視窗，\n&c已經取消此任務的NPC。");
+				QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.NPCRemoved"));
 				return;
 			}
 			else if (args[3].equalsIgnoreCase("cancel")){
@@ -266,7 +267,7 @@ public class CommandEdit {
 	private static void editRedoDelay(Quest q, Player sender, String[] args){
 		if (args.length == 3) {
 			QuestEditorListener.registerListeningObject(sender, "mq e edit redodelay ");
-			QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
+			QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.EnterValue"));
 			return;
 		} 
 		else if (args.length == 4) {
@@ -321,7 +322,7 @@ public class CommandEdit {
 				TriggerObject obj = TriggerObject.valueOf(args[6]);
 				QuestEditorListener.registerListeningObject(sender, "mq e edit evt " + index + " "
 						+ type.toString() + " " + i + " " + obj.toString() + " ");
-				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
+				QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.EnterValue"));
 				return;
 			default:
 				obj = TriggerObject.valueOf(args[5]);
@@ -340,7 +341,7 @@ public class CommandEdit {
 			TriggerObject obj = TriggerObject.valueOf(args[5]);
 			QuestEditorListener.registerListeningObject(sender,
 					"mq e edit evt " + index + " " + type.toString() + " " + obj.toString() + " ");
-			QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並打開聊天窗輸入數值。\n&7(請依照對應的類別輸入內容)");
+			QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.EnterValue"));
 			return;
 		}
 	}
@@ -355,7 +356,7 @@ public class CommandEdit {
 			try{
 				stage = Integer.parseInt(args[3]);
 			}catch(NumberFormatException e){
-				QuestUtil.error(sender, "請輸入正確的數字！");
+				QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 			}
 			QuestEditorManager.editQuestObjects(sender, stage);
 			return;
@@ -374,7 +375,7 @@ public class CommandEdit {
 			stage = Integer.parseInt(args[3]);
 			obj = Integer.parseInt(args[4]);
 		}catch(NumberFormatException e){
-			QuestUtil.error(sender, "請輸入正確的數字！");
+			QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 			return;
 		}
 		switch(args.length){
@@ -384,32 +385,32 @@ public class CommandEdit {
 			case 6:
 				switch(args[5].toLowerCase()){
 					case "block":
-						QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並破壞方塊，\n&c系統會自動讀取。");
+						QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.BreakBlock"));
 						break;
 					case "amount":
-						QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並打開聊天窗輸入數量。");
+						QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.EnterAmount"));
 						break;
 					case "item":
-						QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並將物品拿在主手上，\n&c點擊右鍵，系統將自動讀取。");
+						QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.RightClick"));
 						break;
 					case "itemnpc":
 					case "npc":
-						QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並左鍵打擊目標NPC，\n&c系統將自動讀取。");
+						QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.ClickNPC"));
 						break;
 					case "mtmmob":
-						QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並輸入自定義怪物的ID。\n&c(或是左鍵打擊怪物)");
+						QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.EnterMobID"));
 						break;
 					case "mobname":
-						QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並輸入自定義怪物名稱。");
+						QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.EnterMobName"));
 						break;
 					case "mobtype":
-						QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並左鍵打擊怪物，\n&c系統將自動讀取。");
+						QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.HitMob"));
 						break;
 					case "loc":
-						QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並到達目標位置，\n&c輸入限定範圍後，\n&c系統將自動讀取。");
+						QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.ReachLocation"));
 						break;
 					case "locname":
-						QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並輸入目標位置名稱。");
+						QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.LocationName"));
 						break;
 					case "type":
 						QuestEditorManager.selectObjectType(sender, stage, obj);
@@ -429,62 +430,62 @@ public class CommandEdit {
 						String[] split = args[6].split(":");
 						((QuestObjectBreakBlock)o).setType(Material.getMaterial(split[0]));
 						((QuestObjectBreakBlock)o).setSubID(Short.parseShort(split[1]));
-						QuestUtil.info(sender, "方塊成功登錄： " + QuestUtil.translate(Material.getMaterial(split[0]), Short.parseShort(split[1])));
+						QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", QuestUtil.translate(Material.getMaterial(split[0]), Short.parseShort(split[1]))));
 					}catch(Exception e){
-						QuestUtil.error(sender, "輸入了錯誤的方塊名稱！");
+						QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 					}
 					break;
 				case "amount":
 					try{
 						((NumerableObject)o).setAmount(Integer.parseInt(args[6]));
-						QuestUtil.info(sender, "數量更改成功： " + args[6]);
+						QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
 					}catch(NumberFormatException e){
-						QuestUtil.error(sender, "輸入了錯誤的數字！");
+						QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 					}
 					break;
 				case "item":
 					try{
 						((ItemObject)o).setItem(Main.instance.handler.getItemInMainHand(sender));
-						QuestUtil.info(sender, "物品更改成功。");
+						QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ItemRegistered"));
 					}catch(NullPointerException e){
-						QuestUtil.error(sender, "請拿著物品在主手以利系統讀取！");
+						QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.ItemInHand"));
 					}
 					break;
 				case "itemnpc":
 					try{
 						((QuestObjectDeliverItem)o).setTargetNPC(CitizensAPI.getNPCRegistry().getById(Integer.valueOf(args[6])));
-						QuestUtil.info(sender, "NPC更改成功： " + args[6]);
+						QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
 					}catch(Exception e){
-						QuestUtil.error(sender, "請輸入正確以及存在的NPC代號！");
+						QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 					}
 					break;
 				case "npc":
 					try{
 						((QuestObjectTalkToNPC)o).setTargetNPC(CitizensAPI.getNPCRegistry().getById(Integer.valueOf(args[6])));
-						QuestUtil.info(sender, "NPC更改成功： " + args[6]);
+						QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
 					}catch(Exception e){
-						QuestUtil.error(sender, "請輸入正確以及存在的NPC代號！");
+						QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 					}
 					break;
 				case "mtmmob":
 					try{
 						((QuestObjectKillMob)o).setMythicMob(Main.instance.initManager.getMythicMobsAPI().getMythicMob(args[6]));
-						QuestUtil.info(sender, "MythicMob更改成功： " + args[6]);
+						QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
 					}catch(Exception e){
 						e.printStackTrace();
-						QuestUtil.error(sender, "請輸入正確以及存在的MythicMob代號！");
+						QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 					}
 					break;
 				case "mobname":
 					((QuestObjectKillMob)o).setCustomName(QuestUtil.translateColor(args[6]));
-					QuestUtil.info(sender, "怪物名稱更改成功： " + args[6]);
+					QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
 					break;
 				case "mobtype":
 					try{
 						((QuestObjectKillMob)o).setType(EntityType.valueOf(args[6]));
-						QuestUtil.info(sender, "怪物更改成功： " + QuestUtil.translate(EntityType.valueOf(args[6])));
+						QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", QuestUtil.translate(EntityType.valueOf(args[6]))));
 					}catch(Exception e){
-						QuestUtil.error(sender, "請輸入正確的怪物名稱！");
+						QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 					}
 					break;
 				case "loc":
@@ -492,15 +493,15 @@ public class CommandEdit {
 						((QuestObjectReachLocation)o).setRadius(Integer.parseInt(args[6]));
 						Location l = sender.getLocation();
 						((QuestObjectReachLocation)o).setLocation(new Location(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ()));
-						QuestUtil.info(sender, "座標更改成功： (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ")");
-						QuestUtil.info(sender, "距離更改成功： " + args[6]);
+						QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", "(" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ")"));
+						QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
 					}catch(NumberFormatException e){
-						QuestUtil.error(sender, "輸入了錯誤的數字！");
+						QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 					}
 					break;
 				case "locname":
 					((QuestObjectReachLocation)o).setName(QuestUtil.translateColor(args[6]));
-					QuestUtil.info(sender, "怪物名稱更改成功： " + args[6]);
+					QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
 					break;
 				case "type":
 					SimpleQuestObject ob = null;
@@ -518,7 +519,7 @@ public class CommandEdit {
 						ob = new QuestObjectKillMob(EntityType.ZOMBIE, 1, null);
 						break;
 					case "REACH_LOCATION":
-						ob = new QuestObjectReachLocation(new Location(Bukkit.getWorld("world"), 0, 0, 0), 0, "預設地點");
+						ob = new QuestObjectReachLocation(new Location(Bukkit.getWorld("world"), 0, 0, 0), 0, Questi18n.localizeMessage("EditorMessage.DefaultLocation"));
 						break;
 					case "TALK_TO_NPC":
 						ob = new QuestObjectTalkToNPC(CitizensAPI.getNPCRegistry().getById(0));
@@ -528,7 +529,7 @@ public class CommandEdit {
 					}
 					if (ob != null){
 						q.getStage(stage - 1).getObjects().set(obj - 1, ob);
-						QuestUtil.info(sender, "&a更改任務目標類別時將會重設為預設值，請自行依據需求調整目標內容。");
+						QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ChangeObject"));
 					}
 					break;
 				}
@@ -542,10 +543,10 @@ public class CommandEdit {
 		if (args.length == 4){
 			switch(args[3].toLowerCase()){
 			case "money":
-				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並輸入金錢獎勵金額。");
+				QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.MoneyAmount"));
 				break;
 			case "exp":
-				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並輸入經驗值量。");
+				QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.ExpAmount"));
 				break;
 			case "item":
 				QuestEditorListener.registerGUI(sender, "reward");
@@ -560,7 +561,7 @@ public class CommandEdit {
 				try{
 					money = Integer.parseInt(args[4]);
 				}catch(NumberFormatException e){
-					QuestUtil.error(sender, "請輸入正確的數字！");
+					QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 					break;
 				}
 				q.getQuestReward().setMoney(money);
@@ -570,17 +571,17 @@ public class CommandEdit {
 				try{
 					exp = Integer.parseInt(args[4]);
 				}catch(NumberFormatException e){
-					QuestUtil.error(sender, "請輸入正確的數字！");
+					QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 					break;
 				}
 				q.getQuestReward().setExp(exp);
 				break;
 			case "fp":
-				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並輸入要調整的好感度。");
+				QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.FriendPoint"));
 				QuestEditorListener.registerListeningObject(sender, "mq e edit reward fp " + Integer.parseInt(args[4]) + " ");
 				return;
 			case "command":
-				QuestGUIManager.openInfo(sender, "&c請關閉書本視窗，\n&c並輸入指令獎勵，\n&c玩家變數請使用<player>。\n&7(不須使用'/'作為開頭。)");
+				QuestGUIManager.openInfo(sender, Questi18n.localizeMessage("EditorMessage.EnterCommand"));
 				QuestEditorListener.registerListeningObject(sender, "mq e edit reward command " + Integer.parseInt(args[4]) + " ");
 				return;
 			}
@@ -595,7 +596,7 @@ public class CommandEdit {
 					npc = Integer.parseInt(args[4]);
 					fp = Integer.parseInt(args[5]);
 				}catch(NumberFormatException e){
-					QuestUtil.error(sender, "請輸入正確的數字！");
+					QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 					QuestEditorManager.editQuest(sender);
 					return;
 				}

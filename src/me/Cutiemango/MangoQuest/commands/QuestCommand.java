@@ -8,6 +8,7 @@ import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestInitializer;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
@@ -50,7 +51,7 @@ public class QuestCommand{
 				return;
 			}
 			if (QuestStorage.Quests.get(args[2]) == null){
-				QuestUtil.error(sender, "你所要找的任務不存在！");
+				QuestUtil.error(sender, Questi18n.localizeMessage("CommandInfo.QuestNotFound"));
 				return;
 			}
 			Quest quest = QuestStorage.Quests.get(args[2]);
@@ -78,11 +79,11 @@ public class QuestCommand{
 	}
 	
 	private static void sendHelp(Player p){
-		QuestUtil.info(p, "指令幫助：");
-		QuestUtil.info(p, "/mq quest list - 查看任務清單");
-		QuestUtil.info(p, "/mq quest view [任務內部名稱] - 查看任務資料");
-		QuestUtil.info(p, "/mq quest take [任務內部名稱] - 接取指定任務");
-		QuestUtil.info(p, "/mq quest quit [任務內部名稱] - 放棄指定任務");
+		QuestUtil.info(p, "&e&l" + Questi18n.localizeMessage("CommandHelp.Title"));
+		QuestUtil.info(p, Questi18n.localizeMessage("CommandQuestHelp.List"));
+		QuestUtil.info(p, Questi18n.localizeMessage("CommandQuestHelp.View"));
+		QuestUtil.info(p, Questi18n.localizeMessage("CommandQuestHelp.Take"));
+		QuestUtil.info(p, Questi18n.localizeMessage("CommandQuestHelp.Quit"));
 	}
 
 }

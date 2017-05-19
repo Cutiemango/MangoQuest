@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Questi18n;
 
 public class QuestTrigger {
 	
@@ -34,8 +35,11 @@ public class QuestTrigger {
 	}
 	
 	public enum TriggerType{
-		TRIGGER_ON_TAKE("接受時觸發", false), TRIGGER_ON_QUIT("放棄時觸發", false), TRIGGER_ON_FINISH("完成時觸發", false),
-		TRIGGER_STAGE_START("第N階段開始時觸發", true), TRIGGER_STAGE_FINISH("第N階段完成時觸發", true);
+		TRIGGER_ON_TAKE(Questi18n.localizeMessage("TriggerType.OnTake"), false),
+		TRIGGER_ON_QUIT(Questi18n.localizeMessage("TriggerType.OnQuit"), false),
+		TRIGGER_ON_FINISH(Questi18n.localizeMessage("TriggerType.OnFinish"), false),
+		TRIGGER_STAGE_START(Questi18n.localizeMessage("TriggerType.StageStart"), true),
+		TRIGGER_STAGE_FINISH(Questi18n.localizeMessage("TriggerType.StageFinish"), true);
 		
 		private String name;
 		private boolean hasStage;
@@ -59,9 +63,11 @@ public class QuestTrigger {
 	}
 	
 	public enum TriggerObject{
-		COMMAND("指令"),
-		SEND_TITLE("發送標題"), SEND_SUBTITLE("發送副標題"), SEND_MESSAGE("發送訊息"),
-		TELEPORT("傳送玩家");
+		COMMAND(Questi18n.localizeMessage("TriggerObject.Command")),
+		SEND_TITLE(Questi18n.localizeMessage("TriggerObject.SendTitle")),
+		SEND_SUBTITLE(Questi18n.localizeMessage("TriggerObject.SendSubtitle")),
+		SEND_MESSAGE(Questi18n.localizeMessage("TriggerObject.SendMessage")),
+		TELEPORT(Questi18n.localizeMessage("TriggerObject.Teleport"));
 		
 		private String name;
 		

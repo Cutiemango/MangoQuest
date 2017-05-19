@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import me.Cutiemango.MangoQuest.commands.CommandReceiver;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.listeners.MythicListener;
@@ -21,19 +20,22 @@ import me.Cutiemango.MangoQuest.versions.Version_v1_8_R3;
 import me.Cutiemango.MangoQuest.versions.Version_v1_9_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_9_R2;
 
-public class Main extends JavaPlugin{
-	
+public class Main extends JavaPlugin
+{
+
 	public static Main instance;
-	
+
 	public QuestInitializer initManager;
 	public QuestVersionHandler handler;
 	public QuestConfigManager configManager;
 
 	@Override
-	public void onEnable(){
+	public void onEnable()
+	{
 		instance = this;
+		Questi18n.init("zh_TW");
 		getCommand("mq").setExecutor(new CommandReceiver());
-		
+
 		initManager = new QuestInitializer(this);
 		initManager.initPlugins();
 
@@ -41,12 +43,13 @@ public class Main extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new QuestEditorListener(), this);
 		configManager = new QuestConfigManager(this);
-		
+
 		if (initManager.hasMythicMobEnabled())
 			getServer().getPluginManager().registerEvents(new MythicListener(), this);
-		
+
 		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-		switch(version){
+		switch (version)
+		{
 			case "v1_8_R1":
 				handler = new Version_v1_8_R1();
 				break;
@@ -73,16 +76,19 @@ public class Main extends JavaPlugin{
 				getLogger().severe("插件功能將無法運作，請考慮移除。");
 				break;
 		}
-		
+
 		getLogger().info("讀取伺服器版本號為：NMS " + version + "。");
-		
-		new BukkitRunnable(){
+
+		new BukkitRunnable()
+		{
 			@Override
-			public void run() {
+			public void run()
+			{
 				configManager.loadConversation();
 				configManager.loadQuests();
 				configManager.loadNPC();
-				for (Player p : Bukkit.getOnlinePlayers()){
+				for (Player p : Bukkit.getOnlinePlayers())
+				{
 					QuestPlayerData qd = new QuestPlayerData(p);
 					if (QuestPlayerData.hasConfigData(p))
 						qd = new QuestPlayerData(p, configManager.getPlayerIO());
@@ -92,30 +98,35 @@ public class Main extends JavaPlugin{
 			}
 		}.runTaskLater(this, 5L);
 	}
-	
+
 	@Override
-	public void onDisable(){
+	public void onDisable()
+	{
 		getLogger().info("已經關閉！");
-		for (Player p : Bukkit.getOnlinePlayers()){
+		for (Player p : Bukkit.getOnlinePlayers())
+		{
 			QuestUtil.getData(p).save();
 			QuestUtil.info(p, "&b玩家資料儲存中...");
 		}
 	}
-	
-	public void reload(){
-		for (Player p : Bukkit.getOnlinePlayers()){
+
+	public void reload()
+	{
+		for (Player p : Bukkit.getOnlinePlayers())
+		{
 			QuestUtil.getData(p).save();
 			QuestUtil.info(p, "&b玩家資料儲存中...");
 		}
 		QuestStorage.clear();
-		
+
 		configManager = new QuestConfigManager(this);
-		
+
 		configManager.loadConversation();
 		configManager.loadQuests();
 		configManager.loadNPC();
-		
-		for (Player p : Bukkit.getOnlinePlayers()){
+
+		for (Player p : Bukkit.getOnlinePlayers())
+		{
 			QuestPlayerData qd = new QuestPlayerData(p);
 			if (QuestPlayerData.hasConfigData(p))
 				qd = new QuestPlayerData(p, configManager.getPlayerIO());

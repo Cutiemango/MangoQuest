@@ -1,8 +1,10 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Questi18n;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestObjectReachLocation extends SimpleQuestObject{
@@ -20,12 +22,12 @@ public class QuestObjectReachLocation extends SimpleQuestObject{
 
 	@Override
 	public TextComponent toTextComponent(boolean isFinished) {
-		return super.toTextComponent("到達地點 %0%1", isFinished, name, loc);
+		return super.toTextComponent(Questi18n.localizeMessage("QuestObject.ReachLocation"), isFinished, name, loc);
 	}
 
 	@Override
 	public String toPlainText() {
-		return QuestUtil.translateColor("&a到達地點 " + name);
+		return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.ReachLocation", name);
 	}
 	
 	public Location getLocation(){

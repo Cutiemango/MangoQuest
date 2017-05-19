@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest.commands.edtior;
 import org.bukkit.entity.Player;
 
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.listeners.QuestEditorListener;
 import me.Cutiemango.MangoQuest.manager.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
@@ -34,7 +35,7 @@ public class CommandNewQuest {
 	
 	private static void setInternalID(Player p, String[] args){
 		if (args.length == 3){
-			QuestGUIManager.openInfo(p, "&9&l新建任務》\n&0請關閉視窗，\n&0並輸入要新建的&c&l內部ID&0。\n&0(建議使用英數混合)");
+			QuestGUIManager.openInfo(p, Questi18n.localizeMessage("EditorMessage.NewQuest.EnterID"));
 			QuestEditorListener.registerListeningObject(p, "mq e newquest id ");
 			return;
 		}
@@ -43,13 +44,13 @@ public class CommandNewQuest {
 			return;
 		}
 		QuestEditorManager.getCurrentEditingQuest(p).setInternalID(args[3]);
-		QuestUtil.info(p, "&a已經成功設定任務內部ID： " + args[3]);
+		QuestUtil.info(p, Questi18n.localizeMessage("EditorMessage.NewQuest.IDRegistered", args[3]));
 		QuestEditorManager.createQuest(p);
 	}
 	
 	private static void setQuestName(Player p, String[] args){
 		if (args.length == 3){
-			QuestGUIManager.openInfo(p, "&9&l新建任務》\n&0請關閉視窗，並輸入\n&0新建任務的&c&l顯示名稱&0。");
+			QuestGUIManager.openInfo(p, Questi18n.localizeMessage("EditorMessage.NewQuest.EnterName"));
 			QuestEditorListener.registerListeningObject(p, "mq e newquest name ");
 			return;
 		}
@@ -58,17 +59,17 @@ public class CommandNewQuest {
 			return;
 		}
 		QuestEditorManager.getCurrentEditingQuest(p).setQuestName(args[3]);
-		QuestUtil.info(p, "&a已經成功設定任務顯示名稱： " + args[3]);
+		QuestUtil.info(p, Questi18n.localizeMessage("EditorMessage.NewQuest.NameRegistered", args[3]));
 		QuestEditorManager.createQuest(p);
 	}
 	
 	private static void create(Player p){
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 		if (q.getInternalID() != null && q.getQuestName() != null){
-			QuestUtil.info(p, "&6新建任務： " + q.getQuestName() + " &a成功&6&l！");
+			QuestUtil.info(p, Questi18n.localizeMessage("EditorMessage.NewQuest.Successful", q.getQuestName()));
 			QuestEditorManager.editQuest(p);
 		}else{
-			QuestUtil.error(p, "新建任務所需的資料不足！請確認輸入後再創建！");
+			QuestUtil.error(p, Questi18n.localizeMessage("EditorMessage.NewQuest.Failed"));
 			QuestEditorManager.createQuest(p);
 			return;
 		}

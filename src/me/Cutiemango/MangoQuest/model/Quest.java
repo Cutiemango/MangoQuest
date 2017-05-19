@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
@@ -344,22 +345,22 @@ public class Quest {
 			case ITEM:
 				ItemStack item = (ItemStack)obj;
 				if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
-					s = ChatColor.RED + "沒有指定的物品： " + item.getItemMeta().getDisplayName();
+					s = ChatColor.RED + Questi18n.localizeMessage("Requirements.NotMeet.Item") + item.getItemMeta().getDisplayName();
 				else
-					s = ChatColor.RED + "沒有指定的物品： " + QuestUtil.translate(item.getType(), item.getDurability());
+					s = ChatColor.RED + Questi18n.localizeMessage("Requirements.NotMeet.Item") + QuestUtil.translate(item.getType(), item.getDurability());
 				break;
 			case LEVEL:
-				s = ChatColor.RED + "等級不足： " + (Integer)obj;
+				s = ChatColor.RED + Questi18n.localizeMessage("Requirements.NotMeet.Level") + (Integer)obj;
 				break;
 			case MONEY:
-				s = ChatColor.RED + "金錢不足： " + (Double)obj;
+				s = ChatColor.RED + Questi18n.localizeMessage("Requirements.NotMeet.Money") + (Double)obj;
 				break;
 			case SCOREBOARD:
 			case NBTTAG:
-				s = ChatColor.RED + "你並沒有達到指定的任務條件。";
+				s = ChatColor.RED + Questi18n.localizeMessage("Requirements.NotMeet.Special");
 				break;
 			case QUEST:
-				s = ChatColor.RED + "沒有完成任務： " + ((Quest)obj).getQuestName();
+				s = ChatColor.RED + Questi18n.localizeMessage("Requirements.NotMeet.Quest") + ((Quest)obj).getQuestName();
 				break;
 			}
 			return s;
