@@ -280,7 +280,7 @@ public class QuestConfigManager
 				List<String> act = ConversationIO.getStringList("Conversations." + id + ".ConversationActions");
 				NPC npc = CitizensAPI.getNPCRegistry().getById(ConversationIO.getInt("Conversations." + id + ".NPC"));
 				QuestConversation conv = new QuestConversation(name, id, npc, loadConvAction(act),
-						ConversationIO.getBoolean("Conversations." + id + ".好感度對話"));
+						ConversationIO.getBoolean("Conversations." + id + ".FriendConversation"));
 				QuestStorage.Conversations.put(id, conv);
 				count++;
 			}
@@ -555,10 +555,9 @@ public class QuestConfigManager
 				}
 				if (QuestsIO.getLong("Quests." + internal + ".Version") == 0L)
 				{
-					long l = System.currentTimeMillis();
-					QuestVersion qc = new QuestVersion(l);
-					QuestsIO.set("Quests." + internal + ".Version", l);
-					quest.registerVersion(qc);
+					QuestVersion ver = QuestVersion.instantVersion();
+					QuestsIO.set("Quests." + internal + ".Version", ver.getVersion());
+					quest.registerVersion(ver);
 				}
 				else
 				{

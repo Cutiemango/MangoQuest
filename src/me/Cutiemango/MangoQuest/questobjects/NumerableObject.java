@@ -1,14 +1,17 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
-public abstract class NumerableObject extends SimpleQuestObject{
-	
+public abstract class NumerableObject extends SimpleQuestObject
+{
+
 	protected int amount;
 
-	public int getAmount(){
+	public int getAmount()
+	{
 		return amount;
 	}
-	
-	public void setAmount(int a){
+
+	public void setAmount(int a)
+	{
 		amount = a;
 	}
 }

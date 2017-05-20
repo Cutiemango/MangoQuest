@@ -126,7 +126,7 @@ public class QuestEditorListener implements Listener
 		}
 	}
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onNPCLeftClick(NPCLeftClickEvent e)
 	{
 		Player p = e.getClicker();

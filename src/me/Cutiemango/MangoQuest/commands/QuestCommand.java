@@ -50,7 +50,7 @@ public class QuestCommand{
 				}
 				return;
 			}
-			if (QuestStorage.Quests.get(args[2]) == null){
+			if (args.length < 3 || QuestStorage.Quests.get(args[2]) == null){
 				QuestUtil.error(sender, Questi18n.localizeMessage("CommandInfo.QuestNotFound"));
 				return;
 			}
@@ -58,7 +58,7 @@ public class QuestCommand{
 			QuestPlayerData qd = QuestUtil.getData(sender);
 			switch(args[1]){
 			case "view":
-				if (qd.getProgress(quest) == null)
+				if (!QuestUtil.getData(sender).isCurrentlyDoing(quest))
 					QuestGUIManager.openGUI(sender, new QuestProgress(quest, sender));
 				else
 					QuestGUIManager.openGUI(sender, qd.getProgress(quest));

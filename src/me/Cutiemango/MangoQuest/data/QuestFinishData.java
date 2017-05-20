@@ -2,36 +2,43 @@ package me.Cutiemango.MangoQuest.data;
 
 import me.Cutiemango.MangoQuest.model.Quest;
 
-public class QuestFinishData {
-	
+public class QuestFinishData
+{
+
 	private Quest q;
 	private int times;
 	private long lastFinish;
-	
-	public QuestFinishData(Quest quest, int time, long lastFinishTime){
+
+	public QuestFinishData(Quest quest, int time, long lastFinishTime)
+	{
 		q = quest;
 		times = time;
 		lastFinish = lastFinishTime;
 	}
-	
-	public Quest getQuest(){
+
+	public Quest getQuest()
+	{
 		return q;
 	}
-	
-	public int getFinishedTimes(){
+
+	public int getFinishedTimes()
+	{
 		return times;
 	}
-	
-	public long getLastFinish(){
+
+	public long getLastFinish()
+	{
 		return lastFinish;
 	}
-	
-	public void finish(){
+
+	public void finish()
+	{
 		lastFinish = System.currentTimeMillis();
 		times++;
 	}
-	
-	public void setLastFinish(long l){
+
+	public void setLastFinish(long l)
+	{
 		lastFinish = l;
 	}
 

@@ -12,6 +12,7 @@
     - "CHANGE_LINE#"
     - "CHOICE#Choice001"
   NPC01_20:
+    FriendConversation: true
     NPC: 1
     ConversationName: "你的名子？"
     ConversationActions:

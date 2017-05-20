@@ -2,70 +2,80 @@ package me.Cutiemango.MangoQuest.questobjects;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
-
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
 import net.elseland.xikage.MythicMobs.Mobs.MythicMob;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class QuestObjectKillMob extends NumerableObject{
-	
-	public QuestObjectKillMob(EntityType t, int i, String customname){
+public class QuestObjectKillMob extends NumerableObject
+{
+
+	public QuestObjectKillMob(EntityType t, int i, String customname)
+	{
 		type = t;
 		amount = i;
 		config = "KILL_MOB";
 		CustomName = customname;
 	}
-	
-	public QuestObjectKillMob(MythicMob mmMob, int i){
+
+	public QuestObjectKillMob(MythicMob mmMob, int i)
+	{
 		mtmMob = mmMob;
 		amount = i;
 		config = "KILL_MOB";
 		type = EntityType.valueOf(mmMob.getEntityType().toUpperCase());
 		CustomName = mmMob.getDisplayName();
 	}
-	
+
 	private EntityType type;
 	private String CustomName;
 	private MythicMob mtmMob;
-	
-	public EntityType getType(){
+
+	public EntityType getType()
+	{
 		return type;
 	}
 
-	public boolean hasCustomName(){
+	public boolean hasCustomName()
+	{
 		return !(CustomName == null);
 	}
-	
-	public String getCustomName(){
+
+	public String getCustomName()
+	{
 		return CustomName;
 	}
-	
-	public MythicMob getMythicMob(){
+
+	public MythicMob getMythicMob()
+	{
 		return mtmMob;
 	}
-	
-	public void setCustomName(String s){
+
+	public void setCustomName(String s)
+	{
 		CustomName = s;
 	}
-	
-	public void setMythicMob(MythicMob m){
+
+	public void setMythicMob(MythicMob m)
+	{
 		mtmMob = m;
 		CustomName = m.getDisplayName();
 		type = EntityType.valueOf(m.getEntityType().toUpperCase());
 	}
-	
-	public void setType(EntityType t){
+
+	public void setType(EntityType t)
+	{
 		type = t;
 	}
-	
-	
-	public boolean isMythicObject(){
+
+	public boolean isMythicObject()
+	{
 		return mtmMob != null;
 	}
 
 	@Override
-	public TextComponent toTextComponent(boolean isFinished) {
+	public TextComponent toTextComponent(boolean isFinished)
+	{
 		if (hasCustomName())
 			return super.toTextComponent(Questi18n.localizeMessage("QuestObject.KillMob"), isFinished, amount, CustomName);
 		else
@@ -73,7 +83,8 @@ public class QuestObjectKillMob extends NumerableObject{
 	}
 
 	@Override
-	public String toPlainText() {
+	public String toPlainText()
+	{
 		if (CustomName != null)
 			return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.KillMob", Integer.toString(amount), QuestUtil.translateColor(CustomName));
 		else

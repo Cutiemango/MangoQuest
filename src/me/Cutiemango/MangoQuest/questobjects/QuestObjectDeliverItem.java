@@ -2,15 +2,16 @@ package me.Cutiemango.MangoQuest.questobjects;
 
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
-
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class QuestObjectDeliverItem extends ItemObject{
-	
-	public QuestObjectDeliverItem(NPC n, ItemStack is, int deliveramount) {
+public class QuestObjectDeliverItem extends ItemObject
+{
+
+	public QuestObjectDeliverItem(NPC n, ItemStack is, int deliveramount)
+	{
 		npc = n;
 		item = is;
 		amount = deliveramount;
@@ -19,28 +20,31 @@ public class QuestObjectDeliverItem extends ItemObject{
 
 	private NPC npc;
 
-	public NPC getTargetNPC() {
+	public NPC getTargetNPC()
+	{
 		return npc;
 	}
 
-	public void setTargetNPC(NPC targetNPC) {
+	public void setTargetNPC(NPC targetNPC)
+	{
 		npc = targetNPC;
 	}
 
-
 	@Override
-	public TextComponent toTextComponent(boolean isFinished) {
+	public TextComponent toTextComponent(boolean isFinished)
+	{
 		return super.toTextComponent(Questi18n.localizeMessage("QuestObject.DeliverItem"), isFinished, amount, item, npc);
 	}
 
 	@Override
-	public String toPlainText() {
+	public String toPlainText()
+	{
 		if (item.getItemMeta().hasDisplayName())
-			return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.DeliverItem", item.getItemMeta().getDisplayName(), Integer.toString(amount), npc.getName());
+			return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.DeliverItem", Integer.toString(amount),
+					item.getItemMeta().getDisplayName(), npc.getName());
 		else
-			return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.DeliverItem", QuestUtil.translate(item.getType(), item.getDurability()), Integer.toString(amount), npc.getName());
+			return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.DeliverItem", Integer.toString(amount),
+					QuestUtil.translate(item.getType(), item.getDurability()), npc.getName());
 	}
-	
-	
 
 }

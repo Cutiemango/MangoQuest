@@ -9,7 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
@@ -32,10 +31,7 @@ public class QuestListener implements Listener
 					return;
 				e.setCancelled(true);
 				if (QuestEditorManager.isInEditorMode(p))
-				{
-					QuestUtil.info(p, Questi18n.localizeMessage("EditorMessage.PleaseQuitEdtior"));
 					return;
-				}
 				QuestPlayerData pd = QuestUtil.getData(p);
 				if (Main.instance.handler.getItemInMainHand(p).getType().equals(Material.AIR) || Main.instance.handler.getItemInMainHand(p) == null)
 				{

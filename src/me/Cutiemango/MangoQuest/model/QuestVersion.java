@@ -1,26 +1,37 @@
 package me.Cutiemango.MangoQuest.model;
 
-public class QuestVersion {
-	
-	public QuestVersion(long l){
+public class QuestVersion
+{
+
+	public QuestVersion(long l)
+	{
 		questVersion = l;
 	}
 
 	private long questVersion;
 
-	public long getVersion(){
+	public long getVersion()
+	{
 		return questVersion;
 	}
-	
-	public void update(){
+
+	public void update()
+	{
 		questVersion = System.currentTimeMillis();
 	}
-	
-	public void retrieve(long version){
+
+	public void retrieve(long version)
+	{
 		questVersion = version;
 	}
-	
-	public static boolean detailedValidate(Quest before, Quest after){
+
+	public static QuestVersion instantVersion()
+	{
+		return new QuestVersion(System.currentTimeMillis());
+	}
+
+	public static boolean detailedValidate(Quest before, Quest after)
+	{
 		if (before == null || after == null)
 			return false;
 		if (!before.getInternalID().equals(after.getInternalID()))
@@ -29,7 +40,8 @@ public class QuestVersion {
 			return false;
 		if (!(before.isCommandQuest() == after.isCommandQuest()))
 			return false;
-		if (!before.isCommandQuest()){
+		if (!before.isCommandQuest())
+		{
 			if (!(before.getQuestNPC().getId() == after.getQuestNPC().getId()))
 				return false;
 		}
@@ -41,7 +53,8 @@ public class QuestVersion {
 			return false;
 		if (!(before.isRedoable() == after.isRedoable()))
 			return false;
-		if (before.isRedoable()){
+		if (before.isRedoable())
+		{
 			if (!(before.getRedoDelay() == after.getRedoDelay()))
 				return false;
 		}
@@ -53,8 +66,9 @@ public class QuestVersion {
 			return false;
 		return true;
 	}
-	
-	public static boolean weakValidate(Quest before, Quest after){
+
+	public static boolean weakValidate(Quest before, Quest after)
+	{
 		if (before == null || after == null)
 			return false;
 		if (!before.getInternalID().equals(after.getInternalID()))

@@ -3,10 +3,8 @@ package me.Cutiemango.MangoQuest;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
-
 import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;

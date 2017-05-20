@@ -125,6 +125,8 @@ public class QuestPlayerData
 					FinishedConversation.add(qc);
 			}
 		}
+		
+		io.save();
 
 		QuestUtil.info(p, Questi18n.localizeMessage("CommandInfo.PlayerLoadComplete"));
 	}
@@ -596,7 +598,8 @@ public class QuestPlayerData
 		qop.checkIfFinished();
 		if (qop.isFinished())
 		{
-			qop.newConversation(p);
+			if (!(o instanceof QuestObjectTalkToNPC))
+				qop.newConversation(p);
 			QuestUtil.info(p, o.toPlainText() + " " + Questi18n.localizeMessage("CommandInfo.Finished"));
 			qp.checkIfnextStage();
 			return true;
