@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import io.netty.buffer.Unpooled;
+import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -84,7 +85,7 @@ public class Version_v1_8_R1 implements QuestVersionHandler
 				ChatColor.WHITE + "- 座標： (" + Math.floor(loc.getX()) + " , " + loc.getY() + " , " + Math.floor(loc.getZ()) + ")" }));
 		is.setItemMeta(im);
 		if (isFinished)
-			t = new TextComponent(QuestUtil.translateColor("&8&m&o") + ChatColor.stripColor(name));
+			t = new TextComponent(QuestChatManager.translateColor("&8&m&o") + ChatColor.stripColor(name));
 		else
 			t = new TextComponent(name);
 
@@ -110,14 +111,14 @@ public class Version_v1_8_R1 implements QuestVersionHandler
 			im.setDisplayName(ChatColor.WHITE + QuestUtil.translate(is.getType(), it.getDurability()));
 			is.setItemMeta(im);
 			if (f)
-				itemname = new TextComponent(QuestUtil.translateColor("&8&m&o") + QuestUtil.translate(is.getType(), is.getDurability()));
+				itemname = new TextComponent(QuestChatManager.translateColor("&8&m&o") + QuestUtil.translate(is.getType(), is.getDurability()));
 			else
 				itemname = new TextComponent(ChatColor.BLACK + QuestUtil.translate(is.getType(), is.getDurability()));
 		}
 		else
 		{
 			if (f)
-				itemname = new TextComponent(QuestUtil.translateColor("&8&m&o") + QuestUtil.translate(is.getType(), is.getDurability()));
+				itemname = new TextComponent(QuestChatManager.translateColor("&8&m&o") + QuestUtil.translate(is.getType(), is.getDurability()));
 			else
 				itemname = new TextComponent(is.getItemMeta().getDisplayName());
 		}

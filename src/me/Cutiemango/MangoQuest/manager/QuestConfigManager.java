@@ -2,6 +2,7 @@ package me.Cutiemango.MangoQuest.manager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -9,11 +10,13 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestChatManager;
+import me.Cutiemango.MangoQuest.QuestConfigSettings;
 import me.Cutiemango.MangoQuest.QuestIO;
-import me.Cutiemango.MangoQuest.QuestNPC;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
@@ -23,6 +26,7 @@ import me.Cutiemango.MangoQuest.conversation.QuestChoice;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.model.QuestNPC;
 import me.Cutiemango.MangoQuest.model.QuestVersion;
 import me.Cutiemango.MangoQuest.model.QuestReward;
 import me.Cutiemango.MangoQuest.model.QuestStage;
@@ -48,6 +52,7 @@ public class QuestConfigManager
 	private QuestIO QuestsIO;
 	private QuestIO TranslateIO;
 	private QuestIO NPCIO;
+	private QuestIO ConfigIO;
 
 	private QuestIO ConversationIO;
 
@@ -55,16 +60,13 @@ public class QuestConfigManager
 
 	public QuestConfigManager(Main pl)
 	{
+		plugin = pl;
+		ConfigIO = new QuestIO("config.yml");
 		PlayerIO = new QuestIO("players.yml");
 		QuestsIO = new QuestIO("quests.yml");
 		TranslateIO = new QuestIO("translations.yml");
 		NPCIO = new QuestIO("npc.yml");
 		ConversationIO = new QuestIO("conversations.yml");
-
-		plugin = pl;
-
-		loadChoice();
-		loadTranslation();
 	}
 
 	public QuestIO getPlayerIO()
@@ -72,12 +74,7 @@ public class QuestConfigManager
 		return PlayerIO;
 	}
 
-	private void log(Level lv, String msg)
-	{
-		Bukkit.getLogger().log(lv, "[MangoQuest] " + msg);
-	}
-
-	private void loadTranslation()
+	public void loadTranslation()
 	{
 		if (TranslateIO.isSection("Material"))
 		{
@@ -101,7 +98,7 @@ public class QuestConfigManager
 				}
 			}
 		}
-		log(Level.INFO, Questi18n.localizeMessage("Cmdlog.TranslationLoaded"));
+		QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("Cmdlog.TranslationLoaded"));
 	}
 
 	public void loadNPC()
@@ -134,18 +131,40 @@ public class QuestConfigManager
 				}
 				else
 				{
-					log(Level.WARNING, Questi18n.localizeMessage("Cmdlog.NPCNotValid", s));
+					QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.NPCNotValid", s));
 					continue;
 				}
 			}
 		}
-		log(Level.INFO, Questi18n.localizeMessage("Cmdlog.NPCLoaded", Integer.toString(count)));
+		QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("Cmdlog.NPCLoaded", Integer.toString(count)));
+	}
+	
+	public void loadConfig(){
+		if (ConfigIO.getString("language") != null){
+			String[] lang = ConfigIO.getString("language").split("_");
+			if (lang.length > 1)
+			{
+				QuestConfigSettings.LOCALE_USING = new Locale(lang[0], lang[1]);
+				Questi18n.init(QuestConfigSettings.LOCALE_USING);
+				QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("Cmdlog.UsingLocale", ConfigIO.getString("language")));
+				return;
+			}
+		}
+		QuestConfigSettings.LOCALE_USING = QuestConfigSettings.DEFAULT_LOCALE;
+		Questi18n.init(QuestConfigSettings.LOCALE_USING);
+		QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.LocaleNotFound"));
+		QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("Cmdlog.UsingDefaultLocale", QuestConfigSettings.DEFAULT_LOCALE.toString()));
+	}
+	
+	public void clearPlayerData(Player p){
+		PlayerIO.removeSection("玩家資料." + p.getUniqueId());
+		QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.PlayerDataDeleted", p.getName()));
 	}
 
 	public void removeQuest(Quest q)
 	{
 		QuestsIO.getConfig().set("Quests." + q.getInternalID(), null);
-		log(Level.WARNING, Questi18n.localizeMessage("Cmdlog.QuestDeleted", q.getQuestName(), q.getInternalID()));
+		QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.QuestDeleted", q.getQuestName(), q.getInternalID()));
 		QuestsIO.save();
 	}
 
@@ -265,7 +284,7 @@ public class QuestConfigManager
 			QuestsIO.set("Quests." + q.getInternalID() + ".Rewards.Commands", q.getQuestReward().getCommands());
 		if (!QuestVersion.detailedValidate(q, QuestUtil.getQuest(q.getInternalID())))
 			QuestsIO.set("Quests." + q.getInternalID() + ".Version", q.getVersion().getVersion());
-		log(Level.INFO, Questi18n.localizeMessage("Cmdlog.QuestSaved", q.getQuestName(), q.getInternalID()));
+		QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("Cmdlog.QuestSaved", q.getQuestName(), q.getInternalID()));
 		QuestsIO.save();
 	}
 
@@ -285,7 +304,7 @@ public class QuestConfigManager
 				count++;
 			}
 
-			log(Level.INFO, Questi18n.localizeMessage("Cmdlog.ConversationLoaded", Integer.toString(count)));
+			QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("Cmdlog.ConversationLoaded", Integer.toString(count)));
 		}
 	}
 
@@ -297,7 +316,7 @@ public class QuestConfigManager
 		List<Choice> list = new ArrayList<>();
 		for (String id : ConversationIO.getSection("Choices"))
 		{
-			TextComponent q = new TextComponent(QuestUtil.translateColor(ConversationIO.getString("Choices." + id + ".Question")));
+			TextComponent q = new TextComponent(QuestChatManager.translateColor(ConversationIO.getString("Choices." + id + ".Question")));
 			for (String num : ConversationIO.getSection("Choices." + id + ".Options"))
 			{
 				String name = ConversationIO.getString("Choices." + id + ".Options." + num + ".OptionName");
@@ -309,7 +328,7 @@ public class QuestConfigManager
 			count++;
 		}
 
-		log(Level.INFO, Questi18n.localizeMessage("Cmdlog.ChoiceLoaded", Integer.toString(count)));
+		QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("Cmdlog.ChoiceLoaded", Integer.toString(count)));
 	}
 
 	public void loadQuests()
@@ -338,7 +357,7 @@ public class QuestConfigManager
 							n = QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".TargetNPC");
 							if (CitizensAPI.getNPCRegistry().getById(n) == null)
 							{
-								log(Level.WARNING, Questi18n.localizeMessage("Cmdlog.NPCNotValid", Integer.toString(n)));
+								QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.NPCNotValid", Integer.toString(n)));
 								continue;
 							}
 							obj = new QuestObjectDeliverItem(CitizensAPI.getNPCRegistry().getById(n),
@@ -349,7 +368,7 @@ public class QuestConfigManager
 							n = QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".TargetNPC");
 							if (CitizensAPI.getNPCRegistry().getById(n) == null)
 							{
-								log(Level.WARNING, Questi18n.localizeMessage("Cmdlog.NPCNotValid", Integer.toString(n)));
+								QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.NPCNotValid", Integer.toString(n)));
 								continue;
 							}
 							obj = new QuestObjectTalkToNPC(CitizensAPI.getNPCRegistry().getById(n));
@@ -359,7 +378,7 @@ public class QuestConfigManager
 							{
 								if (!Main.instance.initManager.hasMythicMobEnabled())
 								{
-									log(Level.SEVERE, Questi18n.localizeMessage("Cmdlog.MTMNotInstalled"));
+									QuestChatManager.logCmd(Level.SEVERE, Questi18n.localizeMessage("Cmdlog.MTMNotInstalled"));
 									continue;
 								}
 								name = QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MythicMob");
@@ -370,7 +389,7 @@ public class QuestConfigManager
 								}
 								catch (Exception e)
 								{
-									log(Level.WARNING, Questi18n.localizeMessage("Cmdlog.MTMMobNotFound", name));
+									QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.MTMMobNotFound", name));
 									continue;
 								}
 							}
@@ -412,7 +431,7 @@ public class QuestConfigManager
 									QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".LocationName"));
 							break;
 						default:
-							log(Level.WARNING, Questi18n.localizeMessage("Cmdlog.NoValidObject", internal));
+							QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.NoValidObject", internal));
 							continue;
 					}
 					if (QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".ActivateConversation") != null)
@@ -423,7 +442,7 @@ public class QuestConfigManager
 							obj.setConversation(conv);
 						else
 						{
-							log(Level.WARNING, Questi18n.localizeMessage("Cmdlog.NoValidConversation", internal));
+							QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.NoValidConversation", internal));
 							continue;
 						}
 					}
@@ -569,12 +588,12 @@ public class QuestConfigManager
 			}
 			else
 			{
-				log(Level.SEVERE, Questi18n.localizeMessage("Cmdlog.NPCError", questname));
+				QuestChatManager.logCmd(Level.SEVERE, Questi18n.localizeMessage("Cmdlog.NPCError", questname));
 				continue;
 			}
 		}
 		QuestsIO.save();
-		log(Level.INFO, Questi18n.localizeMessage("Cmdlog.QuestLoaded", Integer.toString(totalcount)));
+		QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("Cmdlog.QuestLoaded", Integer.toString(totalcount)));
 	}
 
 	private List<QuestBaseAction> loadConvAction(List<String> fromlist)
@@ -591,7 +610,7 @@ public class QuestConfigManager
 				}
 				catch (Exception ex)
 				{
-					log(Level.WARNING, Questi18n.localizeMessage("Cmdlog.EnumActionError", s.split("#")[0]));
+					QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.EnumActionError", s.split("#")[0]));
 					continue;
 				}
 				if (e != null)
@@ -631,7 +650,7 @@ public class QuestConfigManager
 		ItemMeta im = is.getItemMeta();
 		if (config.getString(path + ".ItemName") != null)
 		{
-			String name = QuestUtil.translateColor(config.getString(path + ".ItemName"));
+			String name = QuestChatManager.translateColor(config.getString(path + ".ItemName"));
 			im.setDisplayName(name);
 		}
 		if (config.getStringList(path + ".ItemLore") != null)
@@ -639,7 +658,7 @@ public class QuestConfigManager
 			List<String> lore = new ArrayList<>();
 			for (String s : config.getStringList(path + ".ItemLore"))
 			{
-				lore.add(QuestUtil.translateColor(s));
+				lore.add(QuestChatManager.translateColor(s));
 			}
 			im.setLore(lore);
 		}

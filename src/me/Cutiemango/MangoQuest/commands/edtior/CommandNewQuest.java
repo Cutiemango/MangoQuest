@@ -1,11 +1,10 @@
 package me.Cutiemango.MangoQuest.commands.edtior;
 
 import org.bukkit.entity.Player;
-
-import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.Questi18n;
-import me.Cutiemango.MangoQuest.listeners.QuestEditorListener;
-import me.Cutiemango.MangoQuest.manager.QuestEditorManager;
+import me.Cutiemango.MangoQuest.editor.QuestEditorListener;
+import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 
@@ -44,7 +43,7 @@ public class CommandNewQuest {
 			return;
 		}
 		QuestEditorManager.getCurrentEditingQuest(p).setInternalID(args[3]);
-		QuestUtil.info(p, Questi18n.localizeMessage("EditorMessage.NewQuest.IDRegistered", args[3]));
+		QuestChatManager.info(p, Questi18n.localizeMessage("EditorMessage.NewQuest.IDRegistered", args[3]));
 		QuestEditorManager.createQuest(p);
 	}
 	
@@ -59,17 +58,17 @@ public class CommandNewQuest {
 			return;
 		}
 		QuestEditorManager.getCurrentEditingQuest(p).setQuestName(args[3]);
-		QuestUtil.info(p, Questi18n.localizeMessage("EditorMessage.NewQuest.NameRegistered", args[3]));
+		QuestChatManager.info(p, Questi18n.localizeMessage("EditorMessage.NewQuest.NameRegistered", args[3]));
 		QuestEditorManager.createQuest(p);
 	}
 	
 	private static void create(Player p){
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 		if (q.getInternalID() != null && q.getQuestName() != null){
-			QuestUtil.info(p, Questi18n.localizeMessage("EditorMessage.NewQuest.Successful", q.getQuestName()));
+			QuestChatManager.info(p, Questi18n.localizeMessage("EditorMessage.NewQuest.Successful", q.getQuestName()));
 			QuestEditorManager.editQuest(p);
 		}else{
-			QuestUtil.error(p, Questi18n.localizeMessage("EditorMessage.NewQuest.Failed"));
+			QuestChatManager.error(p, Questi18n.localizeMessage("EditorMessage.NewQuest.Failed"));
 			QuestEditorManager.createQuest(p);
 			return;
 		}

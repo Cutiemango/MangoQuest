@@ -59,8 +59,6 @@ public class QuestObjectProgress
 				newConversation(p);
 			return;
 		}
-		// else if (cp.needReset())
-		// QuestGUIManager.updateConversation(p, cp);
 		else
 			finish();
 		return;

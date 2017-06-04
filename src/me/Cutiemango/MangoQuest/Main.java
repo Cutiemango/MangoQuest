@@ -1,16 +1,17 @@
 package me.Cutiemango.MangoQuest;
 
+import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import me.Cutiemango.MangoQuest.commands.AdminCommand;
 import me.Cutiemango.MangoQuest.commands.CommandReceiver;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.listeners.MythicListener;
-import me.Cutiemango.MangoQuest.listeners.PlayerListener;
-import me.Cutiemango.MangoQuest.listeners.QuestEditorListener;
 import me.Cutiemango.MangoQuest.listeners.QuestListener;
 import me.Cutiemango.MangoQuest.manager.QuestConfigManager;
+import me.Cutiemango.MangoQuest.manager.QuestInitializer;
 import me.Cutiemango.MangoQuest.versions.QuestVersionHandler;
 import me.Cutiemango.MangoQuest.versions.Version_v1_10_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_11_R1;
@@ -33,16 +34,16 @@ public class Main extends JavaPlugin
 	public void onEnable()
 	{
 		instance = this;
-		Questi18n.init("zh_TW");
 		getCommand("mq").setExecutor(new CommandReceiver());
-
+		getCommand("mqa").setExecutor(new AdminCommand());
+		
+		configManager = new QuestConfigManager(this);
+		configManager.loadConfig();
+		
 		initManager = new QuestInitializer(this);
 		initManager.initPlugins();
 
 		getServer().getPluginManager().registerEvents(new QuestListener(), this);
-		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-		getServer().getPluginManager().registerEvents(new QuestEditorListener(), this);
-		configManager = new QuestConfigManager(this);
 
 		if (initManager.hasMythicMobEnabled())
 			getServer().getPluginManager().registerEvents(new MythicListener(), this);
@@ -72,18 +73,20 @@ public class Main extends JavaPlugin
 				handler = new Version_v1_11_R1();
 				break;
 			default:
-				getLogger().severe("您的伺服器版本不支援此插件，可支援的版本：1.8~1.11。");
-				getLogger().severe("插件功能將無法運作，請考慮移除。");
+				QuestChatManager.logCmd(Level.SEVERE, "您的伺服器版本不支援此插件，可支援的版本：1.8~1.11。");
+				QuestChatManager.logCmd(Level.SEVERE, "插件功能將無法運作，請考慮移除。");
 				break;
 		}
 
-		getLogger().info("讀取伺服器版本號為：NMS " + version + "。");
+		QuestChatManager.logCmd(Level.SEVERE, "讀取伺服器版本號為：NMS " + version + "。");
 
 		new BukkitRunnable()
 		{
 			@Override
 			public void run()
 			{
+				configManager.loadTranslation();
+				configManager.loadChoice();
 				configManager.loadConversation();
 				configManager.loadQuests();
 				configManager.loadNPC();
@@ -102,11 +105,11 @@ public class Main extends JavaPlugin
 	@Override
 	public void onDisable()
 	{
-		getLogger().info("已經關閉！");
+		QuestChatManager.logCmd(Level.INFO, "已經關閉！");
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
 			QuestUtil.getData(p).save();
-			QuestUtil.info(p, "&b玩家資料儲存中...");
+			QuestChatManager.info(p, "&b玩家資料儲存中...");
 		}
 	}
 
@@ -115,7 +118,7 @@ public class Main extends JavaPlugin
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
 			QuestUtil.getData(p).save();
-			QuestUtil.info(p, "&b玩家資料儲存中...");
+			QuestChatManager.info(p, "&b玩家資料儲存中...");
 		}
 		QuestStorage.clear();
 

@@ -1,7 +1,7 @@
 package me.Cutiemango.MangoQuest.model;
 
 import org.bukkit.inventory.ItemStack;
-import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.TextComponentFactory;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -10,7 +10,7 @@ public class InteractiveText
 
 	public InteractiveText(String text)
 	{
-		target = new TextComponent(QuestUtil.translateColor(text));
+		target = new TextComponent(QuestChatManager.translateColor(text));
 	}
 
 	private TextComponent target;

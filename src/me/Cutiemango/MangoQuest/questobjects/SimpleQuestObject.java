@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
+import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.TextComponentFactory;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
@@ -33,12 +34,12 @@ public abstract class SimpleQuestObject
 		TextComponent text = new TextComponent("");
 		s = s.replace("[", "").replace("]", "");
 		String left = s;
-		String color = QuestUtil.translateColor("&0");
+		String color = QuestChatManager.translateColor("&0");
 
 		Material block = null;
 		Short subID = 0;
 		if (isFinished)
-			color = QuestUtil.translateColor("&8&m&o");
+			color = QuestChatManager.translateColor("&8&m&o");
 		for (int i = 0; i < args.length; i++)
 		{
 			String[] split = left.split("%" + i);
@@ -90,7 +91,7 @@ public abstract class SimpleQuestObject
 										if (isFinished)
 											text.addExtra(color + (String) args[i]);
 										else
-											text.addExtra(color + QuestUtil.translateColor((String) args[i]));
+											text.addExtra(color + QuestChatManager.translateColor((String) args[i]));
 									}
 								}
 

@@ -15,12 +15,12 @@ public class Questi18n
 
 	private static ResourceBundle bundle;
 
-	public static void init(String locale)
+	public static void init(Locale local)
 	{
-		String[] s = locale.split("_");
-		Locale local = new Locale(s[0], s[1]);
 		try
 		{
+			Main.instance.saveResource("messages_zh_TW.properties", true);
+			Main.instance.saveResource("messages_zh_TW_original.yml", true);
 			bundle = ResourceBundle.getBundle("messages", local);
 		}
 		catch (MissingResourceException e)
@@ -32,7 +32,7 @@ public class Questi18n
 	public static String localizeMessage(String path)
 	{
 		String format = bundle.getString(path);
-		format = QuestUtil.translateColor(format);
+		format = QuestChatManager.translateColor(format);
 		if (format == null)
 			return path;
 		else
@@ -44,7 +44,7 @@ public class Questi18n
 		String format = bundle.getString(path);
 		if (format == null)
 			return path;
-		format = QuestUtil.translateColor(format);
+		format = QuestChatManager.translateColor(format);
 		if (format.contains("%"))
 		{
 			try

@@ -10,6 +10,7 @@ import me.Cutiemango.MangoQuest.conversation.QuestChoice;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.model.QuestNPC;
 import net.md_5.bungee.api.ChatColor;
 
 public class QuestStorage

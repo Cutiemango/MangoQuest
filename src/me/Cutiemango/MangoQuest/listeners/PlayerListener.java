@@ -1,54 +1,70 @@
 package me.Cutiemango.MangoQuest.listeners;
 
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
+import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
+import net.citizensnpcs.api.npc.NPC;
 
-public class PlayerListener implements Listener
+public class PlayerListener
 {
 
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent e)
+	public static void onPlayerJoin(Player p)
 	{
-		Player p = e.getPlayer();
 		QuestPlayerData qd = new QuestPlayerData(p);
 		if (QuestPlayerData.hasConfigData(p))
 			qd = new QuestPlayerData(p, Main.instance.configManager.getPlayerIO());
 		QuestStorage.Players.put(p.getName(), qd);
 	}
 
-	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent e)
+	public static void onPlayerQuit(Player p)
 	{
-		Player p = e.getPlayer();
-		QuestPlayerData qd = QuestStorage.Players.get(p.getName());
+		QuestPlayerData qd = QuestUtil.getData(p);
 		qd.save();
 		QuestStorage.Players.remove(p.getName());
 	}
-
-	@EventHandler
-	public void onEntityDeath(EntityDeathEvent e)
+	
+	public static void onNPCRightClick(Player p, NPC npc, Cancellable event)
 	{
-		if (e.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent)
+		if (p.isSneaking())
+			return;
+		event.setCancelled(true);
+		if (QuestEditorManager.isInEditorMode(p))
+			return;
+		QuestPlayerData pd = QuestUtil.getData(p);
+		if (pd.deliverItem(npc))
+			return;
+		else
+			if (Main.instance.initManager.hasShopkeepersEnabled())
+			{
+				if (Main.instance.initManager.getShopkeepers().isShopkeeper(npc.getEntity()))
+				{
+					QuestGUIManager.openNPCInfo(p, npc, true);
+					return;
+				}
+			}
+		QuestGUIManager.openNPCInfo(p, npc, false);
+		return;
+	}
+
+	public static void onEntityDeath(Entity e)
+	{
+		if (e.getLastDamageCause() instanceof EntityDamageByEntityEvent)
 		{
-			Entity damager = ((EntityDamageByEntityEvent) e.getEntity().getLastDamageCause()).getDamager();
+			Entity damager = ((EntityDamageByEntityEvent) e.getLastDamageCause()).getDamager();
 			if (!(damager instanceof Player || damager instanceof Projectile))
 				return;
-			if (Main.instance.initManager.hasMythicMobEnabled()
-					&& Main.instance.initManager.getMTMPlugin().getAPI().getMobAPI().isMythicMob(e.getEntity()))
+			if (Main.instance.initManager.hasMythicMobEnabled() && Main.instance.initManager.getMTMPlugin().getAPI().getMobAPI().isMythicMob(e))
 				return;
 			Player attacker;
 			if (damager instanceof Projectile)
@@ -58,38 +74,27 @@ public class PlayerListener implements Listener
 				attacker = (Player) ((Projectile) damager).getShooter();
 			}
 			else
-			{
 				attacker = (Player) damager;
-			}
 			QuestPlayerData qd = QuestUtil.getData(attacker);
-			qd.killEntity(e.getEntity());
+			qd.killEntity(e);
 		}
 	}
 
-	@EventHandler
-	public void onBreakBlock(BlockBreakEvent e)
+	public static void onBreakBlock(Player p, Material m, short subID)
 	{
-		Player p = e.getPlayer();
 		QuestPlayerData qd = QuestUtil.getData(p);
-		if (e.getBlock() != null && e.getBlock().getType() != null)
-			qd.breakBlock(e.getBlock().getType());
+		qd.breakBlock(m, subID);
 	}
 
-	@EventHandler
-	public void onCosumeItem(PlayerItemConsumeEvent e)
+	public static void onConsumeItem(Player p, ItemStack is)
 	{
-		Player p = e.getPlayer();
 		QuestPlayerData qd = QuestUtil.getData(p);
-		if (e.getItem() != null && !e.isCancelled())
-			qd.consumeItem(e.getItem());
+		qd.consumeItem(is);
 	}
 
-	@EventHandler
-	public void onMove(PlayerMoveEvent e)
+	public static void onMove(Player p, Location loc)
 	{
-		Player p = e.getPlayer();
 		QuestPlayerData qd = QuestUtil.getData(p);
-		if (qd != null && e.getTo() != null)
-			qd.reachLocation(e.getTo());
+		qd.reachLocation(loc);
 	}
 }

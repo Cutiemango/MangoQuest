@@ -110,4 +110,9 @@ public class QuestIO
 	{
 		return config.isConfigurationSection(path);
 	}
+	
+	public void removeSection(String path){
+		config.set(path, "");
+		return;
+	}
 }

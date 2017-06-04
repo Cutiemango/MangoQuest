@@ -1,6 +1,6 @@
 package me.Cutiemango.MangoQuest.model;
 
-import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.QuestChatManager;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestBookPage
@@ -8,7 +8,7 @@ public class QuestBookPage
 
 	public QuestBookPage()
 	{
-		page = new TextComponent();
+		page = new TextComponent("");
 	}
 
 	private TextComponent page;
@@ -20,7 +20,7 @@ public class QuestBookPage
 
 	public QuestBookPage add(String s)
 	{
-		page.addExtra(QuestUtil.translateColor(s));
+		page.addExtra(QuestChatManager.translateColor(s));
 		return this;
 	}
 

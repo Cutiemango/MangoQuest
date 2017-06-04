@@ -2,8 +2,10 @@ package me.Cutiemango.MangoQuest.conversation;
 
 import java.util.List;
 import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.TextComponentFactory;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -59,7 +61,7 @@ public class QuestChoice
 		cp.getCurrentPage()
 				.addExtra(TextComponentFactory.regHoverEvent(
 						TextComponentFactory.regClickCmdEvent((TextComponent) question.duplicate(), "/mq conv openchoice"),
-						QuestUtil.translateColor("&e[點擊以前往問題介面]")));
+						Questi18n.localizeMessage("Conversation.ClickToAnswer")));
 		QuestGUIManager.openChoice(cp.getOwner(), question, choices);
 	}
 
@@ -67,7 +69,7 @@ public class QuestChoice
 	{
 		if (i > choices.size())
 		{
-			QuestUtil.error(p, "你不能選擇第 " + i + " 個選項！");
+			QuestChatManager.error(p, Questi18n.localizeMessage("Conversation.AnswerDenied"));
 			return;
 		}
 		int count = 0;

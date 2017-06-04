@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest.conversation;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.TextComponentFactory;
 import net.citizensnpcs.api.CitizensAPI;
@@ -45,17 +46,14 @@ public class QuestBaseAction
 			case CHOICE:
 				QuestChoice c = QuestUtil.getChoiceByName(obj);
 				if (c == null)
-				{
-					QuestUtil.warnCmd("錯誤： 找不到指定的選擇 - " + obj);
 					return;
-				}
 				c.apply(cp);
 				break;
 			case COMMAND:
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), obj);
 				break;
 			case SENTENCE:
-				cp.getCurrentPage().addExtra(QuestUtil.translateColor(obj));
+				cp.getCurrentPage().addExtra(QuestChatManager.translateColor(obj));
 				cp.getCurrentPage().addExtra("\n");
 				break;
 			case NPC_TALK:
@@ -63,7 +61,7 @@ public class QuestBaseAction
 				NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
 				if (npc != null)
 				{
-					cp.getCurrentPage().addExtra(QuestUtil.translateColor(npc.getName() + "&0：「" + split[0] + "」"));
+					cp.getCurrentPage().addExtra(QuestChatManager.translateColor(npc.getName() + "&0：「" + split[0] + "」"));
 					cp.getCurrentPage().addExtra("\n");
 				}
 				break;

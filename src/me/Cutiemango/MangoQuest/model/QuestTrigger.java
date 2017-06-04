@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest.model;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
 
@@ -20,7 +21,7 @@ public class QuestTrigger
 		o = obj;
 		value = arg;
 		if (value instanceof String)
-			value = QuestUtil.translateColor((String) value);
+			value = QuestChatManager.translateColor((String) value);
 	}
 
 	public QuestTrigger(TriggerType type, TriggerObject obj, int i, Object arg)
@@ -33,7 +34,7 @@ public class QuestTrigger
 		o = obj;
 		value = arg;
 		if (value instanceof String)
-			value = QuestUtil.translateColor((String) value);
+			value = QuestChatManager.translateColor((String) value);
 	}
 
 	public enum TriggerType
@@ -94,7 +95,7 @@ public class QuestTrigger
 		if (value instanceof CharSequence)
 		{
 			replaced = ((String) value).replace("<player>", p.getName());
-			replaced = QuestUtil.translateColor(replaced);
+			replaced = QuestChatManager.translateColor(replaced);
 		}
 		else
 		{

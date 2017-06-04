@@ -6,8 +6,10 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -65,7 +67,7 @@ public class ConversationProgress
 	public void finish(boolean questFinish)
 	{
 		getCurrentPage().addExtra("\n");
-		getCurrentPage().addExtra(QuestUtil.translateColor("    &8=》 &2&l對話結束 &8《="));
+		getCurrentPage().addExtra(Questi18n.localizeMessage("Conversation.Finished"));
 		QuestGUIManager.updateConversation(owner, this);
 		if (conv.hasNPC() && questFinish)
 		{
@@ -141,6 +143,6 @@ public class ConversationProgress
 
 	public final String getDefaultTitleString()
 	{
-		return QuestUtil.translateColor("&0「" + conv.getName() + "」");
+		return QuestChatManager.translateColor("&0「" + conv.getName() + "」");
 	}
 }

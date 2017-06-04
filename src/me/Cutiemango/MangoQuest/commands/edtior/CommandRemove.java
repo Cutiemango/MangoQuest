@@ -8,11 +8,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
-import me.Cutiemango.MangoQuest.manager.QuestEditorManager;
+import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestVersion;
 import me.Cutiemango.MangoQuest.model.RequirementType;
@@ -31,7 +32,7 @@ public class CommandRemove {
 			}
 		}
 		if (!QuestEditorManager.isInEditorMode(sender)){
-			QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.NotInEditor"));
+			QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.NotInEditor"));
 			return;
 		}
 		switch (args[2]) {
@@ -100,7 +101,7 @@ public class CommandRemove {
 				break;
 			}
 			QuestEditorManager.editQuestRequirement(sender);
-			QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRemoved"));
+			QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRemoved"));
 			return;
 		}
 	}
@@ -110,7 +111,7 @@ public class CommandRemove {
 		if (args.length == 4) {
 			q.getTriggers().remove(index);
 			QuestEditorManager.editQuestTrigger(sender);
-			QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRemoved"));
+			QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRemoved"));
 			return;
 		}
 	}
@@ -124,14 +125,14 @@ public class CommandRemove {
 					while (it.hasNext()) {
 						QuestProgress qp = it.next();
 						if (QuestVersion.weakValidate(target, qp.getQuest())){
-							QuestUtil.getData(pl).forceQuit(target);
+							QuestUtil.getData(pl).forceQuit(target, true);
 							break;
 						}
 						else continue;
 					}
 				}
 				Main.instance.configManager.removeQuest(target);
-				QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.QuestRemoved", target.getQuestName()));
+				QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.QuestRemoved", target.getQuestName()));
 				QuestStorage.Quests.remove(args[3]);
 				return;
 			}
@@ -145,12 +146,12 @@ public class CommandRemove {
 			try{
 				stage = Integer.parseInt(args[3]);
 			}catch(NumberFormatException e){
-				QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+				QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 				QuestEditorManager.editQuestStages(sender);
 				return;
 			}
 			q.getStages().remove(stage - 1);
-			QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRemoved"));
+			QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRemoved"));
 			QuestEditorManager.editQuestStages(sender);
 			return;
 		}
@@ -165,12 +166,12 @@ public class CommandRemove {
 				stage = Integer.parseInt(args[3]);
 				obj = Integer.parseInt(args[4]);
 			}catch(NumberFormatException e){
-				QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+				QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 				QuestEditorManager.editQuestStages(sender);
 				return;
 			}
 			q.getStage(stage - 1).getObjects().remove(obj - 1);
-			QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRemoved"));
+			QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRemoved"));
 			QuestEditorManager.editQuestObjects(sender, stage);
 			return;
 		}

@@ -5,7 +5,7 @@ import me.Cutiemango.MangoQuest.Questi18n;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class QuestObjectTalkToNPC extends SimpleQuestObject
+public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 {
 
 	public QuestObjectTalkToNPC(NPC n)

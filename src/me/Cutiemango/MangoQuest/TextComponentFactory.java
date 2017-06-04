@@ -19,7 +19,7 @@ public class TextComponentFactory
 
 	public static TextComponent regClickCmdEvent(String text, String command)
 	{
-		TextComponent t = new TextComponent(QuestUtil.translateColor(text));
+		TextComponent t = new TextComponent(QuestChatManager.translateColor(text));
 		t.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
 		return t;
 	}
@@ -32,22 +32,22 @@ public class TextComponentFactory
 
 	public static TextComponent regHoverEvent(String text, String s)
 	{
-		TextComponent t = new TextComponent(QuestUtil.translateColor(text));
+		TextComponent t = new TextComponent(QuestChatManager.translateColor(text));
 		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]
-		{ new TextComponent(QuestUtil.translateColor(s)) }));
+		{ new TextComponent(QuestChatManager.translateColor(s)) }));
 		return t;
 	}
 
 	public static TextComponent regHoverEvent(TextComponent t, String s)
 	{
 		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]
-		{ new TextComponent(QuestUtil.translateColor(s)) }));
+		{ new TextComponent(QuestChatManager.translateColor(s)) }));
 		return t;
 	}
 
 	public static TextComponent regChangePageEvent(String text, Integer page)
 	{
-		TextComponent t = new TextComponent(QuestUtil.translateColor(text));
+		TextComponent t = new TextComponent(QuestChatManager.translateColor(text));
 		t.setClickEvent(new ClickEvent(ClickEvent.Action.CHANGE_PAGE, page.toString()));
 		return t;
 	}
@@ -66,14 +66,14 @@ public class TextComponentFactory
 	{
 		TextComponent t = new TextComponent(ChatColor.BOLD + q.getQuestName());
 		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]
-		{ new TextComponent(QuestUtil.translateColor("&e點擊以查看 " + q.getQuestName() + " &e的詳細資料")) }));
+		{ new TextComponent(QuestChatManager.translateColor("&e點擊以查看 " + q.getQuestName() + " &e的詳細資料")) }));
 		t.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mq quest view " + q.getInternalID()));
 		return t;
 	}
 
 	public static TextComponent convertRequirement(QuestPlayerData qd, Quest q)
 	{
-		TextComponent text = new TextComponent(QuestUtil.translateColor("&7&o" + q.getQuestName()));
+		TextComponent text = new TextComponent(QuestChatManager.translateColor("&7&o" + q.getQuestName()));
 		if (!q.isRedoable() && qd.hasFinished(q))
 			return regHoverEvent(text, "&c此為一次性任務。");
 		else

@@ -7,7 +7,7 @@ import me.Cutiemango.MangoQuest.Questi18n;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class QuestObjectDeliverItem extends ItemObject
+public class QuestObjectDeliverItem extends ItemObject implements NPCObject
 {
 
 	public QuestObjectDeliverItem(NPC n, ItemStack is, int deliveramount)

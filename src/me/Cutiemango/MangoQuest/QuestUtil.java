@@ -14,15 +14,11 @@ import me.Cutiemango.MangoQuest.conversation.QuestChoice;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.model.QuestNPC;
 import net.citizensnpcs.api.npc.NPC;
 
 public class QuestUtil
 {
-
-	public static String translateColor(String s)
-	{
-		return ChatColor.translateAlternateColorCodes('&', s);
-	}
 
 	public static void sendTitle(Player p, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle)
 	{
@@ -94,17 +90,11 @@ public class QuestUtil
 	{
 		return QuestStorage.Quests.get(s);
 	}
-
-	public static void info(Player p, String s)
-	{
-		p.sendMessage(QuestStorage.prefix + " " + translateColor(s));
-		return;
-	}
-
-	public static void error(Player p, String s)
-	{
-		p.sendMessage(translateColor("&c&lError> " + s));
-		return;
+	
+	public static void clearData(Player p){
+		QuestStorage.Players.put(p.getName(), new QuestPlayerData(p));
+		Main.instance.configManager.clearPlayerData(p);
+		QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.PlayerDataRemoved"));
 	}
 
 	public static void warnCmd(String s)

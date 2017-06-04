@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest.data;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
@@ -57,7 +58,7 @@ public class QuestProgress
 		pd.addFinishedQuest(quest);
 		quest.getQuestReward().giveRewardTo(owner);
 		QuestUtil.sendQuestTitle(owner, quest, QuestTitleEnum.FINISH);
-		QuestUtil.info(owner, Questi18n.localizeMessage("CommandInfo.CompleteMessage", quest.getQuestName()));
+		QuestChatManager.info(owner, Questi18n.localizeMessage("CommandInfo.CompleteMessage", quest.getQuestName()));
 		pd.removeProgress(quest);
 	}
 
@@ -122,7 +123,7 @@ public class QuestProgress
 		if (CurrentStage + 1 < quest.getStages().size())
 		{
 			CurrentStage++;
-			QuestUtil.info(owner, Questi18n.localizeMessage("CommandInfo.ProgressMessage", quest.getQuestName(), Integer.toString(CurrentStage),
+			QuestChatManager.info(owner, Questi18n.localizeMessage("CommandInfo.ProgressMessage", quest.getQuestName(), Integer.toString(CurrentStage),
 					Integer.toString(quest.getStages().size())));
 			objlist = new ArrayList<>();
 			for (SimpleQuestObject o : quest.getStage(CurrentStage).getObjects())
@@ -132,9 +133,7 @@ public class QuestProgress
 		}
 		else
 			if (CurrentStage + 1 >= quest.getStages().size())
-			{
 				finish();
-			}
 	}
 
 	public List<QuestObjectProgress> getCurrentObjects()

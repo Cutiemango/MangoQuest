@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
@@ -52,7 +53,7 @@ public class Quest
 	public Quest(String InternalID, String name, List<String> QuestOutline, QuestReward reward, List<QuestStage> stages, NPC npc)
 	{
 		this.InternalID = InternalID;
-		this.QuestName = QuestUtil.translateColor(name);
+		this.QuestName = QuestChatManager.translateColor(name);
 		this.QuestOutline = QuestOutline;
 		this.reward = reward;
 		this.AllStages = stages;
@@ -371,7 +372,7 @@ public class Quest
 				QuestProgress qp = it.next();
 				if (QuestVersion.detailedValidate(q, qp.getQuest()))
 				{
-					pd.forceQuit(q);
+					pd.forceQuit(q, true);
 					break;
 				}
 				else

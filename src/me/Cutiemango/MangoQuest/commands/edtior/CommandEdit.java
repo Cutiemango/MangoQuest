@@ -8,10 +8,11 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
-import me.Cutiemango.MangoQuest.listeners.QuestEditorListener;
-import me.Cutiemango.MangoQuest.manager.QuestEditorManager;
+import me.Cutiemango.MangoQuest.editor.QuestEditorListener;
+import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestTrigger;
@@ -37,7 +38,7 @@ public class CommandEdit
 	{
 		if (!QuestEditorManager.isInEditorMode(sender))
 		{
-			QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.NotInEditor"));
+			QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.NotInEditor"));
 			return;
 		}
 		switch (args[2])
@@ -120,13 +121,13 @@ public class CommandEdit
 				}
 				catch (NumberFormatException e)
 				{
-					QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+					QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 					QuestEditorManager.editQuest(sender);
 					return;
 				}
 				if (line < 0)
 				{
-					QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+					QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 					QuestEditorManager.editQuest(sender);
 					return;
 				}
@@ -192,7 +193,7 @@ public class CommandEdit
 				case NBTTAG:
 					if (((List<String>) q.getRequirements().get(t)).contains(args[5]))
 					{
-						QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.ObjectExist"));
+						QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.ObjectExist"));
 						((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
 						break;
 					}
@@ -204,7 +205,7 @@ public class CommandEdit
 					{
 						if (((List<String>) q.getRequirements().get(t)).contains(args[5]))
 						{
-							QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.ObjectExist"));
+							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.ObjectExist"));
 							((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
 							break;
 						}
@@ -214,13 +215,13 @@ public class CommandEdit
 					}
 					else
 					{
-						QuestUtil.error(sender, Questi18n.localizeMessage("CommandInfo.QuestNotFound"));
+						QuestChatManager.error(sender, Questi18n.localizeMessage("CommandInfo.QuestNotFound"));
 						break;
 					}
 				case SCOREBOARD:
 					if (((List<String>) q.getRequirements().get(t)).contains(args[5]))
 					{
-						QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.ObjectExist"));
+						QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.ObjectExist"));
 						((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
 						break;
 					}
@@ -296,7 +297,7 @@ public class CommandEdit
 				{
 					q.setQuestNPC(null);
 					QuestEditorManager.editQuest(sender);
-					QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.NPCRemoved"));
+					QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.NPCRemoved"));
 					return;
 				}
 				else
@@ -438,7 +439,7 @@ public class CommandEdit
 				}
 				catch (NumberFormatException e)
 				{
-					QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+					QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 				}
 				QuestEditorManager.editQuestObjects(sender, stage);
 				return;
@@ -462,7 +463,7 @@ public class CommandEdit
 		}
 		catch (NumberFormatException e)
 		{
-			QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+			QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 			return;
 		}
 		switch (args.length)
@@ -521,84 +522,84 @@ public class CommandEdit
 							String[] split = args[6].split(":");
 							((QuestObjectBreakBlock) o).setType(Material.getMaterial(split[0]));
 							((QuestObjectBreakBlock) o).setSubID(Short.parseShort(split[1]));
-							QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered",
+							QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered",
 									QuestUtil.translate(Material.getMaterial(split[0]), Short.parseShort(split[1]))));
 						}
 						catch (Exception e)
 						{
-							QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 						}
 						break;
 					case "amount":
 						try
 						{
 							((NumerableObject) o).setAmount(Integer.parseInt(args[6]));
-							QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
+							QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
 						}
 						catch (NumberFormatException e)
 						{
-							QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 						}
 						break;
 					case "item":
 						try
 						{
 							((ItemObject) o).setItem(Main.instance.handler.getItemInMainHand(sender));
-							QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ItemRegistered"));
+							QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.ItemRegistered"));
 						}
 						catch (NullPointerException e)
 						{
-							QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.ItemInHand"));
+							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.ItemInHand"));
 						}
 						break;
 					case "itemnpc":
 						try
 						{
 							((QuestObjectDeliverItem) o).setTargetNPC(CitizensAPI.getNPCRegistry().getById(Integer.valueOf(args[6])));
-							QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
+							QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
 						}
 						catch (Exception e)
 						{
-							QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 						}
 						break;
 					case "npc":
 						try
 						{
 							((QuestObjectTalkToNPC) o).setTargetNPC(CitizensAPI.getNPCRegistry().getById(Integer.valueOf(args[6])));
-							QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
+							QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
 						}
 						catch (Exception e)
 						{
-							QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 						}
 						break;
 					case "mtmmob":
 						try
 						{
 							((QuestObjectKillMob) o).setMythicMob(Main.instance.initManager.getMythicMobsAPI().getMythicMob(args[6]));
-							QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
+							QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
 						}
 						catch (Exception e)
 						{
 							e.printStackTrace();
-							QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 						}
 						break;
 					case "mobname":
-						((QuestObjectKillMob) o).setCustomName(QuestUtil.translateColor(args[6]));
-						QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
+						((QuestObjectKillMob) o).setCustomName(QuestChatManager.translateColor(args[6]));
+						QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
 						break;
 					case "mobtype":
 						try
 						{
 							((QuestObjectKillMob) o).setType(EntityType.valueOf(args[6]));
-							QuestUtil.info(sender,
+							QuestChatManager.info(sender,
 									Questi18n.localizeMessage("EditorMessage.ObjectRegistered", QuestUtil.translate(EntityType.valueOf(args[6]))));
 						}
 						catch (Exception e)
 						{
-							QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 						}
 						break;
 					case "loc":
@@ -607,18 +608,18 @@ public class CommandEdit
 							((QuestObjectReachLocation) o).setRadius(Integer.parseInt(args[6]));
 							Location l = sender.getLocation();
 							((QuestObjectReachLocation) o).setLocation(new Location(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ()));
-							QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered",
+							QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered",
 									"(" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ")"));
-							QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
+							QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
 						}
 						catch (NumberFormatException e)
 						{
-							QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 						}
 						break;
 					case "locname":
-						((QuestObjectReachLocation) o).setName(QuestUtil.translateColor(args[6]));
-						QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
+						((QuestObjectReachLocation) o).setName(QuestChatManager.translateColor(args[6]));
+						QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.ObjectRegistered", args[6]));
 						break;
 					case "type":
 						SimpleQuestObject ob = null;
@@ -649,7 +650,7 @@ public class CommandEdit
 						if (ob != null)
 						{
 							q.getStage(stage - 1).getObjects().set(obj - 1, ob);
-							QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.ChangeObject"));
+							QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.ChangeObject"));
 						}
 						break;
 				}
@@ -691,7 +692,7 @@ public class CommandEdit
 						}
 						catch (NumberFormatException e)
 						{
-							QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 							break;
 						}
 						q.getQuestReward().setMoney(money);
@@ -704,7 +705,7 @@ public class CommandEdit
 						}
 						catch (NumberFormatException e)
 						{
-							QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 							break;
 						}
 						q.getQuestReward().setExp(exp);
@@ -735,7 +736,7 @@ public class CommandEdit
 							}
 							catch (NumberFormatException e)
 							{
-								QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+								QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 								QuestEditorManager.editQuest(sender);
 								return;
 							}

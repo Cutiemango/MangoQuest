@@ -6,11 +6,10 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.Questi18n;
-import me.Cutiemango.MangoQuest.listeners.QuestEditorListener;
-import me.Cutiemango.MangoQuest.manager.QuestEditorManager;
+import me.Cutiemango.MangoQuest.editor.QuestEditorListener;
+import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestStage;
@@ -24,7 +23,7 @@ public class CommandAddnew {
 	
 	public static void execute(Quest q, Player sender, String[] args){
 		if (!QuestEditorManager.isInEditorMode(sender)){
-			QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.NotInEditor"));
+			QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.NotInEditor"));
 			return;
 		}
 		switch (args[2]) {
@@ -128,9 +127,9 @@ public class CommandAddnew {
 		List<SimpleQuestObject> l = new ArrayList<>();
 		l.add(new QuestObjectBreakBlock(Material.GRASS, (short)0, 1));
 		q.getStages().add(q.getStages().size(), new QuestStage(null, null, l));
-		QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.StageCreated"));
-		QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.StageCreated2"));
-		QuestUtil.info(sender, Questi18n.localizeMessage("EditorMessage.StageCreated3"));
+		QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.StageCreated"));
+		QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.StageCreated2"));
+		QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.StageCreated3"));
 		QuestEditorManager.editQuestStages(sender);
 	}
 	
@@ -141,7 +140,7 @@ public class CommandAddnew {
 			try{
 				stage = Integer.parseInt(args[3]);
 			}catch(NumberFormatException e){
-				QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+				QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 				return;
 			}
 			q.getStage(stage - 1).getObjects().add(q.getStage(stage - 1).getObjects().size(), new QuestObjectBreakBlock(Material.GRASS, (short)0, 1));
@@ -178,7 +177,7 @@ public class CommandAddnew {
 				try{
 					q.getQuestReward().getFp().put(Integer.parseInt(sp[0]), Integer.parseInt(sp[1]));
 				}catch(NumberFormatException e){
-					QuestUtil.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
+					QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.WrongFormat"));
 					QuestEditorManager.editQuest(sender);
 					return;
 				}

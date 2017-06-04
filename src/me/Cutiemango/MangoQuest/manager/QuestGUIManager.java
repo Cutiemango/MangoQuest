@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.TextComponentFactory;
@@ -133,7 +134,7 @@ public class QuestGUIManager
 	public static void openConversation(Player p)
 	{
 		ConversationProgress cp = QuestUtil.getConvProgress(p);
-		TextComponent p1 = new TextComponent(QuestUtil.translateColor(cp.getDefaultTitleString()));
+		TextComponent p1 = new TextComponent(QuestChatManager.translateColor(cp.getDefaultTitleString()));
 		p1.addExtra("\n");
 		cp.setCurrentBook(new LinkedList<>(QuestUtil.createList(p1)));
 		updateConversation(p, cp);
@@ -233,15 +234,15 @@ public class QuestGUIManager
 		QuestPlayerData qd = QuestUtil.getData(p);
 		QuestBookPage p1 = new QuestBookPage();
 
-		// Title
-		p1.add("&5&lNPC介面 &0&l| ");
-		p1.add(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
-		p1.changeLine();
+//		// Title
+//		p1.add("&5&lNPC &0&l| ");
+//		p1.add(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
+//		p1.changeLine();
 
 		List<Quest> holder = new ArrayList<>();
 
 		// Message
-		p1.changeLine();
+//		p1.changeLine();
 		p1.add("&0&l" + npc.getName() + "&0：「").add(QuestUtil.getNPCMessage(npc.getId(), qd.getNPCfp(npc.getId()))).add("」").changeLine();
 		p1.changeLine();
 
@@ -260,10 +261,12 @@ public class QuestGUIManager
 						.showText("&c放棄任務 &f" + q.getQuest().getQuestName() + "\n&4所有的任務進度都會消失。"));
 				holder.add(q.getQuest());
 			}
-			p1.add("\n");
+			p1.changeLine();
 		}
 		for (Quest q : QuestUtil.getGivenNPCQuests(npc))
 		{
+			if (!q.isRedoable() && qd.hasFinished(q))
+				continue;
 			if (qd.canTake(q, false))
 			{
 				if (qd.hasFinished(q))
