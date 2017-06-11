@@ -2,10 +2,10 @@ package me.Cutiemango.MangoQuest.questobjects;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
-import me.Cutiemango.MangoQuest.QuestChatManager;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
-import net.elseland.xikage.MythicMobs.Mobs.MythicMob;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestObjectKillMob extends NumerableObject

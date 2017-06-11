@@ -1,16 +1,13 @@
 package me.Cutiemango.MangoQuest.manager;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.TextComponentFactory;
-import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.data.QuestFinishData;
@@ -131,20 +128,6 @@ public class QuestGUIManager
 		openBook(p, list.toArray(new TextComponent[list.size()]));
 	}
 
-	public static void openConversation(Player p)
-	{
-		ConversationProgress cp = QuestUtil.getConvProgress(p);
-		TextComponent p1 = new TextComponent(QuestChatManager.translateColor(cp.getDefaultTitleString()));
-		p1.addExtra("\n");
-		cp.setCurrentBook(new LinkedList<>(QuestUtil.createList(p1)));
-		updateConversation(p, cp);
-	}
-
-	public static void updateConversation(Player p, ConversationProgress cp)
-	{
-		openBook(p, cp.getCurrentBook().toArray(new TextComponent[cp.getCurrentBook().size()]));
-	}
-
 	public static void openChoice(Player p, TextComponent q, List<Choice> c)
 	{
 		QuestBookPage p1 = new QuestBookPage();
@@ -242,7 +225,6 @@ public class QuestGUIManager
 		List<Quest> holder = new ArrayList<>();
 
 		// Message
-//		p1.changeLine();
 		p1.add("&0&l" + npc.getName() + "&0：「").add(QuestUtil.getNPCMessage(npc.getId(), qd.getNPCfp(npc.getId()))).add("」").changeLine();
 		p1.changeLine();
 

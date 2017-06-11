@@ -7,11 +7,11 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import com.google.common.base.Charsets;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
 public class QuestIO
 {
@@ -26,7 +26,7 @@ public class QuestIO
 		if (!file.exists())
 		{
 			Main.instance.saveResource(name, true);
-			Bukkit.getLogger().log(Level.SEVERE, "[MangoQuest] 找不到" + name + "，建立新檔案！");
+			QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.FileNotFound", name));
 		}
 
 		loadFrom(file);
@@ -57,7 +57,8 @@ public class QuestIO
 		}
 		catch (IOException | InvalidConfigurationException e)
 		{
-			Bukkit.getLogger().log(Level.SEVERE, "[MangoQuest] 讀取Config檔案過程中發生問題！請聯絡開發者。");
+			QuestChatManager.logCmd(Level.SEVERE, Questi18n.localizeMessage("Cmdlog.IOException"));
+			e.printStackTrace();
 		}
 	}
 

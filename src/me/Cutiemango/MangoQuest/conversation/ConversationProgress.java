@@ -6,13 +6,11 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
-import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
-import net.md_5.bungee.api.chat.TextComponent;
+import me.Cutiemango.MangoQuest.model.QuestBookPage;
 
 public class ConversationProgress
 {
@@ -25,19 +23,16 @@ public class ConversationProgress
 		actQueue = new LinkedList<>(conv.getActions());
 	}
 
-	public static final List<EnumAction> STOP_ACTIONS = Arrays.asList(new EnumAction[]
-	{ EnumAction.BUTTON, EnumAction.WAIT, EnumAction.CHOICE, EnumAction.FINISH });
+	public static final List<EnumAction> STOP_ACTIONS = Arrays.asList(EnumAction.BUTTON, EnumAction.WAIT, EnumAction.CHOICE, EnumAction.FINISH);
 
 	private Player owner;
 	private QuestConversation conv;
 	private LinkedList<QuestBaseAction> actQueue;
-	private LinkedList<TextComponent> currentBook = new LinkedList<>();
-	private LinkedList<TextComponent> history = new LinkedList<>();
+	private LinkedList<QuestBookPage> currentBook = new LinkedList<>();
+	private LinkedList<QuestBookPage> history = new LinkedList<>();
 	private boolean isFinished;
-	// private boolean reset;
 
-	// Book Page
-	private int page;
+	private int page = 0;
 
 	public void nextAction()
 	{
@@ -47,7 +42,7 @@ public class ConversationProgress
 			return;
 		}
 		actQueue.getFirst().execute(this);
-		QuestGUIManager.updateConversation(owner, this);
+		QuestConversationManager.openConversation(owner, this);
 		if (!(STOP_ACTIONS.contains(actQueue.getFirst().getActionType())))
 		{
 			new BukkitRunnable()
@@ -66,9 +61,9 @@ public class ConversationProgress
 
 	public void finish(boolean questFinish)
 	{
-		getCurrentPage().addExtra("\n");
-		getCurrentPage().addExtra(Questi18n.localizeMessage("Conversation.Finished"));
-		QuestGUIManager.updateConversation(owner, this);
+		getCurrentPage().changeLine();
+		getCurrentPage().add(Questi18n.localizeMessage("Conversation.Finished")).changeLine();
+		QuestConversationManager.openConversation(owner, this);
 		if (conv.hasNPC() && questFinish)
 		{
 			QuestUtil.getData(owner).addFinishConversation(conv);
@@ -76,7 +71,6 @@ public class ConversationProgress
 			if (!conv.isFriendConv())
 				owner.performCommand("mq conv npc " + conv.getNPC().getId());
 		}
-		// reset = !questFinish;
 	}
 
 	public Player getOwner()
@@ -94,23 +88,20 @@ public class ConversationProgress
 		return conv;
 	}
 
-	public LinkedList<TextComponent> getCurrentBook()
+	public LinkedList<QuestBookPage> getCurrentBook()
 	{
 		return currentBook;
 	}
 
-	// public boolean needReset(){
-	// return reset;
-	// }
 
-	public TextComponent getCurrentPage()
+	public QuestBookPage getCurrentPage()
 	{
 		if (currentBook.get(page) == null)
-			currentBook.set(page, new TextComponent(getDefaultTitleString()));
+			currentBook.add(page, QuestConversationManager.generateNewPage(conv));
 		return currentBook.get(page);
 	}
 
-	public void setCurrentBook(LinkedList<TextComponent> list)
+	public void setCurrentBook(LinkedList<QuestBookPage> list)
 	{
 		currentBook = list;
 		update();
@@ -118,31 +109,27 @@ public class ConversationProgress
 
 	public void retrieve()
 	{
-		currentBook.set(0, (TextComponent) history.getFirst().duplicate());
+		currentBook.set(0, history.getFirst().duplicate());
 	}
 
 	public void update()
 	{
 		for (int i = 0; i <= page; i++)
 		{
-			history.add(i, new TextComponent(""));
-			history.get(i).addExtra(currentBook.get(i).duplicate());
+			if (page > history.size() - 1)
+				history.add(i, QuestConversationManager.generateNewPage(conv));
+			history.set(i, currentBook.get(i).duplicate());
 		}
 	}
 
 	public void newPage()
 	{
-		currentBook.push(new TextComponent(getDefaultTitleString()));
+		currentBook.push(QuestConversationManager.generateNewPage(conv));
 		update();
 	}
 
 	public boolean isFinished()
 	{
 		return isFinished;
-	}
-
-	public final String getDefaultTitleString()
-	{
-		return QuestChatManager.translateColor("&0「" + conv.getName() + "」");
 	}
 }

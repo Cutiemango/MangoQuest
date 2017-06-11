@@ -5,8 +5,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
 public class CommandReceiver implements CommandExecutor
 {

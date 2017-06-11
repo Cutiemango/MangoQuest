@@ -10,13 +10,15 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.QuestUtil.QuestTitleEnum;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
+import me.Cutiemango.MangoQuest.conversation.QuestConversationManager;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestTrigger;
 import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
@@ -30,7 +32,6 @@ import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
-import net.elseland.xikage.MythicMobs.Mobs.MythicMob;
 
 public class QuestPlayerData
 {
@@ -113,7 +114,7 @@ public class QuestPlayerData
 		{
 			for (String s : io.getStringList("玩家資料." + p.getUniqueId() + ".已完成的對話"))
 			{
-				QuestConversation qc = QuestUtil.getConvByName(s);
+				QuestConversation qc = QuestConversationManager.getConversation(s);
 				if (qc != null && !FinishedConversation.contains(s))
 					FinishedConversation.add(qc);
 			}
@@ -418,12 +419,11 @@ public class QuestPlayerData
 						}
 						else
 						{
+							 Main.instance.handler.setItemInMainHand(p, null);
 							if (itemtoDeliver.getAmount() == amountNeeded)
 								qop.setProgress(o.getAmount());
 							else
 								qop.setProgress(qop.getProgress() + itemtoDeliver.getAmount());
-							// TODO Version Compatibility
-							p.getInventory().setItemInMainHand(null);
 						}
 						this.checkFinished(p, qp, qop);
 						return true;
@@ -659,10 +659,16 @@ public class QuestPlayerData
 			else
 				if (o instanceof QuestObjectTalkToNPC)
 				{
-					if (!qop.isFinished())
+					if (qop.getObject().hasConversation())
 					{
 						qop.openConversation(p);
 						return false;
+					}
+					else
+					{
+						qop.finish();
+						checkFinished(p, qp, qop);
+						return true;
 					}
 				}
 			return false;

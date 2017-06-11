@@ -3,9 +3,8 @@ package me.Cutiemango.MangoQuest.conversation;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestChatManager;
-import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.TextComponentFactory;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.model.InteractiveText;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -23,7 +22,16 @@ public class QuestBaseAction
 
 	public enum EnumAction
 	{
-		CHANGE_PAGE, CHANGE_LINE, CHANGE_CONVERSATION, SENTENCE, NPC_TALK, CHOICE, BUTTON, COMMAND, WAIT, FINISH
+		CHANGE_PAGE,
+		CHANGE_LINE,
+		CHANGE_CONVERSATION,
+		SENTENCE,
+		NPC_TALK,
+		CHOICE,
+		BUTTON,
+		COMMAND,
+		WAIT,
+		FINISH
 	}
 
 	public void execute(final ConversationProgress cp)
@@ -31,20 +39,19 @@ public class QuestBaseAction
 		switch (action)
 		{
 			case BUTTON:
-				cp.getCurrentPage().addExtra(TextComponentFactory.regClickCmdEvent("&0[▼]", "/mq conv next"));
-				cp.getCurrentPage().addExtra("\n");
+				cp.getCurrentPage().add(new InteractiveText("&0[▼]").clickCommand("/mq conv next")).changeLine();
 				return;
 			case CHANGE_CONVERSATION:
 				// TODO Complicated
 				break;
 			case CHANGE_LINE:
-				cp.getCurrentPage().addExtra("\n");
+				cp.getCurrentPage().changeLine();
 				break;
 			case CHANGE_PAGE:
 				cp.newPage();
 				break;
 			case CHOICE:
-				QuestChoice c = QuestUtil.getChoiceByName(obj);
+				QuestChoice c = QuestConversationManager.getChoiceByName(obj);
 				if (c == null)
 					return;
 				c.apply(cp);
@@ -53,17 +60,13 @@ public class QuestBaseAction
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), obj);
 				break;
 			case SENTENCE:
-				cp.getCurrentPage().addExtra(QuestChatManager.translateColor(obj));
-				cp.getCurrentPage().addExtra("\n");
+				cp.getCurrentPage().add(QuestChatManager.translateColor(obj)).changeLine();
 				break;
 			case NPC_TALK:
 				String[] split = obj.split("@");
 				NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
 				if (npc != null)
-				{
-					cp.getCurrentPage().addExtra(QuestChatManager.translateColor(npc.getName() + "&0：「" + split[0] + "」"));
-					cp.getCurrentPage().addExtra("\n");
-				}
+					cp.getCurrentPage().add(QuestChatManager.translateColor(npc.getName() + "&0：「" + split[0] + "」")).changeLine();
 				break;
 			case WAIT:
 				new BukkitRunnable()

@@ -19,4 +19,6 @@ public abstract interface QuestVersionHandler
 	public abstract boolean hasTag(Player p, String s);
 
 	public abstract ItemStack getItemInMainHand(Player p);
+	
+	public abstract void setItemInMainHand(Player p, ItemStack is);
 }

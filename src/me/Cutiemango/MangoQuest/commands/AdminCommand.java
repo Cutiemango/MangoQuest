@@ -6,10 +6,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 
 public class AdminCommand implements CommandExecutor
@@ -24,17 +24,24 @@ public class AdminCommand implements CommandExecutor
 		if (!p.isOp())
 		{
 			QuestChatManager.error(p, Questi18n.localizeMessage("CommandInfo.NoPermission"));
-			;
 			return false;
 		}
+		if (args.length == 0)
+			if (args[0].equalsIgnoreCase("reload"))
+			{
+				Main.instance.reload();
+				QuestChatManager.info(p, "&a" + Questi18n.localizeMessage("CommandInfo.ReloadSuccessful"));
+				return true;
+			}
+			else
+			{
+				sendAdminHelp(p);
+				return false;
+			}
 		if (args.length > 1)
 		{
 			switch (args[0])
 			{
-				case "reload":
-					Main.instance.reload();
-					QuestChatManager.info(p, "&a" + Questi18n.localizeMessage("CommandInfo.ReloadSuccessful"));
-					return true;
 				// /mqa nextstage [玩家ID] [任務]
 				// /mqa forcetake [玩家ID] [任務]
 				// /mqa forcefinish [玩家ID] [任務]

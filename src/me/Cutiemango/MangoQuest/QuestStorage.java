@@ -28,7 +28,7 @@ public class QuestStorage
 
 	public static Map<String, QuestChoice> Choices = new HashMap<>();
 
-	public static Map<Material, String> TranslateMap = new EnumMap<>(Material.class);
+	public static Map<Material, Map<Short, String>> TranslateMap = new EnumMap<>(Material.class);
 	public static Map<EntityType, String> EntityTypeMap = new EnumMap<>(EntityType.class);
 
 	public static HashMap<Integer, QuestNPC> NPCMap = new HashMap<>();

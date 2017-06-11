@@ -2,6 +2,7 @@ package me.Cutiemango.MangoQuest.data;
 
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
+import me.Cutiemango.MangoQuest.conversation.QuestConversationManager;
 import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
@@ -45,7 +46,7 @@ public class QuestObjectProgress
 	{
 		if (obj.hasConversation())
 		{
-			cp = obj.getConversation().startNewConversation(p);
+			cp = QuestConversationManager.startConversation(p, obj.getConversation());
 			cp.nextAction();
 			return;
 		}

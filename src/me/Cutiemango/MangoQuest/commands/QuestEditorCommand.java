@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.commands.edtior.CommandAddnew;
@@ -12,6 +11,7 @@ import me.Cutiemango.MangoQuest.commands.edtior.CommandEdit;
 import me.Cutiemango.MangoQuest.commands.edtior.CommandNewQuest;
 import me.Cutiemango.MangoQuest.commands.edtior.CommandRemove;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 
 public class QuestEditorCommand

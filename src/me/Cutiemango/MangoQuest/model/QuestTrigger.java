@@ -1,11 +1,12 @@
 package me.Cutiemango.MangoQuest.model;
 
+import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
 public class QuestTrigger
 {
@@ -27,7 +28,7 @@ public class QuestTrigger
 	public QuestTrigger(TriggerType type, TriggerObject obj, int i, Object arg)
 	{
 		if (!type.hasStage())
-			QuestUtil.warnCmd("ERROR: " + type.toString() + " should not use this constructor.");
+			QuestChatManager.logCmd(Level.WARNING, "ERROR: " + type.toString() + " should not use this constructor.");
 
 		t = type;
 		count = i;
@@ -99,7 +100,7 @@ public class QuestTrigger
 		}
 		else
 		{
-			QuestUtil.warnCmd("ERROR: " + t.toString() + " does not have a matched Object value.");
+			QuestChatManager.logCmd(Level.WARNING, "ERROR: " + t.toString() + " does not have a matched Object value.");
 		}
 		switch (o)
 		{

@@ -2,8 +2,8 @@ package me.Cutiemango.MangoQuest.questobjects;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestObjectReachLocation extends SimpleQuestObject

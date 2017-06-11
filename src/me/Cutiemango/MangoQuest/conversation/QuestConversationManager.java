@@ -1,14 +1,10 @@
 package me.Cutiemango.MangoQuest.conversation;
 
-import java.util.LinkedList;
-import java.util.Optional;
-
 import org.bukkit.entity.Player;
-import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestStorage;
-import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
-import net.md_5.bungee.api.chat.TextComponent;
+import me.Cutiemango.MangoQuest.model.QuestBookPage;
 
 public class QuestConversationManager {
 	
@@ -21,9 +17,7 @@ public class QuestConversationManager {
 	public static ConversationProgress startConversation(Player p, QuestConversation conv){
 		ConversationProgress cp = new ConversationProgress(p, conv);
 		QuestStorage.ConvProgresses.put(p.getName(), cp);
-		TextComponent p1 = new TextComponent(QuestChatManager.translateColor(cp.getDefaultTitleString()));
-		p1.addExtra("\n");
-		cp.setCurrentBook(new LinkedList<>(QuestUtil.createList(p1)));
+		cp.newPage();
 		openConversation(p, cp);
 		return cp;
 	}
@@ -34,41 +28,46 @@ public class QuestConversationManager {
 	 * @param cp The progress to updtae
 	 */
 	public static void openConversation(Player p, ConversationProgress cp){
-		QuestGUIManager.openBook(p, cp.getCurrentBook().toArray(new TextComponent[cp.getCurrentBook().size()]));
+		QuestGUIManager.openBook(p, cp.getCurrentBook().toArray(new QuestBookPage[cp.getCurrentBook().size()]));
 	}
 	
 	/**
 	 * Gets a model conversation by internal id.
 	 * @param s The id of the conversation.
 	 */
-	public static Optional<QuestConversation> getConversation(String s){
-		return Optional.ofNullable(QuestStorage.Conversations.get(s));
+	public static QuestConversation getConversation(String s){
+		return QuestStorage.Conversations.get(s);
 	}
 	
 	/**
 	 * Gets a conversation progress by a specified player.
 	 * @param p The player.
 	 */
-	public static Optional<ConversationProgress> getConvProgress(Player p){
-		return Optional.ofNullable(QuestStorage.ConvProgresses.get(p.getName()));
+	public static ConversationProgress getConvProgress(Player p){
+		return QuestStorage.ConvProgresses.get(p.getName());
 	}
 	
 	/**
 	 * Gets a model choice by internal id.
 	 * @param p The player.
 	 */
-	public static Optional<QuestChoice> getChoiceByName(String s){
-		return Optional.ofNullable(QuestStorage.Choices.get(s));
+	public static QuestChoice getChoiceByName(String s){
+		return QuestStorage.Choices.get(s);
 	}
 	
 	/**
 	 * Gets a choice data by a specified player.
 	 * @param p The player.
 	 */
-	public static Optional<QuestChoice> getChoice(Player p){
-		return Optional.ofNullable(QuestStorage.ChoiceProgresses.get(p.getName()));
+	public static QuestChoice getChoiceProgress(Player p){
+		return QuestStorage.ChoiceProgresses.get(p.getName());
 	}
 	
-	
+	public static QuestBookPage generateNewPage(QuestConversation conv)
+	{
+		QuestBookPage page = new QuestBookPage().add(QuestChatManager.translateColor("&0「" + conv.getName() + "」"));
+		page.changeLine();
+		return page;
+	}
 
 }

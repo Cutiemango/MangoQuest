@@ -9,6 +9,8 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
 public class Questi18n
 {
@@ -19,8 +21,8 @@ public class Questi18n
 	{
 		try
 		{
-			Main.instance.saveResource("messages_zh_TW.properties", true);
-			Main.instance.saveResource("messages_zh_TW_original.yml", true);
+			Main.instance.saveResource("messages_" + QuestConfigSettings.LOCALE_USING.toString() + ".properties", true);
+			Main.instance.saveResource("original_" + QuestConfigSettings.LOCALE_USING.toString() + ".yml", true);
 			bundle = ResourceBundle.getBundle("messages", local);
 		}
 		catch (MissingResourceException e)
@@ -57,7 +59,7 @@ public class Questi18n
 			}
 			catch (Exception e)
 			{
-				QuestUtil.warnCmd("An error occured whilest localizing " + path + " .");
+				QuestChatManager.logCmd(Level.WARNING, "An error occured whilst localizing " + path + " .");
 				e.printStackTrace();
 			}
 		}

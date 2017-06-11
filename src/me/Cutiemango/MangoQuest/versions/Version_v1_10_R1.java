@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import io.netty.buffer.Unpooled;
-import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -147,6 +147,12 @@ public class Version_v1_10_R1 implements QuestVersionHandler
 	public ItemStack getItemInMainHand(Player p)
 	{
 		return p.getInventory().getItemInMainHand();
+	}
+	
+	@Override
+	public void setItemInMainHand(Player p, ItemStack is)
+	{
+		p.getInventory().setItemInMainHand(is);
 	}
 
 }

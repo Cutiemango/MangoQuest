@@ -1,6 +1,7 @@
 package me.Cutiemango.MangoQuest.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -14,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestConfigSettings;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestStorage;
@@ -25,6 +25,7 @@ import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
+import me.Cutiemango.MangoQuest.conversation.QuestConversationManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestNPC;
 import me.Cutiemango.MangoQuest.model.QuestVersion;
@@ -80,8 +81,21 @@ public class QuestConfigManager
 		{
 			for (String s : TranslateIO.getSection("Material"))
 			{
-				if (Material.getMaterial(s) != null)
-					QuestStorage.TranslateMap.put(Material.getMaterial(s), TranslateIO.getConfig().getString("Material." + s));
+				HashMap<Short, String> map = new HashMap<>();
+				if (TranslateIO.isSection("Material." + s))
+				{
+					for (String index : TranslateIO.getSection("Material." + s))
+					{
+						Short data = Short.parseShort(index);
+						map.put(data, TranslateIO.getString("Material." + s + "." + index));
+					}
+				}
+				else
+				{
+					map.put((short) 0, TranslateIO.getString("Material." + s + "." + 0));
+				}
+				QuestStorage.TranslateMap.put(Material.getMaterial(s), map);
+				map = new HashMap<>();
 			}
 		}
 		if (TranslateIO.isSection("EntityType"))
@@ -124,7 +138,8 @@ public class QuestConfigManager
 					{
 						for (String i : NPCIO.getSection("NPC." + id + ".Conversations"))
 						{
-							npc.put(Integer.parseInt(i), QuestUtil.getConvByName(NPCIO.getString("NPC." + id + ".Conversations." + i)));
+							npc.put(Integer.parseInt(i),
+									QuestConversationManager.getConversation(NPCIO.getString("NPC." + id + ".Conversations." + i)));
 						}
 					}
 					QuestStorage.NPCMap.put(id, npc);
@@ -138,9 +153,11 @@ public class QuestConfigManager
 		}
 		QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("Cmdlog.NPCLoaded", Integer.toString(count)));
 	}
-	
-	public void loadConfig(){
-		if (ConfigIO.getString("language") != null){
+
+	public void loadConfig()
+	{
+		if (ConfigIO.getString("language") != null)
+		{
 			String[] lang = ConfigIO.getString("language").split("_");
 			if (lang.length > 1)
 			{
@@ -155,8 +172,9 @@ public class QuestConfigManager
 		QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.LocaleNotFound"));
 		QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("Cmdlog.UsingDefaultLocale", QuestConfigSettings.DEFAULT_LOCALE.toString()));
 	}
-	
-	public void clearPlayerData(Player p){
+
+	public void clearPlayerData(Player p)
+	{
 		PlayerIO.removeSection("玩家資料." + p.getUniqueId());
 		QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.PlayerDataDeleted", p.getName()));
 	}
@@ -212,6 +230,9 @@ public class QuestConfigManager
 			for (SimpleQuestObject obj : s.getObjects())
 			{
 				j++;
+				if (obj.hasConversation())
+					QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".ActivateConversation",
+							obj.getConversation().getInternalID());
 				QuestsIO.set("Quests." + q.getInternalID() + ".Stages." + i + "." + j + ".ObjectType", obj.getConfigString());
 				switch (obj.getConfigString())
 				{
@@ -384,7 +405,7 @@ public class QuestConfigManager
 								name = QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".MythicMob");
 								try
 								{
-									obj = new QuestObjectKillMob(Main.instance.initManager.getMTMPlugin().getAPI().getMobAPI().getMythicMob(name),
+									obj = new QuestObjectKillMob(Main.instance.initManager.getMTMPlugin().getAPIHelper().getMythicMob(name),
 											QuestsIO.getInt("Quests." + internal + ".Stages." + scount + "." + ocount + ".Amount"));
 								}
 								catch (Exception e)
@@ -436,7 +457,7 @@ public class QuestConfigManager
 					}
 					if (QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".ActivateConversation") != null)
 					{
-						QuestConversation conv = QuestUtil.getConvByName(
+						QuestConversation conv = QuestConversationManager.getConversation(
 								QuestsIO.getString("Quests." + internal + ".Stages." + scount + "." + ocount + ".ActivateConversation"));
 						if (conv != null)
 							obj.setConversation(conv);

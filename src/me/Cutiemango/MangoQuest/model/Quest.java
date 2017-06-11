@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestChatManager;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatColor;
@@ -300,7 +301,7 @@ public class Quest
 							split = s.split(">=");
 							if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]) == null)
 							{
-								QuestUtil.warnCmd("任務 " + InternalID + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
+								QuestChatManager.logCmd(Level.WARNING, "任務 " + InternalID + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
 								return new FailResult(RequirementType.SCOREBOARD, "");
 							}
 							if (!(Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]).getScore(p.getName()).getScore() >= Integer
@@ -313,7 +314,7 @@ public class Quest
 								split = s.split("<=");
 								if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]) == null)
 								{
-									QuestUtil.warnCmd("任務 " + InternalID + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
+									QuestChatManager.logCmd(Level.WARNING, "任務 " + InternalID + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
 									return new FailResult(RequirementType.SCOREBOARD, "");
 								}
 								if (!(Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]).getScore(p.getName())
@@ -326,7 +327,7 @@ public class Quest
 									split = s.split("==");
 									if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]) == null)
 									{
-										QuestUtil.warnCmd("任務 " + InternalID + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
+										QuestChatManager.logCmd(Level.WARNING, "任務 " + InternalID + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
 										return new FailResult(RequirementType.SCOREBOARD, "");
 									}
 									if (!(Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]).getScore(p.getName())

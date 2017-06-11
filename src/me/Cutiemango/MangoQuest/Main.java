@@ -10,6 +10,7 @@ import me.Cutiemango.MangoQuest.commands.CommandReceiver;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.listeners.MythicListener;
 import me.Cutiemango.MangoQuest.listeners.QuestListener;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestConfigManager;
 import me.Cutiemango.MangoQuest.manager.QuestInitializer;
 import me.Cutiemango.MangoQuest.versions.QuestVersionHandler;
@@ -73,12 +74,12 @@ public class Main extends JavaPlugin
 				handler = new Version_v1_11_R1();
 				break;
 			default:
-				QuestChatManager.logCmd(Level.SEVERE, "您的伺服器版本不支援此插件，可支援的版本：1.8~1.11。");
-				QuestChatManager.logCmd(Level.SEVERE, "插件功能將無法運作，請考慮移除。");
+				QuestChatManager.logCmd(Level.SEVERE,  Questi18n.localizeMessage("Cmdlog.VersionNotSupported1"));
+				QuestChatManager.logCmd(Level.SEVERE, Questi18n.localizeMessage("Cmdlog.VersionNotSupported2"));
 				break;
 		}
 
-		QuestChatManager.logCmd(Level.SEVERE, "讀取伺服器版本號為：NMS " + version + "。");
+		QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("Cmdlog.LoadedNMSVersion", version));
 
 		new BukkitRunnable()
 		{
@@ -105,11 +106,11 @@ public class Main extends JavaPlugin
 	@Override
 	public void onDisable()
 	{
-		QuestChatManager.logCmd(Level.INFO, "已經關閉！");
+		QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("Cmdlog.Disabled"));
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
 			QuestUtil.getData(p).save();
-			QuestChatManager.info(p, "&b玩家資料儲存中...");
+			QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.PlayerDataSaving"));
 		}
 	}
 
@@ -118,7 +119,7 @@ public class Main extends JavaPlugin
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
 			QuestUtil.getData(p).save();
-			QuestChatManager.info(p, "&b玩家資料儲存中...");
+			QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.PlayerDataSaving"));
 		}
 		QuestStorage.clear();
 

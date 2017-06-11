@@ -1,9 +1,6 @@
 package me.Cutiemango.MangoQuest.conversation;
 
 import java.util.List;
-import org.bukkit.entity.Player;
-import me.Cutiemango.MangoQuest.QuestStorage;
-import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import net.citizensnpcs.api.npc.NPC;
 
 public class QuestConversation
@@ -25,13 +22,6 @@ public class QuestConversation
 		isFriendConv = f;
 	}
 
-	public ConversationProgress startNewConversation(Player p)
-	{
-		ConversationProgress cp = new ConversationProgress(p, this);
-		QuestStorage.ConvProgresses.put(p.getName(), cp);
-		QuestGUIManager.openConversation(p);
-		return cp;
-	}
 
 	public List<QuestBaseAction> getActions()
 	{
