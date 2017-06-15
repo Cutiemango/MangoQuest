@@ -2,9 +2,9 @@ package me.Cutiemango.MangoQuest.conversation;
 
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.QuestStorage;
+import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
-import me.Cutiemango.MangoQuest.model.QuestBookPage;
 
 public class QuestConversationManager {
 	

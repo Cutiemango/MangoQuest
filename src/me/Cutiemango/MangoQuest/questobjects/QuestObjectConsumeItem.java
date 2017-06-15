@@ -1,6 +1,5 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
-import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
@@ -26,10 +25,9 @@ public class QuestObjectConsumeItem extends ItemObject
 	public String toPlainText()
 	{
 		if (item.getItemMeta().hasDisplayName())
-			return ChatColor.GREEN
-					+ Questi18n.localizeMessage("QuestObject.ConsumeItem", Integer.toString(amount), item.getItemMeta().getDisplayName());
+			return Questi18n.localizeMessage("QuestObject.ConsumeItem", Integer.toString(amount), item.getItemMeta().getDisplayName());
 		else
-			return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.ConsumeItem", Integer.toString(amount),
+			return Questi18n.localizeMessage("QuestObject.ConsumeItem", Integer.toString(amount),
 					QuestUtil.translate(item.getType(), item.getDurability()));
 	}
 

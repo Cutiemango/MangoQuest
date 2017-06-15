@@ -7,6 +7,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import me.Cutiemango.MangoQuest.book.FlexiableBook;
+import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
@@ -92,6 +94,16 @@ public class QuestUtil
 		QuestStorage.Players.put(p.getName(), new QuestPlayerData(p));
 		Main.instance.configManager.clearPlayerData(p);
 		QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.PlayerDataRemoved"));
+	}
+	
+	public static void checkOutOfBounds(QuestBookPage page, FlexiableBook book)
+	{
+		if (page.pageOutOfBounds())
+		{
+			book.newPage();
+			book.getLastEditingPage().add(book.getPage(book.size() - 2).getTextleft());
+		}
+		return;
 	}
 
 	public static String convertTime(long l)

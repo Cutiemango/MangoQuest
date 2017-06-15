@@ -1,6 +1,5 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.QuestUtil;
@@ -87,9 +86,9 @@ public class QuestObjectKillMob extends NumerableObject
 	public String toPlainText()
 	{
 		if (CustomName != null)
-			return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.KillMob", Integer.toString(amount), QuestChatManager.translateColor(CustomName));
+			return Questi18n.localizeMessage("QuestObject.KillMob", Integer.toString(amount), QuestChatManager.translateColor(CustomName));
 		else
-			return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.KillMob", Integer.toString(amount), QuestUtil.translate(type));
+			return Questi18n.localizeMessage("QuestObject.KillMob", Integer.toString(amount), QuestUtil.translate(type));
 	}
 
 }

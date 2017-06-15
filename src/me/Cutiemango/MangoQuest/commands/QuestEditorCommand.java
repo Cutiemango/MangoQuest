@@ -70,6 +70,7 @@ public class QuestEditorCommand
 						Quest.synchronizeLocal(q);
 						QuestChatManager.info(sender, "&a" + Questi18n.localizeMessage("EditorMessage.SaveConfigSuccess", q.getQuestName()));
 						QuestChatManager.info(sender, "&b" + Questi18n.localizeMessage("EditorMessage.SaveServerSuccess", q.getQuestName()));
+						QuestEditorManager.exit(sender);
 						break;
 					case "sc":
 					case "savecfg":
@@ -84,7 +85,8 @@ public class QuestEditorCommand
 							return;
 						}
 						Main.instance.configManager.saveQuest(q);
-						QuestChatManager.info(sender, "&a" + Questi18n.localizeMessage("EditorMessage.SaveConfigSuccess", q.getQuestName()));
+						QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.SaveConfigSuccess", q.getQuestName()));
+						QuestEditorManager.exit(sender);
 						break;
 					case "sl":
 					case "savelocal":
@@ -99,7 +101,8 @@ public class QuestEditorCommand
 							return;
 						}
 						Quest.synchronizeLocal(q);
-						QuestChatManager.info(sender, "&b" + Questi18n.localizeMessage("EditorMessage.SaveServerSuccess", q.getQuestName()));
+						QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.SaveServerSuccess", q.getQuestName()));
+						QuestEditorManager.exit(sender);
 						break;
 				}
 			}

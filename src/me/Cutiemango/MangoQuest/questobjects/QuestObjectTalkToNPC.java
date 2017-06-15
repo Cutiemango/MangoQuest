@@ -1,6 +1,5 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
-import org.bukkit.ChatColor;
 import me.Cutiemango.MangoQuest.Questi18n;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -35,7 +34,7 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 	@Override
 	public String toPlainText()
 	{
-		return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.TalkToNPC", getTargetNPC().getName());
+		return Questi18n.localizeMessage("QuestObject.TalkToNPC", getTargetNPC().getName());
 	}
 
 }

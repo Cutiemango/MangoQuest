@@ -21,8 +21,10 @@ public class Questi18n
 	{
 		try
 		{
-			Main.instance.saveResource("messages_" + QuestConfigSettings.LOCALE_USING.toString() + ".properties", true);
-			Main.instance.saveResource("original_" + QuestConfigSettings.LOCALE_USING.toString() + ".yml", true);
+			Main.instance.saveResource("messages_" + QuestConfigSettings.LOCALE_USING.toString() + ".properties", 
+					!new File("messages_" + QuestConfigSettings.LOCALE_USING.toString() + ".properties").exists());
+			Main.instance.saveResource("original_" + QuestConfigSettings.LOCALE_USING.toString() + ".yml", 
+					!new File("original_" + QuestConfigSettings.LOCALE_USING.toString() + ".yml").exists());
 			bundle = ResourceBundle.getBundle("messages", local);
 		}
 		catch (MissingResourceException e)

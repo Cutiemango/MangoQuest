@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest;
+package me.Cutiemango.MangoQuest.book;
 
 import static java.lang.Character.*;
 import java.util.Arrays;
@@ -23,20 +23,49 @@ public class TextAlignment
 	public static final List<Character> ESCAPE_COLOR_CODES = Arrays.asList('k', 'l', 'm', 'n', 'o', 'r');
 	public static final List<String> IGNORE_CHARS = Arrays.asList("@", "\\", "#", "§", "&");
 
-	public TextAlignment(String s)
+	public TextAlignment(String s, int line)
 	{
 		textToAlign = QuestChatManager.translateColor(s);
+		lineUsed = line;
 		align();
 	}
 
 	private String textToAlign = "";
 	private String aligned = "";
 	private String left = "";
+	private int lineUsed;
 
 	public void align()
 	{
-		for (int i = 0; i <= MAXIUM_LINE_PER_PAGE; i++)
+		boolean usedup = false;
+		if (textToAlign.split("\n").length > 1)
 		{
+			String[] split = textToAlign.split("\n");
+			for (int i = 0; i < split.length - 1; i++)
+			{
+				if (lineUsed > MAXIUM_LINE_PER_PAGE && !usedup)
+					usedup = true;
+				if (usedup)
+				{
+					left += split[i];
+					left += "\n";
+					continue;
+				}
+				aligned += split[i];
+				aligned += "\n";
+				lineUsed+=1;
+			}
+			if (usedup) return;
+			textToAlign = split[split.length - 1];
+		}
+		
+		for (int i = 0; i <= MAXIUM_LINE_PER_PAGE - lineUsed; i++)
+		{
+			if (usedup)
+			{
+				left = textToAlign;
+				return;
+			}
 			if (calculateCharSize(textToAlign) > MAXIUM_CHAR_PER_LINE)
 			{
 				aligned += textToAlign.substring(0, getSingleLineIndex(textToAlign));
@@ -45,6 +74,9 @@ public class TextAlignment
 				else
 					continue;
 				aligned += "\n";
+				lineUsed+=1;
+				if (lineUsed > MAXIUM_LINE_PER_PAGE && !usedup)
+					usedup = true;
 			}
 			else
 			{
@@ -132,6 +164,11 @@ public class TextAlignment
 		else
 			color += s.charAt(s.lastIndexOf("§") + 1);
 		return color;
+	}
+	
+	public int lineUsed()
+	{
+		return lineUsed;
 	}
 
 	public String getResult()

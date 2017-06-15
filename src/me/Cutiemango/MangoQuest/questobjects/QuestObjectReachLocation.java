@@ -1,6 +1,5 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import me.Cutiemango.MangoQuest.Questi18n;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
@@ -30,7 +29,7 @@ public class QuestObjectReachLocation extends SimpleQuestObject
 	@Override
 	public String toPlainText()
 	{
-		return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.ReachLocation", name);
+		return Questi18n.localizeMessage("QuestObject.ReachLocation", name);
 	}
 
 	public Location getLocation()

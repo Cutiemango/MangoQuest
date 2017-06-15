@@ -9,8 +9,8 @@ import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
-import me.Cutiemango.MangoQuest.model.QuestBookPage;
 
 public class ConversationProgress
 {

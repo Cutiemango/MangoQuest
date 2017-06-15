@@ -10,12 +10,13 @@ import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
-import me.Cutiemango.MangoQuest.TextComponentFactory;
+import me.Cutiemango.MangoQuest.book.FlexiableBook;
+import me.Cutiemango.MangoQuest.book.InteractiveText;
+import me.Cutiemango.MangoQuest.book.QuestBookPage;
+import me.Cutiemango.MangoQuest.book.TextComponentFactory;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
-import me.Cutiemango.MangoQuest.model.InteractiveText;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.QuestBookPage;
 import me.Cutiemango.MangoQuest.model.QuestTrigger;
 import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerObject;
 import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
@@ -62,50 +63,67 @@ public class QuestEditorManager
 	{
 		QuestBookPage p1 = new QuestBookPage();
 		p1.add(Questi18n.localizeMessage("QuestEditor.Title")).changeLine();
-		p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.NewQuest")).clickCommand("/mq e newquest").showText(Questi18n.localizeMessage("QuestEditor.NewQuest.ShowText"))).changeLine();
+		p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.NewQuest")).clickCommand("/mq e newquest")
+				.showText(Questi18n.localizeMessage("QuestEditor.NewQuest.ShowText"))).changeLine();
 		p1.changeLine();
-		p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.EditQuest")).clickCommand("/mq e edit").showText(Questi18n.localizeMessage("QuestEditor.EditQuest.ShowText"))).changeLine();
+		p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.EditQuest")).clickCommand("/mq e edit")
+				.showText(Questi18n.localizeMessage("QuestEditor.EditQuest.ShowText"))).changeLine();
 		p1.changeLine();
-		p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.RemoveQuest")).clickCommand("/mq e remove").showText(Questi18n.localizeMessage("QuestEditor.RemoveQuest.ShowText"))).changeLine();
+		p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.RemoveQuest")).clickCommand("/mq e remove")
+				.showText(Questi18n.localizeMessage("QuestEditor.RemoveQuest.ShowText"))).changeLine();
 		p1.changeLine();
 
 		if (isInEditorMode(p) && QuestEditorManager.getCurrentEditingQuest(p).getInternalID() != null)
 		{
-			p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.ReturnToEditor")).clickCommand("/mq e gui").showText(Questi18n.localizeMessage("QuestEditor.ReturnToEditor.ShowText"))).changeLine();
+			p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.ReturnToEditor")).clickCommand("/mq e gui")
+					.showText(Questi18n.localizeMessage("QuestEditor.ReturnToEditor.ShowText"))).changeLine();
 			p1.changeLine();
-			p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.ExitEditor")).clickCommand("/mq e exit").showText(Questi18n.localizeMessage("QuestEditor.ExitEditor.ShowText"))).changeLine();
+			p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.ExitEditor")).clickCommand("/mq e exit")
+					.showText(Questi18n.localizeMessage("QuestEditor.ExitEditor.ShowText"))).changeLine();
 		}
 		QuestGUIManager.openBook(p, p1);
 	}
 
 	public static void editGUI(Player p)
 	{
-		QuestBookPage p1 = new QuestBookPage();
-		p1.add(Questi18n.localizeMessage("QuestEditor.Title") + " " + Questi18n.localizeMessage("QuestEditor.ChooseEditQuest")).changeLine();
+		FlexiableBook book = new FlexiableBook();
+		QuestBookPage page = book.getLastEditingPage();
+		page.add(Questi18n.localizeMessage("QuestEditor.Title") + " " + Questi18n.localizeMessage("QuestEditor.ChooseEditQuest")).changeLine();
 		for (Quest q : QuestStorage.Quests.values())
 		{
-			p1.add(new InteractiveText("&0- &l" + q.getQuestName() + "&0(" + q.getInternalID() + ")")
+			QuestUtil.checkOutOfBounds(page, book);
+			page = book.getLastEditingPage();
+			page.add(new InteractiveText("&0- &l" + q.getQuestName() + "&0(" + q.getInternalID() + ")")
 					.clickCommand("/mq e select " + q.getInternalID()));
-			p1.changeLine();
+			page.changeLine();
 		}
-		p1.changeLine();
-		p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.ReturnToMenu")).clickCommand("/mq e"));
-		QuestGUIManager.openBook(p, p1);
+		QuestUtil.checkOutOfBounds(page, book);
+		page = book.getLastEditingPage();
+		page.changeLine();
+		page.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.ReturnToMenu")).clickCommand("/mq e"));
+		page.endNormally();
+		QuestGUIManager.openBook(p, book.toSendableBook());
 	}
 
 	public static void removeGUI(Player p)
 	{
-		QuestBookPage p1 = new QuestBookPage();
-		p1.add(Questi18n.localizeMessage("QuestEditor.Title") + " " + Questi18n.localizeMessage("QuestEditor.ChooseRemoveQuest")).changeLine();
+		FlexiableBook book = new FlexiableBook();
+		QuestBookPage page = book.getLastEditingPage();
+		page.add(Questi18n.localizeMessage("QuestEditor.Title") + " " + Questi18n.localizeMessage("QuestEditor.ChooseRemoveQuest")).changeLine();
 		for (Quest q : QuestStorage.Quests.values())
 		{
-			p1.add(new InteractiveText("&0- &l" + q.getQuestName() + "&0(" + q.getInternalID() + ")")
+			QuestUtil.checkOutOfBounds(page, book);
+			page = book.getLastEditingPage();
+			page.add(new InteractiveText("&0- &l" + q.getQuestName() + "&0(" + q.getInternalID() + ")")
 					.clickCommand("/mq e remove confirm " + q.getInternalID()));
-			p1.changeLine();
+			page.changeLine();
 		}
-		p1.changeLine();
-		p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.ReturnToMenu")).clickCommand("/mq e"));
-		QuestGUIManager.openBook(p, p1);
+		QuestUtil.checkOutOfBounds(page, book);
+		page = book.getLastEditingPage();
+		page.changeLine();
+		page.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.ReturnToMenu")).clickCommand("/mq e"));
+		page.endNormally();
+		QuestGUIManager.openBook(p, book.toSendableBook());
 	}
 
 	public static void removeConfirmGUI(Player p, Quest q)
@@ -118,8 +136,10 @@ public class QuestEditorManager
 		p1.changeLine();
 		p1.add("  ");
 		p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.WarnAccept")).clickCommand("/mq e remove quest " + q.getInternalID()));
+		p1.endNormally();
 		p1.add(" &8&l/ ");
 		p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.WarnDeny")).clickCommand("/mq e remove"));
+		p1.endNormally();
 		QuestGUIManager.openBook(p, p1);
 	}
 
@@ -136,35 +156,44 @@ public class QuestEditorManager
 		p1.add("&d&l基本資料編輯》 ").changeLine();
 		p1.add(Questi18n.localizeMessage("QuestEditor.QuestInternalID", q.getInternalID())).changeLine();
 
-		p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.QuestName")).clickCommand("/mq e edit name").showText(Questi18n.localizeMessage("QuestEditor.QuestName.ShowText")));
-		p1.add(q.getQuestName()).changeLine();
-		p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.QuestNPC")).clickCommand("/mq e edit npc").showText(Questi18n.localizeMessage("QuestEditor.QuestNPC.ShowText")));
+		p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.QuestName", q.getQuestName())).clickCommand("/mq e edit name")
+				.showText(Questi18n.localizeMessage("QuestEditor.QuestName.ShowText"))).changeLine();
+		p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.QuestNPC")).clickCommand("/mq e edit npc")
+				.showText(Questi18n.localizeMessage("QuestEditor.QuestNPC.ShowText"))).endNormally();
 		if (q.isCommandQuest())
-			p1.add(Questi18n.localizeMessage("QuestEditor.CommandQuest"));
+			p1.add(Questi18n.localizeMessage("QuestEditor.CommandQuest")).endNormally();
 		else
-			p1.add(TextComponentFactory.convertLocHoverEvent(q.getQuestNPC().getName(), q.getQuestNPC().getEntity().getLocation(), false));
+			p1.add(new InteractiveText("").showNPCInfo(q.getQuestNPC())).endNormally();
 		p1.changeLine();
 
 		if (q.isRedoable())
 		{
-			p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.IsRedoable")).clickCommand("/mq e edit redo false").showText(Questi18n.localizeMessage("QuestEditor.IsRedoable.ShowText.True"))).changeLine();;
-			p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.RedoDelay")).clickCommand("/mq e edit redodelay").showText(Questi18n.localizeMessage("QuestEditor.RedoDelay.ShowText")));
+			p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.IsRedoable")).clickCommand("/mq e edit redo false")
+					.showText(Questi18n.localizeMessage("QuestEditor.IsRedoable.ShowText.False"))).endNormally();
+			p1.add(Questi18n.localizeMessage("QuestEditor.IsRedoable.True")).changeLine();
+			p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.RedoDelay")).clickCommand("/mq e edit redodelay")
+					.showText(Questi18n.localizeMessage("QuestEditor.RedoDelay.ShowText"))).endNormally();
 			p1.add(QuestUtil.convertTime(q.getRedoDelay())).changeLine();
 		}
 		else
 		{
-			p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.IsRedoable")).clickCommand("/mq e edit redo true").showText(Questi18n.localizeMessage("QuestEditor.IsRedoable.ShowText.False"))).changeLine();
+			p1.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.IsRedoable")).clickCommand("/mq e edit redo true")
+					.showText(Questi18n.localizeMessage("QuestEditor.IsRedoable.ShowText.True"))).endNormally();
+			p1.add(Questi18n.localizeMessage("QuestEditor.IsRedoable.False")).changeLine();
 		}
 
 		QuestBookPage p2 = new QuestBookPage();
 		p2.add(Questi18n.localizeMessage("QuestEditor.ReqEventStageInfo")).changeLine();
 
 		p2.add(Questi18n.localizeMessage("QuestEditor.Requirement")).changeLine();
-		p2.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.GoToEditPage")).clickCommand("/mq e edit req").showText(Questi18n.localizeMessage("QuestEditor.Requirement.ShowText"))).changeLine();
+		p2.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.GoToEditPage")).clickCommand("/mq e edit req")
+				.showText(Questi18n.localizeMessage("QuestEditor.Requirement.ShowText"))).changeLine();
 		p2.add(Questi18n.localizeMessage("QuestEditor.Event")).changeLine();
-		p2.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.GoToEditPage")).clickCommand("/mq e edit evt").showText(Questi18n.localizeMessage("QuestEditor.Event.ShowText"))).changeLine();
+		p2.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.GoToEditPage")).clickCommand("/mq e edit evt")
+				.showText(Questi18n.localizeMessage("QuestEditor.Event.ShowText"))).changeLine();
 		p2.add(Questi18n.localizeMessage("QuestEditor.Stage")).changeLine();
-		p2.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.GoToEditPage")).clickCommand("/mq e edit stage").showText(Questi18n.localizeMessage("QuestEditor.Stage.ShowText"))).changeLine();
+		p2.add(new InteractiveText(Questi18n.localizeMessage("QuestEditor.GoToEditPage")).clickCommand("/mq e edit stage")
+				.showText(Questi18n.localizeMessage("QuestEditor.Stage.ShowText"))).changeLine();
 
 		QuestBookPage p3 = new QuestBookPage();
 		p3.add("&8&l任務提要》").changeLine();
@@ -173,7 +202,7 @@ public class QuestEditorManager
 			p3.add(out).changeLine();
 		}
 		p3.changeLine();
-		p3.add(new InteractiveText("&0&l[編輯提要]").clickCommand("/mq e edit outline"));
+		p3.add(new InteractiveText("&0&l[編輯提要]").clickCommand("/mq e edit outline")).changeLine();;
 
 		QuestBookPage p4 = new QuestBookPage();
 		p4.add("&6&l任務獎勵》").changeLine();
@@ -193,10 +222,10 @@ public class QuestEditorManager
 				if (npc == null)
 					continue;
 				p4.add("- ");
-				p4.add(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
+				p4.add(new InteractiveText("").showNPCInfo(npc));
 				p4.add("&0 " + q.getQuestReward().getFp().get(n) + " 點");
-				p4.add(new InteractiveText("&0&l[編輯]").clickCommand("/mq e edit reward fp " + n));
-				p4.add(new InteractiveText("&0&l[移除]").clickCommand("/mq e remove reward fp " + n));
+				p4.add(new InteractiveText("&0&l[編輯]").clickCommand("/mq e edit reward fp " + n)).endNormally();
+				p4.add(new InteractiveText("&0&l[移除]").clickCommand("/mq e remove reward fp " + n)).endNormally();
 				p4.changeLine();
 			}
 		}
@@ -207,8 +236,8 @@ public class QuestEditorManager
 			for (String s : q.getQuestReward().getCommands())
 			{
 				p4.add(new InteractiveText("- &0指令(" + counter + ")").showText("&f/" + s));
-				p4.add(new InteractiveText("&0&l[編輯]").clickCommand("/mq e edit reward command " + (counter - 1)));
-				p4.add(new InteractiveText("&0&l[移除]").clickCommand("/mq e remove reward command " + (counter - 1)));
+				p4.add(new InteractiveText("&0&l[編輯]").clickCommand("/mq e edit reward command " + (counter - 1))).endNormally();
+				p4.add(new InteractiveText("&0&l[移除]").clickCommand("/mq e remove reward command " + (counter - 1))).endNormally();
 				p4.changeLine();
 				counter++;
 			}
@@ -246,25 +275,25 @@ public class QuestEditorManager
 				if (qt.getType().equals(TriggerType.TRIGGER_STAGE_START) || qt.getType().equals(TriggerType.TRIGGER_STAGE_FINISH))
 				{
 					p1.add(new InteractiveText(qt.getTriggerObject().toCustomString())
-							.showText("觸發時機： " + qt.getType().toCustomString(qt.getCount()) + "\n觸發物件內容： " + qt.getObject().toString()));
-					p1.add(new InteractiveText("&7[編輯]").clickCommand(
-							"/mq e edit evt " + index + " " + qt.getType().toString() + " " + qt.getCount() + " " + qt.getTriggerObject().toString()));
+							.showText("觸發時機： " + qt.getType().toCustomString(qt.getCount()) + "\n觸發物件內容： " + qt.getObject().toString())).endNormally();
+					p1.add(new InteractiveText("&7[編輯]").clickCommand("/mq e edit evt " + index + " " + qt.getType().toString() + " " + qt.getCount()
+							+ " " + qt.getTriggerObject().toString())).endNormally();
 				}
 				else
 				{
 					p1.add(new InteractiveText(qt.getTriggerObject().toCustomString())
-							.showText("觸發時機： " + qt.getType().toCustomString() + "\n觸發物件內容： " + qt.getObject().toString()));
+							.showText("觸發時機： " + qt.getType().toCustomString() + "\n觸發物件內容： " + qt.getObject().toString())).endNormally();
 					p1.add(new InteractiveText("&7[編輯]")
-							.clickCommand("/mq e edit evt " + index + " " + qt.getType().toString() + " " + qt.getTriggerObject().toString()));
+							.clickCommand("/mq e edit evt " + index + " " + qt.getType().toString() + " " + qt.getTriggerObject().toString())).endNormally();
 				}
-				p1.add(new InteractiveText("&7[移除]").clickCommand("/mq e remove evt " + index));
+				p1.add(new InteractiveText("&7[移除]").clickCommand("/mq e remove evt " + index)).endNormally();
 				p1.changeLine();
 				index++;
 			}
 		}
-		p1.add(new InteractiveText("&0&l[新增]").clickCommand("/mq e addnew evt"));
+		p1.add(new InteractiveText("&0&l[新增]").clickCommand("/mq e addnew evt")).endNormally();
 		p1.changeLine();
-		p1.add(new InteractiveText("&0&l[返回任務選單]").clickCommand("/mq e gui"));
+		p1.add(new InteractiveText("&0&l[返回任務選單]").clickCommand("/mq e gui")).endNormally();
 		QuestGUIManager.openBook(p, p1);
 	}
 
@@ -304,7 +333,8 @@ public class QuestEditorManager
 		p1.addExtra(QuestChatManager.translateColor("&c(選擇要編輯的任務目標。)\n"));
 		for (int i = 1; i <= q.getStage(stage - 1).getObjects().size(); i++)
 		{
-			p1.addExtra(TextComponentFactory.regClickCmdEvent(QuestChatManager.translateColor("[編輯目標(" + i + ")]"), "/mq e edit object " + stage + " " + i));
+			p1.addExtra(TextComponentFactory.regClickCmdEvent(QuestChatManager.translateColor("[編輯目標(" + i + ")]"),
+					"/mq e edit object " + stage + " " + i));
 			p1.addExtra(TextComponentFactory.regClickCmdEvent(QuestChatManager.translateColor("&c [移除]"), "/mq e remove object " + stage + " " + i));
 			p1.addExtra("\n");
 

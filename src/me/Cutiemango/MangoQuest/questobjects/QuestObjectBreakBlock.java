@@ -1,7 +1,6 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
@@ -36,7 +35,7 @@ public class QuestObjectBreakBlock extends NumerableObject
 	@Override
 	public String toPlainText()
 	{
-		return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.BreakBlock", Integer.toString(amount), QuestUtil.translate(block, subID), "");
+		return Questi18n.localizeMessage("QuestObject.BreakBlock", Integer.toString(amount), QuestUtil.translate(block, subID), "");
 	}
 
 	public Material getType()

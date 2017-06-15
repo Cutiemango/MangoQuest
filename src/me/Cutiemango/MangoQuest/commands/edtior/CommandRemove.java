@@ -134,6 +134,7 @@ public class CommandRemove {
 				Main.instance.configManager.removeQuest(target);
 				QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.QuestRemoved", target.getQuestName()));
 				QuestStorage.Quests.remove(args[3]);
+				QuestEditorManager.removeGUI(sender);
 				return;
 			}
 		}

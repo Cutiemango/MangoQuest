@@ -62,12 +62,23 @@ public class QuestConfigManager
 	public QuestConfigManager(Main pl)
 	{
 		plugin = pl;
-		ConfigIO = new QuestIO("config.yml");
-		PlayerIO = new QuestIO("players.yml");
-		QuestsIO = new QuestIO("quests.yml");
-		TranslateIO = new QuestIO("translations.yml");
-		NPCIO = new QuestIO("npc.yml");
-		ConversationIO = new QuestIO("conversations.yml");
+		ConfigIO = new QuestIO("config.yml", false);
+	}
+	
+	public void load()
+	{
+		PlayerIO = new QuestIO("players.yml", true);
+		QuestsIO = new QuestIO("quests.yml", true);
+		TranslateIO = new QuestIO("translations.yml", true);
+		NPCIO = new QuestIO("npc.yml", true);
+		ConversationIO = new QuestIO("conversations.yml", true);
+		loadTranslation();
+		loadChoice();
+		loadConversation();
+		loadQuests();
+		loadNPC();
+		
+		SimpleQuestObject.initObjectNames();
 	}
 
 	public QuestIO getPlayerIO()
@@ -92,7 +103,7 @@ public class QuestConfigManager
 				}
 				else
 				{
-					map.put((short) 0, TranslateIO.getString("Material." + s + "." + 0));
+					map.put((short) 0, TranslateIO.getString("Material." + s));
 				}
 				QuestStorage.TranslateMap.put(Material.getMaterial(s), map);
 				map = new HashMap<>();

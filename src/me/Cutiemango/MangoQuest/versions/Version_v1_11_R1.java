@@ -79,7 +79,7 @@ public class Version_v1_11_R1 implements QuestVersionHandler
 	@Override
 	public TextComponent textFactoryConvertLocation(String name, Location loc, boolean isFinished)
 	{
-		TextComponent t = new TextComponent();
+		TextComponent t = new TextComponent("");
 		ItemStack is = new ItemStack(Material.SIGN);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(name);

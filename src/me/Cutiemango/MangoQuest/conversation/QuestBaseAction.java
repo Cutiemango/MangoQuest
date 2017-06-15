@@ -3,8 +3,8 @@ package me.Cutiemango.MangoQuest.conversation;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.model.InteractiveText;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 

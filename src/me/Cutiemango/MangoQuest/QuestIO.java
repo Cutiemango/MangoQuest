@@ -19,14 +19,15 @@ public class QuestIO
 	private File file;
 	private FileConfiguration config = new YamlConfiguration();
 
-	public QuestIO(String name)
+	public QuestIO(String name, boolean warn)
 	{
 		file = new File(Main.instance.getDataFolder(), name);
 
 		if (!file.exists())
 		{
 			Main.instance.saveResource(name, true);
-			QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.FileNotFound", name));
+			if (warn)
+				QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.FileNotFound", name));
 		}
 
 		loadFrom(file);

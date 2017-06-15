@@ -86,11 +86,7 @@ public class Main extends JavaPlugin
 			@Override
 			public void run()
 			{
-				configManager.loadTranslation();
-				configManager.loadChoice();
-				configManager.loadConversation();
-				configManager.loadQuests();
-				configManager.loadNPC();
+				configManager.load();
 				for (Player p : Bukkit.getOnlinePlayers())
 				{
 					QuestPlayerData qd = new QuestPlayerData(p);
@@ -124,10 +120,7 @@ public class Main extends JavaPlugin
 		QuestStorage.clear();
 
 		configManager = new QuestConfigManager(this);
-
-		configManager.loadConversation();
-		configManager.loadQuests();
-		configManager.loadNPC();
+		configManager.load();
 
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
@@ -136,6 +129,11 @@ public class Main extends JavaPlugin
 				qd = new QuestPlayerData(p, configManager.getPlayerIO());
 			QuestStorage.Players.put(p.getName(), qd);
 		}
+	}
+	
+	public static void debug(String msg)
+	{
+		QuestChatManager.logCmd(Level.INFO, "[DEBUG]" + msg);
 	}
 
 }

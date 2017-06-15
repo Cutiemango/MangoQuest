@@ -1,6 +1,5 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
-import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
@@ -40,10 +39,10 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject
 	public String toPlainText()
 	{
 		if (item.getItemMeta().hasDisplayName())
-			return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.DeliverItem", Integer.toString(amount),
+			return Questi18n.localizeMessage("QuestObject.DeliverItem", Integer.toString(amount),
 					item.getItemMeta().getDisplayName(), npc.getName());
 		else
-			return ChatColor.GREEN + Questi18n.localizeMessage("QuestObject.DeliverItem", Integer.toString(amount),
+			return Questi18n.localizeMessage("QuestObject.DeliverItem", Integer.toString(amount),
 					QuestUtil.translate(item.getType(), item.getDurability()), npc.getName());
 	}
 

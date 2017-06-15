@@ -1,6 +1,5 @@
-package me.Cutiemango.MangoQuest.model;
+package me.Cutiemango.MangoQuest.book;
 
-import me.Cutiemango.MangoQuest.TextAlignment;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -9,25 +8,34 @@ public class QuestBookPage
 
 	public QuestBookPage()
 	{
-
+		page = new TextComponent("");
+		textleft = new TextComponent("");
 	}
 	
 	public QuestBookPage(TextComponent text)
 	{
 		page = text;
+		textleft = new TextComponent("");
 	}
 
-	private TextComponent page = new TextComponent("");
-	private TextComponent textleft = new TextComponent("");
-
-	public void changeLine()
+	private TextComponent page;
+	private TextComponent textleft;
+	private int lineUsed = 1;
+	
+	public void endNormally()
 	{
-		if (textleft != null)
+		if (textleft.toPlainText() != "")
 		{
 			page.addExtra(textleft);
 			textleft = new TextComponent("");
 		}
+	}
+
+	public void changeLine()
+	{
+		endNormally();
 		page.addExtra("\n");
+		lineUsed+=1;
 	}
 
 	public QuestBookPage add(String s)
@@ -38,19 +46,23 @@ public class QuestBookPage
 			return this;
 		}
 		s = textleft.toPlainText() + s;
-		TextAlignment align = new TextAlignment(s);
-		if (align.calculateCharSize(s) >= TextAlignment.MAXIUM_CHAR_PER_LINE){
-//			System.out.println("Result:" + align.getResult());
-//			System.out.println("Left:" + align.getLeft());
+		TextAlignment align = new TextAlignment(s, lineUsed);
+		if (align.calculateCharSize(s) >= TextAlignment.MAXIUM_CHAR_PER_LINE)
 			page.addExtra(align.getResult());
-		}
 		textleft = new TextComponent(QuestChatManager.translateColor(align.getLeft()));
+		lineUsed = align.lineUsed();
 		return this;
 	}
 
 	public QuestBookPage add(TextComponent t)
-	{
-		page.addExtra(t);
+	{		
+		t.addExtra(textleft);
+		String s = t.toPlainText();
+		TextAlignment align = new TextAlignment(s, lineUsed);
+		if (align.calculateCharSize(s) >= TextAlignment.MAXIUM_CHAR_PER_LINE)
+			page.addExtra(align.getResult());
+		textleft = new TextComponent(QuestChatManager.translateColor(align.getLeft()));
+		lineUsed = align.lineUsed();
 		return this;
 	}
 
@@ -58,9 +70,7 @@ public class QuestBookPage
 	{
 		String s = it.get().toPlainText();
 		s = textleft.toPlainText() + "@" + s + "#";
-		TextAlignment align = new TextAlignment(s);
-//		System.out.println(align.getResult());
-//		System.out.println(align.getLeft());
+		TextAlignment align = new TextAlignment(s, lineUsed);
 		if (align.calculateCharSize(s) >= TextAlignment.MAXIUM_CHAR_PER_LINE)
 		{
 			if (align.getResult().contains("@"))
@@ -101,6 +111,7 @@ public class QuestBookPage
 				}
 			}
 		}
+		lineUsed = align.lineUsed();
 		return this;
 	}
 
@@ -112,5 +123,15 @@ public class QuestBookPage
 	public QuestBookPage duplicate()
 	{
 		return new QuestBookPage((TextComponent)page.duplicate());
+	}
+	
+	public TextComponent getTextleft()
+	{
+		return textleft;
+	}
+	
+	public boolean pageOutOfBounds()
+	{
+		return lineUsed >= TextAlignment.MAXIUM_LINE_PER_PAGE;
 	}
 }

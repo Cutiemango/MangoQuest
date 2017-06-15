@@ -4,7 +4,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.Questi18n;
-import me.Cutiemango.MangoQuest.TextComponentFactory;
+import me.Cutiemango.MangoQuest.book.TextComponentFactory;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import net.md_5.bungee.api.chat.TextComponent;

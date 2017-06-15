@@ -6,7 +6,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.TextComponentFactory;
+import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.book.TextComponentFactory;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.citizensnpcs.api.npc.NPC;
@@ -19,14 +20,14 @@ public abstract class SimpleQuestObject
 
 	public static HashMap<String, String> ALL_OBJECTS = new HashMap<>();
 
-	static
+	public static void initObjectNames()
 	{
-		ALL_OBJECTS.put("BREAK_BLOCK", "挖掘方塊");
-		ALL_OBJECTS.put("CONSUME_ITEM", "使用物品");
-		ALL_OBJECTS.put("DELIVER_ITEM", "提交物品");
-		ALL_OBJECTS.put("KILL_MOB", "擊殺生物");
-		ALL_OBJECTS.put("REACH_LOCATION", "到達地點");
-		ALL_OBJECTS.put("TALK_TO_NPC", "與NPC對話");
+		ALL_OBJECTS.put("BREAK_BLOCK", Questi18n.localizeMessage("QuestObjectName.BreakBlock"));
+		ALL_OBJECTS.put("CONSUME_ITEM", Questi18n.localizeMessage("QuestObjectName.ConsumeItem"));
+		ALL_OBJECTS.put("DELIVER_ITEM", Questi18n.localizeMessage("QuestObjectName.DeliverItem"));
+		ALL_OBJECTS.put("KILL_MOB", Questi18n.localizeMessage("QuestObjectName.KillMob"));
+		ALL_OBJECTS.put("REACH_LOCATION", Questi18n.localizeMessage("QuestObjectName.ReachLocation"));
+		ALL_OBJECTS.put("TALK_TO_NPC", Questi18n.localizeMessage("QuestObjectName.TalkToNPC"));
 	}
 
 	protected TextComponent toTextComponent(String s, boolean isFinished, Object... args)
