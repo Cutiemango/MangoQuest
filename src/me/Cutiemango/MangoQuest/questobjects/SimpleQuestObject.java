@@ -108,6 +108,7 @@ public abstract class SimpleQuestObject
 	}
 
 	public abstract String toPlainText();
+	public abstract String toDisplayText();
 
 	protected String config;
 	protected QuestConversation conv = null;

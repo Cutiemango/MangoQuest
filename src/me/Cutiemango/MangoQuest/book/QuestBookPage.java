@@ -77,15 +77,17 @@ public class QuestBookPage
 			{
 				String[] firstsplit = align.getResult().split("@");
 				page.addExtra(firstsplit[0]);
-				if (firstsplit[1].contains("#"))
+				for (int i = 1; i < firstsplit.length; i++)
 				{
-					String[] secondsplit = firstsplit[1].split("#");
-					page.addExtra(it.toggleAlignText(secondsplit[0]));
-					if (secondsplit.length > 1)
+					if (firstsplit[i].contains("#"))
+					{
+						String[] secondsplit = firstsplit[i].split("#");
+						page.addExtra(it.toggleAlignText(secondsplit[0]));
 						page.addExtra(secondsplit[1]);
+					}
+					else
+						page.addExtra(it.toggleAlignText(firstsplit[1]));
 				}
-				else
-					page.addExtra(it.toggleAlignText(firstsplit[1]));
 			}
 			else
 				page.addExtra(align.getResult());
@@ -95,7 +97,7 @@ public class QuestBookPage
 			if (align.getLeft().startsWith("@") && align.getLeft().contains("#"))
 			{
 				String[] split = align.getLeft().split("#");
-				textleft.addExtra(it.toggleAlignText(split[0]));
+				textleft.addExtra(it.toggleAlignText(split[0].replace("@", "")));
 				if (split.length > 1)
 					textleft.addExtra(split[1]);
 			}
@@ -110,6 +112,11 @@ public class QuestBookPage
 						textleft.addExtra(secondsplit[1]);
 				}
 			}
+		}
+		else if (align.getLeft().contains("#") && !align.getLeft().contains("@"))
+		{
+			String[] split = align.getLeft().split("#");
+			textleft.addExtra(it.toggleAlignText(split[0]));
 		}
 		lineUsed = align.lineUsed();
 		return this;

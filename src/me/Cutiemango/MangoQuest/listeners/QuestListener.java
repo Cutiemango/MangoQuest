@@ -89,7 +89,7 @@ public class QuestListener implements Listener
 		QuestEditorListener.onInventoryClose((Player)e.getPlayer(), e.getInventory());
 	}
 	
-	@EventHandler
+	@EventHandler (ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageByEntityEvent e){
 		if (e.getDamager() instanceof Player && e.getEntity() instanceof Damageable)
 			QuestEditorListener.onEntityDamage((Player)e.getDamager(), e.getEntity(), e);

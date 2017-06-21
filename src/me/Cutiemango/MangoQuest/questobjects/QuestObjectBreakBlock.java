@@ -1,9 +1,10 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
-import org.bukkit.Bukkit;
+import java.util.logging.Level;
 import org.bukkit.Material;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestObjectBreakBlock extends NumerableObject
@@ -13,7 +14,7 @@ public class QuestObjectBreakBlock extends NumerableObject
 	{
 		if (!m.isBlock())
 		{
-			Bukkit.getLogger().warning("ERROR: argument of QuestObjectBreakBlock does not have a matched Material Object.");
+			QuestChatManager.logCmd(Level.WARNING, "破壞方塊 物件提供的參數並非能夠破壞的方塊。");
 			return;
 		}
 		subID = s;
@@ -36,6 +37,12 @@ public class QuestObjectBreakBlock extends NumerableObject
 	public String toPlainText()
 	{
 		return Questi18n.localizeMessage("QuestObject.BreakBlock", Integer.toString(amount), QuestUtil.translate(block, subID), "");
+	}
+	
+	@Override
+	public String toDisplayText()
+	{
+		return Questi18n.localizeMessage("QuestObject.FinishMessage.BreakBlock", Integer.toString(amount), QuestUtil.translate(block, subID), "");
 	}
 
 	public Material getType()

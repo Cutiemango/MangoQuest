@@ -20,7 +20,9 @@ public class ConversationCommand {
 			return;
 		}
 		else if (args.length >= 2){
-			QuestConversation conv = QuestConversationManager.getConversation(args[2]);
+			QuestConversation conv = null;
+			if (args.length > 2)
+				conv = QuestConversationManager.getConversation(args[2]);
 			ConversationProgress cp = QuestConversationManager.getConvProgress(sender);
 			QuestChoice choice = QuestConversationManager.getChoiceProgress(sender);
 			

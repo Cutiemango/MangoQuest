@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest.conversation;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.advancements.QuestAdvancementManager;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.citizensnpcs.api.CitizensAPI;
@@ -31,7 +32,8 @@ public class QuestBaseAction
 		BUTTON,
 		COMMAND,
 		WAIT,
-		FINISH
+		FINISH,
+		GIVE_ADVANCEMENT;
 	}
 
 	public void execute(final ConversationProgress cp)
@@ -82,6 +84,12 @@ public class QuestBaseAction
 			case FINISH:
 				cp.finish(Boolean.valueOf(obj));
 				return;
+			case GIVE_ADVANCEMENT:
+				if (Main.isUsingUpdatedVersion())
+				{
+					QuestAdvancementManager.getAdvancement(obj).grant(cp.getOwner());
+					return;
+				}
 			default:
 				return;
 		}

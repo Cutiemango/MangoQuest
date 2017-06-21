@@ -88,7 +88,8 @@ public class QuestEditorManager
 	{
 		FlexiableBook book = new FlexiableBook();
 		QuestBookPage page = book.getLastEditingPage();
-		page.add(Questi18n.localizeMessage("QuestEditor.Title") + " " + Questi18n.localizeMessage("QuestEditor.ChooseEditQuest")).changeLine();
+		page.add(Questi18n.localizeMessage("QuestEditor.Title")).changeLine();
+		page.add(Questi18n.localizeMessage("QuestEditor.ChooseEditQuest")).changeLine();
 		for (Quest q : QuestStorage.Quests.values())
 		{
 			QuestUtil.checkOutOfBounds(page, book);
@@ -109,7 +110,8 @@ public class QuestEditorManager
 	{
 		FlexiableBook book = new FlexiableBook();
 		QuestBookPage page = book.getLastEditingPage();
-		page.add(Questi18n.localizeMessage("QuestEditor.Title") + " " + Questi18n.localizeMessage("QuestEditor.ChooseRemoveQuest")).changeLine();
+		page.add(Questi18n.localizeMessage("QuestEditor.Title")).changeLine();
+		page.add(Questi18n.localizeMessage("QuestEditor.ChooseRemoveQuest")).changeLine();
 		for (Quest q : QuestStorage.Quests.values())
 		{
 			QuestUtil.checkOutOfBounds(page, book);

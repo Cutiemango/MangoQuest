@@ -16,6 +16,7 @@ import me.Cutiemango.MangoQuest.manager.QuestInitializer;
 import me.Cutiemango.MangoQuest.versions.QuestVersionHandler;
 import me.Cutiemango.MangoQuest.versions.Version_v1_10_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_11_R1;
+import me.Cutiemango.MangoQuest.versions.Version_v1_12_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_8_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_8_R2;
 import me.Cutiemango.MangoQuest.versions.Version_v1_8_R3;
@@ -30,6 +31,8 @@ public class Main extends JavaPlugin
 	public QuestInitializer initManager;
 	public QuestVersionHandler handler;
 	public QuestConfigManager configManager;
+	
+	private static boolean VERSION_HIGHER_THAN_1_12 = false;
 
 	@Override
 	public void onEnable()
@@ -73,6 +76,10 @@ public class Main extends JavaPlugin
 			case "v1_11_R1":
 				handler = new Version_v1_11_R1();
 				break;
+			case "v1_12_R1":
+				handler = new Version_v1_12_R1();
+				VERSION_HIGHER_THAN_1_12 = true;
+				break;
 			default:
 				QuestChatManager.logCmd(Level.SEVERE,  Questi18n.localizeMessage("Cmdlog.VersionNotSupported1"));
 				QuestChatManager.logCmd(Level.SEVERE, Questi18n.localizeMessage("Cmdlog.VersionNotSupported2"));
@@ -103,20 +110,12 @@ public class Main extends JavaPlugin
 	public void onDisable()
 	{
 		QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("Cmdlog.Disabled"));
-		for (Player p : Bukkit.getOnlinePlayers())
-		{
-			QuestUtil.getData(p).save();
-			QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.PlayerDataSaving"));
-		}
+		savePlayers();
 	}
 
 	public void reload()
 	{
-		for (Player p : Bukkit.getOnlinePlayers())
-		{
-			QuestUtil.getData(p).save();
-			QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.PlayerDataSaving"));
-		}
+		savePlayers();
 		QuestStorage.clear();
 
 		configManager = new QuestConfigManager(this);
@@ -128,6 +127,20 @@ public class Main extends JavaPlugin
 			if (QuestPlayerData.hasConfigData(p))
 				qd = new QuestPlayerData(p, configManager.getPlayerIO());
 			QuestStorage.Players.put(p.getName(), qd);
+		}
+	}
+	
+	public static boolean isUsingUpdatedVersion()
+	{
+		return VERSION_HIGHER_THAN_1_12;
+	}
+	
+	public void savePlayers()
+	{
+		for (Player p : Bukkit.getOnlinePlayers())
+		{
+			QuestUtil.getData(p).save();
+			QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.PlayerDataSaving"));
 		}
 	}
 	

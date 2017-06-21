@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -20,6 +21,9 @@ import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.advancements.QuestAdvancement;
+import me.Cutiemango.MangoQuest.advancements.QuestAdvancement.FrameType;
+import me.Cutiemango.MangoQuest.advancements.QuestAdvancement.Trigger;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice;
@@ -56,6 +60,7 @@ public class QuestConfigManager
 	private QuestIO ConfigIO;
 
 	private QuestIO ConversationIO;
+	private QuestIO AdvancementIO;
 
 	private Main plugin;
 
@@ -79,11 +84,56 @@ public class QuestConfigManager
 		loadNPC();
 		
 		SimpleQuestObject.initObjectNames();
+		
+		if (Main.isUsingUpdatedVersion())
+		{
+			AdvancementIO = new QuestIO("advancements.yml", false);
+			loadAdvancement();
+		}
 	}
 
 	public QuestIO getPlayerIO()
 	{
 		return PlayerIO;
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void loadAdvancement()
+	{
+		int count = 0;
+		if (AdvancementIO.isSection("Advancements"))
+		{
+			for (String key : AdvancementIO.getSection("Advancements"))
+			{
+				QuestAdvancement ad = new QuestAdvancement(new NamespacedKey(Main.instance, "story:" + key));
+				if (AdvancementIO.getString("Advancements." + key + ".Title") != null)
+					ad.title(QuestChatManager.translateColor(AdvancementIO.getString("Advancements." + key + ".Title")));
+				if (AdvancementIO.getString("Advancements." + key + ".Description") != null)
+					ad.description(QuestChatManager.translateColor(AdvancementIO.getString("Advancements." + key + ".Description")));
+				if (AdvancementIO.getString("Advancements." + key + ".Frame") != null)
+					ad.frame(FrameType.valueOf(AdvancementIO.getString("Advancements." + key + ".Frame")));
+				if (AdvancementIO.getString("Advancements." + key + ".Icon") != null)
+				{
+					if (AdvancementIO.getString("Advancements." + key + ".Icon").contains(":"))
+					{
+						String[] split = AdvancementIO.getString("Advancements." + key + ".Icon").split(":");
+						ad.icon(Material.getMaterial(Integer.parseInt(split[0])));
+						ad.iconSubID(Short.parseShort(split[1]));
+					}
+					else
+						ad.icon(Material.getMaterial(AdvancementIO.getInt("Advancements." + key + ".Icon")));
+				}
+				ad.announcement(AdvancementIO.getBoolean("Advancements." + key + ".Announcement"));
+				if (AdvancementIO.getString("Advancements." + key + ".Background") != null)
+					ad.background(AdvancementIO.getString("Advancements." + key + ".Background"));
+				if (AdvancementIO.getString("Advancements." + key + ".Parent") != null)
+					ad.parent("mangoquest:story:" + AdvancementIO.getString("Advancements." + key + ".Parent"));
+				ad.addTrigger(new Trigger(me.Cutiemango.MangoQuest.advancements.QuestAdvancement.TriggerType.IMPOSSIBLE, "mangoquest"));
+				ad.build().add();
+				count++;
+			}
+		}
+		QuestChatManager.logCmd(Level.INFO, "讀取了 " + count + " 個進度檔案(測試中)。");
 	}
 
 	public void loadTranslation()
@@ -92,6 +142,8 @@ public class QuestConfigManager
 		{
 			for (String s : TranslateIO.getSection("Material"))
 			{
+				if (Material.getMaterial(s) == null)
+					continue;
 				HashMap<Short, String> map = new HashMap<>();
 				if (TranslateIO.isSection("Material." + s))
 				{
@@ -657,6 +709,7 @@ public class QuestConfigManager
 						case WAIT:
 						case SENTENCE:
 						case FINISH:
+						case GIVE_ADVANCEMENT:
 							action = new QuestBaseAction(e, s.split("#")[1]);
 							break;
 						case BUTTON:

@@ -37,4 +37,10 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 		return Questi18n.localizeMessage("QuestObject.TalkToNPC", getTargetNPC().getName());
 	}
 
+	@Override
+	public String toDisplayText()
+	{
+		return Questi18n.localizeMessage("QuestObject.FinishMessage.TalkToNPC", getTargetNPC().getName());
+	}
+
 }

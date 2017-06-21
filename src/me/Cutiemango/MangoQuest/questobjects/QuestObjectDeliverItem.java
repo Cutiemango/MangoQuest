@@ -45,5 +45,16 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject
 			return Questi18n.localizeMessage("QuestObject.DeliverItem", Integer.toString(amount),
 					QuestUtil.translate(item.getType(), item.getDurability()), npc.getName());
 	}
+	
+	@Override
+	public String toDisplayText()
+	{
+		if (item.getItemMeta().hasDisplayName())
+			return Questi18n.localizeMessage("QuestObject.FinishMessage.DeliverItem", Integer.toString(amount),
+					item.getItemMeta().getDisplayName(), npc.getName());
+		else
+			return Questi18n.localizeMessage("QuestObject.FinishMessage.DeliverItem", Integer.toString(amount),
+					QuestUtil.translate(item.getType(), item.getDurability()), npc.getName());
+	}
 
 }

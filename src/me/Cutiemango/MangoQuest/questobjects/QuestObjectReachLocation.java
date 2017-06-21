@@ -32,6 +32,12 @@ public class QuestObjectReachLocation extends SimpleQuestObject
 		return Questi18n.localizeMessage("QuestObject.ReachLocation", name);
 	}
 
+	@Override
+	public String toDisplayText()
+	{
+		return Questi18n.localizeMessage("QuestObject.FinishMessage.ReachLocation", name);
+	}
+	
 	public Location getLocation()
 	{
 		return loc;

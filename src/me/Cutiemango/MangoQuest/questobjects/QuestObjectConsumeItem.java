@@ -30,5 +30,15 @@ public class QuestObjectConsumeItem extends ItemObject
 			return Questi18n.localizeMessage("QuestObject.ConsumeItem", Integer.toString(amount),
 					QuestUtil.translate(item.getType(), item.getDurability()));
 	}
+	
+	@Override
+	public String toDisplayText()
+	{
+		if (item.getItemMeta().hasDisplayName())
+			return Questi18n.localizeMessage("QuestObject.FinishMessage.ConsumeItem", Integer.toString(amount), item.getItemMeta().getDisplayName());
+		else
+			return Questi18n.localizeMessage("QuestObject.FinishMessage.ConsumeItem", Integer.toString(amount),
+					QuestUtil.translate(item.getType(), item.getDurability()));
+	}
 
 }

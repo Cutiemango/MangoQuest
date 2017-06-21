@@ -36,13 +36,13 @@ public class QuestEditorListener
 				{
 					p.performCommand(CurrentListening.get(p.getName()) + msg);
 					CurrentListening.remove(p.getName());
+					if (msg.contains("cancel"))
+						QuestChatManager.info(p, Questi18n.localizeMessage("EditorMessage.CancelEntry"));
+					else
+						QuestChatManager.info(p, Questi18n.localizeMessage("EditorMessage.YourEntry", msg));
+					event.setCancelled(true);
 				}
 			}.runTaskAsynchronously(Main.instance);
-			if (msg.contains("cancel"))
-				QuestChatManager.info(p, Questi18n.localizeMessage("EditorMessage.CancelEntry"));
-			else
-				QuestChatManager.info(p, Questi18n.localizeMessage("EditorMessage.YourEntry", msg));
-			event.setCancelled(true);
 		}
 		else
 			return;

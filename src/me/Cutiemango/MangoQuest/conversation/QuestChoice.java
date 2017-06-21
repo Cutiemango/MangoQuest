@@ -4,7 +4,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.Questi18n;
-import me.Cutiemango.MangoQuest.book.TextComponentFactory;
+import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -57,10 +57,8 @@ public class QuestChoice
 	public void apply(ConversationProgress cp)
 	{
 		QuestStorage.ChoiceProgresses.put(cp.getOwner().getName(), this);
-		cp.getCurrentPage()
-				.add(TextComponentFactory.regHoverEvent(
-						TextComponentFactory.regClickCmdEvent((TextComponent) question.duplicate(), "/mq conv openchoice"),
-						Questi18n.localizeMessage("Conversation.ClickToAnswer")));
+		cp.getCurrentPage().add(new InteractiveText(question.getText()).showText(Questi18n.localizeMessage("Conversation.ClickToAnswer"))
+				.clickCommand("/mq conv openchoice")).endNormally();
 		QuestGUIManager.openChoice(cp.getOwner(), question, choices);
 	}
 
@@ -74,7 +72,7 @@ public class QuestChoice
 		int count = 0;
 		ConversationProgress cp = QuestStorage.ConvProgresses.get(p.getName());
 		cp.retrieve();
-		cp.getCurrentPage().add(question);
+		cp.getCurrentPage().add(question).changeLine();
 		for (QuestBaseAction act : choices.get(i).getActions())
 		{
 			QuestConversationManager.getConvProgress(p).getActionQueue().add(count, act);

@@ -647,14 +647,14 @@ public class QuestPlayerData
 		{
 			if (!(o instanceof QuestObjectTalkToNPC))
 				qop.newConversation(p);
-			QuestChatManager.info(p, o.toPlainText() + " " + Questi18n.localizeMessage("CommandInfo.Finished"));
+			QuestChatManager.info(p, o.toDisplayText() + " " + Questi18n.localizeMessage("CommandInfo.Finished"));
 			qp.checkIfnextStage();
 			return true;
 		}
 		else
 		{
 			if (o instanceof NumerableObject)
-				QuestChatManager.info(p, o.toPlainText() + " " + Questi18n.localizeMessage("CommandInfo.Progress", Integer.toString(qop.getProgress()),
+				QuestChatManager.info(p, o.toDisplayText() + " " + Questi18n.localizeMessage("CommandInfo.Progress", Integer.toString(qop.getProgress()),
 						Integer.toString(((NumerableObject) o).getAmount())));
 			else
 				if (o instanceof QuestObjectTalkToNPC)

@@ -110,7 +110,7 @@ public class QuestGUIManager
 				for (Integer id : q.getQuest().getQuestReward().getFp().keySet())
 				{
 					NPC npc = CitizensAPI.getNPCRegistry().getById(id);
-					p3.add(new InteractiveText("").showNPCInfo(npc));
+					p3.add(new InteractiveText("").showNPCInfo(npc)).endNormally();
 					p3.add(" &c將會感激你").changeLine();
 				}
 			}
@@ -131,16 +131,17 @@ public class QuestGUIManager
 
 	public static void openChoice(Player p, TextComponent q, List<Choice> c)
 	{
-		QuestBookPage p1 = new QuestBookPage();
-		p1.add("       &0=》 &c&l選擇 &0《=").changeLine();
-		p1.add(q).changeLine();
+		FlexiableBook book = new FlexiableBook();
+		QuestBookPage page = book.getLastEditingPage();
+		page.add("       &0=》 &c&l選擇 &0《=").changeLine();
+		page.add(q).changeLine();
 		for (int i = 0; i < c.size(); i++)
 		{
-			p1.changeLine();
-			p1.add(new InteractiveText("- " + c.get(i).getContent()).clickCommand("/mq conv choose " + i));
-			p1.changeLine();
+			QuestUtil.checkOutOfBounds(page, book);
+			page = book.getLastEditingPage();
+			page.add(new InteractiveText("- " + c.get(i).getContent()).clickCommand("/mq conv choose " + i)).changeLine();
 		}
-		openBook(p, p1);
+		openBook(p, book.toSendableBook());
 	}
 
 	public static void openJourney(Player p)
@@ -154,11 +155,11 @@ public class QuestGUIManager
 		for (QuestProgress qp : qd.getProgresses())
 		{
 			page.changeLine();
-			page.add(new InteractiveText("").showQuest(qp.getQuest())).add("：");
-			page.add(new InteractiveText("&c&l【放棄】").clickCommand("/mq quest quit " + qp.getQuest().getInternalID()));
+			page.add(new InteractiveText("").showQuest(qp.getQuest())).add("：").endNormally();
+			page.add(new InteractiveText("&c&l【放棄】").clickCommand("/mq quest quit " + qp.getQuest().getInternalID())).changeLine();
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
-				page.add("- ");
+				page.add("- ").endNormally();
 				if (qop.isFinished())
 					page.add(qop.getObject().toTextComponent(true)).changeLine();
 				else
@@ -247,13 +248,13 @@ public class QuestGUIManager
 		{
 			QuestUtil.checkOutOfBounds(page, book);
 			page = book.getLastEditingPage();
-			page.add("&0- &6&l？ &0");
-			page.add(TextComponentFactory.convertViewQuest(q.getQuest()));
-			page.add(new InteractiveText("&9&l【對話】").clickCommand("/mq conv npc " + npc.getId()).showText("&9點擊&f以開始對話"));
+			page.add("&0- &6&l？ &0").endNormally();
+			page.add(TextComponentFactory.convertViewQuest(q.getQuest())).endNormally();
+			page.add(new InteractiveText("&9&l【對話】").clickCommand("/mq conv npc " + npc.getId()).showText("&9點擊&f以開始對話")).endNormally();
 			if (qd.isCurrentlyDoing(q.getQuest()) && !q.getQuest().isCommandQuest() && q.getQuest().getQuestNPC().equals(npc))
 			{
 				page.add(new InteractiveText("&c&l【放棄】").clickCommand("/mq quest quit " + q.getQuest().getInternalID())
-						.showText("&c放棄任務 &f" + q.getQuest().getQuestName() + "\n&4所有的任務進度都會消失。"));
+						.showText("&c放棄任務 &f" + q.getQuest().getQuestName() + "\n&4所有的任務進度都會消失。")).endNormally();
 				holder.add(q.getQuest());
 			}
 			page.changeLine();
@@ -267,10 +268,10 @@ public class QuestGUIManager
 			if (qd.canTake(q, false))
 			{
 				if (qd.hasFinished(q))
-					page.add("&0- &8&l！ &0");
+					page.add("&0- &8&l！ &0").endNormally();
 				else
-					page.add("&0- &6&l！ &0");
-				page.add(new InteractiveText("").showQuest(q));
+					page.add("&0- &6&l！ &0").endNormally();
+				page.add(new InteractiveText("").showQuest(q)).endNormally();
 				page.add(new InteractiveText("&2&l【接受】").clickCommand("/mq quest take " + q.getInternalID()).showText("&a接受任務 &f" + q.getQuestName()));
 				page.changeLine();
 				continue;
@@ -281,7 +282,7 @@ public class QuestGUIManager
 					if (holder.contains(q))
 						continue;
 					page.add("&0- &8&l？ &0");
-					page.add(new InteractiveText("").showQuest(q));
+					page.add(new InteractiveText("").showQuest(q)).endNormally();
 					page.add(new InteractiveText("&c&l【放棄】").clickCommand("/mq quest quit " + q.getInternalID())
 							.showText("&c放棄任務 &f" + q.getQuestName() + "\n&4所有的任務進度都會消失。"));
 					page.changeLine();
@@ -289,7 +290,7 @@ public class QuestGUIManager
 				}
 				else
 				{
-					page.add("&0- ");
+					page.add("&0- ").endNormally();
 					page.add(new InteractiveText("").showRequirement(qd, q));
 					page.changeLine();
 					continue;
@@ -301,12 +302,12 @@ public class QuestGUIManager
 			page = book.getLastEditingPage();
 			if (qd.hasFinished(qc))
 			{
-				page.add("&0- &7&o");
+				page.add("&0- &7&o").endNormally();
 				page.add(new InteractiveText(qc.getName() + " 〈&c&o♥&7&o〉").clickCommand("/mq conv opennew " + qc.getInternalID()));
 			}
 			else
 			{
-				page.add("&0- &6&l！ &0&l");
+				page.add("&0- &6&l！ &0&l").endNormally();
 				page.add(new InteractiveText(qc.getName() + " 〈&c♥&0&l〉").clickCommand("/mq conv opennew " + qc.getInternalID()));
 			}
 			page.changeLine();

@@ -33,7 +33,9 @@ public class QuestInitializer
 		try
 		{
 			citizens = (CitizensPlugin) plugin.getServer().getPluginManager().getPlugin("Citizens");
-			QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("PluginInitializer.CitizensHooked"));
+			if (citizens != null)
+				QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("PluginInitializer.CitizensHooked"));
+			else throw new NullPointerException();
 		}
 		catch (NoClassDefFoundError | NullPointerException e)
 		{
@@ -46,7 +48,9 @@ public class QuestInitializer
 		try
 		{
 			vault = (Vault) plugin.getServer().getPluginManager().getPlugin("Vault");
-			QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("PluginInitializer.VaultHooked"));
+			if (vault != null)
+				QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("PluginInitializer.VaultHooked"));
+			else throw new NullPointerException();
 		}
 		catch (NoClassDefFoundError | NullPointerException e)
 		{
@@ -58,7 +62,9 @@ public class QuestInitializer
 		try
 		{
 			MTMplugin = (MythicMobs) plugin.getServer().getPluginManager().getPlugin("MythicMobs");
-			QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("PluginInitializer.MythicMobsHooked"));
+			if (MTMplugin != null)
+				QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("PluginInitializer.MythicMobsHooked"));
+			else throw new NullPointerException();
 		}
 		catch (NoClassDefFoundError | NullPointerException e)
 		{
@@ -68,7 +74,9 @@ public class QuestInitializer
 		try
 		{
 			shopkeepers = (ShopkeepersPlugin) plugin.getServer().getPluginManager().getPlugin("Shopkeepers");
-			QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("PluginInitializer.ShopkeepersHooked"));
+			if (shopkeepers != null)
+				QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("PluginInitializer.ShopkeepersHooked"));
+			else throw new NullPointerException();
 		}
 		catch (NoClassDefFoundError | NullPointerException e)
 		{

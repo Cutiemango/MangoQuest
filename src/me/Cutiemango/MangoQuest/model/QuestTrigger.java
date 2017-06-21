@@ -1,11 +1,12 @@
 package me.Cutiemango.MangoQuest.model;
 
-import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.advancements.QuestAdvancementManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
 public class QuestTrigger
@@ -27,9 +28,6 @@ public class QuestTrigger
 
 	public QuestTrigger(TriggerType type, TriggerObject obj, int i, Object arg)
 	{
-		if (!type.hasStage())
-			QuestChatManager.logCmd(Level.WARNING, "ERROR: " + type.toString() + " should not use this constructor.");
-
 		t = type;
 		count = i;
 		o = obj;
@@ -40,10 +38,11 @@ public class QuestTrigger
 
 	public enum TriggerType
 	{
-		TRIGGER_ON_TAKE(Questi18n.localizeMessage("TriggerType.OnTake"), false), TRIGGER_ON_QUIT(Questi18n.localizeMessage("TriggerType.OnQuit"),
-				false), TRIGGER_ON_FINISH(Questi18n.localizeMessage("TriggerType.OnFinish"), false), TRIGGER_STAGE_START(
-						Questi18n.localizeMessage("TriggerType.StageStart"),
-						true), TRIGGER_STAGE_FINISH(Questi18n.localizeMessage("TriggerType.StageFinish"), true);
+		TRIGGER_ON_TAKE(Questi18n.localizeMessage("TriggerType.OnTake"), false),
+		TRIGGER_ON_QUIT(Questi18n.localizeMessage("TriggerType.OnQuit"), false),
+		TRIGGER_ON_FINISH(Questi18n.localizeMessage("TriggerType.OnFinish"), false),
+		TRIGGER_STAGE_START(Questi18n.localizeMessage("TriggerType.StageStart"), true),
+		TRIGGER_STAGE_FINISH(Questi18n.localizeMessage("TriggerType.StageFinish"), true);
 
 		private String name;
 		private boolean hasStage;
@@ -72,9 +71,12 @@ public class QuestTrigger
 
 	public enum TriggerObject
 	{
-		COMMAND(Questi18n.localizeMessage("TriggerObject.Command")), SEND_TITLE(Questi18n.localizeMessage("TriggerObject.SendTitle")), SEND_SUBTITLE(
-				Questi18n.localizeMessage("TriggerObject.SendSubtitle")), SEND_MESSAGE(
-						Questi18n.localizeMessage("TriggerObject.SendMessage")), TELEPORT(Questi18n.localizeMessage("TriggerObject.Teleport"));
+		COMMAND(Questi18n.localizeMessage("TriggerObject.Command")),
+		SEND_TITLE(Questi18n.localizeMessage("TriggerObject.SendTitle")),
+		SEND_SUBTITLE(Questi18n.localizeMessage("TriggerObject.SendSubtitle")),
+		SEND_MESSAGE(Questi18n.localizeMessage("TriggerObject.SendMessage")),
+		TELEPORT(Questi18n.localizeMessage("TriggerObject.Teleport")),
+		GIVE_ADVANCEMENT(Questi18n.localizeMessage("TriggerObject.GiveAdvancement"));
 
 		private String name;
 
@@ -93,15 +95,8 @@ public class QuestTrigger
 	{
 		String replaced = "";
 		Location loc = p.getLocation();
-		if (value instanceof CharSequence)
-		{
-			replaced = ((String) value).replace("<player>", p.getName());
-			replaced = QuestChatManager.translateColor(replaced);
-		}
-		else
-		{
-			QuestChatManager.logCmd(Level.WARNING, "ERROR: " + t.toString() + " does not have a matched Object value.");
-		}
+		replaced = ((String) value).replace("<player>", p.getName());
+		replaced = QuestChatManager.translateColor(replaced);
 		switch (o)
 		{
 			case COMMAND:
@@ -121,6 +116,14 @@ public class QuestTrigger
 				loc = new Location(Bukkit.getWorld(splited[0]), Double.parseDouble(splited[1]), Double.parseDouble(splited[2]),
 						Double.parseDouble(splited[3]));
 				p.teleport(loc);
+				break;
+			case GIVE_ADVANCEMENT:
+				if (Main.isUsingUpdatedVersion())
+				{
+					QuestAdvancementManager.getAdvancement(replaced).grant(p);
+				}
+				break;
+			default:
 				break;
 		}
 

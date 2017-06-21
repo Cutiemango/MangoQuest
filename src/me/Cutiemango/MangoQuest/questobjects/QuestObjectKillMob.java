@@ -90,5 +90,15 @@ public class QuestObjectKillMob extends NumerableObject
 		else
 			return Questi18n.localizeMessage("QuestObject.KillMob", Integer.toString(amount), QuestUtil.translate(type));
 	}
+	
+	@Override
+	public String toDisplayText()
+	{
+		if (CustomName != null)
+			return Questi18n.localizeMessage("QuestObject.FinishMessage.KillMob", Integer.toString(amount), QuestChatManager.translateColor(CustomName));
+		else
+			return Questi18n.localizeMessage("QuestObject.FinishMessage.KillMob", Integer.toString(amount), QuestUtil.translate(type));
+	}
+	
 
 }
