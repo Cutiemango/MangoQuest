@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.citizensnpcs.api.CitizensAPI;
@@ -149,7 +149,7 @@ public class QuestReward
 			{
 				if (p.getInventory().firstEmpty() == -1)
 				{
-					QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.RewardDropped"));
+					QuestChatManager.info(p, I18n.locMsg("CommandInfo.RewardDropped"));
 					p.getWorld().dropItem(p.getLocation(), is);
 					return;
 				}
@@ -157,10 +157,10 @@ public class QuestReward
 				{
 					p.getInventory().addItem(is);
 					if (is.getItemMeta().hasDisplayName())
-						QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.GiveItemReward", is.getItemMeta().getDisplayName(),
+						QuestChatManager.info(p, I18n.locMsg("CommandInfo.GiveItemReward", is.getItemMeta().getDisplayName(),
 								Integer.toString(is.getAmount())));
 					else
-						QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.GiveItemReward",
+						QuestChatManager.info(p, I18n.locMsg("CommandInfo.GiveItemReward",
 								QuestUtil.translate(is.getType(), is.getDurability()), Integer.toString(is.getAmount())));
 				}
 			}
@@ -169,13 +169,13 @@ public class QuestReward
 		if (this.hasMoney())
 		{
 			Main.instance.initManager.getEconomy().depositPlayer(p, money);
-			QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.GiveMoneyReward", Double.toString(money)));
+			QuestChatManager.info(p, I18n.locMsg("CommandInfo.GiveMoneyReward", Double.toString(money)));
 		}
 
 		if (this.hasExp())
 		{
 			p.giveExp(experience);
-			QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.GiveExpReward", Double.toString(experience)));
+			QuestChatManager.info(p, I18n.locMsg("CommandInfo.GiveExpReward", Double.toString(experience)));
 		}
 
 		if (this.hasFriendPoint())
@@ -184,7 +184,7 @@ public class QuestReward
 			for (Integer id : npcfp.keySet())
 			{
 				qd.addNPCfp(id, npcfp.get(id));
-				QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.GiveFriendPoint", CitizensAPI.getNPCRegistry().getById(id).getName()));
+				QuestChatManager.info(p, I18n.locMsg("CommandInfo.GiveFriendPoint", CitizensAPI.getNPCRegistry().getById(id).getName()));
 			}
 		}
 

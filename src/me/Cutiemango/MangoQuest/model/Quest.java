@@ -11,10 +11,11 @@ import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatColor;
@@ -287,6 +288,8 @@ public class Quest
 				case ITEM:
 					for (ItemStack i : (List<ItemStack>) value)
 					{
+						if (i == null)
+							continue;
 						if (!p.getInventory().containsAtLeast(i, i.getAmount()))
 							return new FailResult(RequirementType.ITEM, i);
 					}
@@ -371,7 +374,7 @@ public class Quest
 			while (it.hasNext())
 			{
 				QuestProgress qp = it.next();
-				if (QuestVersion.detailedValidate(q, qp.getQuest()))
+				if (QuestValidater.detailedValidate(q, qp.getQuest()))
 				{
 					pd.forceQuit(q, true);
 					break;
@@ -414,23 +417,26 @@ public class Quest
 				case ITEM:
 					ItemStack item = (ItemStack) obj;
 					if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
-						s = ChatColor.RED + Questi18n.localizeMessage("Requirements.NotMeet.Item") + item.getItemMeta().getDisplayName();
+						s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.Item") + item.getItemMeta().getDisplayName();
 					else
-						s = ChatColor.RED + Questi18n.localizeMessage("Requirements.NotMeet.Item")
+						s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.Item")
 								+ QuestUtil.translate(item.getType(), item.getDurability());
 					break;
 				case LEVEL:
-					s = ChatColor.RED + Questi18n.localizeMessage("Requirements.NotMeet.Level") + (Integer) obj;
+					s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.Level") + (Integer) obj;
 					break;
 				case MONEY:
-					s = ChatColor.RED + Questi18n.localizeMessage("Requirements.NotMeet.Money") + (Double) obj;
+					s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.Money") + (Double) obj;
 					break;
 				case SCOREBOARD:
 				case NBTTAG:
-					s = ChatColor.RED + Questi18n.localizeMessage("Requirements.NotMeet.Special");
+					s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.Special");
 					break;
 				case QUEST:
-					s = ChatColor.RED + Questi18n.localizeMessage("Requirements.NotMeet.Quest") + ((Quest) obj).getQuestName();
+					if (obj == null)
+						s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.Special");
+					else
+						s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.Quest") + ((Quest) obj).getQuestName();
 					break;
 			}
 			return s;

@@ -1,66 +1,37 @@
 ﻿Quests:
-  Quest001:
-    "QuestName": "測試任務"
-    "QuestOutline":
-    - 只是測試用的而已。
-    "QuestNPC": -1
-    "Requirements":
-      Level: 5
-      Quest:
-      Item:
-        '1':
-          "Material": DIAMOND_SWORD
-          "Amount": 1
-      Scoreboard:
-      NBTTag:
-    "MessageRequirementNotMeet": "&c你並沒有達到符合的任務條件。"
-    "Redoable": true
-    "RedoDelayMilliseconds": 10000
-    "TriggerEvents":
-    - "TRIGGER_ON_TAKE SEND_TITLE &b成功接受任務了。"
-    - "TRIGGER_STAGE_START 2 SEND_SUBTITLE &6第二階段開始。"
-    - "TRIGGER_STAGE_FINISH 1 SEND_MESSAGE &b恭喜你完成一個階段了。"
-    - "TRIGGER_STAGE_FINISH 1 COMMAND say <player>"
-    - "TRIGGER_ON_QUIT SEND_MESSAGE &c你憑甚麼給我放棄任務！"
-    "Stages":
+  Help:
+    QuestName: 村長的請求
+    QuestOutline: []
+    QuestNPC: -1
+    Requirements:
+      Level: 0
+      Quest: []
+      Scoreboard: []
+      NBTTag: []
+    MessageRequirementNotMeet: '&c你並沒有達到指定的任務條件。'
+    Redoable: false
+    TriggerEvents:
+    - TRIGGER_ON_FINISH SEND_SUBTITLE §e§l村長§f：「感謝你！這些烤鮭魚拿去吃，可不要餓著了！」
+    - TRIGGER_ON_FINISH SEND_SUBTITLE §e§l村長§f：「還有一把不會壞的木劍，希望在你的冒險中能派上用場！」
+    Stages:
       '1':
         '1':
-          "ObjectType": DELIVER_ITEM
-          "TargetNPC": 1
-          "Item":
-            "Material": DIAMOND_SWORD
-            "Amount": 1
-        '2':
-          "ObjectType": KILL_MOB
-          "MobName": "小殭屍"
-          "MobType": ZOMBIE
-          "Amount": 1
-      '2':
+          ObjectType: KILL_MOB
+          Amount: 10
+          MobType: SPIDER
+    Rewards:
+      Item:
         '1':
-          "ObjectType": TALK_TO_NPC
-          "TargetNPC": 1
-          "ActivateConversation": Test001
+          ==: org.bukkit.inventory.ItemStack
+          type: COOKED_FISH
+          damage: 1
+          amount: 10
         '2':
-          "ObjectType": BREAK_BLOCK
-          "BlockType": GRASS
-          "Amount": 5
-      '3':
-        '1':
-          "ObjectType": CONSUME_ITEM
-          "Item":
-            "Material": POTATO_ITEM
-            "Amount": 1
-        '2':
-          "ObjectType": REACH_LOCATION
-          "Location": world:0:80:0
-          "LocationName": "&d&l超級遙遠的地方"
-          "Range": 5
-    "Rewards":
-      "Item":
-        '1':
-          "Material": DIAMOND
-          "Amount": 1
-      "Money": 50
-      "Experience": 100
-      "FriendlyPoint":
-        '0': 20
+          ==: org.bukkit.inventory.ItemStack
+          type: WOOD_SWORD
+          meta:
+            ==: ItemMeta
+            meta-type: UNSPECIFIC
+            Unbreakable: true
+      Money: 100.0
+      Experience: 50

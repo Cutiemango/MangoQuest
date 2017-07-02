@@ -6,7 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.book.TextComponentFactory;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
@@ -22,12 +22,12 @@ public abstract class SimpleQuestObject
 
 	public static void initObjectNames()
 	{
-		ALL_OBJECTS.put("BREAK_BLOCK", Questi18n.localizeMessage("QuestObjectName.BreakBlock"));
-		ALL_OBJECTS.put("CONSUME_ITEM", Questi18n.localizeMessage("QuestObjectName.ConsumeItem"));
-		ALL_OBJECTS.put("DELIVER_ITEM", Questi18n.localizeMessage("QuestObjectName.DeliverItem"));
-		ALL_OBJECTS.put("KILL_MOB", Questi18n.localizeMessage("QuestObjectName.KillMob"));
-		ALL_OBJECTS.put("REACH_LOCATION", Questi18n.localizeMessage("QuestObjectName.ReachLocation"));
-		ALL_OBJECTS.put("TALK_TO_NPC", Questi18n.localizeMessage("QuestObjectName.TalkToNPC"));
+		ALL_OBJECTS.put("BREAK_BLOCK", I18n.locMsg("QuestObjectName.BreakBlock"));
+		ALL_OBJECTS.put("CONSUME_ITEM", I18n.locMsg("QuestObjectName.ConsumeItem"));
+		ALL_OBJECTS.put("DELIVER_ITEM", I18n.locMsg("QuestObjectName.DeliverItem"));
+		ALL_OBJECTS.put("KILL_MOB", I18n.locMsg("QuestObjectName.KillMob"));
+		ALL_OBJECTS.put("REACH_LOCATION", I18n.locMsg("QuestObjectName.ReachLocation"));
+		ALL_OBJECTS.put("TALK_TO_NPC", I18n.locMsg("QuestObjectName.TalkToNPC"));
 	}
 
 	protected TextComponent toTextComponent(String s, boolean isFinished, Object... args)

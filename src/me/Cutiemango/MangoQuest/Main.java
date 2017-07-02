@@ -13,7 +13,7 @@ import me.Cutiemango.MangoQuest.listeners.QuestListener;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestConfigManager;
 import me.Cutiemango.MangoQuest.manager.QuestInitializer;
-import me.Cutiemango.MangoQuest.versions.QuestVersionHandler;
+import me.Cutiemango.MangoQuest.versions.VersionHandler;
 import me.Cutiemango.MangoQuest.versions.Version_v1_10_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_11_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_12_R1;
@@ -29,7 +29,7 @@ public class Main extends JavaPlugin
 	public static Main instance;
 
 	public QuestInitializer initManager;
-	public QuestVersionHandler handler;
+	public VersionHandler handler;
 	public QuestConfigManager configManager;
 	
 	private static boolean VERSION_HIGHER_THAN_1_12 = false;
@@ -81,12 +81,12 @@ public class Main extends JavaPlugin
 				VERSION_HIGHER_THAN_1_12 = true;
 				break;
 			default:
-				QuestChatManager.logCmd(Level.SEVERE,  Questi18n.localizeMessage("Cmdlog.VersionNotSupported1"));
-				QuestChatManager.logCmd(Level.SEVERE, Questi18n.localizeMessage("Cmdlog.VersionNotSupported2"));
+				QuestChatManager.logCmd(Level.SEVERE,  I18n.locMsg("Cmdlog.VersionNotSupported1"));
+				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.VersionNotSupported2"));
 				break;
 		}
 
-		QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("Cmdlog.LoadedNMSVersion", version));
+		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.LoadedNMSVersion", version));
 
 		new BukkitRunnable()
 		{
@@ -97,8 +97,6 @@ public class Main extends JavaPlugin
 				for (Player p : Bukkit.getOnlinePlayers())
 				{
 					QuestPlayerData qd = new QuestPlayerData(p);
-					if (QuestPlayerData.hasConfigData(p))
-						qd = new QuestPlayerData(p, configManager.getPlayerIO());
 					QuestStorage.Players.put(p.getName(), qd);
 				}
 				this.cancel();
@@ -109,7 +107,7 @@ public class Main extends JavaPlugin
 	@Override
 	public void onDisable()
 	{
-		QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("Cmdlog.Disabled"));
+		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.Disabled"));
 		savePlayers();
 	}
 
@@ -124,8 +122,6 @@ public class Main extends JavaPlugin
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
 			QuestPlayerData qd = new QuestPlayerData(p);
-			if (QuestPlayerData.hasConfigData(p))
-				qd = new QuestPlayerData(p, configManager.getPlayerIO());
 			QuestStorage.Players.put(p.getName(), qd);
 		}
 	}
@@ -139,8 +135,9 @@ public class Main extends JavaPlugin
 	{
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
-			QuestUtil.getData(p).save();
-			QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.PlayerDataSaving"));
+			QuestUtil.getData(p).saveOld();
+			QuestUtil.getData(p).saveNew();
+			QuestChatManager.info(p, I18n.locMsg("CommandInfo.PlayerDataSaving"));
 		}
 	}
 	

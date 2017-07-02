@@ -7,7 +7,7 @@ import com.nisovin.shopkeepers.ShopkeepersPlugin;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.api.bukkit.BukkitAPIHelper;
 import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.I18n;
 import net.citizensnpcs.api.CitizensPlugin;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
@@ -34,63 +34,63 @@ public class QuestInitializer
 		{
 			citizens = (CitizensPlugin) plugin.getServer().getPluginManager().getPlugin("Citizens");
 			if (citizens != null)
-				QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("PluginInitializer.CitizensHooked"));
+				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginInitializer.CitizensHooked"));
 			else throw new NullPointerException();
 		}
 		catch (NoClassDefFoundError | NullPointerException e)
 		{
-			QuestChatManager.logCmd(Level.SEVERE, Questi18n.localizeMessage("PluginInitializer.PluginNotHooked"));
-			QuestChatManager.logCmd(Level.SEVERE, Questi18n.localizeMessage("PluginInitializer.CitizensNotHooked1"));
-			QuestChatManager.logCmd(Level.SEVERE, Questi18n.localizeMessage("PluginInitializer.CitizensNotHooked2"));
-			QuestChatManager.logCmd(Level.SEVERE, Questi18n.localizeMessage("PluginInitializer.PleaseInstall"));
+			QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("PluginInitializer.PluginNotHooked"));
+			QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("PluginInitializer.CitizensNotHooked1"));
+			QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("PluginInitializer.CitizensNotHooked2"));
+			QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("PluginInitializer.PleaseInstall"));
 		}
 
 		try
 		{
 			vault = (Vault) plugin.getServer().getPluginManager().getPlugin("Vault");
 			if (vault != null)
-				QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("PluginInitializer.VaultHooked"));
+				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginInitializer.VaultHooked"));
 			else throw new NullPointerException();
 		}
 		catch (NoClassDefFoundError | NullPointerException e)
 		{
-			QuestChatManager.logCmd(Level.SEVERE, Questi18n.localizeMessage("PluginInitializer.PluginNotHooked"));
-			QuestChatManager.logCmd(Level.SEVERE, Questi18n.localizeMessage("PluginInitializer.VaultNotHooked"));
-			QuestChatManager.logCmd(Level.SEVERE, Questi18n.localizeMessage("PluginInitializer.PleaseInstall"));
+			QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("PluginInitializer.PluginNotHooked"));
+			QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("PluginInitializer.VaultNotHooked"));
+			QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("PluginInitializer.PleaseInstall"));
 		}
 
 		try
 		{
 			MTMplugin = (MythicMobs) plugin.getServer().getPluginManager().getPlugin("MythicMobs");
 			if (MTMplugin != null)
-				QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("PluginInitializer.MythicMobsHooked"));
+				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginInitializer.MythicMobsHooked"));
 			else throw new NullPointerException();
 		}
 		catch (NoClassDefFoundError | NullPointerException e)
 		{
-			QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("PluginInitializer.MythicMobsNotHooked"));
+			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("PluginInitializer.MythicMobsNotHooked"));
 		}
 	
 		try
 		{
 			shopkeepers = (ShopkeepersPlugin) plugin.getServer().getPluginManager().getPlugin("Shopkeepers");
 			if (shopkeepers != null)
-				QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("PluginInitializer.ShopkeepersHooked"));
+				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginInitializer.ShopkeepersHooked"));
 			else throw new NullPointerException();
 		}
 		catch (NoClassDefFoundError | NullPointerException e)
 		{
-			QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("PluginInitializer.ShopkeepersNotHooked"));
+			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("PluginInitializer.ShopkeepersNotHooked"));
 		}
 
 		RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServicesManager().getRegistration(Economy.class);
 		if (economyProvider != null && economyProvider.getProvider() != null)
 		{
 			economy = economyProvider.getProvider();
-			QuestChatManager.logCmd(Level.INFO, Questi18n.localizeMessage("PluginInitializer.EconomyHooked"));
+			QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginInitializer.EconomyHooked"));
 		}
 		else
-			QuestChatManager.logCmd(Level.SEVERE, Questi18n.localizeMessage("PluginInitializer.EconomyNotHooked"));
+			QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("PluginInitializer.EconomyNotHooked"));
 	}
 
 	public Economy getEconomy()

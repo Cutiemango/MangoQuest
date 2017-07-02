@@ -26,7 +26,7 @@ import net.minecraft.server.v1_8_R2.NBTTagCompound;
 import net.minecraft.server.v1_8_R2.PacketPlayOutTitle;
 import net.minecraft.server.v1_8_R2.PacketPlayOutTitle.EnumTitleAction;
 
-public class Version_v1_8_R2 implements QuestVersionHandler
+public class Version_v1_8_R2 implements VersionHandler
 {
 
 	@Override

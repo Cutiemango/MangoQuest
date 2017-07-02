@@ -1,9 +1,11 @@
 package me.Cutiemango.MangoQuest.commands.edtior;
 
 import org.bukkit.entity.Player;
-import me.Cutiemango.MangoQuest.Questi18n;
-import me.Cutiemango.MangoQuest.editor.QuestEditorListener;
+import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
+import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
+import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
@@ -34,8 +36,8 @@ public class CommandNewQuest {
 	
 	private static void setInternalID(Player p, String[] args){
 		if (args.length == 3){
-			QuestGUIManager.openInfo(p, Questi18n.localizeMessage("EditorMessage.NewQuest.EnterID"));
-			QuestEditorListener.registerListeningObject(p, "mq e newquest id ");
+			QuestGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewQuest.EnterID"));
+			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq e newquest id"));
 			return;
 		}
 		if (args[3].equalsIgnoreCase("cancel")){
@@ -43,14 +45,14 @@ public class CommandNewQuest {
 			return;
 		}
 		QuestEditorManager.getCurrentEditingQuest(p).setInternalID(args[3]);
-		QuestChatManager.info(p, Questi18n.localizeMessage("EditorMessage.NewQuest.IDRegistered", args[3]));
+		QuestChatManager.info(p, I18n.locMsg("EditorMessage.NewQuest.IDRegistered", args[3]));
 		QuestEditorManager.createQuest(p);
 	}
 	
 	private static void setQuestName(Player p, String[] args){
 		if (args.length == 3){
-			QuestGUIManager.openInfo(p, Questi18n.localizeMessage("EditorMessage.NewQuest.EnterName"));
-			QuestEditorListener.registerListeningObject(p, "mq e newquest name ");
+			QuestGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewQuest.EnterName"));
+			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq e newquest name"));
 			return;
 		}
 		if (args[3].equalsIgnoreCase("cancel")){
@@ -58,17 +60,17 @@ public class CommandNewQuest {
 			return;
 		}
 		QuestEditorManager.getCurrentEditingQuest(p).setQuestName(args[3]);
-		QuestChatManager.info(p, Questi18n.localizeMessage("EditorMessage.NewQuest.NameRegistered", args[3]));
+		QuestChatManager.info(p, I18n.locMsg("EditorMessage.NewQuest.NameRegistered", args[3]));
 		QuestEditorManager.createQuest(p);
 	}
 	
 	private static void create(Player p){
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 		if (q.getInternalID() != null && q.getQuestName() != null){
-			QuestChatManager.info(p, Questi18n.localizeMessage("EditorMessage.NewQuest.Successful", q.getQuestName()));
+			QuestChatManager.info(p, I18n.locMsg("EditorMessage.NewQuest.Successful", q.getQuestName()));
 			QuestEditorManager.editQuest(p);
 		}else{
-			QuestChatManager.error(p, Questi18n.localizeMessage("EditorMessage.NewQuest.Failed"));
+			QuestChatManager.error(p, I18n.locMsg("EditorMessage.NewQuest.Failed"));
 			QuestEditorManager.createQuest(p);
 			return;
 		}

@@ -45,6 +45,8 @@ public class InteractiveText
 
 	public InteractiveText showItem(ItemStack item)
 	{
+		if (item == null)
+			return this;
 		itemToShow = item.clone();
 		if (!hasShowItem && itemToShow != null)
 			target.addExtra(TextComponentFactory.convertItemHoverEvent(itemToShow, false));

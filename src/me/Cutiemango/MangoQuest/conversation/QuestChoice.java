@@ -3,7 +3,7 @@ package me.Cutiemango.MangoQuest.conversation;
 import java.util.List;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.QuestStorage;
-import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
@@ -57,7 +57,7 @@ public class QuestChoice
 	public void apply(ConversationProgress cp)
 	{
 		QuestStorage.ChoiceProgresses.put(cp.getOwner().getName(), this);
-		cp.getCurrentPage().add(new InteractiveText(question.getText()).showText(Questi18n.localizeMessage("Conversation.ClickToAnswer"))
+		cp.getCurrentPage().add(new InteractiveText(question.getText()).showText(I18n.locMsg("Conversation.ClickToAnswer"))
 				.clickCommand("/mq conv openchoice")).endNormally();
 		QuestGUIManager.openChoice(cp.getOwner(), question, choices);
 	}
@@ -66,7 +66,7 @@ public class QuestChoice
 	{
 		if (i > choices.size())
 		{
-			QuestChatManager.error(p, Questi18n.localizeMessage("Conversation.AnswerDenied"));
+			QuestChatManager.error(p, I18n.locMsg("Conversation.AnswerDenied"));
 			return;
 		}
 		int count = 0;
@@ -75,10 +75,10 @@ public class QuestChoice
 		cp.getCurrentPage().add(question).changeLine();
 		for (QuestBaseAction act : choices.get(i).getActions())
 		{
-			QuestConversationManager.getConvProgress(p).getActionQueue().add(count, act);
+			ConversationManager.getConvProgress(p).getActionQueue().add(count, act);
 			count++;
 		}
-		QuestConversationManager.getConvProgress(p).nextAction();
+		ConversationManager.getConvProgress(p).nextAction();
 	}
 
 }

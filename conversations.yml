@@ -1,4 +1,28 @@
 ﻿Conversations:
+  Help:
+    NPC: 0
+    ConversationName: "村長的請求"
+    StartTriggerConversation: true
+    AcceptMessage: "&7&o「好，我很願意幫忙！」"
+    AcceptActions:
+    - "WAIT#30"
+    - "NPC_TALK#那麼就拜託你了！@0"
+    - "FINISH#true"
+    DenyMessage: "&7&o「不好意思，我還有別的事情要辦...」"
+    DenyActions:
+    - "WAIT#30"
+    - "NPC_TALK#好吧，那麼就不麻煩你了！@0"
+    - "NPC_TALK#願意幫忙的話再和我說！@0"
+    - "FINISH#false"
+    ConversationActions:
+    - "NPC_TALK#你好啊，冒險者，歡迎來到村莊！@0"
+    - "NPC_TALK#不知道你是否能來幫我一個忙呢？@0"
+    - "BUTTON#"
+    - "SENTENCE#&7&o「什麼忙？」"
+    - "NPC_TALK#最近那些在森林裡的蜘蛛令村民非常頭痛...@0"
+    - "NPC_TALK#你能幫村子去清除那些惱人的蜘蛛嗎？@0"
+    - "TAKE_QUEST#"
+    StartQuest: Help
   Test001:
     NPC: 1
     ConversationName: "初次會面"
@@ -14,6 +38,7 @@
   NPC01_20:
     FriendConversation: true
     NPC: 1
+    FriendPoint: 20
     ConversationName: "你的名子？"
     ConversationActions:
     - "SENTENCE#&7&o「其實我一直想問你，你這個名子是誰取的啊？」"

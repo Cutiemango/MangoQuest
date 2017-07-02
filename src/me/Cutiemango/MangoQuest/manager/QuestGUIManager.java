@@ -11,8 +11,8 @@ import me.Cutiemango.MangoQuest.book.FlexiableBook;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.book.TextComponentFactory;
+import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
-import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.data.QuestFinishData;
 import me.Cutiemango.MangoQuest.data.QuestObjectProgress;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
@@ -94,8 +94,11 @@ public class QuestGUIManager
 			{
 				for (ItemStack is : q.getQuest().getQuestReward().getItems())
 				{
-					p3.add(new InteractiveText("").showItem(is));
-					p3.add(" &l" + is.getAmount() + " &0個").changeLine();
+					if (is != null)
+					{
+						p3.add(new InteractiveText("").showItem(is));
+						p3.add(" &l" + is.getAmount() + " &0個").changeLine();
+					}
 				}
 			}
 
@@ -155,7 +158,8 @@ public class QuestGUIManager
 		for (QuestProgress qp : qd.getProgresses())
 		{
 			page.changeLine();
-			page.add(new InteractiveText("").showQuest(qp.getQuest())).add("：").endNormally();
+			page.add(new InteractiveText("").showQuest(qp.getQuest())).endNormally();
+			page.add("：").endNormally();
 			page.add(new InteractiveText("&c&l【放棄】").clickCommand("/mq quest quit " + qp.getQuest().getInternalID())).changeLine();
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
@@ -202,8 +206,8 @@ public class QuestGUIManager
 		{
 			QuestUtil.checkOutOfBounds(page, book);
 			page = book.getLastEditingPage();
-			page.add("- ");
-			page.add(new InteractiveText("").showQuest(qfd.getQuest()));
+			page.add("- ").endNormally();
+			page.add(new InteractiveText("").showQuest(qfd.getQuest())).endNormally();
 			page.add("： 已完成 " + qfd.getFinishedTimes() + " 次").changeLine();
 		}
 
@@ -296,7 +300,7 @@ public class QuestGUIManager
 					continue;
 				}
 		}
-		for (QuestConversation qc : QuestUtil.getConversations(npc.getId(), qd.getNPCfp(npc.getId())))
+		for (FriendConversation qc : QuestUtil.getConversations(npc, qd.getNPCfp(npc.getId())))
 		{
 			QuestUtil.checkOutOfBounds(page, book);
 			page = book.getLastEditingPage();

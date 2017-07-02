@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.advancements.QuestAdvancementManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
@@ -38,11 +38,11 @@ public class QuestTrigger
 
 	public enum TriggerType
 	{
-		TRIGGER_ON_TAKE(Questi18n.localizeMessage("TriggerType.OnTake"), false),
-		TRIGGER_ON_QUIT(Questi18n.localizeMessage("TriggerType.OnQuit"), false),
-		TRIGGER_ON_FINISH(Questi18n.localizeMessage("TriggerType.OnFinish"), false),
-		TRIGGER_STAGE_START(Questi18n.localizeMessage("TriggerType.StageStart"), true),
-		TRIGGER_STAGE_FINISH(Questi18n.localizeMessage("TriggerType.StageFinish"), true);
+		TRIGGER_ON_TAKE(I18n.locMsg("TriggerType.OnTake"), false),
+		TRIGGER_ON_QUIT(I18n.locMsg("TriggerType.OnQuit"), false),
+		TRIGGER_ON_FINISH(I18n.locMsg("TriggerType.OnFinish"), false),
+		TRIGGER_STAGE_START(I18n.locMsg("TriggerType.StageStart"), true),
+		TRIGGER_STAGE_FINISH(I18n.locMsg("TriggerType.StageFinish"), true);
 
 		private String name;
 		private boolean hasStage;
@@ -71,12 +71,12 @@ public class QuestTrigger
 
 	public enum TriggerObject
 	{
-		COMMAND(Questi18n.localizeMessage("TriggerObject.Command")),
-		SEND_TITLE(Questi18n.localizeMessage("TriggerObject.SendTitle")),
-		SEND_SUBTITLE(Questi18n.localizeMessage("TriggerObject.SendSubtitle")),
-		SEND_MESSAGE(Questi18n.localizeMessage("TriggerObject.SendMessage")),
-		TELEPORT(Questi18n.localizeMessage("TriggerObject.Teleport")),
-		GIVE_ADVANCEMENT(Questi18n.localizeMessage("TriggerObject.GiveAdvancement"));
+		COMMAND(I18n.locMsg("TriggerObject.Command")),
+		SEND_TITLE(I18n.locMsg("TriggerObject.SendTitle")),
+		SEND_SUBTITLE(I18n.locMsg("TriggerObject.SendSubtitle")),
+		SEND_MESSAGE(I18n.locMsg("TriggerObject.SendMessage")),
+		TELEPORT(I18n.locMsg("TriggerObject.Teleport")),
+		GIVE_ADVANCEMENT(I18n.locMsg("TriggerObject.GiveAdvancement"));
 
 		private String name;
 

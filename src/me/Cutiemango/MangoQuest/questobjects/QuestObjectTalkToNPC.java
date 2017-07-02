@@ -1,6 +1,6 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
-import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.I18n;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -28,19 +28,19 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 	@Override
 	public TextComponent toTextComponent(boolean isFinished)
 	{
-		return super.toTextComponent(Questi18n.localizeMessage("QuestObject.TalkToNPC"), isFinished, npc);
+		return super.toTextComponent(I18n.locMsg("QuestObject.TalkToNPC"), isFinished, npc);
 	}
 
 	@Override
 	public String toPlainText()
 	{
-		return Questi18n.localizeMessage("QuestObject.TalkToNPC", getTargetNPC().getName());
+		return I18n.locMsg("QuestObject.TalkToNPC", getTargetNPC().getName());
 	}
 
 	@Override
 	public String toDisplayText()
 	{
-		return Questi18n.localizeMessage("QuestObject.FinishMessage.TalkToNPC", getTargetNPC().getName());
+		return I18n.locMsg("QuestObject.FinishMessage.TalkToNPC", getTargetNPC().getName());
 	}
 
 }

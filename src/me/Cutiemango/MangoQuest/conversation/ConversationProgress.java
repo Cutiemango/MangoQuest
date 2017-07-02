@@ -8,7 +8,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.book.FlexiableBook;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 
@@ -23,13 +24,13 @@ public class ConversationProgress
 		actQueue = new LinkedList<>(conv.getActions());
 	}
 
-	public static final List<EnumAction> STOP_ACTIONS = Arrays.asList(EnumAction.BUTTON, EnumAction.WAIT, EnumAction.CHOICE, EnumAction.FINISH);
-
+	public static final List<EnumAction> STOP_ACTIONS = Arrays.asList(EnumAction.BUTTON, EnumAction.WAIT, EnumAction.CHOICE, EnumAction.FINISH, EnumAction.TAKE_QUEST);
+	
 	private Player owner;
 	private QuestConversation conv;
 	private LinkedList<QuestBaseAction> actQueue;
-	private LinkedList<QuestBookPage> currentBook = new LinkedList<>();
-	private LinkedList<QuestBookPage> history = new LinkedList<>();
+	private FlexiableBook currentBook = new FlexiableBook();
+	private FlexiableBook history = new FlexiableBook();
 	private boolean isFinished;
 
 	private int page = 0;
@@ -42,7 +43,7 @@ public class ConversationProgress
 			return;
 		}
 		actQueue.getFirst().execute(this);
-		QuestConversationManager.openConversation(owner, this);
+		ConversationManager.openConversation(owner, this);
 		if (!(STOP_ACTIONS.contains(actQueue.getFirst().getActionType())))
 		{
 			new BukkitRunnable()
@@ -54,7 +55,7 @@ public class ConversationProgress
 					nextAction();
 					return;
 				}
-			}.runTaskLater(Main.instance, 15L);
+			}.runTaskLater(Main.instance, 25L);
 		}
 		actQueue.removeFirst();
 	}
@@ -62,13 +63,13 @@ public class ConversationProgress
 	public void finish(boolean questFinish)
 	{
 		getCurrentPage().changeLine();
-		getCurrentPage().add(Questi18n.localizeMessage("Conversation.Finished")).changeLine();
-		QuestConversationManager.openConversation(owner, this);
+		getCurrentPage().add(I18n.locMsg("Conversation.Finished")).changeLine();
+		ConversationManager.openConversation(owner, this);
 		if (conv.hasNPC() && questFinish)
 		{
 			QuestUtil.getData(owner).addFinishConversation(conv);
 			isFinished = true;
-			if (!conv.isFriendConv())
+			if (!(conv instanceof FriendConversation))
 				owner.performCommand("mq conv npc " + conv.getNPC().getId());
 		}
 	}
@@ -88,7 +89,7 @@ public class ConversationProgress
 		return conv;
 	}
 
-	public LinkedList<QuestBookPage> getCurrentBook()
+	public FlexiableBook getCurrentBook()
 	{
 		return currentBook;
 	}
@@ -96,20 +97,23 @@ public class ConversationProgress
 
 	public QuestBookPage getCurrentPage()
 	{
-		if (currentBook.get(page) == null)
-			currentBook.add(page, QuestConversationManager.generateNewPage(conv));
-		return currentBook.get(page);
+		if (currentBook.getFirstPage().pageOutOfBounds())
+		{
+			currentBook.pushNewPage(conv);
+			currentBook.getFirstPage().add(currentBook.getPage(1).getTextleft()).endNormally();
+		}
+		return currentBook.getFirstPage();
 	}
 
-	public void setCurrentBook(LinkedList<QuestBookPage> list)
+	public void setCurrentBook(FlexiableBook book)
 	{
-		currentBook = list;
+		currentBook = book;
 		update();
 	}
-
+	
 	public void retrieve()
 	{
-		currentBook.set(0, history.getFirst().duplicate());
+		currentBook.setPage(0, history.getFirstPage().duplicate());
 	}
 
 	public void update()
@@ -117,14 +121,15 @@ public class ConversationProgress
 		for (int i = 0; i <= page; i++)
 		{
 			if (page > history.size() - 1)
-				history.add(i, QuestConversationManager.generateNewPage(conv));
-			history.set(i, currentBook.get(i).duplicate());
+				history.addPage(i, ConversationManager.generateNewPage(conv));
+			history.setPage(i, currentBook.getPage(i).duplicate());
 		}
 	}
 
 	public void newPage()
 	{
-		currentBook.push(QuestConversationManager.generateNewPage(conv));
+		currentBook.pushNewPage(conv);
+		currentBook.getFirstPage().add(currentBook.getPage(1).getTextleft()).endNormally();
 		update();
 	}
 

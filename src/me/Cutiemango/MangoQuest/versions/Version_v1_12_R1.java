@@ -27,7 +27,7 @@ import net.minecraft.server.v1_12_R1.PacketPlayOutTitle;
 import net.minecraft.server.v1_12_R1.IChatBaseComponent.ChatSerializer;
 import net.minecraft.server.v1_12_R1.PacketPlayOutTitle.EnumTitleAction;
 
-public class Version_v1_12_R1 implements QuestVersionHandler
+public class Version_v1_12_R1 implements VersionHandler
 {
 
 	@Override

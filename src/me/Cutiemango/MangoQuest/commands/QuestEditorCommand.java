@@ -5,18 +5,17 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.Questi18n;
-import me.Cutiemango.MangoQuest.commands.edtior.CommandAddnew;
-import me.Cutiemango.MangoQuest.commands.edtior.CommandEdit;
+import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.commands.edtior.CommandEditQuest;
+import me.Cutiemango.MangoQuest.commands.edtior.CommandNewObject;
 import me.Cutiemango.MangoQuest.commands.edtior.CommandNewQuest;
-import me.Cutiemango.MangoQuest.commands.edtior.CommandRemove;
+import me.Cutiemango.MangoQuest.commands.edtior.CommandRemoveQuest;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 
 public class QuestEditorCommand
 {
-
 	private static List<String> confirm = new ArrayList<>();
 
 	// Command: /mq editor args[1] args[2]
@@ -42,7 +41,7 @@ public class QuestEditorCommand
 						QuestEditorManager.removeGUI(sender);
 						return;
 					case "help":
-						QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.UseCommand"));
+						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.UseCommand"));
 						return;
 					case "exit":
 						QuestEditorManager.exit(sender);
@@ -56,52 +55,43 @@ public class QuestEditorCommand
 						return;
 					case "sa":
 					case "saveall":
-						if (!QuestEditorManager.isInEditorMode(sender))
-						{
-							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.NotInEditor"));
+						if (!QuestEditorManager.checkEditorMode(sender, true))
 							return;
-						}
 						if (q.getStages().isEmpty())
 						{
-							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.QuestEmpty"));
+							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.QuestEmpty"));
 							return;
 						}
 						Main.instance.configManager.saveQuest(q);
 						Quest.synchronizeLocal(q);
-						QuestChatManager.info(sender, "&a" + Questi18n.localizeMessage("EditorMessage.SaveConfigSuccess", q.getQuestName()));
-						QuestChatManager.info(sender, "&b" + Questi18n.localizeMessage("EditorMessage.SaveServerSuccess", q.getQuestName()));
+						QuestChatManager.info(sender, "&a" + I18n.locMsg("EditorMessage.SaveConfigSuccess", q.getQuestName()));
+						QuestChatManager.info(sender, "&b" + I18n.locMsg("EditorMessage.SaveServerSuccess", q.getQuestName()));
 						QuestEditorManager.exit(sender);
 						break;
 					case "sc":
 					case "savecfg":
-						if (!QuestEditorManager.isInEditorMode(sender))
-						{
-							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.NotInEditor"));
+						if (!QuestEditorManager.checkEditorMode(sender, true))
 							return;
-						}
 						if (q.getStages().isEmpty())
 						{
-							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.QuestEmpty"));
+							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.QuestEmpty"));
 							return;
 						}
 						Main.instance.configManager.saveQuest(q);
-						QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.SaveConfigSuccess", q.getQuestName()));
+						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.SaveConfigSuccess", q.getQuestName()));
 						QuestEditorManager.exit(sender);
 						break;
 					case "sl":
 					case "savelocal":
-						if (!QuestEditorManager.isInEditorMode(sender))
-						{
-							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.NotInEditor"));
+						if (!QuestEditorManager.checkEditorMode(sender, true))
 							return;
-						}
 						if (q.getStages().isEmpty())
 						{
-							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.QuestEmpty"));
+							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.QuestEmpty"));
 							return;
 						}
 						Quest.synchronizeLocal(q);
-						QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.SaveServerSuccess", q.getQuestName()));
+						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.SaveServerSuccess", q.getQuestName()));
 						QuestEditorManager.exit(sender);
 						break;
 				}
@@ -113,14 +103,14 @@ public class QuestEditorCommand
 					case "select":
 						if (QuestUtil.getQuest(args[2]) == null)
 						{
-							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.QuestNotFound"));
+							QuestChatManager.error(sender, I18n.locMsg("CommandInfo.QuestNotFound"));
 							return;
 						}
-						if (QuestEditorManager.isInEditorMode(sender))
+						if (QuestEditorManager.checkEditorMode(sender, false))
 						{
 							if (!confirm.contains(sender.getName()))
 							{
-								QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.QuitEditing"));
+								QuestChatManager.error(sender, I18n.locMsg("EditorMessage.QuitEditing"));
 								confirm.add(sender.getName());
 								return;
 							}
@@ -128,19 +118,19 @@ public class QuestEditorCommand
 						QuestEditorManager.edit(sender, QuestUtil.getQuest(args[2]).clone());
 						QuestEditorManager.editQuest(sender);
 						confirm.remove(sender.getName());
-						QuestChatManager.info(sender, "&c" + Questi18n.localizeMessage("EditorMessage.Entered"));
+						QuestChatManager.info(sender, "&c" + I18n.locMsg("EditorMessage.Entered"));
 						return;
 					case "addnew":
-						CommandAddnew.execute(q, sender, args);
+						CommandNewObject.execute(q, sender, args);
 						return;
 					case "edit":
-						CommandEdit.execute(q, sender, args);
+						CommandEditQuest.execute(q, sender, args);
 						return;
 					case "newquest":
 						CommandNewQuest.execute(sender, args);
 						return;
 					case "remove":
-						CommandRemove.execute(q, sender, args);
+						CommandRemoveQuest.execute(q, sender, args);
 						return;
 				}
 				QuestEditorManager.mainGUI(sender);

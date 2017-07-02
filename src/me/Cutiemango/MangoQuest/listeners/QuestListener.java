@@ -16,7 +16,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.editor.QuestEditorListener;
+import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
+import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
+import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
+import net.citizensnpcs.api.event.NPCDamageByEntityEvent;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 
@@ -45,7 +48,7 @@ public class QuestListener implements Listener
 		if (e.getBlock() != null && e.getBlock().getType() != null)
 		{
 			PlayerListener.onBreakBlock(e.getPlayer(), e.getBlock().getType(), e.getBlock().getData());
-			QuestEditorListener.onBlockBreak(e.getPlayer(), e.getBlock(), e);
+			EditorListenerHandler.onBlockBreak(e.getPlayer(), e.getBlock(), e);
 		}
 	}
 	
@@ -63,12 +66,12 @@ public class QuestListener implements Listener
 	
 	@EventHandler
 	public void onChat(AsyncPlayerChatEvent e){
-		QuestEditorListener.onChat(e.getPlayer(), e.getMessage(), e);
+		EditorListenerHandler.onChat(e.getPlayer(), e.getMessage(), e);
 	}
 	
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent e){
-		QuestEditorListener.onPlayerInteract(e.getPlayer(), e.getAction(), e.getItem());
+		EditorListenerHandler.onPlayerInteract(e.getPlayer(), e.getAction(), e.getItem(), e);
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
@@ -77,22 +80,33 @@ public class QuestListener implements Listener
 		PlayerListener.onNPCRightClick(e.getClicker(), e.getNPC(), e);
 	}
 	
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler
+	public void onNPCDamage(NPCDamageByEntityEvent e)
+	{
+		if (!(e.getDamager() instanceof Player))
+			return;
+		Player p = (Player) e.getDamager();
+		if (QuestEditorManager.checkEditorMode(p, false) || ConversationEditorManager.checkEditorMode(p, false))
+			e.setCancelled(true);
+		return;
+	}
+	
+	@EventHandler
 	public void onNPCLeftClick(NPCLeftClickEvent e){
-		QuestEditorListener.onNPCLeftClick(e.getClicker(), e.getNPC(), e);
+		EditorListenerHandler.onNPCLeftClick(e.getClicker(), e.getNPC(), e);
 	}
 	
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e){
 		if (!(e.getPlayer() instanceof Player))
 			return;
-		QuestEditorListener.onInventoryClose((Player)e.getPlayer(), e.getInventory());
+		EditorListenerHandler.onInventoryClose((Player)e.getPlayer(), e.getInventory());
 	}
 	
 	@EventHandler (ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageByEntityEvent e){
 		if (e.getDamager() instanceof Player && e.getEntity() instanceof Damageable)
-			QuestEditorListener.onEntityDamage((Player)e.getDamager(), e.getEntity(), e);
+			EditorListenerHandler.onEntityDamage((Player)e.getDamager(), e.getEntity(), e);
 		else return;
 	}
 

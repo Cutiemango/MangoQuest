@@ -5,23 +5,18 @@ import net.citizensnpcs.api.npc.NPC;
 
 public class QuestConversation
 {
-
-	private List<QuestBaseAction> action;
-	private String name;
-	private String id;
-	private NPC npc;
-
-	private boolean isFriendConv;
-
-	public QuestConversation(String s, String internal, NPC n, List<QuestBaseAction> list, boolean f)
+	public QuestConversation(String s, String internal, NPC n, List<QuestBaseAction> list)
 	{
 		name = s;
 		action = list;
 		id = internal;
 		npc = n;
-		isFriendConv = f;
 	}
 
+	protected List<QuestBaseAction> action;
+	protected String name;
+	protected String id;
+	protected NPC npc;
 
 	public List<QuestBaseAction> getActions()
 	{
@@ -47,10 +42,26 @@ public class QuestConversation
 	{
 		return npc != null;
 	}
-
-	public boolean isFriendConv()
+	
+	public void setName(String s)
 	{
-		return isFriendConv;
+		name = s;
+	}
+	
+	public void setNPC(NPC n)
+	{
+		npc = n;
+	}
+	
+	public void setActions(List<QuestBaseAction> l)
+	{
+		action = l;
+	}
+	
+	@Override
+	public QuestConversation clone()
+	{
+		return new QuestConversation(name, id, npc, action);
 	}
 
 }

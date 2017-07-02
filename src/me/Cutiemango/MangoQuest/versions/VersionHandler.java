@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public abstract interface QuestVersionHandler
+public abstract interface VersionHandler
 {
 
 	public abstract void sendTitle(Player p, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle);

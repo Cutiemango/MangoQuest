@@ -1,22 +1,30 @@
 package me.Cutiemango.MangoQuest.book;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import me.Cutiemango.MangoQuest.conversation.ConversationManager;
+import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class FlexiableBook
 {
 	public FlexiableBook()
 	{
-		pages = new ArrayList<>();
+		pages = new LinkedList<>();
 		pages.add(new QuestBookPage());
 	}
 	
-	List<QuestBookPage> pages;
+	LinkedList<QuestBookPage> pages;
 
 	public QuestBookPage getPage(int index)
 	{
 		return pages.get(index);
+	}
+	
+	public QuestBookPage getFirstPage()
+	{
+		return pages.getFirst();
 	}
 	
 	public QuestBookPage getLastEditingPage()
@@ -27,6 +35,21 @@ public class FlexiableBook
 	public void newPage()
 	{
 		pages.add(new QuestBookPage());
+	}
+	
+	public void setPage(int index, QuestBookPage page)
+	{
+		pages.set(index, page);
+	}
+	
+	public void addPage(int index, QuestBookPage page)
+	{
+		pages.add(index, page);
+	}
+	
+	public void pushNewPage(QuestConversation conv)
+	{
+		pages.push(ConversationManager.generateNewPage(conv));
 	}
 	
 	public int size()

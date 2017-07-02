@@ -1,14 +1,14 @@
 package me.Cutiemango.MangoQuest.model;
 
-import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.I18n;
 
 public enum RequirementType{
-	LEVEL(Questi18n.localizeMessage("Requirements.Level"), false),
-	MONEY(Questi18n.localizeMessage("Requirements.Money"), false),
-	QUEST(Questi18n.localizeMessage("Requirements.Quest"), true),
-	ITEM(Questi18n.localizeMessage("Requirements.Item"), true),
-	SCOREBOARD(Questi18n.localizeMessage("Requirements.Scoreboard"), true),
-	NBTTAG(Questi18n.localizeMessage("Requirements.NBTTag"), true);
+	LEVEL(I18n.locMsg("Requirements.Level"), false),
+	MONEY(I18n.locMsg("Requirements.Money"), false),
+	QUEST(I18n.locMsg("Requirements.Quest"), true),
+	ITEM(I18n.locMsg("Requirements.Item"), true),
+	SCOREBOARD(I18n.locMsg("Requirements.Scoreboard"), true),
+	NBTTAG(I18n.locMsg("Requirements.NBTTag"), true);
 	
 	private String name;
 	private boolean index;

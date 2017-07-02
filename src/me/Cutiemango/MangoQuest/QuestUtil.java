@@ -1,6 +1,7 @@
 package me.Cutiemango.MangoQuest;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.bukkit.Material;
@@ -9,11 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.book.FlexiableBook;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
-import me.Cutiemango.MangoQuest.conversation.QuestConversation;
+import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.QuestNPC;
+import me.Cutiemango.MangoQuest.model.QuestNPCData;
 import net.citizensnpcs.api.npc.NPC;
 
 public class QuestUtil
@@ -74,15 +75,19 @@ public class QuestUtil
 	public static String getNPCMessage(int id, int fp)
 	{
 		if (!QuestStorage.NPCMap.containsKey(id))
-			QuestStorage.NPCMap.put(id, new QuestNPC());
+			QuestStorage.NPCMap.put(id, new QuestNPCData());
 		return QuestStorage.NPCMap.get(id).getNPCMessage(fp);
 	}
 
-	public static List<QuestConversation> getConversations(int id, int fp)
+	public static Set<FriendConversation> getConversations(NPC npc, int fp)
 	{
-		if (!QuestStorage.NPCMap.containsKey(id))
-			QuestStorage.NPCMap.put(id, new QuestNPC());
-		return QuestStorage.NPCMap.get(id).getConversations(fp);
+		Set<FriendConversation> set = new HashSet<>();
+		for (FriendConversation conv : QuestStorage.FriendConvs)
+		{
+			if (conv.getNPC().equals(npc) && fp >= conv.getReqPoint())
+				set.add(conv);
+		}
+		return set;
 	}
 
 	public static Quest getQuest(String s)
@@ -93,7 +98,7 @@ public class QuestUtil
 	public static void clearData(Player p){
 		QuestStorage.Players.put(p.getName(), new QuestPlayerData(p));
 		Main.instance.configManager.clearPlayerData(p);
-		QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.PlayerDataRemoved"));
+		QuestChatManager.info(p, I18n.locMsg("CommandInfo.PlayerDataRemoved"));
 	}
 	
 	public static void checkOutOfBounds(QuestBookPage page, FlexiableBook book)
@@ -183,6 +188,8 @@ public class QuestUtil
 	{
 		if (!QuestStorage.TranslateMap.containsKey(mat))
 			return "未知的物品";
+		if (QuestStorage.TranslateMap.get(mat).get(data) == null)
+			return QuestStorage.TranslateMap.get(mat).get(0);
 		return QuestStorage.TranslateMap.get(mat).get(data);
 	}
 

@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
@@ -23,14 +23,15 @@ public class AdminCommand implements CommandExecutor
 		Player p = (Player) sender;
 		if (!p.isOp())
 		{
-			QuestChatManager.error(p, Questi18n.localizeMessage("CommandInfo.NoPermission"));
+			QuestChatManager.error(p, I18n.locMsg("CommandInfo.NoPermission"));
 			return false;
 		}
-		if (args.length == 0)
+		if (args.length == 1)
+		{
 			if (args[0].equalsIgnoreCase("reload"))
 			{
 				Main.instance.reload();
-				QuestChatManager.info(p, "&a" + Questi18n.localizeMessage("CommandInfo.ReloadSuccessful"));
+				QuestChatManager.info(p, "&a" + I18n.locMsg("CommandInfo.ReloadSuccessful"));
 				return true;
 			}
 			else
@@ -38,7 +39,8 @@ public class AdminCommand implements CommandExecutor
 				sendAdminHelp(p);
 				return false;
 			}
-		if (args.length > 1)
+		}
+		else if (args.length > 1)
 		{
 			switch (args[0])
 			{
@@ -54,7 +56,7 @@ public class AdminCommand implements CommandExecutor
 					Quest q = QuestUtil.getQuest(args[2]);
 					if (target == null || q == null)
 					{
-						QuestChatManager.error(p, Questi18n.localizeMessage("CommandInfo.InvalidArgument"));
+						QuestChatManager.error(p, I18n.locMsg("CommandInfo.InvalidArgument"));
 						return false;
 					}
 					QuestPlayerData pd = QuestUtil.getData(target);
@@ -75,7 +77,7 @@ public class AdminCommand implements CommandExecutor
 					Integer obj = Integer.parseInt(args[3]);
 					if (target == null || q == null)
 					{
-						QuestChatManager.error(p, Questi18n.localizeMessage("CommandInfo.InvalidArgument"));
+						QuestChatManager.error(p, I18n.locMsg("CommandInfo.InvalidArgument"));
 						return false;
 					}
 					pd = QuestUtil.getData(target);
@@ -87,7 +89,7 @@ public class AdminCommand implements CommandExecutor
 					QuestUtil.clearData(p);
 					break;
 			}
-			QuestChatManager.info(p, Questi18n.localizeMessage("CommandInfo.CommandPerformed"));
+			QuestChatManager.info(p, I18n.locMsg("CommandInfo.CommandPerformed"));
 			return true;
 		}
 		sendAdminHelp(p);
@@ -96,13 +98,13 @@ public class AdminCommand implements CommandExecutor
 
 	public void sendAdminHelp(Player p)
 	{
-		QuestChatManager.info(p, Questi18n.localizeMessage("AdminCommandHelp.Title"));
-		QuestChatManager.info(p, Questi18n.localizeMessage("AdminCommandHelp.Reload"));
-		QuestChatManager.info(p, Questi18n.localizeMessage("AdminCommandHelp.NextStage"));
-		QuestChatManager.info(p, Questi18n.localizeMessage("AdminCommandHelp.FinishObject"));
-		QuestChatManager.info(p, Questi18n.localizeMessage("AdminCommandHelp.TakeQuest"));
-		QuestChatManager.info(p, Questi18n.localizeMessage("AdminCommandHelp.FinishQuest"));
-		QuestChatManager.info(p, Questi18n.localizeMessage("AdminCommandHelp.RemovePlayerData"));
+		QuestChatManager.info(p, I18n.locMsg("AdminCommandHelp.Title"));
+		QuestChatManager.info(p, I18n.locMsg("AdminCommandHelp.Reload"));
+		QuestChatManager.info(p, I18n.locMsg("AdminCommandHelp.NextStage"));
+		QuestChatManager.info(p, I18n.locMsg("AdminCommandHelp.FinishObject"));
+		QuestChatManager.info(p, I18n.locMsg("AdminCommandHelp.TakeQuest"));
+		QuestChatManager.info(p, I18n.locMsg("AdminCommandHelp.FinishQuest"));
+		QuestChatManager.info(p, I18n.locMsg("AdminCommandHelp.RemovePlayerData"));
 	}
 
 }

@@ -3,7 +3,7 @@ package me.Cutiemango.MangoQuest.questobjects;
 import java.util.logging.Level;
 import org.bukkit.Material;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -30,19 +30,19 @@ public class QuestObjectBreakBlock extends NumerableObject
 	@Override
 	public TextComponent toTextComponent(boolean isFinished)
 	{
-		return super.toTextComponent(Questi18n.localizeMessage("QuestObject.BreakBlock"), isFinished, amount, block, subID);
+		return super.toTextComponent(I18n.locMsg("QuestObject.BreakBlock"), isFinished, amount, block, subID);
 	}
 
 	@Override
 	public String toPlainText()
 	{
-		return Questi18n.localizeMessage("QuestObject.BreakBlock", Integer.toString(amount), QuestUtil.translate(block, subID), "");
+		return I18n.locMsg("QuestObject.BreakBlock", Integer.toString(amount), QuestUtil.translate(block, subID), "");
 	}
 	
 	@Override
 	public String toDisplayText()
 	{
-		return Questi18n.localizeMessage("QuestObject.FinishMessage.BreakBlock", Integer.toString(amount), QuestUtil.translate(block, subID), "");
+		return I18n.locMsg("QuestObject.FinishMessage.BreakBlock", Integer.toString(amount), QuestUtil.translate(block, subID), "");
 	}
 
 	public Material getType()

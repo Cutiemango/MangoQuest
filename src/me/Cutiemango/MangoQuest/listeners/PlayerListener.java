@@ -22,15 +22,14 @@ public class PlayerListener
 	public static void onPlayerJoin(Player p)
 	{
 		QuestPlayerData qd = new QuestPlayerData(p);
-		if (QuestPlayerData.hasConfigData(p))
-			qd = new QuestPlayerData(p, Main.instance.configManager.getPlayerIO());
 		QuestStorage.Players.put(p.getName(), qd);
 	}
 
 	public static void onPlayerQuit(Player p)
 	{
 		QuestPlayerData qd = QuestUtil.getData(p);
-		qd.save();
+		qd.saveOld();
+		qd.saveNew();
 		QuestStorage.Players.remove(p.getName());
 	}
 	
@@ -39,7 +38,7 @@ public class PlayerListener
 		if (p.isSneaking())
 			return;
 		event.setCancelled(true);
-		if (QuestEditorManager.isInEditorMode(p))
+		if (QuestEditorManager.checkEditorMode(p, false))
 			return;
 		QuestPlayerData pd = QuestUtil.getData(p);
 		if (pd.deliverItem(npc))

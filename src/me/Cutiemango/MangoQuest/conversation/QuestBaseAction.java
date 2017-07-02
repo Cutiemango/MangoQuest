@@ -1,10 +1,15 @@
 package me.Cutiemango.MangoQuest.conversation;
 
+import java.util.Arrays;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.advancements.QuestAdvancementManager;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
+import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -23,17 +28,30 @@ public class QuestBaseAction
 
 	public enum EnumAction
 	{
-		CHANGE_PAGE,
-		CHANGE_LINE,
-		CHANGE_CONVERSATION,
-		SENTENCE,
-		NPC_TALK,
-		CHOICE,
-		BUTTON,
-		COMMAND,
-		WAIT,
-		FINISH,
-		GIVE_ADVANCEMENT;
+		CHANGE_PAGE(I18n.locMsg("EnumAction.ChangePage")),
+		CHANGE_LINE(I18n.locMsg("EnumAction.ChangeLine")),
+		SENTENCE(I18n.locMsg("EnumAction.Sentence")),
+		NPC_TALK(I18n.locMsg("EnumAction.NPCTalk")),
+		CHOICE(I18n.locMsg("EnumAction.Choice")),
+		BUTTON(I18n.locMsg("EnumAction.Button")),
+		COMMAND(I18n.locMsg("EnumAction.Command")),
+		WAIT(I18n.locMsg("EnumAction.Wait")),
+		FINISH(I18n.locMsg("EnumAction.Finish")),
+		TAKE_QUEST(I18n.locMsg("EnumAction.TakeQuest")),
+		GIVE_ADVANCEMENT(I18n.locMsg("EnumAction.GiveAdvancement"));
+		
+		EnumAction(String s)
+		{
+			name = s;
+		}
+
+		public static final List<EnumAction> NO_OBJ_ACTIONS = Arrays.asList(EnumAction.CHANGE_LINE, EnumAction.CHANGE_PAGE, EnumAction.BUTTON, EnumAction.TAKE_QUEST);
+		private String name;
+		
+		public String toCustomString()
+		{
+			return name;
+		}
 	}
 
 	public void execute(final ConversationProgress cp)
@@ -42,9 +60,6 @@ public class QuestBaseAction
 		{
 			case BUTTON:
 				cp.getCurrentPage().add(new InteractiveText("&0[▼]").clickCommand("/mq conv next")).changeLine();
-				return;
-			case CHANGE_CONVERSATION:
-				// TODO Complicated
 				break;
 			case CHANGE_LINE:
 				cp.getCurrentPage().changeLine();
@@ -53,9 +68,9 @@ public class QuestBaseAction
 				cp.newPage();
 				break;
 			case CHOICE:
-				QuestChoice c = QuestConversationManager.getChoiceByName(obj);
+				QuestChoice c = ConversationManager.getChoiceByName(obj);
 				if (c == null)
-					return;
+					break;
 				c.apply(cp);
 				break;
 			case COMMAND:
@@ -80,24 +95,47 @@ public class QuestBaseAction
 						return;
 					}
 				}.runTaskLater(Main.instance, Long.parseLong(obj.toString()));
-				return;
+				break;
 			case FINISH:
 				cp.finish(Boolean.valueOf(obj));
-				return;
+				break;
 			case GIVE_ADVANCEMENT:
 				if (Main.isUsingUpdatedVersion())
 				{
 					QuestAdvancementManager.getAdvancement(obj).grant(cp.getOwner());
-					return;
+					break;
 				}
+			case TAKE_QUEST:
+				if (!(cp.getConvseration() instanceof StartTriggerConversation))
+					break;
+				StartTriggerConversation conv = (StartTriggerConversation)cp.getConvseration();
+				QuestPlayerData data = QuestUtil.getData(cp.getOwner());
+				if (!data.checkQuestSize(false))
+				{
+					cp.getCurrentPage().add(conv.getQuestFullMessage()).changeLine();
+					cp.getActionQueue().add(new QuestBaseAction(EnumAction.FINISH, "false"));
+					break;
+				}
+				cp.newPage();
+				cp.getCurrentPage().add(I18n.locMsg("Conversation.ChooseAnOption")).changeLine();
+				
+				cp.getCurrentPage().add(new InteractiveText(I18n.locMsg("Conversation.DefaultQuestAcceptMessage") + conv.getAcceptMessage()).clickCommand("/mq conv takequest")).changeLine();
+				cp.getCurrentPage().add(new InteractiveText(I18n.locMsg("Conversation.DefaultQuestDenyMessage") + conv.getDenyMessage()).clickCommand("/mq conv denyquest")).changeLine();
+				break;
 			default:
-				return;
+				break;
 		}
+		
 	}
 
 	public EnumAction getActionType()
 	{
 		return action;
+	}
+	
+	public String getObject()
+	{
+		return obj;
 	}
 
 }

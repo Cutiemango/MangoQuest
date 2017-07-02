@@ -10,6 +10,8 @@ import java.util.logging.Level;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import com.google.common.base.Charsets;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
@@ -27,10 +29,32 @@ public class QuestIO
 		{
 			Main.instance.saveResource(name, true);
 			if (warn)
-				QuestChatManager.logCmd(Level.WARNING, Questi18n.localizeMessage("Cmdlog.FileNotFound", name));
+				QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.FileNotFound", name));
 		}
 
 		loadFrom(file);
+	}
+	
+	public QuestIO(Player p)
+	{
+		File f = new File(Main.instance.getDataFolder() + "/data/" , p.getUniqueId() + ".yml");
+		if (!f.exists())
+		{
+			f.getParentFile().mkdirs();
+			try
+			{
+				f.createNewFile();
+				new YamlConfiguration().save(f);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			QuestChatManager.logCmd(Level.INFO, "新玩家 " + p.getName() + " 已經註冊資料！");
+		}
+		loadFrom(f);
+		
+		file = f;
 	}
 
 	public FileConfiguration getConfig()
@@ -58,7 +82,7 @@ public class QuestIO
 		}
 		catch (IOException | InvalidConfigurationException e)
 		{
-			QuestChatManager.logCmd(Level.SEVERE, Questi18n.localizeMessage("Cmdlog.IOException"));
+			QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.IOException"));
 			e.printStackTrace();
 		}
 	}
@@ -102,6 +126,11 @@ public class QuestIO
 	{
 		return config.getStringList(path);
 	}
+	
+	public ItemStack getItemStack(String path)
+	{
+		return config.getItemStack(path);
+	}
 
 	public boolean contains(String path)
 	{
@@ -117,4 +146,5 @@ public class QuestIO
 		config.set(path, "");
 		return;
 	}
+
 }

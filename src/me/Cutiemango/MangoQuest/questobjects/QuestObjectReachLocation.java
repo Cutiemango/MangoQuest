@@ -1,7 +1,7 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
 import org.bukkit.Location;
-import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -23,19 +23,19 @@ public class QuestObjectReachLocation extends SimpleQuestObject
 	@Override
 	public TextComponent toTextComponent(boolean isFinished)
 	{
-		return super.toTextComponent(Questi18n.localizeMessage("QuestObject.ReachLocation"), isFinished, name, loc);
+		return super.toTextComponent(I18n.locMsg("QuestObject.ReachLocation"), isFinished, name, loc);
 	}
 
 	@Override
 	public String toPlainText()
 	{
-		return Questi18n.localizeMessage("QuestObject.ReachLocation", name);
+		return I18n.locMsg("QuestObject.ReachLocation", name);
 	}
 
 	@Override
 	public String toDisplayText()
 	{
-		return Questi18n.localizeMessage("QuestObject.FinishMessage.ReachLocation", name);
+		return I18n.locMsg("QuestObject.FinishMessage.ReachLocation", name);
 	}
 	
 	public Location getLocation()

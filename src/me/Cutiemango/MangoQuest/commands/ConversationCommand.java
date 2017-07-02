@@ -6,7 +6,9 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
-import me.Cutiemango.MangoQuest.conversation.QuestConversationManager;
+import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
+import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -22,20 +24,20 @@ public class ConversationCommand {
 		else if (args.length >= 2){
 			QuestConversation conv = null;
 			if (args.length > 2)
-				conv = QuestConversationManager.getConversation(args[2]);
-			ConversationProgress cp = QuestConversationManager.getConvProgress(sender);
-			QuestChoice choice = QuestConversationManager.getChoiceProgress(sender);
+				conv = ConversationManager.getConversation(args[2]);
+			ConversationProgress cp = ConversationManager.getConvProgress(sender);
+			QuestChoice choice = ConversationManager.getChoiceProgress(sender);
 			
 			switch(args[1]){
 			case "opennew":
 				if (args.length == 3)
 					if (conv != null)
-						QuestConversationManager.startConversation(sender, conv);
+						ConversationManager.startConversation(sender, conv);
 				else break;
 			case "open":
 				if (args.length == 3)
 					if (cp != null)
-						QuestConversationManager.openConversation(sender, cp);
+						ConversationManager.openConversation(sender, cp);
 				else break;
 			case "next":
 				if (cp != null){
@@ -56,6 +58,28 @@ public class ConversationCommand {
 				if (npc != null)
 					QuestUtil.getData(sender).talkToNPC(npc);
 				return;
+			case "takequest":
+				if (cp.getConvseration() instanceof StartTriggerConversation)
+				{
+					StartTriggerConversation trigger = (StartTriggerConversation)cp.getConvseration();
+					QuestPlayerData pd = QuestUtil.getData(sender);
+					pd.takeQuest(trigger.getQuest(), false);
+					cp.retrieve();
+					cp.getCurrentPage().add(trigger.getAcceptMessage()).changeLine();
+					cp.getActionQueue().addAll(trigger.getAcceptActions());
+					cp.nextAction();
+					return;
+				}
+			case "denyquest":
+				if (cp.getConvseration() instanceof StartTriggerConversation)
+				{
+					StartTriggerConversation trigger = (StartTriggerConversation)cp.getConvseration();
+					cp.retrieve();
+					cp.getCurrentPage().add(trigger.getDenyMessage()).changeLine();
+					cp.getActionQueue().addAll(trigger.getDenyActions());
+					cp.nextAction();
+					return;
+				}
 			default:
 				break;
 			}

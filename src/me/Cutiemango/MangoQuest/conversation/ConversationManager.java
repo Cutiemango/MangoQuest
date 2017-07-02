@@ -5,8 +5,10 @@ import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
+import me.Cutiemango.MangoQuest.model.Quest;
 
-public class QuestConversationManager {
+public class ConversationManager {
 	
 	/**
 	 * Starts a conversation from the beginning.
@@ -17,7 +19,7 @@ public class QuestConversationManager {
 	public static ConversationProgress startConversation(Player p, QuestConversation conv){
 		ConversationProgress cp = new ConversationProgress(p, conv);
 		QuestStorage.ConvProgresses.put(p.getName(), cp);
-		cp.newPage();
+		cp.nextAction();
 		openConversation(p, cp);
 		return cp;
 	}
@@ -28,7 +30,7 @@ public class QuestConversationManager {
 	 * @param cp The progress to updtae
 	 */
 	public static void openConversation(Player p, ConversationProgress cp){
-		QuestGUIManager.openBook(p, cp.getCurrentBook().toArray(new QuestBookPage[cp.getCurrentBook().size()]));
+		QuestGUIManager.openBook(p, cp.getCurrentBook().toSendableBook());
 	}
 	
 	/**
@@ -61,6 +63,19 @@ public class QuestConversationManager {
 	 */
 	public static QuestChoice getChoiceProgress(Player p){
 		return QuestStorage.ChoiceProgresses.get(p.getName());
+	}
+	
+	
+	public static StartTriggerConversation getStartConversation(Quest q)
+	{
+		return QuestStorage.StartConvs.get(q);
+	}
+	
+	public static boolean isInConvProgress(Player p, QuestConversation conv)
+	{
+		if (QuestStorage.ConvProgresses.get(p.getName()) == null)
+			return false;
+		return QuestValidater.detailedValidate(conv, QuestStorage.ConvProgresses.get(p.getName()).getConvseration());
 	}
 	
 	public static QuestBookPage generateNewPage(QuestConversation conv)

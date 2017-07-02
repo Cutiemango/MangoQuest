@@ -3,7 +3,7 @@ package me.Cutiemango.MangoQuest.questobjects;
 import org.bukkit.entity.EntityType;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -77,27 +77,27 @@ public class QuestObjectKillMob extends NumerableObject
 	public TextComponent toTextComponent(boolean isFinished)
 	{
 		if (hasCustomName())
-			return super.toTextComponent(Questi18n.localizeMessage("QuestObject.KillMob"), isFinished, amount, CustomName);
+			return super.toTextComponent(I18n.locMsg("QuestObject.KillMob"), isFinished, amount, CustomName);
 		else
-			return super.toTextComponent(Questi18n.localizeMessage("QuestObject.KillMob"), isFinished, amount, type);
+			return super.toTextComponent(I18n.locMsg("QuestObject.KillMob"), isFinished, amount, type);
 	}
 
 	@Override
 	public String toPlainText()
 	{
 		if (CustomName != null)
-			return Questi18n.localizeMessage("QuestObject.KillMob", Integer.toString(amount), QuestChatManager.translateColor(CustomName));
+			return I18n.locMsg("QuestObject.KillMob", Integer.toString(amount), QuestChatManager.translateColor(CustomName));
 		else
-			return Questi18n.localizeMessage("QuestObject.KillMob", Integer.toString(amount), QuestUtil.translate(type));
+			return I18n.locMsg("QuestObject.KillMob", Integer.toString(amount), QuestUtil.translate(type));
 	}
 	
 	@Override
 	public String toDisplayText()
 	{
 		if (CustomName != null)
-			return Questi18n.localizeMessage("QuestObject.FinishMessage.KillMob", Integer.toString(amount), QuestChatManager.translateColor(CustomName));
+			return I18n.locMsg("QuestObject.FinishMessage.KillMob", Integer.toString(amount), QuestChatManager.translateColor(CustomName));
 		else
-			return Questi18n.localizeMessage("QuestObject.FinishMessage.KillMob", Integer.toString(amount), QuestUtil.translate(type));
+			return I18n.locMsg("QuestObject.FinishMessage.KillMob", Integer.toString(amount), QuestUtil.translate(type));
 	}
 	
 

@@ -12,7 +12,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
-public class Questi18n
+public class I18n
 {
 
 	private static ResourceBundle bundle;
@@ -28,11 +28,11 @@ public class Questi18n
 		}
 		catch (MissingResourceException e)
 		{
-			bundle = ResourceBundle.getBundle("messages", local, new FileResClassLoader(Questi18n.class.getClassLoader(), Main.instance));
+			bundle = ResourceBundle.getBundle("messages", local, new FileResClassLoader(I18n.class.getClassLoader(), Main.instance));
 		}
 	}
 
-	public static String localizeMessage(String path)
+	public static String locMsg(String path)
 	{
 		String format = bundle.getString(path);
 		format = QuestChatManager.translateColor(format);
@@ -42,7 +42,7 @@ public class Questi18n
 			return format;
 	}
 
-	public static String localizeMessage(String path, String... args)
+	public static String locMsg(String path, String... args)
 	{
 		String format = bundle.getString(path);
 		if (format == null)

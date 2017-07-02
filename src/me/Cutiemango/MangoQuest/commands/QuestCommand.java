@@ -5,7 +5,7 @@ import com.nisovin.shopkeepers.Shopkeeper;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.Questi18n;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
@@ -63,7 +63,7 @@ public class QuestCommand
 						}
 				if (args.length < 3 || QuestStorage.Quests.get(args[2]) == null)
 				{
-					QuestChatManager.error(sender, Questi18n.localizeMessage("CommandInfo.QuestNotFound"));
+					QuestChatManager.error(sender, I18n.locMsg("CommandInfo.QuestNotFound"));
 					return;
 				}
 				Quest quest = QuestStorage.Quests.get(args[2]);
@@ -77,8 +77,7 @@ public class QuestCommand
 							QuestGUIManager.openGUI(sender, qd.getProgress(quest));
 						return;
 					case "take":
-						qd.takeQuest(quest);
-						QuestGUIManager.openGUI(sender, qd.getProgress(quest));
+						qd.takeQuest(quest, true);
 						return;
 					case "quit":
 						qd.quitQuest(quest);
@@ -93,11 +92,11 @@ public class QuestCommand
 
 	private static void sendHelp(Player p)
 	{
-		QuestChatManager.info(p, Questi18n.localizeMessage("CommandHelp.Title"));
-		QuestChatManager.info(p, Questi18n.localizeMessage("CommandHelp.List"));
-		QuestChatManager.info(p, Questi18n.localizeMessage("CommandHelp.View"));
-		QuestChatManager.info(p, Questi18n.localizeMessage("CommandHelp.Take"));
-		QuestChatManager.info(p, Questi18n.localizeMessage("CommandHelp.Quit"));
+		QuestChatManager.info(p, I18n.locMsg("CommandHelp.Title"));
+		QuestChatManager.info(p, I18n.locMsg("CommandHelp.List"));
+		QuestChatManager.info(p, I18n.locMsg("CommandHelp.View"));
+		QuestChatManager.info(p, I18n.locMsg("CommandHelp.Take"));
+		QuestChatManager.info(p, I18n.locMsg("CommandHelp.Quit"));
 	}
 
 }
