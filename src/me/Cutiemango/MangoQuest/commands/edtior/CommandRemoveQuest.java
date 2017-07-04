@@ -2,27 +2,29 @@ package me.Cutiemango.MangoQuest.commands.edtior;
 
 import java.util.Iterator;
 import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestConfigManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.RequirementType;
 
-public class CommandRemoveQuest {
-	
-	public static void execute(Quest q, Player sender, String[] args){
-		if (args.length >= 3){
-			switch(args[2]){
+public class CommandRemoveQuest
+{
+
+	public static void execute(Quest q, Player sender, String[] args)
+	{
+		if (args.length >= 3)
+		{
+			switch (args[2])
+			{
 				case "quest":
 					removeQuest(q, sender, args);
 					return;
@@ -33,7 +35,8 @@ public class CommandRemoveQuest {
 		}
 		if (!QuestEditorManager.checkEditorMode(sender, true))
 			return;
-		switch (args[2]) {
+		switch (args[2])
+		{
 			case "req":
 				removeRequirements(q, sender, args);
 				break;
@@ -51,10 +54,13 @@ public class CommandRemoveQuest {
 				break;
 		}
 	}
-	
-	private static void removeReward(Quest q, Player sender, String[] args) {
-		if (args.length == 5){
-			switch(args[3].toLowerCase()){
+
+	private static void removeReward(Quest q, Player sender, String[] args)
+	{
+		if (args.length == 5)
+		{
+			switch (args[3].toLowerCase())
+			{
 				case "item":
 					q.getQuestReward().getItems().remove(Integer.parseInt(args[4]));
 					break;
@@ -68,68 +74,83 @@ public class CommandRemoveQuest {
 			QuestEditorManager.editQuest(sender);
 			return;
 		}
-		
+
 	}
 
-	private static void removeConfirm(Quest q, Player sender, String[] args){
-		if (args.length == 4){
-			if (QuestUtil.getQuest(args[3]) != null){
+	private static void removeConfirm(Quest q, Player sender, String[] args)
+	{
+		if (args.length == 4)
+		{
+			if (QuestUtil.getQuest(args[3]) != null)
+			{
 				Quest target = QuestUtil.getQuest(args[3]);
 				QuestEditorManager.removeConfirmGUI(sender, target);
 				return;
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private static void removeRequirements(Quest q, Player sender, String[] args){
+	private static void removeRequirements(Quest q, Player sender, String[] args)
+	{
 		RequirementType t = RequirementType.valueOf(args[3]);
-		if (args.length == 5) {
-			switch (t) {
-			case LEVEL:
-			case MONEY:
-				break;
-			case QUEST:
-			case SCOREBOARD:
-			case NBTTAG:
-				((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
-				break;
-			case ITEM:
-				((List<ItemStack>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
-				break;
+		if (args.length == 5)
+		{
+			switch (t)
+			{
+				case LEVEL:
+				case MONEY:
+					break;
+				case QUEST:
+				case SCOREBOARD:
+				case NBTTAG:
+					((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
+					break;
+				case ITEM:
+					((List<ItemStack>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
+					break;
 			}
 			QuestEditorManager.editQuestRequirement(sender);
 			QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRemoved"));
 			return;
 		}
 	}
-	
-	private static void removeEvent(Quest q, Player sender, String[] args){
+
+	private static void removeEvent(Quest q, Player sender, String[] args)
+	{
 		int index = Integer.parseInt(args[3]);
-		if (args.length == 4) {
+		if (args.length == 4)
+		{
 			q.getTriggers().remove(index);
 			QuestEditorManager.editQuestTrigger(sender);
 			QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRemoved"));
 			return;
 		}
 	}
-	
-	private static void removeQuest(Quest q, Player sender, String[] args){
-		if (args.length == 4){
-			if (QuestUtil.getQuest(args[3]) != null){
+
+	private static void removeQuest(Quest q, Player sender, String[] args)
+	{
+		if (args.length == 4)
+		{
+			if (QuestUtil.getQuest(args[3]) != null)
+			{
 				Quest target = QuestUtil.getQuest(args[3]);
-				for (Player pl : Bukkit.getOnlinePlayers()){
+				for (Player pl : Bukkit.getOnlinePlayers())
+				{
 					Iterator<QuestProgress> it = QuestUtil.getData(pl).getProgresses().iterator();
-					while (it.hasNext()) {
+					while (it.hasNext())
+					{
 						QuestProgress qp = it.next();
-						if (QuestValidater.weakValidate(target, qp.getQuest())){
+						if (QuestValidater.weakValidate(target, qp.getQuest()))
+						{
 							QuestUtil.getData(pl).forceQuit(target, true);
 							break;
 						}
-						else continue;
+						else
+							continue;
 					}
 				}
-				Main.instance.configManager.removeQuest(target);
+				QuestConfigManager.getSaver().removeQuest(target);
 				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.QuestRemoved", target.getQuestName()));
 				QuestStorage.Quests.remove(args[3]);
 				QuestEditorManager.removeGUI(sender);
@@ -137,14 +158,19 @@ public class CommandRemoveQuest {
 			}
 		}
 	}
-	
+
 	// /mq e remove stage [stage]
-	private static void removeStage(Quest q, Player sender, String[] args){
-		if (args.length == 4){
+	private static void removeStage(Quest q, Player sender, String[] args)
+	{
+		if (args.length == 4)
+		{
 			int stage = 1;
-			try{
+			try
+			{
 				stage = Integer.parseInt(args[3]);
-			}catch(NumberFormatException e){
+			}
+			catch (NumberFormatException e)
+			{
 				QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
 				QuestEditorManager.editQuestStages(sender);
 				return;
@@ -155,16 +181,21 @@ public class CommandRemoveQuest {
 			return;
 		}
 	}
-	
+
 	// /mq e remove object [stage] [object]
-	private static void removeObject(Quest q, Player sender, String[] args){
-		if (args.length == 5){
+	private static void removeObject(Quest q, Player sender, String[] args)
+	{
+		if (args.length == 5)
+		{
 			int stage = 1;
 			int obj = 1;
-			try{
+			try
+			{
 				stage = Integer.parseInt(args[3]);
 				obj = Integer.parseInt(args[4]);
-			}catch(NumberFormatException e){
+			}
+			catch (NumberFormatException e)
+			{
 				QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
 				QuestEditorManager.editQuestStages(sender);
 				return;

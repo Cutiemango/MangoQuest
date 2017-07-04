@@ -45,7 +45,7 @@ public class CommandNewQuest {
 			return;
 		}
 		QuestEditorManager.getCurrentEditingQuest(p).setInternalID(args[3]);
-		QuestChatManager.info(p, I18n.locMsg("EditorMessage.NewQuest.IDRegistered", args[3]));
+		QuestChatManager.info(p, I18n.locMsg("EditorMessage.IDRegistered", args[3]));
 		QuestEditorManager.createQuest(p);
 	}
 	
@@ -60,7 +60,7 @@ public class CommandNewQuest {
 			return;
 		}
 		QuestEditorManager.getCurrentEditingQuest(p).setQuestName(args[3]);
-		QuestChatManager.info(p, I18n.locMsg("EditorMessage.NewQuest.NameRegistered", args[3]));
+		QuestChatManager.info(p, I18n.locMsg("EditorMessage.NameRegistered", args[3]));
 		QuestEditorManager.createQuest(p);
 	}
 	

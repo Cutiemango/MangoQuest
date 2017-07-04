@@ -264,6 +264,7 @@ public class CommandEditConv
 							}
 							break;
 					}
+					ConversationEditorManager.editConversation(sender);
 					return;
 				}
 				EditorListenerHandler.register(sender,

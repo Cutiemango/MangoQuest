@@ -1,9 +1,10 @@
 package me.Cutiemango.MangoQuest.conversation;
 
 import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
@@ -24,6 +25,20 @@ public class ConversationManager {
 		return cp;
 	}
 	
+	/**
+	 * Simulates a conversation from the beginning.
+	 * @param p The player to start a new conversation
+	 * @param conv The conversation to start
+	 * @return The progress of conversation
+	 */
+	public static ConversationProgress simulateConversation(Player p, QuestConversation conv){
+		ConversationProgress cp = new ModelConvProgress(p, conv);
+		QuestStorage.ConvProgresses.put(p.getName(), cp);
+		cp.nextAction();
+		openConversation(p, cp);
+		return cp;
+	}
+
 	/**
 	 * Update player's conversation with a specified progress.
 	 * @param p The player to start a new conversation
@@ -78,9 +93,18 @@ public class ConversationManager {
 		return QuestValidater.detailedValidate(conv, QuestStorage.ConvProgresses.get(p.getName()).getConvseration());
 	}
 	
+	public static void forceQuit(Player p, QuestConversation conv)
+	{
+		if (!isInConvProgress(p, conv))
+			return;
+		ConversationProgress cp = QuestStorage.ConvProgresses.get(p.getName());
+		cp.getCurrentPage().add(I18n.locMsg("CommandInfo.ForceQuitConv")).changeLine();
+		cp.getActionQueue().push(new QuestBaseAction(EnumAction.FINISH, "false"));
+	}
+	
 	public static QuestBookPage generateNewPage(QuestConversation conv)
 	{
-		QuestBookPage page = new QuestBookPage().add(QuestChatManager.translateColor("&0「" + conv.getName() + "」"));
+		QuestBookPage page = new QuestBookPage().add("&0「" + conv.getName() + "」");
 		page.changeLine();
 		return page;
 	}

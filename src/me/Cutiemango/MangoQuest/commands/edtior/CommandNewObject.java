@@ -22,7 +22,7 @@ import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
 
 public class CommandNewObject
 {
-
+	
 	public static void execute(Quest q, Player sender, String[] args)
 	{
 		if (!QuestEditorManager.checkEditorMode(sender, true))

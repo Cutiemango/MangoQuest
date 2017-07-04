@@ -12,6 +12,7 @@ import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestConfigManager;
 
 public class ConversationEditorCommand
 {
@@ -30,6 +31,11 @@ public class ConversationEditorCommand
 			{
 				switch (args[1])
 				{
+					case "modconv":
+						if (!ConversationEditorManager.checkEditorMode(sender, false))
+							return;
+						ConversationManager.simulateConversation(sender, conv);
+						return;
 					case "edit":
 						ConversationEditorManager.editGUI(sender);
 						return;
@@ -53,45 +59,43 @@ public class ConversationEditorCommand
 					case "saveall":
 						if (!ConversationEditorManager.checkEditorMode(sender, true))
 							return;
-						// TODO
-//						if (q.getStages().isEmpty())
-//						{
-//							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.QuestEmpty"));
-//							return;
-//						}
-//						Main.instance.configManager.saveQuest(q);
-//						Quest.synchronizeLocal(q);
-//						QuestChatManager.info(sender, "&a" + Questi18n.localizeMessage("EditorMessage.SaveConfigSuccess", q.getQuestName()));
-//						QuestChatManager.info(sender, "&b" + Questi18n.localizeMessage("EditorMessage.SaveServerSuccess", q.getQuestName()));
-						ConversationEditorManager.exit(sender);
+						if (conv.getActions().isEmpty())
+						{
+							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.ConversationEmpty"));
+							return;
+						}
+						QuestConfigManager.getSaver().saveConversation(conv);
+						QuestConversation.synchronizeLocal(conv);
+						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ConvSaveCfgSuccess", conv.getName()));
+						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ConvSaveSevSuccess", conv.getName()));
 						break;
 					case "sc":
 					case "savecfg":
 						if (!ConversationEditorManager.checkEditorMode(sender, true))
 							return;
-//						if (q.getStages().isEmpty())
-//						{
-//							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.QuestEmpty"));
-//							return;
-//						}
-//						Main.instance.configManager.saveQuest(q);
-//						QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.SaveConfigSuccess", q.getQuestName()));
-						ConversationEditorManager.exit(sender);
+						if (conv.getActions().isEmpty())
+						{
+							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.ConversationEmpty"));
+							return;
+						}
+						QuestConfigManager.getSaver().saveConversation(conv);
+						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ConvSaveCfgSuccess", conv.getName()));
 						break;
 					case "sl":
 					case "savelocal":
 						if (!ConversationEditorManager.checkEditorMode(sender, true))
 							return;
-//						if (q.getStages().isEmpty())
-//						{
-//							QuestChatManager.error(sender, Questi18n.localizeMessage("EditorMessage.QuestEmpty"));
-//							return;
-//						}
-//						Quest.synchronizeLocal(q);
-//						QuestChatManager.info(sender, Questi18n.localizeMessage("EditorMessage.SaveServerSuccess", q.getQuestName()));
-						ConversationEditorManager.exit(sender);
+						if (conv.getActions().isEmpty())
+						{
+							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.ConversationEmpty"));
+							return;
+						}
+						QuestConversation.synchronizeLocal(conv);
+						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ConvSaveSevSuccess", conv.getName()));
 						break;
 				}
+				ConversationEditorManager.exit(sender);
+				return;
 			}
 			else
 			{

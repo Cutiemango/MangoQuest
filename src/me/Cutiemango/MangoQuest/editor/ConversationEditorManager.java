@@ -15,6 +15,8 @@ import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 
 public class ConversationEditorManager
 {
@@ -47,7 +49,7 @@ public class ConversationEditorManager
 	{
 		QuestBookPage p1 = new QuestBookPage();
 		p1.add(I18n.locMsg("QuestEditor.Title")).changeLine();
-		p1.add(new InteractiveText(I18n.locMsg("ConversationEditor.NewConversation")).clickCommand("/mq ce new")
+		p1.add(new InteractiveText(I18n.locMsg("ConversationEditor.NewConversation")).clickCommand("/mq ce newconv")
 				.showText(I18n.locMsg("ConversationEditor.NewConversation.ShowText"))).changeLine();
 		p1.changeLine();
 		p1.add(new InteractiveText(I18n.locMsg("ConversationEditor.EditConversation")).clickCommand("/mq ce edit")
@@ -131,6 +133,11 @@ public class ConversationEditorManager
 		
 		page.changeLine();
 		
+		page.add(new InteractiveText(I18n.locMsg("ConversationEditor.StartSimulation")).clickCommand("/mq ce modconv")).changeLine();
+		
+		page.changeLine();
+		page.changeLine();
+		
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.ReturnToMenu")).clickCommand("/mq ce edit")).changeLine();
 		// 特殊對話：
 		// 是否為 友好度對話、接受任務對話
@@ -180,7 +187,7 @@ public class ConversationEditorManager
 							.clickCommand("/mq ce edit acceptact" + counter)).endNormally();
 				else
 					page.add(new InteractiveText(act.getActionType().toCustomString())
-						.showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject()).clickCommand("/mq ce edit acceptact" + counter)).endNormally();
+						.showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject()).clickCommand("/mq ce edit acceptact " + counter)).endNormally();
 				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq ce remove acceptact " + counter));
 				page.changeLine();
 				counter++;
@@ -205,9 +212,17 @@ public class ConversationEditorManager
 						.showText(I18n.locMsg("ConversationEditor.ActionObject") + I18n.locMsg("ConversationEditor.NoObjectAction"))
 							.clickCommand("/mq ce edit denyact" + counter)).endNormally();
 				else
-					page.add(new InteractiveText(act.getActionType().toCustomString())
-						.showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject()).clickCommand("/mq ce edit denyact" + counter)).endNormally();
-				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq ce remove denyact" + counter));
+					if (act.getActionType().equals(EnumAction.NPC_TALK))
+					{
+						String[] split = act.getObject().split("@");
+						NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
+						page.add(new InteractiveText(act.getActionType().toCustomString())
+								.showText(I18n.locMsg("ConversationEditor.ActionObject") + npc.getName() + "&0：「" + split[0] + "」").clickCommand("/mq ce edit denyact " + counter)).endNormally();
+					}
+					else
+						page.add(new InteractiveText(act.getActionType().toCustomString())
+						.showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject()).clickCommand("/mq ce edit denyact " + counter)).endNormally();
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq ce remove denyact " + counter));
 				page.changeLine();
 				counter++;
 			}
@@ -237,8 +252,8 @@ public class ConversationEditorManager
 						.clickCommand("/mq ce edit act" + counter)).endNormally();
 			else
 				page.add(new InteractiveText(act.getActionType().toCustomString())
-					.showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject()).clickCommand("/mq ce edit act" + counter)).endNormally();
-			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq ce remove act" + counter));
+					.showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject()).clickCommand("/mq ce edit act " + counter)).endNormally();
+			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq ce remove act " + counter));
 			page.changeLine();
 			counter++;
 		}
@@ -248,7 +263,65 @@ public class ConversationEditorManager
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new act"));
 		page.changeLine();
 		
+		// 儲存頁面
+		book.newPage();
+		page = book.getLastEditingPage();
+		page.add(I18n.locMsg("QuestEditor.SaveAndExit")).changeLine();
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.SyncSevAndLoc")).clickCommand("/mq ce sa").showText(I18n.locMsg("QuestEditor.WarnSave"))).changeLine();
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.SyncSev")).clickCommand("/mq ce sl").showText(I18n.locMsg("QuestEditor.WarnSave"))).changeLine();
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.SyncLoc")).clickCommand("/mq ce sc").showText(I18n.locMsg("QuestEditor.WarnSave"))).changeLine();
+		page.changeLine();
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.QuitEditor")).clickCommand("/mq ce exit").showText(I18n.locMsg("QuestEditor.ExitEditor.ShowText"))).changeLine();
+		
 		QuestGUIManager.openBook(p, book.toSendableBook());
+	}
+	
+	public static void createConversation(Player p)
+	{
+		QuestBookPage page = new QuestBookPage();
+		page.add(I18n.locMsg("ConversationEditor.CreateConv")).changeLine();
+		page.add(I18n.locMsg("ConversationEditor.CreateConv2")).endNormally();
+		page.add(I18n.locMsg("ConversationEditor.CreateConv3")).changeLine();
+		QuestConversation qc = ConversationEditorManager.getEditingConversation(p);
+		page.add(new InteractiveText(I18n.locMsg("ConversationEditor.NewConvID")).clickCommand("/mq ce newconv id").showText(I18n.locMsg("ConversationEditor.ClickToEdit"))).endNormally();
+		if (qc.getInternalID() == null)
+			page.add(I18n.locMsg("QuestEditor.NotSet")).changeLine();
+		else
+			page.add(qc.getInternalID()).changeLine();
+		
+		page.add(new InteractiveText(I18n.locMsg("ConversationEditor.NewConvName")).clickCommand("/mq ce newconv name").showText(I18n.locMsg("ConversationEditor.ClickToEdit"))).endNormally();
+		if (qc.getName() == null)
+			page.add(I18n.locMsg("QuestEditor.NotSet")).changeLine();
+		else
+			page.add(qc.getName()).changeLine();
+		
+		page.add(new InteractiveText(I18n.locMsg("ConversationEditor.NewConvNPC")).clickCommand("/mq ce newconv npc").showText(I18n.locMsg("ConversationEditor.ClickToEdit"))).endNormally();
+		if (qc.getNPC() == null)
+			page.add(I18n.locMsg("QuestEditor.NotSet")).changeLine();
+		else
+			page.add(new InteractiveText("").showNPCInfo(qc.getNPC())).changeLine();
+		
+		page.changeLine();
+		page.add(new InteractiveText(I18n.locMsg("ConversationEditor.CreateConvButton")).clickCommand("/mq ce newconv create")).endNormally();
+		QuestGUIManager.openBook(p, page);
+	}
+	
+	
+	public static void removeConfirmGUI(Player p, QuestConversation conv)
+	{
+		QuestBookPage p1 = new QuestBookPage();
+		p1.add(I18n.locMsg("QuestEditor.WarnRemoveConv")).changeLine();
+		p1.add(I18n.locMsg("QuestEditor.WarnRemoveQuest2", conv.getName())).changeLine();
+		p1.add(I18n.locMsg("QuestEditor.WarnRemoveQuest3")).changeLine();
+		p1.changeLine();
+		p1.changeLine();
+		p1.add("  ");
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.WarnAccept")).clickCommand("/mq ce remove conv " + conv.getInternalID()));
+		p1.endNormally();
+		p1.add(" &8&l/ ");
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.WarnDeny")).clickCommand("/mq ce remove"));
+		p1.endNormally();
+		QuestGUIManager.openBook(p, p1);
 	}
 	
 	

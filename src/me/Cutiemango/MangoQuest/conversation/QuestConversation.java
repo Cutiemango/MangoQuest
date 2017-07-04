@@ -1,10 +1,23 @@
 package me.Cutiemango.MangoQuest.conversation;
 
+import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.QuestStorage;
 import net.citizensnpcs.api.npc.NPC;
 
 public class QuestConversation
 {
+	// Only init with command
+	public QuestConversation()
+	{
+		action = new ArrayList<>();
+		name = "未設定";
+		id = "未設定";
+		npc = null;
+	}
+	
 	public QuestConversation(String s, String internal, NPC n, List<QuestBaseAction> list)
 	{
 		name = s;
@@ -43,6 +56,11 @@ public class QuestConversation
 		return npc != null;
 	}
 	
+	public void setInternalID(String s)
+	{
+		id = s;
+	}
+	
 	public void setName(String s)
 	{
 		name = s;
@@ -62,6 +80,15 @@ public class QuestConversation
 	public QuestConversation clone()
 	{
 		return new QuestConversation(name, id, npc, action);
+	}
+	
+	public static void synchronizeLocal(QuestConversation qc)
+	{
+		for (Player p : Bukkit.getOnlinePlayers())
+		{
+			ConversationManager.forceQuit(p, qc);
+		}
+		QuestStorage.Conversations.put(qc.getName(), qc);
 	}
 
 }

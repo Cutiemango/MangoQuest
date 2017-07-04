@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.QuestUtil.QuestTitleEnum;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestTrigger;
@@ -57,15 +56,14 @@ public class QuestProgress
 		QuestPlayerData pd = QuestUtil.getData(owner);
 		pd.addFinishedQuest(quest);
 		quest.getQuestReward().giveRewardTo(owner);
-		QuestUtil.sendQuestTitle(owner, quest, QuestTitleEnum.FINISH);
 		QuestChatManager.info(owner, I18n.locMsg("CommandInfo.CompleteMessage", quest.getQuestName()));
 		pd.removeProgress(quest);
 	}
 
 	public void save(QuestIO io)
 	{
-		io.set("玩家資料." + owner.getUniqueId() + ".任務進度." + quest.getInternalID() + ".QuestStage", CurrentStage);
-		io.set("玩家資料." + owner.getUniqueId() + ".任務進度." + quest.getInternalID() + ".Version", quest.getVersion().getVersion());
+		io.set("QuestProgress." + quest.getInternalID() + ".QuestStage", CurrentStage);
+		io.set("QuestProgress." + quest.getInternalID() + ".Version", quest.getVersion().getVersion());
 		int t = 0;
 		int value = 0;
 		for (QuestObjectProgress qop : objlist)
@@ -80,7 +78,7 @@ public class QuestProgress
 			}
 			else
 				value = qop.getProgress();
-			io.set("玩家資料." + owner.getUniqueId() + ".任務進度." + quest.getInternalID() + ".QuestObjectProgress." + t, value);
+			io.set("QuestProgress." + quest.getInternalID() + ".QuestObjectProgress." + t, value);
 			t++;
 		}
 	}

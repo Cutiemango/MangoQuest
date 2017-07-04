@@ -10,6 +10,7 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestConfigManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 
 public class AdminCommand implements CommandExecutor
@@ -86,7 +87,9 @@ public class AdminCommand implements CommandExecutor
 					// /mqa removedata [玩家ID]
 				case "removedata":
 					target = Bukkit.getPlayer(args[1]);
-					QuestUtil.clearData(p);
+					p.kickPlayer(I18n.locMsg("CommandInfo.KickForDataClearing"));
+					QuestConfigManager.getSaver().clearPlayerData(p);
+					QuestChatManager.info(p, I18n.locMsg("CommandInfo.PlayerDataRemoved"));
 					break;
 			}
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.CommandPerformed"));

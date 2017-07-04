@@ -23,6 +23,7 @@
     - "NPC_TALK#你能幫村子去清除那些惱人的蜘蛛嗎？@0"
     - "TAKE_QUEST#"
     StartQuest: Help
+    QuestFullMessage: "&c任務已滿，無法接受任務！"
   Test001:
     NPC: 1
     ConversationName: "初次會面"

@@ -137,5 +137,10 @@ public class QuestBaseAction
 	{
 		return obj;
 	}
+	
+	public String toConfigFormat()
+	{
+		return action.toString() + "#" + obj;
+	}
 
 }

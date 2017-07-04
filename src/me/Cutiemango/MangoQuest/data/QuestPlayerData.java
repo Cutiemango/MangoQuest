@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest.data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.bukkit.Location;
@@ -15,7 +16,6 @@ import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.QuestUtil.QuestTitleEnum;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
@@ -49,92 +49,11 @@ public class QuestPlayerData
 	{
 		this.p = p;
 		save = new QuestIO(p);
-		if (hasOldConfigData(p))
-		{
-			loadOld();
-			saveOld();
-			saveNew();
-		}
-		loadNew();
+		load();
+		save();
 	}
 	
-	public void loadOld()
-	{
-		QuestIO io = Main.instance.configManager.getPlayerIO();
-		io.set("玩家資料." + p.getUniqueId() + ".玩家ID", p.getName());
-
-		if (io.isSection("玩家資料." + p.getUniqueId() + ".任務進度"))
-		{
-			for (String index : io.getSection("玩家資料." + p.getUniqueId() + ".任務進度"))
-			{
-				if (QuestUtil.getQuest(index) == null)
-				{
-					QuestChatManager.error(p, I18n.locMsg("CommandInfo.TargetProgressNotFound", index));
-					io.removeSection("玩家資料." + p.getUniqueId() + ".任務進度." + index);
-					continue;
-				}
-				Quest q = QuestUtil.getQuest(index);
-				if (!(q.getVersion().getVersion() == io.getLong("玩家資料." + p.getUniqueId() + ".任務進度." + q.getInternalID() + ".Version")))
-				{
-					QuestChatManager.error(p, I18n.locMsg("CommandInfo.OutdatedQuestVersion", index));
-					io.removeSection("玩家資料." + p.getUniqueId() + ".任務進度." + index);
-					continue;
-				}
-
-				int t = 0;
-				int s = io.getInt("玩家資料." + p.getUniqueId() + ".任務進度." + index + ".QuestStage");
-				List<QuestObjectProgress> qplist = new ArrayList<>();
-				for (SimpleQuestObject ob : q.getStage(s).getObjects())
-				{
-					QuestObjectProgress qp = new QuestObjectProgress(ob,
-							io.getInt("玩家資料." + p.getUniqueId() + ".任務進度." + index + ".QuestObjectProgress." + t));
-					qp.checkIfFinished();
-					qplist.add(qp);
-					t++;
-				}
-				CurrentQuest.add(new QuestProgress(q, p, s, qplist));
-			}
-		}
-
-		if (io.isSection("玩家資料." + p.getUniqueId() + ".已完成的任務"))
-		{
-			for (String s : io.getSection("玩家資料." + p.getUniqueId() + ".已完成的任務"))
-			{
-				if (QuestUtil.getQuest(s) == null)
-				{
-					QuestChatManager.error(p, I18n.locMsg("CommandInfo.TargetProgressNotFound", s));
-					io.removeSection("玩家資料." + p.getUniqueId() + ".已完成的任務." + s);
-					continue;
-				}
-				QuestFinishData qd = new QuestFinishData(QuestUtil.getQuest(s),
-						io.getInt("玩家資料." + p.getUniqueId() + ".已完成的任務." + s + ".FinishedTimes"),
-						io.getLong("玩家資料." + p.getUniqueId() + ".已完成的任務." + s + ".LastFinishTime"));
-				FinishedQuest.add(qd);
-			}
-		}
-
-		if (io.isSection("玩家資料." + p.getUniqueId() + ".NPC友好度"))
-		{
-			for (String s : io.getSection("玩家資料." + p.getUniqueId() + ".NPC友好度"))
-			{
-				NPCfp.put(Integer.parseInt(s), io.getInt("玩家資料." + p.getUniqueId() + ".NPC友好度." + s));
-			}
-		}
-
-		if (io.getStringList("玩家資料." + p.getUniqueId() + ".已完成的對話") != null)
-		{
-			for (String s : io.getStringList("玩家資料." + p.getUniqueId() + ".已完成的對話"))
-			{
-				QuestConversation qc = ConversationManager.getConversation(s);
-				if (qc != null && !FinishedConversation.contains(s))
-					FinishedConversation.add(qc);
-			}
-		}
-
-		io.save();
-	}
-	
-	public void loadNew()
+	public void load()
 	{
 		save.set("LastKnownID", p.getName());
 
@@ -210,44 +129,8 @@ public class QuestPlayerData
 
 		QuestChatManager.info(p, I18n.locMsg("CommandInfo.PlayerLoadComplete"));
 	}
-	
-	public void saveOld()
-	{
-		QuestIO io = Main.instance.configManager.getPlayerIO();
-		io.set("玩家資料." + p.getUniqueId() + ".玩家ID", p.getName());
-		for (QuestFinishData q : FinishedQuest)
-		{
-			String id = q.getQuest().getInternalID();
-			io.set("玩家資料." + p.getUniqueId() + ".已完成的任務." + id + ".FinishedTimes", q.getFinishedTimes());
-			io.set("玩家資料." + p.getUniqueId() + ".已完成的任務." + id + ".LastFinishTime", q.getLastFinish());
-		}
 
-		io.set("玩家資料." + p.getUniqueId() + ".任務進度", "");
-
-		if (!CurrentQuest.isEmpty())
-		{
-			for (QuestProgress qp : CurrentQuest)
-			{
-				qp.save(io);
-			}
-		}
-
-		for (int i : NPCfp.keySet())
-		{
-			io.set("玩家資料." + p.getUniqueId() + ".NPC友好度." + i, NPCfp.get(i));
-		}
-
-		Set<String> s = new HashSet<>();
-		for (QuestConversation conv : FinishedConversation)
-		{
-			s.add(conv.getInternalID());
-		}
-		io.set("玩家資料." + p.getUniqueId() + ".已完成的對話", QuestUtil.convert(s));
-
-		io.save();
-	}
-
-	public void saveNew()
+	public void save()
 	{
 		save.set("LastKnownID", p.getName());
 		for (QuestFinishData q : FinishedQuest)
@@ -396,7 +279,6 @@ public class QuestPlayerData
 			}
 		}
 		CurrentQuest.add(new QuestProgress(q, p));
-		QuestUtil.sendQuestTitle(p, q, QuestTitleEnum.ACCEPT);
 	}
 	
 	public void forceTake(Quest q, boolean msg){
@@ -414,7 +296,6 @@ public class QuestPlayerData
 			}
 		}
 		CurrentQuest.add(new QuestProgress(q, p));
-		QuestUtil.sendQuestTitle(p, q, QuestTitleEnum.ACCEPT);
 		if (msg)
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.ForceTakeQuest", q.getQuestName()));
 		return;
@@ -477,7 +358,6 @@ public class QuestPlayerData
 			}
 		}
 		removeProgress(q);
-		QuestUtil.sendQuestTitle(p, q, QuestTitleEnum.QUIT);
 	}
 
 	public List<QuestProgress> getNPCtoTalkWith(NPC npc)
@@ -698,8 +578,10 @@ public class QuestPlayerData
 
 	public void removeProgress(Quest q)
 	{
-		for (QuestProgress qp : CurrentQuest)
+		Iterator<QuestProgress> it = CurrentQuest.iterator();
+		while (it.hasNext())
 		{
+			QuestProgress qp = it.next();
 			if (q.getInternalID().equals(qp.getQuest().getInternalID()))
 			{
 				CurrentQuest.remove(qp);
@@ -786,13 +668,8 @@ public class QuestPlayerData
 		}
 		return true;
 	}
-
-	public boolean hasOldConfigData(Player p)
-	{
-		return Main.instance.configManager.getPlayerIO().contains("玩家資料." + p.getUniqueId() + ".玩家ID");
-	}
 	
-	public boolean hasNewConfigData(Player p)
+	public boolean hasConfigData(Player p)
 	{
 		return save.contains("玩家資料." + p.getUniqueId() + ".玩家ID");
 	}

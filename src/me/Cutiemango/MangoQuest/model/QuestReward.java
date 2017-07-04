@@ -156,7 +156,7 @@ public class QuestReward
 				else
 				{
 					p.getInventory().addItem(is);
-					if (is.getItemMeta().hasDisplayName())
+					if (is.hasItemMeta() && is.getItemMeta().hasDisplayName())
 						QuestChatManager.info(p, I18n.locMsg("CommandInfo.GiveItemReward", is.getItemMeta().getDisplayName(),
 								Integer.toString(is.getAmount())));
 					else

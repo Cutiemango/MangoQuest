@@ -3,7 +3,6 @@ package me.Cutiemango.MangoQuest.commands;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Player;
-import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.commands.edtior.CommandEditQuest;
@@ -12,6 +11,7 @@ import me.Cutiemango.MangoQuest.commands.edtior.CommandNewQuest;
 import me.Cutiemango.MangoQuest.commands.edtior.CommandRemoveQuest;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestConfigManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 
 public class QuestEditorCommand
@@ -62,11 +62,10 @@ public class QuestEditorCommand
 							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.QuestEmpty"));
 							return;
 						}
-						Main.instance.configManager.saveQuest(q);
+						QuestConfigManager.getSaver().saveQuest(q);
 						Quest.synchronizeLocal(q);
-						QuestChatManager.info(sender, "&a" + I18n.locMsg("EditorMessage.SaveConfigSuccess", q.getQuestName()));
-						QuestChatManager.info(sender, "&b" + I18n.locMsg("EditorMessage.SaveServerSuccess", q.getQuestName()));
-						QuestEditorManager.exit(sender);
+						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.QuestSaveCfgSuccess", q.getQuestName()));
+						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.QuestSaveSevSuccess", q.getQuestName()));
 						break;
 					case "sc":
 					case "savecfg":
@@ -77,9 +76,8 @@ public class QuestEditorCommand
 							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.QuestEmpty"));
 							return;
 						}
-						Main.instance.configManager.saveQuest(q);
-						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.SaveConfigSuccess", q.getQuestName()));
-						QuestEditorManager.exit(sender);
+						QuestConfigManager.getSaver().saveQuest(q);
+						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.QuestSaveSevSuccess", q.getQuestName()));
 						break;
 					case "sl":
 					case "savelocal":
@@ -91,10 +89,11 @@ public class QuestEditorCommand
 							return;
 						}
 						Quest.synchronizeLocal(q);
-						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.SaveServerSuccess", q.getQuestName()));
-						QuestEditorManager.exit(sender);
+						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.QuestSaveCfgSuccess", q.getQuestName()));
 						break;
 				}
+				QuestEditorManager.exit(sender);
+				return;
 			}
 			else
 			{

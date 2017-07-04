@@ -26,12 +26,12 @@ public class ConversationProgress
 
 	public static final List<EnumAction> STOP_ACTIONS = Arrays.asList(EnumAction.BUTTON, EnumAction.WAIT, EnumAction.CHOICE, EnumAction.FINISH, EnumAction.TAKE_QUEST);
 	
-	private Player owner;
-	private QuestConversation conv;
-	private LinkedList<QuestBaseAction> actQueue;
-	private FlexiableBook currentBook = new FlexiableBook();
-	private FlexiableBook history = new FlexiableBook();
-	private boolean isFinished;
+	protected Player owner;
+	protected QuestConversation conv;
+	protected LinkedList<QuestBaseAction> actQueue;
+	protected FlexiableBook currentBook = new FlexiableBook();
+	protected FlexiableBook history = new FlexiableBook();
+	protected boolean isFinished;
 
 	private int page = 0;
 

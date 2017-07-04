@@ -12,7 +12,6 @@ import me.Cutiemango.MangoQuest.book.FlexiableBook;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestNPCData;
 import net.citizensnpcs.api.npc.NPC;
@@ -46,27 +45,6 @@ public class QuestUtil
 		return new ArrayList<T>(set);
 	}
 
-	public enum QuestTitleEnum
-	{
-		ACCEPT, FINISH, QUIT;
-	}
-
-	public static void sendQuestTitle(Player target, Quest quest, QuestTitleEnum e)
-	{
-		switch (e)
-		{
-			case ACCEPT:
-				sendTitle(target, 1, 3, 1, "&b&l接受任務", quest.getQuestName());
-				break;
-			case FINISH:
-				sendTitle(target, 1, 3, 1, "&6&l完成任務", quest.getQuestName());
-				break;
-			case QUIT:
-				sendTitle(target, 1, 3, 1, "&c&l放棄任務", quest.getQuestName());
-				break;
-		}
-	}
-
 	public static QuestPlayerData getData(Player p)
 	{
 		return QuestStorage.Players.get(p.getName());
@@ -95,12 +73,6 @@ public class QuestUtil
 		return QuestStorage.Quests.get(s);
 	}
 	
-	public static void clearData(Player p){
-		QuestStorage.Players.put(p.getName(), new QuestPlayerData(p));
-		Main.instance.configManager.clearPlayerData(p);
-		QuestChatManager.info(p, I18n.locMsg("CommandInfo.PlayerDataRemoved"));
-	}
-	
 	public static void checkOutOfBounds(QuestBookPage page, FlexiableBook book)
 	{
 		if (page.pageOutOfBounds())
@@ -119,15 +91,21 @@ public class QuestUtil
 		long hours = (l % 86400000) / 3600000;
 		long minutes = ((l % 86400000) % 3600000) / 60000;
 		long seconds = (((l % 86400000) % 3600000) % 60000) / 1000;
-
+		
+		if (l == 0)
+		{
+			s = I18n.locMsg("TimeFormat.NoCooldown");
+			return s;
+		}
+		
 		if (days > 0)
-			s += days + " 天,";
+			s += days + " " + I18n.locMsg("TimeFormat.Day") + ",";
 		if (hours > 0)
-			s += hours + " 小時,";
+			s += hours + " " + I18n.locMsg("TimeFormat.Hour") + ",";
 		if (minutes > 0)
-			s += minutes + " 分鐘,";
+			s += minutes + " " + I18n.locMsg("TimeFormat.Minute") + ",";
 		if (seconds > 0)
-			s += seconds + " 秒";
+			s += seconds + " " + I18n.locMsg("TimeFormat.Second");
 		return s;
 	}
 

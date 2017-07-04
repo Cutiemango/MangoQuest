@@ -195,24 +195,24 @@ public class QuestEditorManager
 				.showText(I18n.locMsg("QuestEditor.Stage.ShowText"))).changeLine();
 
 		QuestBookPage p3 = new QuestBookPage();
-		p3.add("&8&l任務提要》").changeLine();
+		p3.add(I18n.locMsg("QuestEditor.Outline")).changeLine();
 		for (String out : q.getQuestOutline())
 		{
 			p3.add(out).changeLine();
 		}
 		p3.changeLine();
-		p3.add(new InteractiveText("&0&l[編輯提要]").clickCommand("/mq e edit outline")).changeLine();;
+		p3.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit outline")).changeLine();;
 
 		QuestBookPage p4 = new QuestBookPage();
-		p4.add("&6&l任務獎勵》").changeLine();
+		p4.add(I18n.locMsg("QuestEditor.Reward")).changeLine();
 
-		p4.add("金錢： " + q.getQuestReward().getMoney() + " 元").endNormally();
-		p4.add(new InteractiveText("&0 &l[編輯]").clickCommand("/mq e edit reward money").showText("&f點擊以輸入 &6金錢獎勵")).changeLine();
+		p4.add(I18n.locMsg("QuestEditor.RewardMoney", Double.toString(q.getQuestReward().getMoney()))).endNormally();
+		p4.add(new InteractiveText(" " + I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward money").showText(I18n.locMsg("QuestEditor.RewardMoney.ShowText"))).changeLine();
 
-		p4.add("經驗值： " + q.getQuestReward().getExp() + " 點").endNormally();
-		p4.add(new InteractiveText("&0 &l[編輯]").clickCommand("/mq e edit reward exp").showText("&f點擊以輸入 &b經驗值獎勵")).changeLine();
+		p4.add(I18n.locMsg("QuestEditor.RewardExp", Integer.toString(q.getQuestReward().getExp()))).endNormally();
+		p4.add(new InteractiveText(" " + I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward exp").showText(I18n.locMsg("QuestEditor.RewardExp.ShowText"))).changeLine();
 
-		p4.add(new InteractiveText("好感度： ").clickCommand("/mq e addnew reward fp").showText("&f點擊以&c新增&f好感度設定")).changeLine();
+		p4.add(new InteractiveText(I18n.locMsg("QuestEditor.RewardFriendPoint")).clickCommand("/mq e addnew reward fp").showText("QuestEditor.RewardFriendPoint.ShowText")).changeLine();
 		if (q.getQuestReward().hasFriendPoint())
 		{
 			for (Integer n : q.getQuestReward().getFp().keySet())
@@ -222,35 +222,35 @@ public class QuestEditorManager
 					continue;
 				p4.add("- ").endNormally();
 				p4.add(new InteractiveText("").showNPCInfo(npc)).endNormally();
-				p4.add("&0 " + q.getQuestReward().getFp().get(n) + " 點").endNormally();
-				p4.add(new InteractiveText("&0&l[編輯]").clickCommand("/mq e edit reward fp " + n)).endNormally();
-				p4.add(new InteractiveText("&0&l[移除]").clickCommand("/mq e remove reward fp " + n)).endNormally();
+				p4.add("&0 " + q.getQuestReward().getFp().get(n) + " " + I18n.locMsg("QuestEditor.Point")).endNormally();
+				p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward fp " + n)).endNormally();
+				p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove reward fp " + n)).endNormally();
 				p4.changeLine();
 			}
 		}
-		p4.add(new InteractiveText("指令： ").clickCommand("/mq e addnew reward command").showText("&f點擊以&c新增&f指令")).changeLine();
+		p4.add(new InteractiveText(I18n.locMsg("QuestEditor.RewardCommand")).clickCommand("/mq e addnew reward command").showText(I18n.locMsg("QuestEditor.RewardCommand.ShowText"))).changeLine();
 		if (q.getQuestReward().hasCommand())
 		{
 			int counter = 1;
 			for (String s : q.getQuestReward().getCommands())
 			{
-				p4.add(new InteractiveText("- &0指令(" + counter + ")").showText("&f/" + s));
-				p4.add(new InteractiveText("&0&l[編輯]").clickCommand("/mq e edit reward command " + (counter - 1))).endNormally();
-				p4.add(new InteractiveText("&0&l[移除]").clickCommand("/mq e remove reward command " + (counter - 1))).endNormally();
+				p4.add(new InteractiveText("- &0" + I18n.locMsg("QuestEditor.Command") + "(" + counter + ")").showText("&f/" + s));
+				p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward command " + (counter - 1))).endNormally();
+				p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove reward command " + (counter - 1))).endNormally();
 				p4.changeLine();
 				counter++;
 			}
 		}
-		p4.add("物品： ").changeLine();
-		p4.add(new InteractiveText("&7[點擊開啟GUI]").clickCommand("/mq e edit reward item").showText("&f請將物品丟入物品欄，系統將會自動讀取。")).changeLine();
+		p4.add(I18n.locMsg("QuestEditor.RewardItem")).changeLine();
+		p4.add(new InteractiveText(I18n.locMsg("QuestEditor.ClickToOpenGUI")).clickCommand("/mq e edit reward item").showText(I18n.locMsg("QuestEditor.RewardItem.ShowText"))).changeLine();
 
 		QuestBookPage p5 = new QuestBookPage();
-		p5.add("&c&l儲存/退出》").changeLine();
-		p5.add(new InteractiveText("&2&l【同步伺服器與設定檔】").clickCommand("/mq e sa").showText("&c&l注意： 目前持有此任務的玩家都會遺失任務進度。")).changeLine();
-		p5.add(new InteractiveText("&5&l【同步伺服器】").clickCommand("/mq e sl").showText("&c&l注意： 目前持有此任務的玩家都會遺失任務進度。")).changeLine();
-		p5.add(new InteractiveText("&9&l【同步設定檔】").clickCommand("/mq e sc").showText("&c&l注意： 目前持有此任務的玩家都會遺失任務進度。")).changeLine();
+		p5.add(I18n.locMsg("QuestEditor.SaveAndExit")).changeLine();
+		p5.add(new InteractiveText(I18n.locMsg("QuestEditor.SyncSevAndLoc")).clickCommand("/mq e sa").showText(I18n.locMsg("QuestEditor.WarnSave"))).changeLine();
+		p5.add(new InteractiveText(I18n.locMsg("QuestEditor.SyncSev")).clickCommand("/mq e sl").showText(I18n.locMsg("QuestEditor.WarnSave"))).changeLine();
+		p5.add(new InteractiveText(I18n.locMsg("QuestEditor.SyncLoc")).clickCommand("/mq e sc").showText(I18n.locMsg("QuestEditor.WarnSave"))).changeLine();
 		p5.changeLine();
-		p5.add(new InteractiveText("&0&l[退出編輯器]").clickCommand("/mq e exit").showText("&c&l所做的任何變更都不會儲存。")).changeLine();
+		p5.add(new InteractiveText(I18n.locMsg("QuestEditor.QuitEditor")).clickCommand("/mq e exit").showText(I18n.locMsg("QuestEditor.ExitEditor.ShowText"))).changeLine();
 
 		QuestGUIManager.openBook(p, p1, p2, p3, p4, p5);
 	}

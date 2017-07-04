@@ -28,8 +28,7 @@ public class PlayerListener
 	public static void onPlayerQuit(Player p)
 	{
 		QuestPlayerData qd = QuestUtil.getData(p);
-		qd.saveOld();
-		qd.saveNew();
+		qd.save();
 		QuestStorage.Players.remove(p.getName());
 	}
 	

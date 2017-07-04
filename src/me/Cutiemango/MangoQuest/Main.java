@@ -41,8 +41,8 @@ public class Main extends JavaPlugin
 		getCommand("mq").setExecutor(new CommandReceiver());
 		getCommand("mqa").setExecutor(new AdminCommand());
 		
-		configManager = new QuestConfigManager(this);
-		configManager.loadConfig();
+		configManager = new QuestConfigManager();
+		configManager.loadFile();
 		
 		initManager = new QuestInitializer(this);
 		initManager.initPlugins();
@@ -93,7 +93,7 @@ public class Main extends JavaPlugin
 			@Override
 			public void run()
 			{
-				configManager.load();
+				QuestConfigManager.getLoader().loadAll();
 				for (Player p : Bukkit.getOnlinePlayers())
 				{
 					QuestPlayerData qd = new QuestPlayerData(p);
@@ -116,8 +116,8 @@ public class Main extends JavaPlugin
 		savePlayers();
 		QuestStorage.clear();
 
-		configManager = new QuestConfigManager(this);
-		configManager.load();
+		configManager = new QuestConfigManager();
+		QuestConfigManager.getLoader().loadAll();
 
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
@@ -135,8 +135,7 @@ public class Main extends JavaPlugin
 	{
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
-			QuestUtil.getData(p).saveOld();
-			QuestUtil.getData(p).saveNew();
+			QuestUtil.getData(p).save();
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.PlayerDataSaving"));
 		}
 	}

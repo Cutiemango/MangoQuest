@@ -308,7 +308,8 @@ public class CommandEditQuest
 		else
 			if (args.length == 4)
 			{
-				q.setRedoDelay(Long.parseLong(args[3]));
+				String mili = Integer.toString(Integer.parseInt(args[3]) * 1000);
+				q.setRedoDelay(Long.parseLong(mili));
 				QuestEditorManager.editQuest(sender);
 				return;
 			}
