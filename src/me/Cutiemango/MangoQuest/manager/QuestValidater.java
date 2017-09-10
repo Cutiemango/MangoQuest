@@ -39,7 +39,7 @@ public class QuestValidater
 			return false;
 		if (!before.getStages().equals(after.getStages()))
 			return false;
-		if (!before.getTriggers().equals(after.getTriggers()))
+		if (!before.getTriggerMap().equals(after.getTriggerMap()))
 			return false;
 		return true;
 	}

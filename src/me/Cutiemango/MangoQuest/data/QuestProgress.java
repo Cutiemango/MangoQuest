@@ -8,8 +8,8 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.QuestTrigger;
-import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
+import me.Cutiemango.MangoQuest.model.TriggerObject;
+import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
@@ -45,13 +45,10 @@ public class QuestProgress
 
 	public void finish()
 	{
-		for (QuestTrigger t : quest.getTriggers())
+		for (TriggerObject obj : quest.getTrigger(TriggerType.TRIGGER_ON_FINISH))
 		{
-			if (t.getType().equals(TriggerType.TRIGGER_ON_FINISH))
-			{
-				t.trigger(owner);
-				continue;
-			}
+			obj.trigger(owner);
+			continue;
 		}
 		QuestPlayerData pd = QuestUtil.getData(owner);
 		pd.addFinishedQuest(quest);
@@ -95,27 +92,26 @@ public class QuestProgress
 
 	public void nextStage()
 	{
-		if (quest.hasTrigger())
+		if (quest.hasTrigger(TriggerType.TRIGGER_STAGE_FINISH))
 		{
-			for (QuestTrigger t : quest.getTriggers())
+			for (TriggerObject obj : quest.getTrigger(TriggerType.TRIGGER_STAGE_FINISH))
 			{
-				if (t.getType().equals(TriggerType.TRIGGER_STAGE_FINISH))
+				if (CurrentStage + 1 == obj.getStage())
 				{
-					if (CurrentStage + 1 == t.getCount())
-					{
-						t.trigger(owner);
-						continue;
-					}
+					obj.trigger(owner);
+					continue;
 				}
-				else
-					if (t.getType().equals(TriggerType.TRIGGER_STAGE_START))
-					{
-						if (CurrentStage + 2 == t.getCount())
-						{
-							t.trigger(owner);
-							continue;
-						}
-					}
+			}
+		}
+		if (quest.hasTrigger(TriggerType.TRIGGER_STAGE_START))
+		{
+			for (TriggerObject obj : quest.getTrigger(TriggerType.TRIGGER_STAGE_START))
+			{
+				if (CurrentStage + 2 == obj.getStage())
+				{
+					obj.trigger(owner);
+					continue;
+				}
 			}
 		}
 		if (CurrentStage + 1 < quest.getStages().size())

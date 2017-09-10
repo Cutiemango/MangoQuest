@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
@@ -157,10 +158,13 @@ public class QuestGUIManager
 		page.add("&0&l[進行中的任務]").changeLine();
 		for (QuestProgress qp : qd.getProgresses())
 		{
+			if (!qp.getQuest().getSettings().displayOnProgress())
+				continue;
 			page.changeLine();
 			page.add(new InteractiveText("").showQuest(qp.getQuest())).endNormally();
 			page.add("：").endNormally();
-			page.add(new InteractiveText("&c&l【放棄】").clickCommand("/mq quest quit " + qp.getQuest().getInternalID())).changeLine();
+			if (qp.getQuest().isQuitable())
+				page.add(new InteractiveText("&c&l【放棄】").clickCommand("/mq quest quit " + qp.getQuest().getInternalID())).changeLine();
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
 				page.add("- ").endNormally();
@@ -183,6 +187,8 @@ public class QuestGUIManager
 
 		for (Quest q : QuestStorage.Quests.values())
 		{
+			if (!q.getSettings().displayOnTake())
+				continue;
 			if (!qd.canTake(q, false))
 				continue;
 			else
@@ -204,6 +210,8 @@ public class QuestGUIManager
 		
 		for (QuestFinishData qfd : qd.getFinishQuests())
 		{
+			if (!qfd.getQuest().getSettings().displayOnFinish())
+				continue;
 			QuestUtil.checkOutOfBounds(page, book);
 			page = book.getLastEditingPage();
 			page.add("- ").endNormally();
@@ -226,18 +234,26 @@ public class QuestGUIManager
 	{
 		Main.instance.handler.openBook(p, texts);
 	}
+	
+	public static void openQuitGUI(Player p, Quest q)
+	{
+		QuestBookPage page = new QuestBookPage();
+		page.add(I18n.locMsg("QuestQuitMsg.Title")).changeLine();
+		page.add(I18n.locMsg("QuestQuitMsg.WarnAccept")).changeLine();
+		page.add(I18n.locMsg("QuestQuitMsg.WarnAccept2")).changeLine();
+		page.changeLine();
+		page.add(new InteractiveText(q.getQuitAcceptMsg()).clickCommand("/mq q cquit " + q.getInternalID())).changeLine();
+		page.changeLine();
+		page.add(new InteractiveText(q.getQuitCancelMsg()).clickCommand("/mq q list")).changeLine();
+		
+		openBook(p, page);
+	}
 
 	public static void openNPCInfo(Player p, NPC npc, boolean trade)
 	{
 		QuestPlayerData qd = QuestUtil.getData(p);
 		FlexiableBook book = new FlexiableBook();
 		QuestBookPage page = book.getLastEditingPage();
-
-//		// Title
-//		p1.add("&5&lNPC &0&l| ");
-//		p1.add(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), false));
-//		p1.changeLine();
-
 		List<Quest> holder = new ArrayList<>();
 
 		// Message
@@ -255,12 +271,13 @@ public class QuestGUIManager
 			page.add("&0- &6&l？ &0").endNormally();
 			page.add(TextComponentFactory.convertViewQuest(q.getQuest())).endNormally();
 			page.add(new InteractiveText("&9&l【對話】").clickCommand("/mq conv npc " + npc.getId()).showText("&9點擊&f以開始對話")).endNormally();
-			if (qd.isCurrentlyDoing(q.getQuest()) && !q.getQuest().isCommandQuest() && q.getQuest().getQuestNPC().equals(npc))
-			{
-				page.add(new InteractiveText("&c&l【放棄】").clickCommand("/mq quest quit " + q.getQuest().getInternalID())
-						.showText("&c放棄任務 &f" + q.getQuest().getQuestName() + "\n&4所有的任務進度都會消失。")).endNormally();
-				holder.add(q.getQuest());
-			}
+			if (q.getQuest().isQuitable())
+				if (qd.isCurrentlyDoing(q.getQuest()) && !q.getQuest().isCommandQuest() && q.getQuest().getQuestNPC().equals(npc))
+				{
+					page.add(new InteractiveText("&c&l【放棄】").clickCommand("/mq quest quit " + q.getQuest().getInternalID())
+							.showText("&c放棄任務 &f" + q.getQuest().getQuestName() + "\n&4所有的任務進度都會消失。")).endNormally();
+					holder.add(q.getQuest());
+				}
 			page.changeLine();
 		}
 		for (Quest q : QuestUtil.getGivenNPCQuests(npc))
@@ -287,7 +304,8 @@ public class QuestGUIManager
 						continue;
 					page.add("&0- &8&l？ &0");
 					page.add(new InteractiveText("").showQuest(q)).endNormally();
-					page.add(new InteractiveText("&c&l【放棄】").clickCommand("/mq quest quit " + q.getInternalID())
+					if (q.isQuitable())
+						page.add(new InteractiveText("&c&l【放棄】").clickCommand("/mq quest quit " + q.getInternalID())
 							.showText("&c放棄任務 &f" + q.getQuestName() + "\n&4所有的任務進度都會消失。"));
 					page.changeLine();
 					continue;

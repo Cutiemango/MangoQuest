@@ -1,6 +1,5 @@
 package me.Cutiemango.MangoQuest.manager;
 
-import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestIO;
 
 public class QuestConfigManager
@@ -30,9 +29,7 @@ public class QuestConfigManager
 		TranslateIO = new QuestIO("translations.yml", true);
 		NPCIO = new QuestIO("npc.yml", true);
 		ConversationIO = new QuestIO("conversations.yml", true);
-		
-		if (Main.isUsingUpdatedVersion())
-			AdvancementIO = new QuestIO("advancements.yml", false);
+		AdvancementIO = new QuestIO("advancements.yml", false);
 		
 		loader.init();
 		saver.init();

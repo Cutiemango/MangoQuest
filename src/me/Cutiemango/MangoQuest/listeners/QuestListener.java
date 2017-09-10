@@ -15,6 +15,8 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import me.Cutiemango.MangoQuest.ConfigSettings;
+import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
@@ -80,19 +82,23 @@ public class QuestListener implements Listener
 		PlayerListener.onNPCRightClick(e.getClicker(), e.getNPC(), e);
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onNPCDamage(NPCDamageByEntityEvent e)
 	{
 		if (!(e.getDamager() instanceof Player))
 			return;
+		if (ConfigSettings.DEBUG_MODE)
+			Main.debug(e.getEventName() + " has triggered.");
 		Player p = (Player) e.getDamager();
 		if (QuestEditorManager.checkEditorMode(p, false) || ConversationEditorManager.checkEditorMode(p, false))
 			e.setCancelled(true);
 		return;
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onNPCLeftClick(NPCLeftClickEvent e){
+		if (ConfigSettings.DEBUG_MODE)
+			Main.debug(e.getEventName() + " has triggered.");
 		EditorListenerHandler.onNPCLeftClick(e.getClicker(), e.getNPC(), e);
 	}
 	
@@ -105,6 +111,8 @@ public class QuestListener implements Listener
 	
 	@EventHandler (ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageByEntityEvent e){
+		if (ConfigSettings.DEBUG_MODE)
+			Main.debug(e.getEventName() + " has triggered.");
 		if (e.getDamager() instanceof Player && e.getEntity() instanceof Damageable)
 			EditorListenerHandler.onEntityDamage((Player)e.getDamager(), e.getEntity(), e);
 		else return;

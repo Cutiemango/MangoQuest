@@ -33,20 +33,22 @@ public class Version_v1_10_R1 implements VersionHandler
 	@Override
 	public void sendTitle(Player p, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle)
 	{
-		if (title != null)
-		{
-			title = ChatColor.translateAlternateColorCodes('&', title);
-			PacketPlayOutTitle ppot = new PacketPlayOutTitle(EnumTitleAction.TITLE, ChatSerializer.a("{\"text\":\"" + title + "\"}"), fadeIn, stay,
-					fadeOut);
-			((CraftPlayer) p).getHandle().playerConnection.sendPacket(ppot);
-		}
-		if (subtitle != null)
-		{
-			subtitle = ChatColor.translateAlternateColorCodes('&', subtitle);
-			PacketPlayOutTitle ppot = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, ChatSerializer.a("{\"text\":\"" + subtitle + "\"}"), fadeIn,
-					stay, fadeOut);
-			((CraftPlayer) p).getHandle().playerConnection.sendPacket(ppot);
-		}
+		String t;
+		if (title == null)
+			t = "";
+		else
+			t = QuestChatManager.translateColor(title);
+		
+		String subt;
+		if (subtitle == null)
+			subt = "";
+		else
+			subt = QuestChatManager.translateColor(subtitle);
+		
+		PacketPlayOutTitle ppot = new PacketPlayOutTitle(EnumTitleAction.TITLE, ChatSerializer.a("{\"text\":\"" + t + "\"}"), fadeIn, stay, fadeOut);
+		((CraftPlayer) p).getHandle().playerConnection.sendPacket(ppot);
+		ppot = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, ChatSerializer.a("{\"text\":\"" + subt + "\"}"), fadeIn, stay, fadeOut);
+		((CraftPlayer) p).getHandle().playerConnection.sendPacket(ppot);
 	}
 
 	@Override

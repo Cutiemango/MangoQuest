@@ -15,6 +15,8 @@ import me.Cutiemango.MangoQuest.manager.QuestConfigManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.RequirementType;
+import me.Cutiemango.MangoQuest.model.TriggerObject;
+import me.Cutiemango.MangoQuest.model.TriggerType;
 
 public class CommandRemoveQuest
 {
@@ -115,14 +117,19 @@ public class CommandRemoveQuest
 			return;
 		}
 	}
-
+	
+	// /mq e remove evt [triggertype] [stage] [index]
 	private static void removeEvent(Quest q, Player sender, String[] args)
 	{
-		int index = Integer.parseInt(args[3]);
 		if (args.length == 4)
 		{
-			q.getTriggers().remove(index);
-			QuestEditorManager.editQuestTrigger(sender);
+			TriggerType type = TriggerType.valueOf(args[3]);
+			int stage = Integer.parseInt(args[4]);
+			int index = Integer.parseInt(args[5]);
+			List<TriggerObject> list = q.getTriggerMap().get(type);
+			list.remove(index);
+			q.getTriggerMap().put(type, list);
+			QuestEditorManager.editQuestTrigger(sender, type, stage);
 			QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRemoved"));
 			return;
 		}

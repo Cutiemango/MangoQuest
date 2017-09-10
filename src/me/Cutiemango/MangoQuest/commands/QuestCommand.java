@@ -79,9 +79,21 @@ public class QuestCommand
 					case "take":
 						qd.takeQuest(quest, true);
 						return;
-					case "quit":
+					case "cquit":
+						if (!quest.isQuitable())
+						{
+							QuestChatManager.error(sender, I18n.locMsg("QuestQuitMsg.Denied"));
+							return;
+						}
 						qd.quitQuest(quest);
 						QuestGUIManager.openJourney(sender);
+					case "quit":
+						if (!quest.isQuitable())
+						{
+							QuestChatManager.error(sender, I18n.locMsg("QuestQuitMsg.Denied"));
+							return;
+						}
+						QuestGUIManager.openQuitGUI(sender, quest);
 						return;
 					default:
 						sendHelp(sender);

@@ -30,22 +30,22 @@ public class Quest
 			switch (t)
 			{
 				case ITEM:
-					Requirements.put(t, new ArrayList<ItemStack>());
+					requirements.put(t, new ArrayList<ItemStack>());
 					break;
 				case LEVEL:
-					Requirements.put(t, 0);
+					requirements.put(t, 0);
 					break;
 				case MONEY:
-					Requirements.put(t, 0.0D);
+					requirements.put(t, 0.0D);
 					break;
 				case NBTTAG:
-					Requirements.put(t, new ArrayList<String>());
+					requirements.put(t, new ArrayList<String>());
 					break;
 				case QUEST:
-					Requirements.put(t, new ArrayList<String>());
+					requirements.put(t, new ArrayList<String>());
 					break;
 				case SCOREBOARD:
-					Requirements.put(t, new ArrayList<String>());
+					requirements.put(t, new ArrayList<String>());
 					break;
 			}
 		}
@@ -56,9 +56,9 @@ public class Quest
 	{
 		this.InternalID = InternalID;
 		this.QuestName = QuestChatManager.translateColor(name);
-		this.QuestOutline = QuestOutline;
+		this.outline = QuestOutline;
 		this.reward = reward;
-		this.AllStages = stages;
+		this.stages = stages;
 		this.QuestNPC = npc;
 
 		for (RequirementType t : RequirementType.values())
@@ -66,22 +66,22 @@ public class Quest
 			switch (t)
 			{
 				case ITEM:
-					Requirements.put(t, new ArrayList<ItemStack>());
+					requirements.put(t, new ArrayList<ItemStack>());
 					break;
 				case LEVEL:
-					Requirements.put(t, 0);
+					requirements.put(t, 0);
 					break;
 				case MONEY:
-					Requirements.put(t, 0.0D);
+					requirements.put(t, 0.0D);
 					break;
 				case NBTTAG:
-					Requirements.put(t, new ArrayList<String>());
+					requirements.put(t, new ArrayList<String>());
 					break;
 				case QUEST:
-					Requirements.put(t, new ArrayList<String>());
+					requirements.put(t, new ArrayList<String>());
 					break;
 				case SCOREBOARD:
-					Requirements.put(t, new ArrayList<String>());
+					requirements.put(t, new ArrayList<String>());
 					break;
 			}
 		}
@@ -93,18 +93,15 @@ public class Quest
 	private String InternalID;
 	private String QuestName;
 
-	private List<String> QuestOutline = new ArrayList<>();
+	private List<String> outline = new ArrayList<>();
 
-	private boolean useCustomFailMessage = false;
-	private String FailRequirementMessage = "&c你並沒有達到指定的任務條件。";
-	private List<QuestStage> AllStages = new ArrayList<>();
+	private List<QuestStage> stages = new ArrayList<>();
 	private QuestReward reward = new QuestReward();
+	private QuestSetting setting = new QuestSetting();
 
-	private EnumMap<RequirementType, Object> Requirements = new EnumMap<>(RequirementType.class);
-	private List<QuestTrigger> Triggers = new ArrayList<>();
+	private EnumMap<RequirementType, Object> requirements = new EnumMap<>(RequirementType.class);
+	private EnumMap<TriggerType, List<TriggerObject>> triggerMap = new EnumMap<>(TriggerType.class);
 
-	private boolean isRedoable = false;
-	private long RedoDelay;
 
 	private QuestVersion version;
 
@@ -130,12 +127,12 @@ public class Quest
 
 	public List<String> getQuestOutline()
 	{
-		return QuestOutline;
+		return outline;
 	}
 
 	public void setQuestOutline(List<String> s)
 	{
-		QuestOutline = s;
+		outline = s;
 	}
 
 	public QuestReward getQuestReward()
@@ -170,13 +167,13 @@ public class Quest
 
 	public List<QuestStage> getStages()
 	{
-		return AllStages;
+		return stages;
 	}
 
 	public List<SimpleQuestObject> getAllObjects()
 	{
 		List<SimpleQuestObject> list = new ArrayList<>();
-		for (QuestStage qs : AllStages)
+		for (QuestStage qs : stages)
 		{
 			list.addAll(qs.getObjects());
 		}
@@ -185,86 +182,131 @@ public class Quest
 
 	public QuestStage getStage(int index)
 	{
-		return AllStages.get(index);
+		return stages.get(index);
 	}
 
 	public EnumMap<RequirementType, Object> getRequirements()
 	{
-		return Requirements;
+		return requirements;
 	}
 
-	public List<QuestTrigger> getTriggers()
+	public EnumMap<TriggerType, List<TriggerObject>> getTriggerMap()
 	{
-		return Triggers;
+		return triggerMap;
+	}
+	
+	public List<TriggerObject> getTrigger(TriggerType type)
+	{
+		return triggerMap.get(type);
 	}
 
-	public void setTriggers(List<QuestTrigger> triggers)
+	public void setTriggers(EnumMap<TriggerType, List<TriggerObject>> map)
 	{
-		Triggers = triggers;
+		triggerMap = map;
 	}
 
-	public boolean hasTrigger()
+	public boolean hasTrigger(TriggerType type)
 	{
-		return !Triggers.isEmpty();
+		return triggerMap.containsKey(type);
 	}
 
 	public boolean hasRequirement()
 	{
-		return !Requirements.isEmpty();
+		return !requirements.isEmpty();
 	}
 
 	public String getFailMessage()
 	{
-		return FailRequirementMessage;
+		return setting.failRequirementMessage;
 	}
 
 	public void setFailMessage(String s)
 	{
-		FailRequirementMessage = s;
+		setting.failRequirementMessage = s;
+	}
+	
+	public String getQuitAcceptMsg()
+	{
+		return I18n.locMsg("QuestQuitMsg.QuitQuest") + setting.quitAcceptMsg;
+	}
+	
+	public void setQuitAcceptMsg(String s)
+	{
+		setting.quitAcceptMsg = s;
+	}
+	
+	public String getQuitCancelMsg()
+	{
+		return I18n.locMsg("QuestQuitMsg.Cancel") + setting.quitCancelMsg;
+	}
+	
+	public void setQuitCancelMsg(String s)
+	{
+		setting.quitCancelMsg = s;
 	}
 
 	public boolean useCustomFailMessage()
 	{
-		return useCustomFailMessage;
+		return setting.useCustomFailMessage;
 	}
 
 	public void setUseCustomFailMessage(boolean b)
 	{
-		useCustomFailMessage = b;
+		setting.useCustomFailMessage = b;
 	}
 
 	public boolean isRedoable()
 	{
-		return isRedoable;
+		return setting.isRedoable;
 	}
 
 	public void setRedoable(boolean b)
 	{
-		isRedoable = b;
+		setting.isRedoable = b;
+	}
+	
+	public boolean isQuitable()
+	{
+		return setting.isQuitable;
+	}
+	
+	public void setQuitable(boolean b)
+	{
+		setting.isQuitable = b;
 	}
 
 	public long getRedoDelay()
 	{
-		return RedoDelay;
+		return setting.redoDelay;
 	}
 
 	public void setRedoDelay(long delay)
 	{
-		RedoDelay = delay;
+		setting.redoDelay = delay;
 	}
 
 	public void setRequirements(EnumMap<RequirementType, Object> m)
 	{
-		Requirements = m;
+		requirements = m;
+	}
+	
+	public QuestSetting getSettings()
+	{
+		return setting;
+	}
+	
+	public void registerSettings(QuestSetting s)
+	{
+		setting = s;
 	}
 
 	@SuppressWarnings("unchecked")
 	public FailResult meetRequirementWith(Player p)
 	{
 		QuestPlayerData pd = QuestUtil.getData(p);
-		for (RequirementType t : Requirements.keySet())
+		for (RequirementType t : requirements.keySet())
 		{
-			Object value = Requirements.get(t);
+			Object value = requirements.get(t);
 			switch (t)
 			{
 				case QUEST:
@@ -354,14 +396,11 @@ public class Quest
 	@Override
 	public Quest clone()
 	{
-		Quest q = new Quest(InternalID, QuestName, QuestOutline, reward, AllStages, QuestNPC);
-		q.setRequirements(Requirements);
-		q.setRedoable(isRedoable);
-		q.setRedoDelay(RedoDelay);
-		q.setFailMessage(FailRequirementMessage);
+		Quest q = new Quest(InternalID, QuestName, outline, reward, stages, QuestNPC);
+		q.setRequirements(requirements);
 		q.registerVersion(version);
-		q.setTriggers(Triggers);
-		q.useCustomFailMessage = useCustomFailMessage;
+		q.setTriggers(triggerMap);
+		q.registerSettings(setting);
 		return q;
 	}
 

@@ -14,6 +14,13 @@ public class QuestObjectConsumeItem extends ItemObject
 		amount = i;
 		config = "CONSUME_ITEM";
 	}
+	
+	@Override
+	public void setAmount(int i)
+	{
+		item.setAmount(i);
+		amount = i;
+	}
 
 	@Override
 	public TextComponent toTextComponent(boolean isFinished)

@@ -1,5 +1,6 @@
 package me.Cutiemango.MangoQuest.commands.edtior;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,8 +19,11 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.QuestTrigger;
+import me.Cutiemango.MangoQuest.model.QuestSetting;
 import me.Cutiemango.MangoQuest.model.RequirementType;
+import me.Cutiemango.MangoQuest.model.TriggerObject;
+import me.Cutiemango.MangoQuest.model.TriggerObject.TriggerObjectType;
+import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.questobjects.ItemObject;
 import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
@@ -29,8 +33,6 @@ import me.Cutiemango.MangoQuest.questobjects.QuestObjectKillMob;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
-import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerObject;
-import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
 import net.citizensnpcs.api.CitizensAPI;
 
 public class CommandEditQuest
@@ -74,6 +76,12 @@ public class CommandEditQuest
 				break;
 			case "object":
 				editObject(q, sender, args);
+				break;
+			case "vis":
+				editVisibility(q, sender, args);
+				break;
+			case "quit":
+				editQuit(q, sender, args);
 				break;
 			case "reward":
 				editReward(q, sender, args);
@@ -315,37 +323,36 @@ public class CommandEditQuest
 			}
 	}
 
-	// Command: /mq e edit evt [index] [type] ([stage]) [object]
+	// Command: /mq e edit evt [triggertype] [stage] [index] [objtype] [obj]
 	private static void editEvent(Quest q, Player sender, String[] args)
 	{
 		if (args.length == 3)
 		{
-			QuestEditorManager.editQuestTrigger(sender);
+			QuestEditorManager.selectTriggerType(sender, "edit");
 			return;
 		}
-		int index = Integer.parseInt(args[3]);
-		TriggerType type = TriggerType.valueOf(args[4]);
+		else if (args.length == 4)
+		{
+			TriggerType type = TriggerType.valueOf(args[3]);
+			if (type == TriggerType.TRIGGER_STAGE_FINISH || type == TriggerType.TRIGGER_STAGE_START)
+				QuestEditorManager.selectTriggerStage(sender, "edit", TriggerType.valueOf(args[3]));
+			else
+				QuestEditorManager.editQuestTrigger(sender, TriggerType.valueOf(args[3]), -1);
+			return;
+		}
+		else if (args.length == 5)
+		{
+			QuestEditorManager.editQuestTrigger(sender, TriggerType.valueOf(args[3]), Integer.parseInt(args[4]));
+			return;
+		}
+		TriggerType type = TriggerType.valueOf(args[3]);
+		int stage = Integer.parseInt(args[4]);
+		int index = Integer.parseInt(args[5]);
+		TriggerObjectType objtype = TriggerObjectType.valueOf(args[6]);
 		if (args.length >= 8)
 		{
-			if (type.equals(TriggerType.TRIGGER_STAGE_START) || type.equals(TriggerType.TRIGGER_STAGE_FINISH))
-			{
-				int i = Integer.parseInt(args[5]);
-				TriggerObject obj = TriggerObject.valueOf(args[6]);
-				String s = "";
-				for (int j = 7; j < args.length; j++)
-				{
-					s = s + args[j] + " ";
-				}
-				if (index == q.getTriggers().size())
-					q.getTriggers().add(new QuestTrigger(type, obj, i, s));
-				else
-					q.getTriggers().set(index, new QuestTrigger(type, obj, i, s));
-				QuestEditorManager.editQuestTrigger(sender);
-				return;
-			}
-			TriggerObject obj = TriggerObject.valueOf(args[5]);
 			String s = "";
-			for (int j = 6; j < args.length; j++)
+			for (int j = 7; j < args.length; j++)
 			{
 				s = s + args[j];
 				if (j + 1 == args.length)
@@ -353,54 +360,23 @@ public class CommandEditQuest
 				else
 					s += " ";
 			}
-			if (index == q.getTriggers().size())
-				q.getTriggers().add(new QuestTrigger(type, obj, s));
+			List<TriggerObject> list = q.getTriggerMap().containsKey(type) ? q.getTriggerMap().get(type) : new ArrayList<>();
+			list.add(new TriggerObject(objtype, s, stage));
+			if (index == list.size())
+				list.add(new TriggerObject(objtype, s, stage));
 			else
-				q.getTriggers().set(index, new QuestTrigger(type, obj, s));
-			QuestEditorManager.editQuestTrigger(sender);
+				list.set(index, new TriggerObject(objtype, s, stage));
+			q.getTriggerMap().put(type, list);
+			QuestEditorManager.editQuestTrigger(sender, type, stage);
 			return;
 		}
 		else
 			if (args.length == 7)
 			{
-				switch (type)
-				{
-					case TRIGGER_STAGE_START:
-					case TRIGGER_STAGE_FINISH:
-						int i = Integer.parseInt(args[5]);
-						TriggerObject obj = TriggerObject.valueOf(args[6]);
-						EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING,
-								"mq e edit evt " + index + " " + type.toString() + " " + i + " " + obj.toString()));
-						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-						return;
-					default:
-						obj = TriggerObject.valueOf(args[5]);
-						String s = "";
-						for (int j = 6; j < args.length; j++)
-						{
-							s = s + args[j];
-							if (j + 1 == args.length)
-								break;
-							else
-								s += " ";
-						}
-						if (index == q.getTriggers().size())
-							q.getTriggers().add(new QuestTrigger(type, obj, s));
-						else
-							q.getTriggers().set(index, new QuestTrigger(type, obj, s));
-						QuestEditorManager.editQuestTrigger(sender);
-						return;
-				}
+				EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING,
+						"mq e edit evt " + type.toString() + " " + stage + " " + index + " " + objtype.toString()));
+				QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 			}
-			else
-				if (args.length == 6)
-				{
-					TriggerObject obj = TriggerObject.valueOf(args[5]);
-					EditorListenerHandler.register(sender,
-							new EditorListenerObject(ListeningType.STRING, "mq e edit evt " + index + " " + type.toString() + " " + obj.toString()));
-					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-					return;
-				}
 	}
 
 	private static void editStage(Quest q, Player sender, String[] args)
@@ -600,6 +576,32 @@ public class CommandEditQuest
 				}
 				QuestEditorManager.editQuestObject(sender, stage, obj);
 		}
+	}
+	
+	// /mq e edit vis [take/prog/finish] [true/false]
+	private static void editVisibility(Quest q, Player sender, String[] args)
+	{
+		QuestSetting s = q.getSettings();
+		switch (args[3])
+		{
+			case "take":
+				s.toggle(Boolean.parseBoolean(args[4]), s.displayOnProgress(), s.displayOnFinish());
+				break;
+			case "prog":
+				s.toggle(s.displayOnTake(), Boolean.parseBoolean(args[4]), s.displayOnFinish());
+				break;
+			case "finish":
+				s.toggle(s.displayOnTake(), s.displayOnProgress(), Boolean.parseBoolean(args[4]));
+				break;
+		}
+		QuestEditorManager.editQuest(sender);
+	}
+	
+	private static void editQuit(Quest q, Player sender, String[] args)
+	{
+		q.setQuitable(Boolean.parseBoolean(args[3]));
+		QuestEditorManager.editQuest(sender);
+		return;
 	}
 
 	// /mq e edit reward [type] [value]

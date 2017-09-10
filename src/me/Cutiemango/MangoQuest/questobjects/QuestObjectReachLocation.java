@@ -29,13 +29,13 @@ public class QuestObjectReachLocation extends SimpleQuestObject
 	@Override
 	public String toPlainText()
 	{
-		return I18n.locMsg("QuestObject.ReachLocation", name);
+		return I18n.locMsg("QuestObject.ReachLocation", name, "");
 	}
 
 	@Override
 	public String toDisplayText()
 	{
-		return I18n.locMsg("QuestObject.FinishMessage.ReachLocation", name);
+		return I18n.locMsg("QuestObject.FinishMessage.ReachLocation", name, "");
 	}
 	
 	public Location getLocation()

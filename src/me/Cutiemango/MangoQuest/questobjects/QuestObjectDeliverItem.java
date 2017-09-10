@@ -18,6 +18,13 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject
 	}
 
 	private NPC npc;
+	
+	@Override
+	public void setAmount(int i)
+	{
+		item.setAmount(i);
+		amount = i;
+	}
 
 	public NPC getTargetNPC()
 	{

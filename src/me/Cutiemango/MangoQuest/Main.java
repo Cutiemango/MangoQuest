@@ -117,6 +117,8 @@ public class Main extends JavaPlugin
 		QuestStorage.clear();
 
 		configManager = new QuestConfigManager();
+		configManager.loadFile();
+		
 		QuestConfigManager.getLoader().loadAll();
 
 		for (Player p : Bukkit.getOnlinePlayers())
@@ -142,7 +144,7 @@ public class Main extends JavaPlugin
 	
 	public static void debug(String msg)
 	{
-		QuestChatManager.logCmd(Level.INFO, "[DEBUG]" + msg);
+		QuestChatManager.logCmd(Level.INFO, "[DEBUG] " + msg);
 	}
 
 }

@@ -18,9 +18,9 @@ import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestStage;
-import me.Cutiemango.MangoQuest.model.QuestTrigger;
-import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
 import me.Cutiemango.MangoQuest.model.RequirementType;
+import me.Cutiemango.MangoQuest.model.TriggerObject;
+import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectConsumeItem;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectDeliverItem;
@@ -99,17 +99,32 @@ public class QuestConfigSaver
 		quest.set(qpath + "Redoable", q.isRedoable());
 		if (q.isRedoable())
 			quest.set(qpath + "RedoDelayMilliseconds", q.getRedoDelay());
-		List<String> list = new ArrayList<>();
-		for (QuestTrigger qt : q.getTriggers())
+		
+		for (TriggerType type : q.getTriggerMap().keySet())
 		{
-			if (qt.getType().equals(TriggerType.TRIGGER_STAGE_START) || qt.getType().equals(TriggerType.TRIGGER_STAGE_FINISH))
+			List<String> list = new ArrayList<>();
+			switch(type)
 			{
-				list.add(qt.getType() + " " + qt.getCount() + " " + qt.getTriggerObject().toString() + " " + qt.getObject().toString());
-				continue;
+				case TRIGGER_ON_FINISH:
+				case TRIGGER_ON_QUIT:
+				case TRIGGER_ON_TAKE:
+					for (TriggerObject obj : q.getTriggerMap().get(type))
+					{
+						list.add(obj.getObjType().toString() + " " + obj.getObject().toString());
+					}
+					break;
+				case TRIGGER_STAGE_FINISH:
+				case TRIGGER_STAGE_START:
+					for (TriggerObject obj : q.getTriggerMap().get(type))
+					{
+						list.add(obj.getStage() + " " + obj.getObjType().toString() + " " + obj.getObject().toString());
+					}
+					break;
+				default:
+					break;
 			}
-			list.add(qt.getType() + " " + qt.getTriggerObject().toString() + " " + qt.getObject().toString());
+			quest.set(qpath + "TriggerEvents." + type.toString(), list);
 		}
-		quest.set(qpath + "TriggerEvents", list);
 		i = 0;
 		int j = 0;
 		quest.set(qpath + "Stages", "");
@@ -189,6 +204,12 @@ public class QuestConfigSaver
 				quest.set(qpath + "Rewards.FriendlyPoint." + npc, q.getQuestReward().getFp().get(npc));
 			}
 		}
+		quest.set(qpath + "Visibility.onTake", q.getSettings().displayOnTake());
+		quest.set(qpath + "Visibility.onProgress", q.getSettings().displayOnProgress());
+		quest.set(qpath + "Visibility.onFinish", q.getSettings().displayOnFinish());
+		quest.set(qpath + "QuitSettings.Quitable", q.isQuitable());
+		quest.set(qpath + "QuitSettings.QuitAcceptMsg", q.getQuitAcceptMsg());
+		quest.set(qpath + "QuitSettings.QuitCancelMsg", q.getQuitCancelMsg());
 		if (q.getQuestReward().hasCommand())
 			quest.set(qpath + "Rewards.Commands", q.getQuestReward().getCommands());
 		if (!QuestValidater.detailedValidate(q, QuestUtil.getQuest(q.getInternalID())))

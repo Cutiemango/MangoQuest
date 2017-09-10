@@ -22,8 +22,8 @@ import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.QuestTrigger;
-import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
+import me.Cutiemango.MangoQuest.model.TriggerObject;
+import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectConsumeItem;
@@ -239,7 +239,7 @@ public class QuestPlayerData
 		}
 		return true;
 	}
-	
+
 	public boolean checkQuestSize(boolean msg)
 	{
 		if (CurrentQuest.size() + 1 > 4)
@@ -267,32 +267,17 @@ public class QuestPlayerData
 			return;
 		if (checkConv && !checkStartConv(q))
 			return;
-		if (q.hasTrigger())
-		{
-			for (QuestTrigger t : q.getTriggers())
-			{
-				if (t.getType().equals(TriggerType.TRIGGER_ON_TAKE))
-					t.trigger(p);
-				else
-					if (t.getType().equals(TriggerType.TRIGGER_STAGE_START) && t.getCount() == 1)
-						t.trigger(p);
-			}
-		}
-		CurrentQuest.add(new QuestProgress(q, p));
+		forceTake(q, false);
 	}
 	
 	public void forceTake(Quest q, boolean msg){
 		if (CurrentQuest.size() + 1 > 4)
 			return;
-		if (q.hasTrigger())
+		if (q.hasTrigger(TriggerType.TRIGGER_ON_TAKE))
 		{
-			for (QuestTrigger t : q.getTriggers())
+			for (TriggerObject obj : q.getTrigger(TriggerType.TRIGGER_ON_TAKE))
 			{
-				if (t.getType().equals(TriggerType.TRIGGER_ON_TAKE))
-					t.trigger(p);
-				else
-					if (t.getType().equals(TriggerType.TRIGGER_STAGE_START) && t.getCount() == 1)
-						t.trigger(p);
+				obj.trigger(p);
 			}
 		}
 		CurrentQuest.add(new QuestProgress(q, p));
@@ -341,6 +326,13 @@ public class QuestPlayerData
 	{
 		if (!isCurrentlyDoing(q))
 			return;
+		if (q.hasTrigger(TriggerType.TRIGGER_ON_QUIT))
+		{
+			for (TriggerObject obj : q.getTrigger(TriggerType.TRIGGER_ON_QUIT))
+			{
+				obj.trigger(p);
+			}
+		}
 		removeProgress(q);
 		if (msg)
 			QuestChatManager.error(p, I18n.locMsg("CommandInfo.ForceQuitQuest", q.getQuestName()));
@@ -349,15 +341,7 @@ public class QuestPlayerData
 
 	public void quitQuest(Quest q)
 	{
-		for (QuestTrigger t : q.getTriggers())
-		{
-			if (t.getType().equals(TriggerType.TRIGGER_ON_QUIT))
-			{
-				t.trigger(p);
-				continue;
-			}
-		}
-		removeProgress(q);
+		forceQuit(q, false);
 	}
 
 	public List<QuestProgress> getNPCtoTalkWith(NPC npc)

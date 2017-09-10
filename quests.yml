@@ -11,8 +11,17 @@
     MessageRequirementNotMeet: '&c你並沒有達到指定的任務條件。'
     Redoable: false
     TriggerEvents:
-    - TRIGGER_ON_FINISH SEND_SUBTITLE §e§l村長§f：「感謝你！這些烤鮭魚拿去吃，可不要餓著了！」
-    - TRIGGER_ON_FINISH SEND_SUBTITLE §e§l村長§f：「還有一把不會壞的木劍，希望在你的冒險中能派上用場！」
+      TRIGGER_ON_FINISH:
+      - "SEND_SUBTITLE §e§l村長§f：「感謝你！這些烤鮭魚拿去吃，可不要餓著了！」"
+      - "SEND_SUBTITLE §e§l村長§f：「還有一把不會壞的木劍，希望在你的冒險中能派上用場！」"
+    QuitSettings:
+      Quitable: true
+      QuitAcceptMsg: "不好意思...我還有其他事情要忙..."
+      QuitCancelMsg: "我覺得我還是能幫上忙！"
+    Visibility:
+      onTake: true
+      onProgress: true
+      onFinish: true
     Stages:
       '1':
         '1':

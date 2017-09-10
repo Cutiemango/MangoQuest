@@ -9,11 +9,13 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
+import me.Cutiemango.MangoQuest.ConfigSettings;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
@@ -25,7 +27,7 @@ public class EditorListenerHandler
 
 	public static HashMap<String, EditorListenerObject> CurrentListening = new HashMap<>();
 
-	public static void onChat(final Player p, final String msg, Cancellable event)
+	public static void onChat(final Player p, final String msg, AsyncPlayerChatEvent event)
 	{
 		if (CurrentListening.containsKey(p.getName()))
 		{
@@ -104,12 +106,21 @@ public class EditorListenerHandler
 	public static void onNPCLeftClick(Player p, NPC npc, Cancellable event)
 	{
 		if (!preCondiction(p))
+		{
+			if (ConfigSettings.DEBUG_MODE)
+				Main.debug("Player " + p.getName() + " does not have the precondition to edit.");
 			return;
+		}
 		EditorListenerObject obj = CurrentListening.get(p.getName());
 		if (obj.getType().equals(ListeningType.NPC_LEFT_CLICK))
 		{
 			obj.execute(p, Integer.toString(npc.getId()));
 			QuestChatManager.info(p, I18n.locMsg("EditorMessage.NPCSelcted", npc.getName()));
+		}
+		else
+		{
+			if (ConfigSettings.DEBUG_MODE)
+				Main.debug("Object was not NPC_LEFT_CLICK.");
 		}
 		event.setCancelled(true);
 		return;

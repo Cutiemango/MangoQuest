@@ -15,10 +15,10 @@ import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestStage;
 import me.Cutiemango.MangoQuest.model.RequirementType;
+import me.Cutiemango.MangoQuest.model.TriggerObject.TriggerObjectType;
+import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
-import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerObject;
-import me.Cutiemango.MangoQuest.model.QuestTrigger.TriggerType;
 
 public class CommandNewObject
 {
@@ -47,11 +47,12 @@ public class CommandNewObject
 		}
 	}
 
+	// /mq e addnew evt [triggertype] [stage] [triggerobject] [obj]
 	private static void addEvent(Quest q, Player sender, String[] args)
 	{
 		if (args.length == 3)
 		{
-			QuestEditorManager.selectTriggerType(sender);
+			QuestEditorManager.selectTriggerType(sender, "addnew");
 			return;
 		}
 		else
@@ -60,10 +61,10 @@ public class CommandNewObject
 				TriggerType type = TriggerType.valueOf(args[3]);
 				if (type.equals(TriggerType.TRIGGER_STAGE_START) || type.equals(TriggerType.TRIGGER_STAGE_FINISH))
 				{
-					QuestEditorManager.selectStage(sender, type);
+					QuestEditorManager.selectTriggerStage(sender, "addnew", type);
 					return;
 				}
-				QuestEditorManager.selectTriggerObject(sender, type, 0);
+				QuestEditorManager.selectTriggerObjType(sender, type, -1);
 				return;
 			}
 			else
@@ -72,12 +73,12 @@ public class CommandNewObject
 					TriggerType type = TriggerType.valueOf(args[3]);
 					if (type.equals(TriggerType.TRIGGER_STAGE_START) || type.equals(TriggerType.TRIGGER_STAGE_FINISH))
 					{
-						QuestEditorManager.selectTriggerObject(sender, type, Integer.parseInt(args[4]));
+						QuestEditorManager.selectTriggerObjType(sender, type, Integer.parseInt(args[4]));
 						return;
 					}
-					TriggerObject obj = TriggerObject.valueOf(args[4]);
+					TriggerObjectType obj = TriggerObjectType.valueOf(args[4]);
 					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING,
-							"mq e edit evt " + q.getTriggers().size() + " " + type.toString() + " " + obj.toString()));
+							"mq e edit evt " + type.toString() + " -1 " +  q.getTriggerMap().get(type).size() + " " + obj.toString()));
 					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 					return;
 				}
@@ -85,11 +86,13 @@ public class CommandNewObject
 					if (args.length == 6)
 					{
 						TriggerType type = TriggerType.valueOf(args[3]);
-						TriggerObject obj = TriggerObject.valueOf(args[5]);
+						TriggerObjectType obj = TriggerObjectType.valueOf(args[5]);
+						int size = 0;
+						if (q.getTriggerMap().containsKey(type))
+							size = q.getTriggerMap().get(type).size();
 						if (type.equals(TriggerType.TRIGGER_STAGE_START) || type.equals(TriggerType.TRIGGER_STAGE_FINISH))
 						{
-							EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit evt "
-									+ q.getTriggers().size() + " " + type.toString() + " " + Integer.parseInt(args[4]) + " " + obj.toString()));
+							EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit evt " + type.toString() + " " + Integer.parseInt(args[4])+ " " + size + " " + obj.toString()));
 							QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 							return;
 						}
@@ -106,7 +109,7 @@ public class CommandNewObject
 			switch (t)
 			{
 				case QUEST:
-					QuestEditorManager.selectQuest(sender, "mq e edit req " + t.toString() + " " + index);
+					QuestEditorManager.selectQuest(sender, "/mq e edit req " + t.toString() + " " + index);
 					((List<String>) q.getRequirements().get(t)).add("");
 					break;
 				case SCOREBOARD:
