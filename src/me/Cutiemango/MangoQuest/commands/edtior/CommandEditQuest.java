@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import com.sucy.skill.SkillAPI;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
@@ -69,6 +70,11 @@ public class CommandEditQuest
 				editRequirements(q, sender, args);
 				break;
 			case "evt":
+				if (args[args.length-1].equals("cancel"))
+				{
+					QuestEditorManager.selectTriggerType(sender, "edit");
+					return;
+				}
 				editEvent(q, sender, args);
 				break;
 			case "stage":
@@ -258,6 +264,17 @@ public class CommandEditQuest
 						break;
 					case ITEM:
 						break;
+					case SKILLAPI_CLASS:
+						if (SkillAPI.isClassRegistered(args[4]))
+							q.getRequirements().put(t, args[4]);
+						else
+							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.NotSkillAPIClass", args[4]));
+						QuestEditorManager.editQuestRequirement(sender);
+						break;
+					case SKILLAPI_LEVEL:
+						q.getRequirements().put(t, Integer.parseInt(args[4]));
+						QuestEditorManager.editQuestRequirement(sender);
+						break;
 				}
 				return;
 			}
@@ -268,6 +285,8 @@ public class CommandEditQuest
 					{
 						case LEVEL:
 						case MONEY:
+						case SKILLAPI_CLASS:
+						case SKILLAPI_LEVEL:
 							EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req " + t.toString()));
 							QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 							break;
@@ -361,7 +380,6 @@ public class CommandEditQuest
 					s += " ";
 			}
 			List<TriggerObject> list = q.getTriggerMap().containsKey(type) ? q.getTriggerMap().get(type) : new ArrayList<>();
-			list.add(new TriggerObject(objtype, s, stage));
 			if (index == list.size())
 				list.add(new TriggerObject(objtype, s, stage));
 			else
@@ -514,7 +532,7 @@ public class CommandEditQuest
 						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRegistered", args[6]));
 						break;
 					case "mtmmob":
-						MythicMob mob = Main.instance.initManager.getMythicMobsAPI().getMythicMob(args[6]);
+						MythicMob mob = Main.instance.pluginHooker.getMythicMobsAPI().getMythicMob(args[6]);
 						((QuestObjectKillMob) o).setMythicMob(mob);
 						((QuestObjectKillMob) o).setCustomName(mob.getDisplayName());
 						((QuestObjectKillMob) o).setType(EntityType.valueOf(mob.getEntityType().toUpperCase()));
@@ -618,6 +636,9 @@ public class CommandEditQuest
 				case "exp":
 					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ExpAmount"));
 					break;
+				case "saexp":
+					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ExpAmount"));
+					break;
 				case "item":
 					EditorListenerHandler.registerGUI(sender, "reward");
 					return;
@@ -634,7 +655,7 @@ public class CommandEditQuest
 						double money = q.getQuestReward().getMoney();
 						try
 						{
-							money = Integer.parseInt(args[4]);
+							money = Double.parseDouble(args[4]);
 						}
 						catch (NumberFormatException e)
 						{
@@ -655,6 +676,19 @@ public class CommandEditQuest
 							break;
 						}
 						q.getQuestReward().setExp(exp);
+						break;
+					case "saexp":
+						int saexp = q.getQuestReward().getExp();
+						try
+						{
+							saexp = Integer.parseInt(args[4]);
+						}
+						catch (NumberFormatException e)
+						{
+							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
+							break;
+						}
+						q.getQuestReward().setSkillAPIExp(saexp);
 						break;
 					case "fp":
 						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPoint"));

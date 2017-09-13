@@ -62,6 +62,7 @@ public class QuestEditorManager
 
 	public static void mainGUI(Player p)
 	{
+		EditorListenerHandler.unreigster(p);
 		QuestBookPage p1 = new QuestBookPage();
 		p1.add(I18n.locMsg("QuestEditor.Title")).changeLine();
 		p1.changeLine();
@@ -88,6 +89,7 @@ public class QuestEditorManager
 
 	public static void editGUI(Player p)
 	{
+		EditorListenerHandler.unreigster(p);
 		FlexiableBook book = new FlexiableBook();
 		QuestBookPage page = book.getLastEditingPage();
 		page.add(I18n.locMsg("QuestEditor.Title")).changeLine();
@@ -110,6 +112,7 @@ public class QuestEditorManager
 
 	public static void removeGUI(Player p)
 	{
+		EditorListenerHandler.unreigster(p);
 		FlexiableBook book = new FlexiableBook();
 		QuestBookPage page = book.getLastEditingPage();
 		page.add(I18n.locMsg("QuestEditor.Title")).changeLine();
@@ -152,7 +155,7 @@ public class QuestEditorManager
 		if (!checkEditorMode(p, true))
 			return;
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
-
+		EditorListenerHandler.unreigster(p);
 		QuestBookPage p1 = new QuestBookPage();
 		p1.add(I18n.locMsg("QuestEditor.BasicInfo")).changeLine();
 		p1.add(I18n.locMsg("QuestEditor.QuestInternalID", q.getInternalID())).changeLine();
@@ -224,6 +227,9 @@ public class QuestEditorManager
 		p4.add(I18n.locMsg("QuestEditor.RewardExp", Integer.toString(q.getQuestReward().getExp()))).endNormally();
 		p4.add(new InteractiveText(" " + I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward exp").showText(I18n.locMsg("QuestEditor.RewardExp.ShowText"))).changeLine();
 
+		p4.add(I18n.locMsg("QuestEditor.RewardSkillAPIExp", Integer.toString(q.getQuestReward().getSkillAPIExp()))).endNormally();
+		p4.add(new InteractiveText(" " + I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward saexp").showText(I18n.locMsg("QuestEditor.RewardSkillAPIExp.ShowText"))).changeLine();
+		
 		p4.add(I18n.locMsg("QuestEditor.RewardFriendPoint")).endNormally();
 		p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew reward fp").showText(I18n.locMsg("QuestEditor.RewardFriendPoint.ShowText"))).changeLine();
 		
@@ -281,11 +287,13 @@ public class QuestEditorManager
 		page.add(I18n.locMsg("QuestEditor.EditTrigger") + q.getQuestName()).changeLine();
 		page.add(I18n.locMsg("QuestEditor.EditTriggerType") + type.toCustomString(stage)).changeLine();
 		int index = 0;
+		int realIndex = -1;
 		
 		if (q.hasTrigger(type))
 		{
 			for (TriggerObject obj : q.getTriggerMap().get(type))
 			{
+				realIndex++;
 				if (obj.getStage() != stage)
 					continue;
 				QuestUtil.checkOutOfBounds(page, book);
@@ -294,8 +302,8 @@ public class QuestEditorManager
 				
 				page.add(new InteractiveText(obj.getObjType().toCustomString())
 						.showText(I18n.locMsg("QuestEditor.EditTriggerObjectType") + obj.getObject().toString())).endNormally();
-				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit evt " + type.toString() + " " + stage + " " + index + " " + obj.toString())).endNormally();
-				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove evt " + type.toString() + " " + stage + " " + index)).endNormally();
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit evt " + type.toString() + " " + stage + " " + realIndex + " " + obj.getObjType().toString())).endNormally();
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove evt " + type.toString() + " " + stage + " " + realIndex)).endNormally();
 				page.changeLine();
 				index++;
 			}
@@ -330,7 +338,7 @@ public class QuestEditorManager
 			return;
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 		QuestBookPage p1 = new QuestBookPage();
-		p1.add(I18n.locMsg("QuestEditor.EditStage")).changeLine();
+		p1.add(I18n.locMsg("QuestEditor.EditStage", Integer.toString(stage))).changeLine();
 		p1.add(I18n.locMsg("QuestEditor.ChooseObject")).changeLine();
 		for (int i = 1; i <= q.getStage(stage - 1).getObjects().size(); i++)
 		{
@@ -377,7 +385,7 @@ public class QuestEditorManager
 				p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " itemnpc")).changeLine();
 				break;
 			case "KILL_MOB":
-				if (Main.instance.initManager.hasMythicMobEnabled())
+				if (Main.instance.pluginHooker.hasMythicMobEnabled())
 				{
 					p1.add(I18n.locMsg("QuestEditor.MythicMobs"));
 					if (((QuestObjectKillMob) o).isMythicObject())
@@ -452,7 +460,6 @@ public class QuestEditorManager
 			int i = 0;
 			switch (t)
 			{
-				
 				case ITEM:
 					p1.add(I18n.locMsg("QuestEditor.ItemReq")).endNormally();
 					p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req ITEM"));
@@ -468,7 +475,22 @@ public class QuestEditorManager
 					p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req MONEY"));
 					p1.changeLine();
 					break;
-
+				case SKILLAPI_CLASS:
+					if (Main.instance.pluginHooker.hasSkillAPIEnabled())
+					{
+						p1.add(I18n.locMsg("QuestEditor.SkillAPIClassReq") + q.getRequirements().get(t).toString() + " ").endNormally();
+						p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req SKILLAPI_CLASS"));
+						p1.changeLine();
+					}
+					break;
+				case SKILLAPI_LEVEL:
+					if (Main.instance.pluginHooker.hasSkillAPIEnabled())
+					{
+						p1.add(I18n.locMsg("QuestEditor.SkillAPILevelReq") + q.getRequirements().get(t).toString() + " ").endNormally();
+						p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req SKILLAPI_LEVEL"));
+						p1.changeLine();
+					}
+					break;
 				case NBTTAG:
 					p2.add(I18n.locMsg("QuestEditor.NBTReq")).changeLine();
 					i = 0;
@@ -584,36 +606,27 @@ public class QuestEditorManager
 		}
 		QuestUtil.checkOutOfBounds(page, book);
 		page = book.getLastEditingPage();
-		page.add("&8&l(關閉並輸入cancel來取消輸入)").changeLine();
 		QuestGUIManager.openBook(p, book.toSendableBook());
 	}
 
 	public static void createQuest(Player p)
 	{
 		QuestBookPage p1 = new QuestBookPage();
-		p1.add("&9&l新建任務》").changeLine();
-		p1.add("&0若要新建任務，").changeLine();
-		p1.add("確認以下兩個&c&l必須&0的參數輸入完成後，").changeLine();
-		p1.add("&0點擊&a&l創建&0按鈕，").changeLine();
-		p1.add("即可創建新任務。").changeLine();
+		p1.add(I18n.locMsg("QuestEditor.NewQuestTitle")).changeLine();
+		p1.add(I18n.locMsg("QuestEditor.NewQuestDesc")).changeLine();
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.NewQuestButton")).clickCommand("/mq e newquest create")).endNormally();
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 		p1.changeLine();
-		if (q.getInternalID() == null)
-			p1.add("&0新建任務內部ID： &c未設定");
-		else
-			p1.add("&0新建任務內部ID： " + q.getInternalID());
+		String id = (q.getInternalID() != null) ? q.getInternalID() : I18n.locMsg("QuestEditor.NotSet");
+		p1.add(I18n.locMsg("QuestEditor.NewQuestID")).endNormally();
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e newquest id")).changeLine();
+		p1.add(id).changeLine();
+		String name = (q.getQuestName() != null) ? q.getQuestName() : I18n.locMsg("QuestEditor.NotSet");
+		p1.add(I18n.locMsg("QuestEditor.NewQuestName")).endNormally();
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e newquest name")).changeLine();
+		p1.add(name).changeLine();
 		p1.changeLine();
-		p1.add(new InteractiveText("&0 &l[編輯]").clickCommand("/mq e newquest id"));
-		p1.changeLine();
-		if (q.getQuestName() == null)
-			p1.add("&0新建任務顯示名稱： &c未設定");
-		else
-			p1.add("&0新建任務顯示名稱： " + q.getQuestName());
-		p1.changeLine();
-		p1.add(new InteractiveText("&0 &l[編輯]").clickCommand("/mq e newquest name"));
-		p1.changeLine();
-		p1.changeLine();
-		p1.add(new InteractiveText("&2       &l【創建任務】").clickCommand("/mq e newquest create")).endNormally();
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e")).changeLine();
 		QuestGUIManager.openBook(p, p1);
 	}
 
@@ -622,7 +635,7 @@ public class QuestEditorManager
 		if (checkEditorMode(p, false))
 		{
 			Quest q = QuestEditorManager.getCurrentEditingQuest(p);
-			Inventory inv = Bukkit.createInventory(null, 27, "《" + type + "》" + q.getQuestName());
+			Inventory inv = Bukkit.createInventory(null, 27, "〈" + type + "〉" + q.getQuestName());
 			inv.addItem(list.toArray(new ItemStack[list.size()]));
 			p.openInventory(inv);
 		}

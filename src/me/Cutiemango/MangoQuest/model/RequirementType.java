@@ -8,7 +8,9 @@ public enum RequirementType{
 	QUEST(I18n.locMsg("Requirements.Quest"), true),
 	ITEM(I18n.locMsg("Requirements.Item"), true),
 	SCOREBOARD(I18n.locMsg("Requirements.Scoreboard"), true),
-	NBTTAG(I18n.locMsg("Requirements.NBTTag"), true);
+	NBTTAG(I18n.locMsg("Requirements.NBTTag"), true),
+	SKILLAPI_CLASS(I18n.locMsg("Requirements.SkillAPIClass"), true),
+	SKILLAPI_LEVEL(I18n.locMsg("Requirements.SkillAPILevel"), true);
 	
 	private String name;
 	private boolean index;

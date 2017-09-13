@@ -12,7 +12,7 @@ import me.Cutiemango.MangoQuest.listeners.MythicListener;
 import me.Cutiemango.MangoQuest.listeners.QuestListener;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestConfigManager;
-import me.Cutiemango.MangoQuest.manager.QuestInitializer;
+import me.Cutiemango.MangoQuest.manager.PluginHooker;
 import me.Cutiemango.MangoQuest.versions.VersionHandler;
 import me.Cutiemango.MangoQuest.versions.Version_v1_10_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_11_R1;
@@ -28,7 +28,7 @@ public class Main extends JavaPlugin
 
 	public static Main instance;
 
-	public QuestInitializer initManager;
+	public PluginHooker pluginHooker;
 	public VersionHandler handler;
 	public QuestConfigManager configManager;
 	
@@ -44,12 +44,12 @@ public class Main extends JavaPlugin
 		configManager = new QuestConfigManager();
 		configManager.loadFile();
 		
-		initManager = new QuestInitializer(this);
-		initManager.initPlugins();
+		pluginHooker = new PluginHooker(this);
+		pluginHooker.hookPlugins();
 
 		getServer().getPluginManager().registerEvents(new QuestListener(), this);
 
-		if (initManager.hasMythicMobEnabled())
+		if (pluginHooker.hasMythicMobEnabled())
 			getServer().getPluginManager().registerEvents(new MythicListener(), this);
 
 		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
@@ -81,7 +81,7 @@ public class Main extends JavaPlugin
 				VERSION_HIGHER_THAN_1_12 = true;
 				break;
 			default:
-				QuestChatManager.logCmd(Level.SEVERE,  I18n.locMsg("Cmdlog.VersionNotSupported1"));
+				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.VersionNotSupported1"));
 				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.VersionNotSupported2"));
 				break;
 		}
@@ -144,7 +144,8 @@ public class Main extends JavaPlugin
 	
 	public static void debug(String msg)
 	{
-		QuestChatManager.logCmd(Level.INFO, "[DEBUG] " + msg);
+		if (ConfigSettings.DEBUG_MODE)
+			QuestChatManager.logCmd(Level.INFO, "[DEBUG] " + msg);
 	}
 
 }

@@ -95,6 +95,7 @@ public class CommandEditConv
 						ConversationEditorManager.edit(sender, new StartTriggerConversation(conv, null));
 						break;
 				}
+				ConversationEditorManager.editConversation(sender);
 				return;
 			}
 	}

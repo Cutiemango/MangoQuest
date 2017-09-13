@@ -49,6 +49,7 @@ public class ConversationEditorManager
 	{
 		QuestBookPage p1 = new QuestBookPage();
 		p1.add(I18n.locMsg("QuestEditor.Title")).changeLine();
+		p1.changeLine();
 		p1.add(new InteractiveText(I18n.locMsg("ConversationEditor.NewConversation")).clickCommand("/mq ce newconv")
 				.showText(I18n.locMsg("ConversationEditor.NewConversation.ShowText"))).changeLine();
 		p1.changeLine();
@@ -87,7 +88,7 @@ public class ConversationEditorManager
 		QuestUtil.checkOutOfBounds(page, book);
 		page = book.getLastEditingPage();
 		page.changeLine();
-		page.add(new InteractiveText(I18n.locMsg("QuestEditor.ReturnToMenu")).clickCommand("/mq ce"));
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq ce"));
 		page.endNormally();
 		QuestGUIManager.openBook(p, book.toSendableBook());
 	}
@@ -109,7 +110,7 @@ public class ConversationEditorManager
 		QuestUtil.checkOutOfBounds(page, book);
 		page = book.getLastEditingPage();
 		page.changeLine();
-		page.add(new InteractiveText(I18n.locMsg("QuestEditor.ReturnToMenu")).clickCommand("/mq ce"));
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq ce"));
 		page.endNormally();
 		QuestGUIManager.openBook(p, book.toSendableBook());
 	}
@@ -138,7 +139,7 @@ public class ConversationEditorManager
 		page.changeLine();
 		page.changeLine();
 		
-		page.add(new InteractiveText(I18n.locMsg("QuestEditor.ReturnToMenu")).clickCommand("/mq ce edit")).changeLine();
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq ce edit")).changeLine();
 		// 特殊對話：
 		// 是否為 友好度對話、接受任務對話
 		book.newPage();
@@ -280,29 +281,29 @@ public class ConversationEditorManager
 	{
 		QuestBookPage page = new QuestBookPage();
 		page.add(I18n.locMsg("ConversationEditor.CreateConv")).changeLine();
-		page.add(I18n.locMsg("ConversationEditor.CreateConv2")).endNormally();
-		page.add(I18n.locMsg("ConversationEditor.CreateConv3")).changeLine();
+		page.add(I18n.locMsg("ConversationEditor.CreateConvDesc")).changeLine();
 		QuestConversation qc = ConversationEditorManager.getEditingConversation(p);
-		page.add(new InteractiveText(I18n.locMsg("ConversationEditor.NewConvID")).clickCommand("/mq ce newconv id").showText(I18n.locMsg("ConversationEditor.ClickToEdit"))).endNormally();
-		if (qc.getInternalID() == null)
-			page.add(I18n.locMsg("QuestEditor.NotSet")).changeLine();
-		else
-			page.add(qc.getInternalID()).changeLine();
-		
-		page.add(new InteractiveText(I18n.locMsg("ConversationEditor.NewConvName")).clickCommand("/mq ce newconv name").showText(I18n.locMsg("ConversationEditor.ClickToEdit"))).endNormally();
-		if (qc.getName() == null)
-			page.add(I18n.locMsg("QuestEditor.NotSet")).changeLine();
-		else
-			page.add(qc.getName()).changeLine();
-		
-		page.add(new InteractiveText(I18n.locMsg("ConversationEditor.NewConvNPC")).clickCommand("/mq ce newconv npc").showText(I18n.locMsg("ConversationEditor.ClickToEdit"))).endNormally();
-		if (qc.getNPC() == null)
-			page.add(I18n.locMsg("QuestEditor.NotSet")).changeLine();
-		else
-			page.add(new InteractiveText("").showNPCInfo(qc.getNPC())).changeLine();
+		page.add(new InteractiveText(I18n.locMsg("ConversationEditor.CreateConvButton")).clickCommand("/mq ce newconv create")).changeLine();
 		
 		page.changeLine();
-		page.add(new InteractiveText(I18n.locMsg("ConversationEditor.CreateConvButton")).clickCommand("/mq ce newconv create")).endNormally();
+		
+		String id = (qc.getInternalID() != null) ? qc.getInternalID() : I18n.locMsg("QuestEditor.NotSet");
+		page.add(I18n.locMsg("ConversationEditor.NewConvID")).endNormally();
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq ce newconv id")).changeLine();
+		page.add(id).changeLine();
+		
+		String name = (qc.getName() != null) ? qc.getName() : I18n.locMsg("QuestEditor.NotSet");
+		page.add(I18n.locMsg("ConversationEditor.NewConvName")).endNormally();
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq ce newconv name")).changeLine();
+		page.add(name).changeLine();
+		
+		InteractiveText npc = (qc.getNPC() != null) ? new InteractiveText("").showNPCInfo(qc.getNPC()) : new InteractiveText(I18n.locMsg("QuestEditor.NotSet"));
+		page.add(I18n.locMsg("ConversationEditor.NewConvNPC")).endNormally();
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq ce newconv npc")).changeLine();
+		page.add(npc).changeLine();
+		
+		page.changeLine();
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq ce")).changeLine();
 		QuestGUIManager.openBook(p, page);
 	}
 	

@@ -366,7 +366,7 @@ public class QuestConfigLoader
 							String name = null;
 							if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".MythicMob") != null)
 							{
-								if (!Main.instance.initManager.hasMythicMobEnabled())
+								if (!Main.instance.pluginHooker.hasMythicMobEnabled())
 								{
 									QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.MTMNotInstalled"));
 									continue;
@@ -374,7 +374,7 @@ public class QuestConfigLoader
 								name = quest.getString(qpath + "Stages." + scount + "." + ocount + ".MythicMob");
 								try
 								{
-									obj = new QuestObjectKillMob(Main.instance.initManager.getMTMPlugin().getAPIHelper().getMythicMob(name),
+									obj = new QuestObjectKillMob(Main.instance.pluginHooker.getMTMPlugin().getAPIHelper().getMythicMob(name),
 											quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Amount"));
 								}
 								catch (Exception e)
@@ -471,7 +471,7 @@ public class QuestConfigLoader
 				}
 			}
 
-			if (Main.instance.initManager.hasCitizensEnabled() && quest.contains(qpath + "QuestNPC"))
+			if (Main.instance.pluginHooker.hasCitizensEnabled() && quest.contains(qpath + "QuestNPC"))
 			{
 				NPC npc = null;
 				if (!(quest.getInt(qpath + "QuestNPC") == -1)

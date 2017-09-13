@@ -10,7 +10,6 @@ import me.Cutiemango.MangoQuest.conversation.QuestBaseAction;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
-import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestConfigManager;
 
@@ -31,7 +30,7 @@ public class CommandRemoveConv
 					return;
 			}
 		}
-		if (!QuestEditorManager.checkEditorMode(sender, true))
+		if (!ConversationEditorManager.checkEditorMode(sender, true))
 			return;
 		switch (args[2])
 		{

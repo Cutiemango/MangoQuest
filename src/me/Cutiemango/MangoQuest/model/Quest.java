@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import com.sucy.skill.SkillAPI;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
@@ -47,6 +48,14 @@ public class Quest
 				case SCOREBOARD:
 					requirements.put(t, new ArrayList<String>());
 					break;
+				case SKILLAPI_CLASS:
+					requirements.put(t, "none");
+					break;
+				case SKILLAPI_LEVEL:
+					requirements.put(t, 0);
+					break;
+				default:
+					break;
 			}
 		}
 		version = QuestVersion.instantVersion();
@@ -82,6 +91,12 @@ public class Quest
 					break;
 				case SCOREBOARD:
 					requirements.put(t, new ArrayList<String>());
+					break;
+				case SKILLAPI_CLASS:
+					requirements.put(t, "none");
+					break;
+				case SKILLAPI_LEVEL:
+					requirements.put(t, 0);
 					break;
 			}
 		}
@@ -198,6 +213,15 @@ public class Quest
 	public List<TriggerObject> getTrigger(TriggerType type)
 	{
 		return triggerMap.get(type);
+	}
+	
+	public void trigger(Player p, int index, TriggerType type, int stage)
+	{
+		if (!hasTrigger(type))
+			return;
+		if (triggerMap.get(type).isEmpty() || triggerMap.get(type).size() <= index)
+			return;
+		triggerMap.get(type).get(index).trigger(p, index, type, stage, this);
 	}
 
 	public void setTriggers(EnumMap<TriggerType, List<TriggerObject>> map)
@@ -321,9 +345,9 @@ public class Quest
 						return new FailResult(RequirementType.LEVEL, (Integer) value);
 					break;
 				case MONEY:
-					if (Main.instance.initManager.hasEconomyEnabled())
+					if (Main.instance.pluginHooker.hasEconomyEnabled())
 					{
-						if (!(Main.instance.initManager.getEconomy().getBalance(p) >= (Double) value))
+						if (!(Main.instance.pluginHooker.getEconomy().getBalance(p) >= (Double) value))
 							return new FailResult(RequirementType.MONEY, (Double) value);
 					}
 					break;
@@ -386,6 +410,28 @@ public class Quest
 					{
 						if (!Main.instance.handler.hasTag(p, n))
 							return new FailResult(RequirementType.NBTTAG, "");
+					}
+					break;
+				case SKILLAPI_CLASS:
+					if (!Main.instance.pluginHooker.hasSkillAPIEnabled())
+						break;
+					if (SkillAPI.hasPlayerData(p))
+					{
+						if (((String)value).equalsIgnoreCase("none"))
+							break;
+						if (SkillAPI.getClass((String)value) == null)
+							return new FailResult(RequirementType.SKILLAPI_CLASS, I18n.locMsg("Requirements.NotMeet.BadConfig") + "沒有名為 " + value + "的職業。");
+						if (!SkillAPI.getPlayerData(p).isClass(SkillAPI.getClass((String)value)))
+								return new FailResult(RequirementType.SKILLAPI_CLASS, SkillAPI.getClass((String)value).getName());
+					}
+					break;
+				case SKILLAPI_LEVEL:
+					if (!Main.instance.pluginHooker.hasSkillAPIEnabled())
+						break;
+					if (SkillAPI.hasPlayerData(p))
+					{
+						if (!(SkillAPI.getPlayerData(p).getMainClass().getLevel() >= (Integer)value))
+							return new FailResult(RequirementType.SKILLAPI_LEVEL, value);
 					}
 					break;
 			}
@@ -477,6 +523,13 @@ public class Quest
 					else
 						s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.Quest") + ((Quest) obj).getQuestName();
 					break;
+				case SKILLAPI_CLASS:
+					s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.SkillAPIClass") + obj.toString();
+					break;
+				case SKILLAPI_LEVEL:
+					s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.SkillAPILevel") + (Integer) obj;
+					break;
+
 			}
 			return s;
 		}

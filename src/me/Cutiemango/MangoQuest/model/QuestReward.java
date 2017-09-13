@@ -6,6 +6,8 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.enums.ExpSource;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
@@ -21,6 +23,8 @@ public class QuestReward
 	private int experience;
 	private List<String> command = new ArrayList<>();
 	private HashMap<Integer, Integer> npcfp = new HashMap<>();
+	
+	private int skillAPIexp;
 
 	public void addItem(ItemStack is)
 	{
@@ -35,6 +39,11 @@ public class QuestReward
 	public void addExp(int i)
 	{
 		experience += i;
+	}
+	
+	public void addSkillAPIExp(int i)
+	{
+		skillAPIexp += i;
 	}
 
 	public void addFriendPoint(int id, int value)
@@ -95,6 +104,11 @@ public class QuestReward
 	{
 		return !command.isEmpty();
 	}
+	
+	public boolean hasSkillAPIExp()
+	{
+		return !(skillAPIexp == 0);
+	}
 
 	public List<ItemStack> getItems()
 	{
@@ -109,6 +123,11 @@ public class QuestReward
 	public int getExp()
 	{
 		return experience;
+	}
+	
+	public int getSkillAPIExp()
+	{
+		return skillAPIexp;
 	}
 
 	public HashMap<Integer, Integer> getFp()
@@ -140,6 +159,11 @@ public class QuestReward
 	{
 		items = l;
 	}
+	
+	public void setSkillAPIExp(int i)
+	{
+		skillAPIexp = i;
+	}
 
 	public void giveRewardTo(Player p)
 	{
@@ -168,7 +192,7 @@ public class QuestReward
 
 		if (this.hasMoney())
 		{
-			Main.instance.initManager.getEconomy().depositPlayer(p, money);
+			Main.instance.pluginHooker.getEconomy().depositPlayer(p, money);
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.GiveMoneyReward", Double.toString(money)));
 		}
 
@@ -195,6 +219,12 @@ public class QuestReward
 				cmd = cmd.replace("<player>", p.getName());
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
 			}
+		}
+		
+		if (this.hasSkillAPIExp())
+		{
+			SkillAPI.getPlayerData(p).giveExp(skillAPIexp, ExpSource.SPECIAL);
+			QuestChatManager.info(p, I18n.locMsg("CommandInfo.GiveSkillAPIExpReward", Integer.toString(skillAPIexp)));
 		}
 	}
 }

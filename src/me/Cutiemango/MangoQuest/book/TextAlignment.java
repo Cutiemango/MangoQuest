@@ -12,7 +12,7 @@ public class TextAlignment
 	public static final int MAXIUM_LINE_PER_PAGE = 14;
 
 	public static final double CHARACTER_ALPHABET = 1D;
-	public static final double CHARACTER_CHINESE = 2.4D;
+	public static final double CHARACTER_CHINESE = 2.45D;
 
 	public static final List<UnicodeBlock> CHINESE_UNICODEBLOCK = Arrays.asList(
 			UnicodeBlock.GENERAL_PUNCTUATION,

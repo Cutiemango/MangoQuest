@@ -62,7 +62,7 @@ public class QuestUtil
 		Set<FriendConversation> set = new HashSet<>();
 		for (FriendConversation conv : QuestStorage.FriendConvs)
 		{
-			if (conv.getNPC().equals(npc) && fp >= conv.getReqPoint())
+			if (conv.getNPC().equals(npc) && (fp >= conv.getReqPoint()))
 				set.add(conv);
 		}
 		return set;

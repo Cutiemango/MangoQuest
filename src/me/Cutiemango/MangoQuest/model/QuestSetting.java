@@ -13,8 +13,8 @@ public class QuestSetting
 	
 	protected boolean isRedoable = false;
 	protected boolean isQuitable = true;
-	protected String quitAcceptMsg = I18n.locMsg("QuestQuitMsg.QuitQuest");
-	protected String quitCancelMsg = I18n.locMsg("QuestQuitMsg.Cancel");
+	protected String quitAcceptMsg = I18n.locMsg("QuestQuitMsg.DefaultQuit");
+	protected String quitCancelMsg = I18n.locMsg("QuestQuitMsg.DefaultCancel");
 	protected String quitDenyMsg = I18n.locMsg("QuestQuitMsg.Denied");
 	protected long redoDelay;
 	

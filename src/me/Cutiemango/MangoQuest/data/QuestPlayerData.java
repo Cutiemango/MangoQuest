@@ -22,7 +22,6 @@ import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.TriggerObject;
 import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
@@ -273,13 +272,7 @@ public class QuestPlayerData
 	public void forceTake(Quest q, boolean msg){
 		if (CurrentQuest.size() + 1 > 4)
 			return;
-		if (q.hasTrigger(TriggerType.TRIGGER_ON_TAKE))
-		{
-			for (TriggerObject obj : q.getTrigger(TriggerType.TRIGGER_ON_TAKE))
-			{
-				obj.trigger(p);
-			}
-		}
+		q.trigger(p, 0, TriggerType.TRIGGER_ON_TAKE, -1);
 		CurrentQuest.add(new QuestProgress(q, p));
 		if (msg)
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.ForceTakeQuest", q.getQuestName()));
@@ -326,13 +319,7 @@ public class QuestPlayerData
 	{
 		if (!isCurrentlyDoing(q))
 			return;
-		if (q.hasTrigger(TriggerType.TRIGGER_ON_QUIT))
-		{
-			for (TriggerObject obj : q.getTrigger(TriggerType.TRIGGER_ON_QUIT))
-			{
-				obj.trigger(p);
-			}
-		}
+		q.trigger(p, 0, TriggerType.TRIGGER_ON_QUIT, -1);
 		removeProgress(q);
 		if (msg)
 			QuestChatManager.error(p, I18n.locMsg("CommandInfo.ForceQuitQuest", q.getQuestName()));
@@ -652,11 +639,6 @@ public class QuestPlayerData
 		}
 		return true;
 	}
-	
-	public boolean hasConfigData(Player p)
-	{
-		return save.contains("玩家資料." + p.getUniqueId() + ".玩家ID");
-	}
 
 	public long getDelay(long last, long quest)
 	{
@@ -671,14 +653,14 @@ public class QuestPlayerData
 		{
 			if (!(o instanceof QuestObjectTalkToNPC))
 				qop.newConversation(p);
-			QuestChatManager.info(p, o.toDisplayText() + " " + I18n.locMsg("CommandInfo.Finished"));
+			QuestChatManager.info(p,"&f「" + qp.getQuest().getQuestName() + "&f」" + o.toDisplayText() + " " + I18n.locMsg("CommandInfo.Finished"));
 			qp.checkIfnextStage();
 			return true;
 		}
 		else
 		{
 			if (o instanceof NumerableObject)
-				QuestChatManager.info(p, o.toDisplayText() + " " + I18n.locMsg("CommandInfo.Progress", Integer.toString(qop.getProgress()),
+				QuestChatManager.info(p, "&f「" + qp.getQuest().getQuestName() + "&f」" + o.toDisplayText() + " " + I18n.locMsg("CommandInfo.Progress", Integer.toString(qop.getProgress()),
 						Integer.toString(((NumerableObject) o).getAmount())));
 			else
 				if (o instanceof QuestObjectTalkToNPC)

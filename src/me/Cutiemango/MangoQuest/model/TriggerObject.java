@@ -61,7 +61,7 @@ public class TriggerObject
 		return stage;
 	}
 	
-	public void trigger(int stage, Player p)
+	public void trigger(Player p, int index, TriggerType t, int stage, Quest q)
 	{
 		String s = ((String) obj).replace("<player>", p.getName());
 		switch(type)
@@ -72,9 +72,9 @@ public class TriggerObject
 					@Override
 					public void run()
 					{
-						trigger(stage+1, p);
+						q.trigger(p, index+1, t, stage);
 					}
-				}.runTaskLater(Main.instance, Long.parseLong(s));
+				}.runTaskLater(Main.instance, Long.parseLong(s) * 20);
 				return;
 			case COMMAND:
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s);
@@ -110,12 +110,6 @@ public class TriggerObject
 			default:
 				break;
 		}
-		trigger(stage+1, p);
-	}
-
-	public void trigger(Player p)
-	{
-		Main.debug("Trigger for player " + p.getName() + "has begun.");
-		trigger(0, p);
+		q.trigger(p, index+1, t, stage);
 	}
 }

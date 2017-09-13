@@ -8,7 +8,6 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.TriggerObject;
 import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
@@ -45,11 +44,7 @@ public class QuestProgress
 
 	public void finish()
 	{
-		for (TriggerObject obj : quest.getTrigger(TriggerType.TRIGGER_ON_FINISH))
-		{
-			obj.trigger(owner);
-			continue;
-		}
+		quest.trigger(owner, 0, TriggerType.TRIGGER_ON_FINISH, -1);
 		QuestPlayerData pd = QuestUtil.getData(owner);
 		pd.addFinishedQuest(quest);
 		quest.getQuestReward().giveRewardTo(owner);
@@ -92,28 +87,8 @@ public class QuestProgress
 
 	public void nextStage()
 	{
-		if (quest.hasTrigger(TriggerType.TRIGGER_STAGE_FINISH))
-		{
-			for (TriggerObject obj : quest.getTrigger(TriggerType.TRIGGER_STAGE_FINISH))
-			{
-				if (CurrentStage + 1 == obj.getStage())
-				{
-					obj.trigger(owner);
-					continue;
-				}
-			}
-		}
-		if (quest.hasTrigger(TriggerType.TRIGGER_STAGE_START))
-		{
-			for (TriggerObject obj : quest.getTrigger(TriggerType.TRIGGER_STAGE_START))
-			{
-				if (CurrentStage + 2 == obj.getStage())
-				{
-					obj.trigger(owner);
-					continue;
-				}
-			}
-		}
+		quest.trigger(owner, 0, TriggerType.TRIGGER_STAGE_FINISH, CurrentStage + 1);
+		quest.trigger(owner, 0, TriggerType.TRIGGER_STAGE_START, CurrentStage + 2);
 		if (CurrentStage + 1 < quest.getStages().size())
 		{
 			CurrentStage++;

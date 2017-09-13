@@ -239,7 +239,7 @@ public class QuestGUIManager
 	{
 		QuestBookPage page = new QuestBookPage();
 		page.add(I18n.locMsg("QuestQuitMsg.Title")).changeLine();
-		page.add(I18n.locMsg("QuestQuitMsg.WarnAccept")).changeLine();
+		page.add(I18n.locMsg("QuestQuitMsg.WarnAccept", q.getQuestName())).changeLine();
 		page.add(I18n.locMsg("QuestQuitMsg.WarnAccept2")).changeLine();
 		page.changeLine();
 		page.add(new InteractiveText(q.getQuitAcceptMsg()).clickCommand("/mq q cquit " + q.getInternalID())).changeLine();

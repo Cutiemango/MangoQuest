@@ -10,7 +10,7 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
-import me.Cutiemango.MangoQuest.manager.QuestInitializer;
+import me.Cutiemango.MangoQuest.manager.PluginHooker;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -43,13 +43,13 @@ public class QuestCommand
 					else
 						if (args[1].equalsIgnoreCase("trade"))
 						{
-							QuestInitializer im = Main.instance.initManager;
+							PluginHooker im = Main.instance.pluginHooker;
 							if (im.hasCitizensEnabled())
 							{
 								NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[2]));
 								if (npc == null || npc.getEntity().getLocation().distance(sender.getLocation()) > 20)
 									return;
-								Shopkeeper s = Main.instance.initManager.getShopkeepers().getShopkeeperByEntity(npc.getEntity());
+								Shopkeeper s = Main.instance.pluginHooker.getShopkeepers().getShopkeeperByEntity(npc.getEntity());
 								if (s == null)
 									return;
 								else
@@ -87,6 +87,7 @@ public class QuestCommand
 						}
 						qd.quitQuest(quest);
 						QuestGUIManager.openJourney(sender);
+						return;
 					case "quit":
 						if (!quest.isQuitable())
 						{

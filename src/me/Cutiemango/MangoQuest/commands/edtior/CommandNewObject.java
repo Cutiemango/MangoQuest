@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
@@ -76,10 +75,7 @@ public class CommandNewObject
 						QuestEditorManager.selectTriggerObjType(sender, type, Integer.parseInt(args[4]));
 						return;
 					}
-					TriggerObjectType obj = TriggerObjectType.valueOf(args[4]);
-					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING,
-							"mq e edit evt " + type.toString() + " -1 " +  q.getTriggerMap().get(type).size() + " " + obj.toString()));
-					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+					QuestEditorManager.selectTriggerObjType(sender, type, -1);
 					return;
 				}
 				else
@@ -90,12 +86,9 @@ public class CommandNewObject
 						int size = 0;
 						if (q.getTriggerMap().containsKey(type))
 							size = q.getTriggerMap().get(type).size();
-						if (type.equals(TriggerType.TRIGGER_STAGE_START) || type.equals(TriggerType.TRIGGER_STAGE_FINISH))
-						{
-							EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit evt " + type.toString() + " " + Integer.parseInt(args[4])+ " " + size + " " + obj.toString()));
-							QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-							return;
-						}
+						EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit evt " + type.toString() + " " + Integer.parseInt(args[4])+ " " + size + " " + obj.toString()));
+						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+						return;
 					}
 	}
 
@@ -118,28 +111,23 @@ public class CommandNewObject
 					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 					((List<String>) q.getRequirements().get(t)).add("");
 					break;
-				case ITEM:
-					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req " + t.toString() + " " + index));
-					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.RightClick"));
-					((List<ItemStack>) q.getRequirements().get(t)).add(new ItemStack(Material.GRASS));
-					break;
 				default:
 					break;
 			}
 		}
-		else
-		{
-			switch (t)
-			{
-				case LEVEL:
-				case MONEY:
-					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req " + t.toString()));
-					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-					break;
-				default:
-					break;
-			}
-		}
+//		else
+//		{
+//			switch (t)
+//			{
+//				case LEVEL:
+//				case MONEY:
+//					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req " + t.toString()));
+//					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+//					break;
+//				default:
+//					break;
+//			}
+//		}
 	}
 
 	// /mq e addnew stage
@@ -184,11 +172,6 @@ public class CommandNewObject
 		{
 			switch (args[3].toLowerCase())
 			{
-				case "item":
-					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.ITEM, "mq e edit reward item " + q.getQuestReward().getItems().size()));
-					q.getQuestReward().getItems().add(new ItemStack(Material.DIRT));
-					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.RightClick"));
-					return;
 				case "fp":
 					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e addnew reward fp"));
 					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPoint"));

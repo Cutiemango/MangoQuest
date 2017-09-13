@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
@@ -102,14 +101,14 @@ public class CommandRemoveQuest
 			{
 				case LEVEL:
 				case MONEY:
+				case ITEM:
+				case SKILLAPI_CLASS:
+				case SKILLAPI_LEVEL:
 					break;
 				case QUEST:
 				case SCOREBOARD:
 				case NBTTAG:
 					((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
-					break;
-				case ITEM:
-					((List<ItemStack>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
 					break;
 			}
 			QuestEditorManager.editQuestRequirement(sender);
@@ -121,17 +120,20 @@ public class CommandRemoveQuest
 	// /mq e remove evt [triggertype] [stage] [index]
 	private static void removeEvent(Quest q, Player sender, String[] args)
 	{
-		if (args.length == 4)
+		if (args.length == 6)
 		{
 			TriggerType type = TriggerType.valueOf(args[3]);
 			int stage = Integer.parseInt(args[4]);
 			int index = Integer.parseInt(args[5]);
 			List<TriggerObject> list = q.getTriggerMap().get(type);
-			list.remove(index);
-			q.getTriggerMap().put(type, list);
-			QuestEditorManager.editQuestTrigger(sender, type, stage);
-			QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRemoved"));
-			return;
+			if (list.get(index).getStage() == stage)
+			{
+				list.remove(index);
+				q.getTriggerMap().put(type, list);
+				QuestEditorManager.editQuestTrigger(sender, type, stage);
+				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRemoved"));
+				return;
+			}
 		}
 	}
 

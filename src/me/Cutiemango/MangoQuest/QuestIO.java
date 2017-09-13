@@ -21,13 +21,26 @@ public class QuestIO
 	private File file;
 	private FileConfiguration config = new YamlConfiguration();
 
-	public QuestIO(String name, boolean warn)
+	public QuestIO(String name, boolean warn, boolean createFile)
 	{
 		file = new File(Main.instance.getDataFolder(), name);
 
 		if (!file.exists())
 		{
-			Main.instance.saveResource(name, true);
+			if (createFile)
+				Main.instance.saveResource(name, true);
+			else
+			{
+				try
+				{
+					file.createNewFile();
+					new YamlConfiguration().save(file);
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
 			if (warn)
 				QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.FileNotFound", name));
 		}

@@ -46,7 +46,7 @@ public class EditorListenerHandler
 
 	public static void onPlayerInteract(Player p, Action act, ItemStack is, Cancellable event)
 	{
-		if (!preCondiction(p))
+		if (!preCondition(p))
 			return;
 		EditorListenerObject obj = CurrentListening.get(p.getName());
 		if (act.equals(Action.RIGHT_CLICK_AIR) || act.equals(Action.RIGHT_CLICK_BLOCK))
@@ -68,7 +68,7 @@ public class EditorListenerHandler
 	@SuppressWarnings("deprecation")
 	public static void onBlockBreak(Player p, Block b, Cancellable event)
 	{
-		if (!preCondiction(p))
+		if (!preCondition(p))
 			return;
 		EditorListenerObject obj = CurrentListening.get(p.getName());
 		if (obj.getType().equals(ListeningType.BLOCK))
@@ -82,14 +82,14 @@ public class EditorListenerHandler
 
 	public static void onEntityDamage(Player p, Entity e, Cancellable event)
 	{
-		if (!preCondiction(p))
+		if (!preCondition(p))
 			return;
 		EditorListenerObject obj = CurrentListening.get(p.getName());
 		event.setCancelled(true);
 		if (obj.getType().equals(ListeningType.MTMMOB_LEFT_CLICK))
 		{
-			if (Main.instance.initManager.hasMythicMobEnabled() && Main.instance.initManager.getMythicMobsAPI().isMythicMob(e))
-				obj.execute(p, Main.instance.initManager.getMythicMobsAPI().getMythicMobInstance(e).getType().getInternalName());
+			if (Main.instance.pluginHooker.hasMythicMobEnabled() && Main.instance.pluginHooker.getMythicMobsAPI().isMythicMob(e))
+				obj.execute(p, Main.instance.pluginHooker.getMythicMobsAPI().getMythicMobInstance(e).getType().getInternalName());
 		}
 		else if (obj.getType().equals(ListeningType.MOB_LEFT_CLICK))
 			obj.execute(p, e.getType().toString());
@@ -105,7 +105,7 @@ public class EditorListenerHandler
 
 	public static void onNPCLeftClick(Player p, NPC npc, Cancellable event)
 	{
-		if (!preCondiction(p))
+		if (!preCondition(p))
 		{
 			if (ConfigSettings.DEBUG_MODE)
 				Main.debug("Player " + p.getName() + " does not have the precondition to edit.");
@@ -128,7 +128,7 @@ public class EditorListenerHandler
 
 	public static void onInventoryClose(Player p, Inventory inv)
 	{
-		if (!preCondiction(p))
+		if (!preCondition(p))
 			return;
 		EditorListenerObject obj = CurrentListening.get(p.getName());
 		if (!obj.getType().equals(ListeningType.OPEN_INVENTORY))
@@ -162,8 +162,17 @@ public class EditorListenerHandler
 	{
 		CurrentListening.put(p.getName(), obj);
 	}
+	
+	public static void unreigster(Player p)
+	{
+		if (preCondition(p))
+		{
+			QuestChatManager.info(p, I18n.locMsg("CommandInfo.ClearedListening"));
+			CurrentListening.remove(p.getName());
+		}
+	}
 
-	public static boolean preCondiction(Player p)
+	public static boolean preCondition(Player p)
 	{
 		return CurrentListening.containsKey(p.getName()) && ((QuestEditorManager.checkEditorMode(p, false) || ConversationEditorManager.checkEditorMode(p, false)));
 	}
