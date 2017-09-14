@@ -15,51 +15,55 @@ import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 
 public class CommandNewAction
 {
-	// /mq ce new [acceptact/denyact/act] [type] [obj]
+	// /mq ce new [acceptact/denyact/act] [index] [type] [obj]
 	public static void execute(QuestConversation conv, Player sender, String[] args)
 	{
 		if (!ConversationEditorManager.checkEditorMode(sender, true))
 			return;
-		if (args.length == 3)
+		if (args.length < 4)
+			return;
+		String acttype = args[2];
+		int index = Integer.parseInt(args[3]);
+		if (args.length == 4)
 		{
-			ConversationEditorManager.selectActionType(sender, args[2], -1);
+			ConversationEditorManager.selectActionType(sender, acttype, "new", index);
 			return;
 		}
 		else
-			if (args.length == 4)
+			if (args.length == 5)
 			{
-				EnumAction act = EnumAction.valueOf(args[3]);
+				EnumAction act = EnumAction.valueOf(args[4]);
 				if (EnumAction.NO_OBJ_ACTIONS.contains(act))
 				{
-					switch (args[2])
+					switch (acttype)
 					{
 						case "act":
 							List<QuestBaseAction> list = conv.getActions();
-							list.add(new QuestBaseAction(act, null));
+							list.add(index, new QuestBaseAction(act, null));
 							conv.setActions(list);
 							break;
 						case "acceptact":
 							list = ((StartTriggerConversation)conv).getAcceptActions();
-							list.add(new QuestBaseAction(act, null));
+							list.add(index, new QuestBaseAction(act, null));
 							((StartTriggerConversation)conv).setAcceptActions(list);
 							break;
 						case "denyact":
 							list = ((StartTriggerConversation)conv).getDenyActions();
-							list.add(new QuestBaseAction(act, null));
+							list.add(index, new QuestBaseAction(act, null));
 							((StartTriggerConversation)conv).setDenyActions(list);
 							break;
 					}
 					ConversationEditorManager.editConversation(sender);
 					return;
 				}
-				EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce new " + args[2] + " " + act.toString()));
+				EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce new " + acttype + " " + index + " " + act.toString()));
 				QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 				return;
 			}
-			else if (args.length >= 5)
+			else if (args.length >= 6)
 			{
 				String s = "";
-				for (int j = 4; j < args.length; j++)
+				for (int j = 5; j < args.length; j++)
 				{
 					s = s + args[j];
 					if (j + 1 == args.length)
@@ -67,22 +71,27 @@ public class CommandNewAction
 					else
 						s += " ";
 				}
-				EnumAction act = EnumAction.valueOf(args[3]);
-				switch (args[2])
+				if (s.equalsIgnoreCase("cancel"))
+				{
+					ConversationEditorManager.editConversation(sender);
+					return;
+				}
+				EnumAction act = EnumAction.valueOf(args[4]);
+				switch (acttype)
 				{
 					case "act":
 						List<QuestBaseAction> list = conv.getActions();
-						list.add(new QuestBaseAction(act, s));
+						list.add(index, new QuestBaseAction(act, s));
 						conv.setActions(list);
 						break;
 					case "acceptact":
 						list = ((StartTriggerConversation)conv).getAcceptActions();
-						list.add(new QuestBaseAction(act, s));
+						list.add(index, new QuestBaseAction(act, s));
 						((StartTriggerConversation)conv).setAcceptActions(list);
 						break;
 					case "denyact":
 						list = ((StartTriggerConversation)conv).getDenyActions();
-						list.add(new QuestBaseAction(act, s));
+						list.add(index, new QuestBaseAction(act, s));
 						((StartTriggerConversation)conv).setDenyActions(list);
 						break;
 				}

@@ -13,13 +13,13 @@ public class TriggerObject
 {
 	TriggerObjectType type;
 	Object obj;
-	int stage;
+	int s;
 	
 	public TriggerObject(TriggerObjectType t, Object o, int i)
 	{
 		type = t;
 		obj = o;
-		stage = i;
+		s = i;
 	}
 	
 	public enum TriggerObjectType
@@ -58,12 +58,17 @@ public class TriggerObject
 	
 	public int getStage()
 	{
-		return stage;
+		return s;
 	}
 	
 	public void trigger(Player p, int index, TriggerType t, int stage, Quest q)
 	{
-		String s = ((String) obj).replace("<player>", p.getName());
+		if (s != stage)
+		{
+			q.trigger(p, index+1, t, stage);
+			return;
+		}
+		String object = ((String) obj).replace("<player>", p.getName());
 		switch(type)
 		{
 			case WAIT:
@@ -74,31 +79,31 @@ public class TriggerObject
 					{
 						q.trigger(p, index+1, t, stage);
 					}
-				}.runTaskLater(Main.instance, Long.parseLong(s) * 20);
+				}.runTaskLater(Main.instance, Long.parseLong(object) * 20);
 				return;
 			case COMMAND:
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s);
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), object);
 				break;
 			case GIVE_ADVANCEMENT:
 				if (Main.isUsingUpdatedVersion())
 				{
-					QuestAdvancementManager.getAdvancement(s).grant(p);
+					QuestAdvancementManager.getAdvancement(object).grant(p);
 				}
 				break;
 			case SEND_MESSAGE:
-				p.sendMessage(s);
+				p.sendMessage(object);
 				break;
 			case SEND_SUBTITLE:
-				QuestUtil.sendTitle(p, 5, 5, 5, null, s);
+				QuestUtil.sendTitle(p, 5, 5, 5, null, object);
 				break;
 			case SEND_TITLE:
-				QuestUtil.sendTitle(p, 5, 5, 5, s, null);
+				QuestUtil.sendTitle(p, 5, 5, 5, object, null);
 				break;
 			case SEND_TITLE_AND_SUBTITLE:
-				String title = s.split("%")[0];
+				String title = object.split("%")[0];
 				String subtitle = "";
-				if (s.split("%")[0].length() > 1)
-					subtitle = s.split("%")[1];
+				if (object.split("%")[0].length() > 1)
+					subtitle = object.split("%")[1];
 				QuestUtil.sendTitle(p, 5, 5, 5, title, subtitle);
 				break;
 			case TELEPORT:

@@ -187,14 +187,24 @@ public class ConversationEditorManager
 						.showText(I18n.locMsg("ConversationEditor.ActionObject") + I18n.locMsg("ConversationEditor.NoObjectAction"))
 							.clickCommand("/mq ce edit acceptact" + counter)).endNormally();
 				else
-					page.add(new InteractiveText(act.getActionType().toCustomString())
-						.showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject()).clickCommand("/mq ce edit acceptact " + counter)).endNormally();
-				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq ce remove acceptact " + counter));
+					if (act.getActionType().equals(EnumAction.NPC_TALK))
+					{
+						String[] split = act.getObject().split("@");
+						NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
+						page.add(new InteractiveText(act.getActionType().toCustomString())
+								.showText(I18n.locMsg("ConversationEditor.ActionObject") + npc.getName() + "&0：「" + split[0] + "」")).endNormally();
+					}
+					else
+						page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject())).endNormally();
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new acceptact " + counter)).endNormally();
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq ce edit acceptact " + counter)).endNormally();
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq ce remove acceptact " + counter)).endNormally();
 				page.changeLine();
 				counter++;
 			}
-			
-			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new acceptact"));
+			if (((StartTriggerConversation) conv).getAcceptActions().size() == 0)
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new acceptact " + 0)).changeLine();
+
 			page.changeLine();
 			
 			book.newPage();
@@ -203,32 +213,33 @@ public class ConversationEditorManager
 			page.add(I18n.locMsg("ConversationEditor.QuestDenyActions")).changeLine();
 			
 			counter = 0;
-			for (QuestBaseAction act : ((StartTriggerConversation) conv).getAcceptActions())
+			for (QuestBaseAction act : ((StartTriggerConversation) conv).getDenyActions())
 			{
 				page = book.getLastEditingPage();
 				QuestUtil.checkOutOfBounds(page, book);
 				page.add("- " + counter + ".");
 				if (EnumAction.NO_OBJ_ACTIONS.contains(act.getActionType()))
 					page.add(new InteractiveText(act.getActionType().toCustomString())
-						.showText(I18n.locMsg("ConversationEditor.ActionObject") + I18n.locMsg("ConversationEditor.NoObjectAction"))
-							.clickCommand("/mq ce edit denyact" + counter)).endNormally();
+						.showText(I18n.locMsg("ConversationEditor.ActionObject") + I18n.locMsg("ConversationEditor.NoObjectAction"))).endNormally();
 				else
 					if (act.getActionType().equals(EnumAction.NPC_TALK))
 					{
 						String[] split = act.getObject().split("@");
 						NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
-						page.add(new InteractiveText(act.getActionType().toCustomString())
-								.showText(I18n.locMsg("ConversationEditor.ActionObject") + npc.getName() + "&0：「" + split[0] + "」").clickCommand("/mq ce edit denyact " + counter)).endNormally();
+						page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + npc.getName() + "&0：「" + split[0] + "」")).endNormally();
 					}
 					else
-						page.add(new InteractiveText(act.getActionType().toCustomString())
-						.showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject()).clickCommand("/mq ce edit denyact " + counter)).endNormally();
-				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq ce remove denyact " + counter));
+						page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject())).endNormally();
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new denyact " + counter)).endNormally();
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq ce edit denyact " + counter)).endNormally();
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq ce remove denyact " + counter)).endNormally();
 				page.changeLine();
 				counter++;
 			}
 			
-			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new denyact"));
+			if (((StartTriggerConversation) conv).getDenyActions().size() == 0)
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new denyact " + counter)).endNormally();
+
 			page.changeLine();
 		}
 		else
@@ -248,20 +259,28 @@ public class ConversationEditorManager
 			QuestUtil.checkOutOfBounds(page, book);
 			page.add("- " + counter + ".");
 			if (EnumAction.NO_OBJ_ACTIONS.contains(act.getActionType()))
-				page.add(new InteractiveText(act.getActionType().toCustomString())
-					.showText(I18n.locMsg("ConversationEditor.ActionObject") + I18n.locMsg("ConversationEditor.NoObjectAction"))
-						.clickCommand("/mq ce edit act" + counter)).endNormally();
+				page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + I18n.locMsg("ConversationEditor.NoObjectAction"))).endNormally();
 			else
-				page.add(new InteractiveText(act.getActionType().toCustomString())
-					.showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject()).clickCommand("/mq ce edit act " + counter)).endNormally();
-			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq ce remove act " + counter));
+				if (act.getActionType().equals(EnumAction.NPC_TALK))
+				{
+					String[] split = act.getObject().split("@");
+					NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
+					page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + npc.getName() + "&0：「" + split[0] + "」")).endNormally();
+				}
+				else
+					page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject())).endNormally();
+			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new act " + counter)).endNormally();
+			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq ce edit act " + counter)).endNormally();
+			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq ce remove act " + counter)).endNormally();
 			page.changeLine();
 			counter++;
 		}
 		
+		if (conv.getActions().size() == 0)
+			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new act " + 0)).changeLine();
+		
 		page = book.getLastEditingPage();
 		QuestUtil.checkOutOfBounds(page, book);
-		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new act"));
 		page.changeLine();
 		
 		// 儲存頁面
@@ -326,16 +345,13 @@ public class ConversationEditorManager
 	}
 	
 	
-	public static void selectActionType(Player p, String type, int index)
+	public static void selectActionType(Player p, String type, String mode, int index)
 	{
 		QuestBookPage p1 = new QuestBookPage();
 		p1.add(I18n.locMsg("ConversationEditor.SelectActionType")).changeLine();
 		for (EnumAction act : EnumAction.values())
 		{
-			if (index == -1)
-				p1.add(new InteractiveText("- [" + act.toCustomString() + "]").clickCommand("/mq ce new " + type + " " + act.toString()));
-			else
-				p1.add(new InteractiveText("- [" + act.toCustomString() + "]").clickCommand("/mq ce edit " + type + " " + index + " " + act.toString()));
+			p1.add(new InteractiveText("- [" + act.toCustomString() + "]").clickCommand("/mq ce " + mode + " " + type + " " + index + " " + act.toString()));
 			p1.changeLine();
 		}
 		QuestGUIManager.openBook(p, p1);

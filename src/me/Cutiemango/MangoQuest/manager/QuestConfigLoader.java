@@ -330,212 +330,28 @@ public class QuestConfigLoader
 			String qpath = "Quests." + internal + ".";
 			String questname = quest.getString(qpath + "QuestName");
 			List<String> questoutline = quest.getStringList(qpath + "QuestOutline");
-			List<QuestStage> stages = new ArrayList<>();
-			for (String stagecount : quest.getSection(qpath + "Stages"))
-			{
-				List<SimpleQuestObject> objs = new ArrayList<>();
-				int scount = Integer.parseInt(stagecount);
-				for (String objcount : quest.getSection(qpath + "Stages." + scount))
-				{
-					int ocount = Integer.parseInt(objcount);
-					String s = quest.getString(qpath + "Stages." + scount + "." + ocount + ".ObjectType");
-					SimpleQuestObject obj = null;
-					int n;
-					switch (s)
-					{
-						case "DELIVER_ITEM":
-							n = quest.getInt(qpath + "Stages." + scount + "." + ocount + ".TargetNPC");
-							if (CitizensAPI.getNPCRegistry().getById(n) == null)
-							{
-								QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NPCNotValid", Integer.toString(n)));
-								continue;
-							}
-							obj = new QuestObjectDeliverItem(CitizensAPI.getNPCRegistry().getById(n),
-									quest.getItemStack(qpath + "Stages." + scount + "." + ocount + ".Item"),
-									quest.getItemStack(qpath + "Stages." + scount + "." + ocount + ".Item").getAmount());
-							break;
-						case "TALK_TO_NPC":
-							n = quest.getInt(qpath + "Stages." + scount + "." + ocount + ".TargetNPC");
-							if (CitizensAPI.getNPCRegistry().getById(n) == null)
-							{
-								QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NPCNotValid", Integer.toString(n)));
-								continue;
-							}
-							obj = new QuestObjectTalkToNPC(CitizensAPI.getNPCRegistry().getById(n));
-						case "KILL_MOB":
-							String name = null;
-							if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".MythicMob") != null)
-							{
-								if (!Main.instance.pluginHooker.hasMythicMobEnabled())
-								{
-									QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.MTMNotInstalled"));
-									continue;
-								}
-								name = quest.getString(qpath + "Stages." + scount + "." + ocount + ".MythicMob");
-								try
-								{
-									obj = new QuestObjectKillMob(Main.instance.pluginHooker.getMTMPlugin().getAPIHelper().getMythicMob(name),
-											quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Amount"));
-								}
-								catch (Exception e)
-								{
-									QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.MTMMobNotFound", name));
-									continue;
-								}
-							}
-							else
-								if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".MobName") != null)
-								{
-									name = quest.getString(qpath + "Stages." + scount + "." + ocount + ".MobName");
-									obj = new QuestObjectKillMob(
-											EntityType.valueOf(
-													quest.getString(qpath + "Stages." + scount + "." + ocount + ".MobType")),
-											quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Amount"), name);
-								}
-								else
-									if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".MobType") != null)
-										obj = new QuestObjectKillMob(
-												EntityType.valueOf(
-														quest.getString(qpath + "Stages." + scount + "." + ocount + ".MobType")),
-												quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Amount"), null);
-							break;
-						case "BREAK_BLOCK":
-							obj = new QuestObjectBreakBlock(
-									Material.getMaterial(
-											quest.getString(qpath + "Stages." + scount + "." + ocount + ".BlockType")),
-									Short.parseShort(
-											Integer.toString(quest.getInt(qpath + "Stages." + scount + "." + ocount + ".SubID"))),
-									quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Amount"));
-							break;
-						case "CONSUME_ITEM":
-							obj = new QuestObjectConsumeItem(
-									quest.getItemStack(qpath + "Stages." + scount + "." + ocount + ".Item"),
-									quest.getItemStack(qpath + "Stages." + scount + "." + ocount + ".Item").getAmount());
-							break;
-						case "REACH_LOCATION":
-							String[] splited = quest.getString(qpath + "Stages." + scount + "." + ocount + ".Location").split(":");
-							Location loc = new Location(Bukkit.getWorld(splited[0]), Double.parseDouble(splited[1]), Double.parseDouble(splited[2]),
-									Double.parseDouble(splited[3]));
-							obj = new QuestObjectReachLocation(loc,
-									quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Range"),
-									quest.getString(qpath + "Stages." + scount + "." + ocount + ".LocationName"));
-							break;
-						default:
-							QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NoValidObject", internal));
-							continue;
-					}
-					if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".ActivateConversation") != null)
-					{
-						QuestConversation conv = ConversationManager.getConversation(
-								quest.getString(qpath + "Stages." + scount + "." + ocount + ".ActivateConversation"));
-						if (conv != null)
-							obj.setConversation(conv);
-						else
-						{
-							QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NoValidConversation", internal));
-							continue;
-						}
-					}
-					objs.add(obj);
-				}
-
-				QuestStage qs = new QuestStage(null, null, objs);
-				stages.add(qs);
-			}
-			QuestReward reward = new QuestReward();
-			if (quest.isSection(qpath + "Rewards.Item"))
-			{
-				for (String temp : quest.getSection(qpath + "Rewards.Item"))
-				{
-					reward.addItem(quest.getItemStack(qpath + "Rewards.Item." + Integer.parseInt(temp)));
-				}
-			}
-			if (quest.getDouble(qpath + "Rewards.Money") != 0)
-				reward.addMoney(quest.getDouble(qpath + "Rewards.Money"));
-			if (quest.getInt(qpath + "Rewards.Experience") != 0)
-				reward.addExp(quest.getInt(qpath + "Rewards.Experience"));
-			if (quest.isSection(qpath + "Rewards.FriendlyPoint"))
-			{
-				for (String s : quest.getSection(qpath + "Rewards.FriendlyPoint"))
-				{
-					reward.addFriendPoint(Integer.parseInt(s), quest.getInt(qpath + "Rewards.FriendlyPoint." + s));
-				}
-			}
-
-			if (quest.getStringList(qpath + "Rewards.Commands") != null)
-			{
-				List<String> l = quest.getStringList(qpath + "Rewards.Commands");
-				for (String s : l)
-				{
-					reward.addCommand(s);
-				}
-			}
-
+			
+			// Stages
+			List<QuestStage> stages = loadStages(internal);
+			QuestReward reward = loadReward(internal);
+			
 			if (Main.instance.pluginHooker.hasCitizensEnabled() && quest.contains(qpath + "QuestNPC"))
 			{
 				NPC npc = null;
 				if (!(quest.getInt(qpath + "QuestNPC") == -1)
 						&& CitizensAPI.getNPCRegistry().getById(quest.getInt(qpath + "QuestNPC")) != null)
 					npc = CitizensAPI.getNPCRegistry().getById(quest.getInt(qpath + "QuestNPC"));
+				
 				Quest q = new Quest(internal, questname, questoutline, reward, stages, npc);
 				if (quest.getString(qpath + "MessageRequirementNotMeet") != null)
 					q.setFailMessage(quest.getString(qpath + "MessageRequirementNotMeet"));
+				
 				// Requirements
-				if (quest.isSection(qpath + "Requirements"))
-				{
-					if (quest.getInt(qpath + "Requirements.Level") != 0)
-						q.getRequirements().put(RequirementType.LEVEL, quest.getInt(qpath + "Requirements.Level"));
-					if (quest.getStringList(qpath + "Requirements.Quest") != null)
-						q.getRequirements().put(RequirementType.QUEST, quest.getStringList(qpath + "Requirements.Quest"));
-					if (quest.isSection(qpath + "Requirements.Item"))
-					{
-						List<ItemStack> l = new ArrayList<>();
-						for (String i : quest.getSection(qpath + "Requirements.Item"))
-						{
-							l.add(quest.getItemStack(qpath + "Requirements.Item." + i));
-						}
-						q.getRequirements().put(RequirementType.ITEM, l);
-					}
-					if (quest.getStringList(qpath + "Requirements.Scoreboard") != null)
-						q.getRequirements().put(RequirementType.SCOREBOARD,
-								quest.getStringList(qpath + "Requirements.Scoreboard"));
-					if (quest.getStringList(qpath + "Requirements.NBTTag") != null)
-						q.getRequirements().put(RequirementType.NBTTAG, quest.getStringList(qpath + "Requirements.NBTTag"));
-				}
+				loadRequirements(q);
 
 				// Triggers
-				String triggerPath = qpath + "TriggerEvents";
-				if (quest.isSection(triggerPath))
-				{
-					EnumMap<TriggerType, List<TriggerObject>> map = new EnumMap<>(TriggerType.class);
-					for (String type : quest.getSection(triggerPath))
-					{
-						TriggerType t = TriggerType.valueOf(type);
-						List<TriggerObject> list = new ArrayList<>();
-						switch(t)
-						{
-							case TRIGGER_ON_FINISH:
-							case TRIGGER_ON_QUIT:
-							case TRIGGER_ON_TAKE:
-								for (String obj : quest.getStringList(triggerPath + "." + type))
-								{
-									String[] split = obj.split(" ");
-									list.add(new TriggerObject(TriggerObjectType.valueOf(split[0]), split[1], -1));
-								}
-								break;
-							case TRIGGER_STAGE_FINISH:
-							case TRIGGER_STAGE_START:
-								for (String obj : quest.getStringList(triggerPath + "." + type))
-								{
-									String[] split = obj.split(" ");
-									list.add(new TriggerObject(TriggerObjectType.valueOf(split[1]), split[2], Integer.parseInt(split[0])));
-								}
-								break;
-						}
-						map.put(t, list);
-					}
-					q.setTriggers(map);
-				}
+				loadTriggers(q);
+				
 				if (quest.getBoolean(qpath + "Redoable"))
 				{
 					q.setRedoable(true);
@@ -571,6 +387,236 @@ public class QuestConfigLoader
 		}
 		quest.save();
 		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.QuestLoaded", Integer.toString(totalcount)));
+	}
+	
+	private List<QuestStage> loadStages(String id)
+	{
+		String qpath = "Quests." + id + ".";
+		List<QuestStage> list = new ArrayList<>();
+		for (String stagecount : quest.getSection(qpath + "Stages"))
+		{
+			List<SimpleQuestObject> objs = new ArrayList<>();
+			int scount = Integer.parseInt(stagecount);
+			for (String objcount : quest.getSection(qpath + "Stages." + scount))
+			{
+				int ocount = Integer.parseInt(objcount);
+				String s = quest.getString(qpath + "Stages." + scount + "." + ocount + ".ObjectType");
+				SimpleQuestObject obj = null;
+				int n;
+				switch (s)
+				{
+					case "DELIVER_ITEM":
+						n = quest.getInt(qpath + "Stages." + scount + "." + ocount + ".TargetNPC");
+						if (CitizensAPI.getNPCRegistry().getById(n) == null)
+						{
+							QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NPCNotValid", Integer.toString(n)));
+							continue;
+						}
+						obj = new QuestObjectDeliverItem(CitizensAPI.getNPCRegistry().getById(n),
+								quest.getItemStack(qpath + "Stages." + scount + "." + ocount + ".Item"),
+								quest.getItemStack(qpath + "Stages." + scount + "." + ocount + ".Item").getAmount());
+						break;
+					case "TALK_TO_NPC":
+						n = quest.getInt(qpath + "Stages." + scount + "." + ocount + ".TargetNPC");
+						if (CitizensAPI.getNPCRegistry().getById(n) == null)
+						{
+							QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NPCNotValid", Integer.toString(n)));
+							continue;
+						}
+						obj = new QuestObjectTalkToNPC(CitizensAPI.getNPCRegistry().getById(n));
+					case "KILL_MOB":
+						String name = null;
+						if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".MythicMob") != null)
+						{
+							if (!Main.instance.pluginHooker.hasMythicMobEnabled())
+							{
+								QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.MTMNotInstalled"));
+								continue;
+							}
+							name = quest.getString(qpath + "Stages." + scount + "." + ocount + ".MythicMob");
+							try
+							{
+								obj = new QuestObjectKillMob(Main.instance.pluginHooker.getMTMPlugin().getAPIHelper().getMythicMob(name),
+										quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Amount"));
+							}
+							catch (Exception e)
+							{
+								QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.MTMMobNotFound", name));
+								continue;
+							}
+						}
+						else
+							if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".MobName") != null)
+							{
+								name = quest.getString(qpath + "Stages." + scount + "." + ocount + ".MobName");
+								obj = new QuestObjectKillMob(
+										EntityType.valueOf(
+												quest.getString(qpath + "Stages." + scount + "." + ocount + ".MobType")),
+										quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Amount"), name);
+							}
+							else
+								if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".MobType") != null)
+									obj = new QuestObjectKillMob(
+											EntityType.valueOf(
+													quest.getString(qpath + "Stages." + scount + "." + ocount + ".MobType")),
+											quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Amount"), null);
+						break;
+					case "BREAK_BLOCK":
+						obj = new QuestObjectBreakBlock(
+								Material.getMaterial(
+										quest.getString(qpath + "Stages." + scount + "." + ocount + ".BlockType")),
+								Short.parseShort(
+										Integer.toString(quest.getInt(qpath + "Stages." + scount + "." + ocount + ".SubID"))),
+								quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Amount"));
+						break;
+					case "CONSUME_ITEM":
+						obj = new QuestObjectConsumeItem(
+								quest.getItemStack(qpath + "Stages." + scount + "." + ocount + ".Item"),
+								quest.getItemStack(qpath + "Stages." + scount + "." + ocount + ".Item").getAmount());
+						break;
+					case "REACH_LOCATION":
+						String[] splited = quest.getString(qpath + "Stages." + scount + "." + ocount + ".Location").split(":");
+						Location loc = new Location(Bukkit.getWorld(splited[0]), Double.parseDouble(splited[1]), Double.parseDouble(splited[2]),
+								Double.parseDouble(splited[3]));
+						obj = new QuestObjectReachLocation(loc,
+								quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Range"),
+								quest.getString(qpath + "Stages." + scount + "." + ocount + ".LocationName"));
+						break;
+					default:
+						QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NoValidObject", id));
+						continue;
+				}
+				if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".ActivateConversation") != null)
+				{
+					QuestConversation conv = ConversationManager.getConversation(
+							quest.getString(qpath + "Stages." + scount + "." + ocount + ".ActivateConversation"));
+					if (conv != null)
+						obj.setConversation(conv);
+					else
+					{
+						QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NoValidConversation", id));
+						continue;
+					}
+				}
+				objs.add(obj);
+			}
+
+			QuestStage qs = new QuestStage(objs);
+			list.add(qs);
+		}
+		return list;
+	}
+	
+	private void loadRequirements(Quest q)
+	{
+		String qpath = "Quests." + q.getInternalID() + ".";
+		if (quest.isSection(qpath + "Requirements"))
+		{
+			if (quest.getInt(qpath + "Requirements.Level") != 0)
+				q.getRequirements().put(RequirementType.LEVEL, quest.getInt(qpath + "Requirements.Level"));
+			if (quest.getStringList(qpath + "Requirements.Quest") != null)
+				q.getRequirements().put(RequirementType.QUEST, quest.getStringList(qpath + "Requirements.Quest"));
+			if (quest.isSection(qpath + "Requirements.Item"))
+			{
+				List<ItemStack> l = new ArrayList<>();
+				for (String i : quest.getSection(qpath + "Requirements.Item"))
+				{
+					l.add(quest.getItemStack(qpath + "Requirements.Item." + i));
+				}
+				q.getRequirements().put(RequirementType.ITEM, l);
+			}
+			if (quest.getStringList(qpath + "Requirements.Scoreboard") != null)
+				q.getRequirements().put(RequirementType.SCOREBOARD,
+						quest.getStringList(qpath + "Requirements.Scoreboard"));
+			if (quest.getStringList(qpath + "Requirements.NBTTag") != null)
+				q.getRequirements().put(RequirementType.NBTTAG, quest.getStringList(qpath + "Requirements.NBTTag"));
+			if (Main.instance.pluginHooker.hasSkillAPIEnabled())
+			{
+				if (quest.getString(qpath + "Requirements.SkillAPIClass") != null)
+					q.getRequirements().put(RequirementType.SKILLAPI_CLASS, quest.getString(qpath + "Requirements.SkillAPIClass"));
+				if (quest.getInt(qpath + "Requirements.SkillAPILevel") != 0)
+					q.getRequirements().put(RequirementType.SKILLAPI_LEVEL, quest.getInt(qpath + "Requirements.SkillAPILevel"));
+			}
+		}
+		return;
+	}
+	
+	private void loadTriggers(Quest q)
+	{
+		String triggerPath = "Quests." + q.getInternalID() + ".TriggerEvents";
+		EnumMap<TriggerType, List<TriggerObject>> map = new EnumMap<>(TriggerType.class);
+		if (quest.isSection(triggerPath))
+		{
+			for (String type : quest.getSection(triggerPath))
+			{
+				TriggerType t = TriggerType.valueOf(type);
+				List<TriggerObject> list = new ArrayList<>();
+				switch(t)
+				{
+					case TRIGGER_ON_FINISH:
+					case TRIGGER_ON_QUIT:
+					case TRIGGER_ON_TAKE:
+						for (String obj : quest.getStringList(triggerPath + "." + type))
+						{
+							String[] split = obj.split(" ");
+							String object = QuestUtil.convertArgsString(split, 1);
+							list.add(new TriggerObject(TriggerObjectType.valueOf(split[0]), object, -1));
+						}
+						break;
+					case TRIGGER_STAGE_FINISH:
+					case TRIGGER_STAGE_START:
+						for (String obj : quest.getStringList(triggerPath + "." + type))
+						{
+							String[] split = obj.split(" ");
+							String object = QuestUtil.convertArgsString(split, 2);
+							list.add(new TriggerObject(TriggerObjectType.valueOf(split[1]), object, Integer.parseInt(split[0])));
+						}
+						break;
+				}
+				map.put(t, list);
+			}
+		}
+		q.setTriggers(map);
+		return;
+	}
+	
+	private QuestReward loadReward(String id)
+	{
+		String qpath = "Quests." + id + ".";
+		QuestReward reward = new QuestReward();
+		if (quest.isSection(qpath + "Rewards.Item"))
+		{
+			for (String temp : quest.getSection(qpath + "Rewards.Item"))
+			{
+				reward.addItem(quest.getItemStack(qpath + "Rewards.Item." + Integer.parseInt(temp)));
+			}
+		}
+		if (quest.getDouble(qpath + "Rewards.Money") != 0)
+			reward.addMoney(quest.getDouble(qpath + "Rewards.Money"));
+		if (quest.getInt(qpath + "Rewards.Experience") != 0)
+			reward.addExp(quest.getInt(qpath + "Rewards.Experience"));
+		if (quest.isSection(qpath + "Rewards.FriendlyPoint"))
+		{
+			for (String s : quest.getSection(qpath + "Rewards.FriendlyPoint"))
+			{
+				reward.addFriendPoint(Integer.parseInt(s), quest.getInt(qpath + "Rewards.FriendlyPoint." + s));
+			}
+		}
+
+		if (quest.getStringList(qpath + "Rewards.Commands") != null)
+		{
+			List<String> l = quest.getStringList(qpath + "Rewards.Commands");
+			for (String s : l)
+			{
+				reward.addCommand(s);
+			}
+		}
+		if (Main.instance.pluginHooker.hasSkillAPIEnabled())
+		{
+			if (quest.getInt(qpath + "Rewards.SkillAPIExp") != 0)
+				reward.setSkillAPIExp(quest.getInt(qpath + "Rewards.SkillAPIExp"));
+		}
+		return reward;
 	}
 
 	private List<QuestBaseAction> loadConvAction(List<String> fromlist)

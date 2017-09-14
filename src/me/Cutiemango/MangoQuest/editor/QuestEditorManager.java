@@ -226,10 +226,13 @@ public class QuestEditorManager
 
 		p4.add(I18n.locMsg("QuestEditor.RewardExp", Integer.toString(q.getQuestReward().getExp()))).endNormally();
 		p4.add(new InteractiveText(" " + I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward exp").showText(I18n.locMsg("QuestEditor.RewardExp.ShowText"))).changeLine();
-
-		p4.add(I18n.locMsg("QuestEditor.RewardSkillAPIExp", Integer.toString(q.getQuestReward().getSkillAPIExp()))).endNormally();
-		p4.add(new InteractiveText(" " + I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward saexp").showText(I18n.locMsg("QuestEditor.RewardSkillAPIExp.ShowText"))).changeLine();
 		
+		if (Main.instance.pluginHooker.hasSkillAPIEnabled())
+		{
+			p4.add(I18n.locMsg("QuestEditor.RewardSkillAPIExp", Integer.toString(q.getQuestReward().getSkillAPIExp()))).endNormally();
+			p4.add(new InteractiveText(" " + I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward saexp").showText(I18n.locMsg("QuestEditor.RewardSkillAPIExp.ShowText"))).changeLine();
+		}
+	
 		p4.add(I18n.locMsg("QuestEditor.RewardFriendPoint")).endNormally();
 		p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew reward fp").showText(I18n.locMsg("QuestEditor.RewardFriendPoint.ShowText"))).changeLine();
 		
@@ -302,6 +305,7 @@ public class QuestEditorManager
 				
 				page.add(new InteractiveText(obj.getObjType().toCustomString())
 						.showText(I18n.locMsg("QuestEditor.EditTriggerObjectType") + obj.getObject().toString())).endNormally();
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew evt " + type.toString() + " " + stage + " " + realIndex + " ")).endNormally();
 				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit evt " + type.toString() + " " + stage + " " + realIndex + " " + obj.getObjType().toString())).endNormally();
 				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove evt " + type.toString() + " " + stage + " " + realIndex)).endNormally();
 				page.changeLine();
@@ -309,7 +313,6 @@ public class QuestEditorManager
 			}
 		}
 		page.changeLine();
-		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew evt " + type.toString() + " " + stage)).changeLine();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e gui")).endNormally();
 		QuestGUIManager.openBook(p, book.toSendableBook());
 	}
@@ -567,13 +570,13 @@ public class QuestEditorManager
 		QuestGUIManager.openBook(p, p1);
 	}
 
-	public static void selectTriggerObjType(Player p, TriggerType t, int stage)
+	public static void selectTriggerObjType(Player p, TriggerType t, int stage, int index)
 	{
 		QuestBookPage p1 = new QuestBookPage();
 		p1.add(I18n.locMsg("QuestEditor.SelectTriggerObj")).changeLine();
 		for (TriggerObjectType otype : TriggerObjectType.values())
 		{
-			p1.add(new InteractiveText("- [" + otype.toCustomString() + "]").clickCommand("/mq e addnew evt " + t.toString() + " " + stage + " " + otype.toString())).endNormally();
+			p1.add(new InteractiveText("- [" + otype.toCustomString() + "]").clickCommand("/mq e addnew evt " + t.toString() + " " + stage + " " + index + " " + otype.toString())).endNormally();
 			p1.changeLine();
 		}
 		QuestGUIManager.openBook(p, p1);

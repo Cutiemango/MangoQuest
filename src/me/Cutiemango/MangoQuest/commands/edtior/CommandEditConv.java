@@ -166,15 +166,7 @@ public class CommandEditConv
 			if (args.length >= 4)
 			{
 				String type = args[2];
-				String msg = "";
-				for (int i = 4; i < args.length; i++)
-				{
-					msg += args[i];
-					if (i + 1 == args.length)
-						break;
-					else
-						msg += " ";
-				}
+				String msg = QuestUtil.convertArgsString(args, 4);
 				switch (type)
 				{
 					case "acceptmsg":
@@ -211,15 +203,10 @@ public class CommandEditConv
 	// /mq ce edit act [index] [acttype] [actobj]
 	private static void editAction(QuestConversation conv, Player sender, String[] args, String type)
 	{
-		if (args.length >= 5 && args[4].equalsIgnoreCase("cancel"))
-		{
-			ConversationEditorManager.editConversation(sender);
-			return;
-		}
 		if (args.length == 4)
 		{
 			int index = Integer.parseInt(args[3]);
-			ConversationEditorManager.selectActionType(sender, type, index);
+			ConversationEditorManager.selectActionType(sender, type, "edit", index);
 			return;
 		}
 		else
@@ -277,15 +264,11 @@ public class CommandEditConv
 				{
 					int index = Integer.parseInt(args[3]);
 					EnumAction act = EnumAction.valueOf(args[4]);
-					String s = "";
-					for (int i = 5; i < args.length; i++)
+					String s = QuestUtil.convertArgsString(args, 5);
+					if (s.equalsIgnoreCase("cancel"))
 					{
-						s += args[i];
-						if (i + 1 == args.length)
-							break;
-						else
-							s += " ";
-
+						ConversationEditorManager.editConversation(sender);
+						return;
 					}
 					switch (type)
 					{

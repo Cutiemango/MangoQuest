@@ -42,10 +42,11 @@ public class Main extends JavaPlugin
 		getCommand("mqa").setExecutor(new AdminCommand());
 		
 		configManager = new QuestConfigManager();
-		configManager.loadFile();
-		
 		pluginHooker = new PluginHooker(this);
 		pluginHooker.hookPlugins();
+		configManager.loadFile();
+
+		
 
 		getServer().getPluginManager().registerEvents(new QuestListener(), this);
 

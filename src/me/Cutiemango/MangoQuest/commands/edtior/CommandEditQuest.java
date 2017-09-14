@@ -70,11 +70,6 @@ public class CommandEditQuest
 				editRequirements(q, sender, args);
 				break;
 			case "evt":
-				if (args[args.length-1].equals("cancel"))
-				{
-					QuestEditorManager.selectTriggerType(sender, "edit");
-					return;
-				}
 				editEvent(q, sender, args);
 				break;
 			case "stage":
@@ -141,12 +136,7 @@ public class CommandEditQuest
 					QuestEditorManager.editQuest(sender);
 					return;
 				}
-				String s = "";
-				for (int i = 4; i < args.length; i++)
-				{
-					s = s + args[i] + " ";
-				}
-				s = s.trim();
+				String s = QuestUtil.convertArgsString(args, 4);
 				if (q.getQuestOutline().size() - 1 < line)
 					q.getQuestOutline().add(line, s);
 				else
@@ -370,14 +360,11 @@ public class CommandEditQuest
 		TriggerObjectType objtype = TriggerObjectType.valueOf(args[6]);
 		if (args.length >= 8)
 		{
-			String s = "";
-			for (int j = 7; j < args.length; j++)
+			String s = QuestUtil.convertArgsString(args, 7);
+			if (s.equalsIgnoreCase("cancel"))
 			{
-				s = s + args[j];
-				if (j + 1 == args.length)
-					break;
-				else
-					s += " ";
+				QuestEditorManager.editQuestTrigger(sender, type, stage);
+				return;
 			}
 			List<TriggerObject> list = q.getTriggerMap().containsKey(type) ? q.getTriggerMap().get(type) : new ArrayList<>();
 			if (index == list.size())
@@ -725,14 +712,8 @@ public class CommandEditQuest
 							q.getQuestReward().getFp().put(npc, fp);
 							break;
 						case "command":
-							String cmd = "";
+							String cmd = QuestUtil.convertArgsString(args, 5);
 							int index = Integer.parseInt(args[4]);
-							for (int i = 5; i <= args.length; i++)
-							{
-								cmd += args[i];
-								if (!(i == args.length - 1))
-									cmd += " ";
-							}
 							if (!cmd.equals(""))
 								q.getQuestReward().getCommands().set(index, cmd);
 							break;

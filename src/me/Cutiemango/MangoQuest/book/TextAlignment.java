@@ -2,6 +2,7 @@ package me.Cutiemango.MangoQuest.book;
 
 import static java.lang.Character.*;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
@@ -10,16 +11,9 @@ public class TextAlignment
 
 	public static final int MAXIUM_CHAR_PER_LINE = 29;
 	public static final int MAXIUM_LINE_PER_PAGE = 14;
+	
+	public static HashMap<UnicodeBlock, Double> CHARACTER_SIZEMAP = new HashMap<>();
 
-	public static final double CHARACTER_ALPHABET = 1D;
-	public static final double CHARACTER_CHINESE = 2.45D;
-
-	public static final List<UnicodeBlock> CHINESE_UNICODEBLOCK = Arrays.asList(
-			UnicodeBlock.GENERAL_PUNCTUATION,
-			UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION,
-			UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS,
-			UnicodeBlock.CJK_COMPATIBILITY_FORMS,
-			UnicodeBlock.VERTICAL_FORMS);
 	public static final List<Character> ESCAPE_COLOR_CODES = Arrays.asList('k', 'l', 'm', 'n', 'o', 'r');
 	public static final List<String> IGNORE_CHARS = Arrays.asList("@", "\\", "#", "§", "&");
 
@@ -28,6 +22,14 @@ public class TextAlignment
 		textToAlign = QuestChatManager.translateColor(s);
 		lineUsed = line;
 		align();
+	}
+	
+	static
+	{
+		CHARACTER_SIZEMAP.put(UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS, 1.0D);
+		CHARACTER_SIZEMAP.put(UnicodeBlock.BASIC_LATIN, 1.0D);
+		CHARACTER_SIZEMAP.put(UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION, 2.41D);
+		CHARACTER_SIZEMAP.put(UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS, 2.41D);
 	}
 
 	private String textToAlign = "";
@@ -110,10 +112,7 @@ public class TextAlignment
 				skipnext = false;
 				continue;
 			}
-			if (UnicodeScript.of(codepoint) == UnicodeScript.HAN || CHINESE_UNICODEBLOCK.contains(UnicodeBlock.of(codepoint)))
-				size += CHARACTER_CHINESE;
-			else
-				size += CHARACTER_ALPHABET;
+			size += getSize(UnicodeBlock.of(codepoint));
 			skipnext = false;
 			continue;
 		}
@@ -140,15 +139,19 @@ public class TextAlignment
 				skipnext = false;
 				continue;
 			}
-			if (UnicodeScript.of(codepoint) == UnicodeScript.HAN || CHINESE_UNICODEBLOCK.contains(UnicodeBlock.of(codepoint)))
-				size += CHARACTER_CHINESE;
-			else
-				size += CHARACTER_ALPHABET;
+			size += getSize(UnicodeBlock.of(codepoint));
 			if (size >= MAXIUM_CHAR_PER_LINE)
 				return index;
 			continue;
 		}
 		return index;
+	}
+	
+	private double getSize(UnicodeBlock block)
+	{
+		if (CHARACTER_SIZEMAP.containsKey(block))
+			return CHARACTER_SIZEMAP.get(block);
+		else return 1.0D;
 	}
 
 	private String getLastAppliedColor(String s)

@@ -17,6 +17,7 @@ import me.Cutiemango.MangoQuest.conversation.QuestBaseAction;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.model.QuestReward;
 import me.Cutiemango.MangoQuest.model.QuestStage;
 import me.Cutiemango.MangoQuest.model.RequirementType;
 import me.Cutiemango.MangoQuest.model.TriggerObject;
@@ -73,8 +74,7 @@ public class QuestConfigSaver
 		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.ConversationSaved", qc.getName(), qc.getInternalID()));
 		conv.save();
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	public void saveQuest(Quest q)
 	{
 		String qpath = "Quests." + q.getInternalID() + ".";
@@ -84,6 +84,33 @@ public class QuestConfigSaver
 			quest.set(qpath + "QuestNPC", -1);
 		else
 			quest.set(qpath + "QuestNPC", q.getQuestNPC().getId());
+		if (q.getFailMessage() != null)
+			quest.set(qpath + "MessageRequirementNotMeet", q.getFailMessage());
+		quest.set(qpath + "Redoable", q.isRedoable());
+		if (q.isRedoable())
+			quest.set(qpath + "RedoDelayMilliseconds", q.getRedoDelay());
+		
+		saveRequirements(q);
+		saveTrigger(q);
+		saveStages(q);
+		saveReward(q);
+
+		quest.set(qpath + "Visibility.onTake", q.getSettings().displayOnTake());
+		quest.set(qpath + "Visibility.onProgress", q.getSettings().displayOnProgress());
+		quest.set(qpath + "Visibility.onFinish", q.getSettings().displayOnFinish());
+		quest.set(qpath + "QuitSettings.Quitable", q.isQuitable());
+		quest.set(qpath + "QuitSettings.QuitAcceptMsg", q.getQuitAcceptMsg());
+		quest.set(qpath + "QuitSettings.QuitCancelMsg", q.getQuitCancelMsg());
+		if (!QuestValidater.detailedValidate(q, QuestUtil.getQuest(q.getInternalID())))
+			quest.set(qpath + "Version", q.getVersion().getVersion());
+		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.QuestSaved", q.getQuestName(), q.getInternalID()));
+		quest.save();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void saveRequirements(Quest q)
+	{
+		String qpath = "Quests." + q.getInternalID() + ".";
 		quest.set(qpath + "Requirements.Level", q.getRequirements().get(RequirementType.LEVEL));
 		quest.set(qpath + "Requirements.Quest", q.getRequirements().get(RequirementType.QUEST));
 		int i = 0;
@@ -94,12 +121,16 @@ public class QuestConfigSaver
 		}
 		quest.set(qpath + "Requirements.Scoreboard", q.getRequirements().get(RequirementType.SCOREBOARD));
 		quest.set(qpath + "Requirements.NBTTag", q.getRequirements().get(RequirementType.NBTTAG));
-		if (q.getFailMessage() != null)
-			quest.set(qpath + "MessageRequirementNotMeet", q.getFailMessage());
-		quest.set(qpath + "Redoable", q.isRedoable());
-		if (q.isRedoable())
-			quest.set(qpath + "RedoDelayMilliseconds", q.getRedoDelay());
-		
+		if (Main.instance.pluginHooker.hasSkillAPIEnabled())
+		{
+			quest.set(qpath + "Requirements.SkillAPIClass", q.getRequirements().get(RequirementType.SKILLAPI_CLASS));
+			quest.set(qpath + "Requirements.SkillAPILevel", q.getRequirements().get(RequirementType.SKILLAPI_LEVEL));
+		}
+	}
+	
+	public void saveTrigger(Quest q)
+	{
+		String qpath = "Quests." + q.getInternalID() + ".";
 		for (TriggerType type : q.getTriggerMap().keySet())
 		{
 			List<String> list = new ArrayList<>();
@@ -125,16 +156,21 @@ public class QuestConfigSaver
 			}
 			quest.set(qpath + "TriggerEvents." + type.toString(), list);
 		}
-		i = 0;
-		int j = 0;
+	}
+	
+	public void saveStages(Quest q)
+	{
+		String qpath = "Quests." + q.getInternalID() + ".";
+		int stageCount = 0;
+		int objCount = 0;
 		quest.set(qpath + "Stages", "");
 		for (QuestStage s : q.getStages())
 		{
-			i++;
+			stageCount++;
 			for (SimpleQuestObject obj : s.getObjects())
 			{
-				j++;
-				String objpath = qpath + "Stages." + i + "." + j + ".";
+				objCount++;
+				String objpath = qpath + "Stages." + stageCount + "." + objCount + ".";
 				if (obj.hasConversation())
 					quest.set(objpath + "ActivateConversation", obj.getConversation().getInternalID());
 				quest.set(objpath + "ObjectType", obj.getConfigString());
@@ -182,9 +218,15 @@ public class QuestConfigSaver
 				}
 				continue;
 			}
-			j = 0;
+			objCount = 0;
 		}
-		if (q.getQuestReward().hasItem())
+	}
+	
+	public void saveReward(Quest q)
+	{
+		String qpath = "Quests." + q.getInternalID() + ".";
+		QuestReward r = q.getQuestReward();
+		if (r.hasItem())
 		{
 			int c = 0;
 			for (ItemStack is : q.getQuestReward().getItems())
@@ -193,29 +235,21 @@ public class QuestConfigSaver
 				quest.set(qpath + "Rewards.Item." + c, is);
 			}
 		}
-		if (q.getQuestReward().hasMoney())
+		if (r.hasMoney())
 			quest.set(qpath + "Rewards.Money", q.getQuestReward().getMoney());
-		if (q.getQuestReward().hasExp())
+		if (r.hasExp())
 			quest.set(qpath + "Rewards.Experience", q.getQuestReward().getExp());
-		if (q.getQuestReward().hasFriendPoint())
+		if (r.hasFriendPoint())
 		{
 			for (Integer npc : q.getQuestReward().getFp().keySet())
 			{
 				quest.set(qpath + "Rewards.FriendlyPoint." + npc, q.getQuestReward().getFp().get(npc));
 			}
 		}
-		quest.set(qpath + "Visibility.onTake", q.getSettings().displayOnTake());
-		quest.set(qpath + "Visibility.onProgress", q.getSettings().displayOnProgress());
-		quest.set(qpath + "Visibility.onFinish", q.getSettings().displayOnFinish());
-		quest.set(qpath + "QuitSettings.Quitable", q.isQuitable());
-		quest.set(qpath + "QuitSettings.QuitAcceptMsg", q.getQuitAcceptMsg());
-		quest.set(qpath + "QuitSettings.QuitCancelMsg", q.getQuitCancelMsg());
-		if (q.getQuestReward().hasCommand())
+		if (r.hasCommand())
 			quest.set(qpath + "Rewards.Commands", q.getQuestReward().getCommands());
-		if (!QuestValidater.detailedValidate(q, QuestUtil.getQuest(q.getInternalID())))
-			quest.set(qpath + "Version", q.getVersion().getVersion());
-		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.QuestSaved", q.getQuestName(), q.getInternalID()));
-		quest.save();
+		if (r.hasSkillAPIExp() && Main.instance.pluginHooker.hasSkillAPIEnabled())
+			quest.set(qpath + "Rewards.SkillAPIExp", q.getQuestReward().getSkillAPIExp());
 	}
 	
 	public void removeConversation(QuestConversation qc)
