@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest.book;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
@@ -67,6 +68,8 @@ public class TextComponentFactory
 
 	public static TextComponent convertViewQuest(Quest q)
 	{
+		if (q == null)
+			return new TextComponent(I18n.locMsg("QuestEditor.NotSet"));
 		TextComponent t = new TextComponent(ChatColor.BOLD + q.getQuestName());
 		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]
 		{ new TextComponent(QuestChatManager.translateColor("&e點擊以查看 " + q.getQuestName() + " &e的詳細資料")) }));

@@ -69,7 +69,10 @@ public abstract class SimpleQuestObject
 					if (args[i] instanceof NPC)
 					{
 						NPC npc = (NPC) args[i];
-						text.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
+						if (npc == null)
+							text.addExtra(QuestChatManager.translateColor("&cUnknown NPC"));
+						else
+							text.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
 					}
 					else
 						if (args[i] instanceof Material)

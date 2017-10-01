@@ -289,6 +289,16 @@ public class Quest
 		setting.isRedoable = b;
 	}
 	
+	public boolean isTimeLimited()
+	{
+		return setting.isTimeLimited;
+	}
+	
+	public void setTimeLimited(boolean b)
+	{
+		setting.isTimeLimited = b;
+	}
+	
 	public boolean isQuitable()
 	{
 		return setting.isQuitable;
@@ -307,6 +317,16 @@ public class Quest
 	public void setRedoDelay(long delay)
 	{
 		setting.redoDelay = delay;
+	}
+	
+	public long getTimeLimit()
+	{
+		return setting.timeLimit;
+	}
+	
+	public void setTimeLimit(long limit)
+	{
+		setting.timeLimit = limit;
 	}
 
 	public void setRequirements(EnumMap<RequirementType, Object> m)

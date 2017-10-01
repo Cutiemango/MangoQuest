@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest.commands.edtior;
 import java.util.List;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.Syntax;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
@@ -56,7 +57,14 @@ public class CommandNewAction
 					ConversationEditorManager.editConversation(sender);
 					return;
 				}
-				EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce new " + acttype + " " + index + " " + act.toString()));
+				if (act == EnumAction.NPC_TALK)
+				{
+					EditorListenerHandler.register(sender,
+							new EditorListenerObject(ListeningType.STRING, "mq ce new " + acttype + " " + index + " " + act.toString(), Syntax.of("S@I", I18n.locMsg("Syntax.NPCTalk"), "@")));
+					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.NPCTalk"));
+					return;
+				}
+				EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce new " + acttype + " " + index + " " + act.toString(), null));
 				QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 				return;
 			}

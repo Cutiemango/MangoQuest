@@ -2,6 +2,7 @@ package me.Cutiemango.MangoQuest.commands.edtior;
 
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.Syntax;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
@@ -47,7 +48,7 @@ public class CommandNewConv
 		if (args.length == 3)
 		{
 			QuestGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewConv.EnterID"));
-			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq ce newconv id"));
+			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq ce newconv id", null));
 			return;
 		}
 		if (args[3].equalsIgnoreCase("cancel"))
@@ -64,7 +65,7 @@ public class CommandNewConv
 	{
 		if (args.length == 3){
 			QuestGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewConv.EnterName"));
-			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq ce newconv name"));
+			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq ce newconv name", null));
 			return;
 		}
 		if (args[3].equalsIgnoreCase("cancel")){
@@ -80,7 +81,7 @@ public class CommandNewConv
 	{
 		if (args.length == 3){
 			QuestGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewConv.EnterNPC"));
-			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, "mq ce newconv npc"));
+			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, "mq ce newconv npc", Syntax.of("N", I18n.locMsg("Syntax.NPCID"), "")));
 			return;
 		}
 		if (args[3].equalsIgnoreCase("cancel")){

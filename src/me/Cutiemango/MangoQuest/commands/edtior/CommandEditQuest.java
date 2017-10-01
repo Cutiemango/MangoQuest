@@ -12,6 +12,7 @@ import com.sucy.skill.SkillAPI;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Syntax;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
@@ -72,6 +73,12 @@ public class CommandEditQuest
 			case "evt":
 				editEvent(q, sender, args);
 				break;
+			case "limit":
+				editLimit(q, sender, args);
+				break;
+			case "timelimit":
+				editTimeLimit(q, sender, args);
+				break;
 			case "stage":
 				editStage(q, sender, args);
 				break;
@@ -95,7 +102,7 @@ public class CommandEditQuest
 		if (args.length == 3)
 		{
 
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit name"));
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit name", null));
 			QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 			return;
 		}
@@ -112,7 +119,7 @@ public class CommandEditQuest
 	{
 		if (args.length == 3)
 		{
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit outline"));
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit outline", null));
 			QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.Outline"));
 			return;
 		}
@@ -150,7 +157,7 @@ public class CommandEditQuest
 	{
 		if (args.length == 3)
 		{
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit redo"));
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit redo", null));
 			QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 			return;
 		}
@@ -158,6 +165,23 @@ public class CommandEditQuest
 			if (args.length == 4)
 			{
 				q.setRedoable(Boolean.parseBoolean(args[3]));
+				QuestEditorManager.editQuest(sender);
+				return;
+			}
+	}
+	
+	private static void editLimit(Quest q, Player sender, String[] args)
+	{
+		if (args.length == 3)
+		{
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit limit", null));
+			QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+			return;
+		}
+		else
+			if (args.length == 4)
+			{
+				q.setTimeLimited(Boolean.parseBoolean(args[3]));
 				QuestEditorManager.editQuest(sender);
 				return;
 			}
@@ -249,7 +273,7 @@ public class CommandEditQuest
 					case SCOREBOARD:
 					case NBTTAG:
 						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.STRING, "mq e edit req " + t.toString() + " " + Integer.parseInt(args[4])));
+								new EditorListenerObject(ListeningType.STRING, "mq e edit req " + t.toString() + " " + Integer.parseInt(args[4]), null));
 						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 						break;
 					case ITEM:
@@ -277,7 +301,7 @@ public class CommandEditQuest
 						case MONEY:
 						case SKILLAPI_CLASS:
 						case SKILLAPI_LEVEL:
-							EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req " + t.toString()));
+							EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req " + t.toString(), null));
 							QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 							break;
 						case ITEM:
@@ -294,7 +318,7 @@ public class CommandEditQuest
 	{
 		if (args.length == 3)
 		{
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, "mq e edit npc"));
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, "mq e edit npc", Syntax.of("N", I18n.locMsg("Syntax.NPCID"), "")));
 			QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ClickNPC"));
 			return;
 		}
@@ -318,7 +342,7 @@ public class CommandEditQuest
 	{
 		if (args.length == 3)
 		{
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit redodelay"));
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit redodelay", Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
 			QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 			return;
 		}
@@ -327,6 +351,24 @@ public class CommandEditQuest
 			{
 				String mili = Integer.toString(Integer.parseInt(args[3]) * 1000);
 				q.setRedoDelay(Long.parseLong(mili));
+				QuestEditorManager.editQuest(sender);
+				return;
+			}
+	}
+	
+	private static void editTimeLimit(Quest q, Player sender, String[] args)
+	{
+		if (args.length == 3)
+		{
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit timelimit", Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
+			QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+			return;
+		}
+		else
+			if (args.length == 4)
+			{
+				String mili = Integer.toString(Integer.parseInt(args[3]) * 1000);
+				q.setTimeLimit(Long.parseLong(mili));
 				QuestEditorManager.editQuest(sender);
 				return;
 			}
@@ -378,8 +420,22 @@ public class CommandEditQuest
 		else
 			if (args.length == 7)
 			{
+				if (objtype == TriggerObjectType.SEND_TITLE_AND_SUBTITLE)
+				{
+					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING,
+							"mq e edit evt " + type.toString() + " " + stage + " " + index + " " + objtype.toString(), Syntax.of("S%S", I18n.locMsg("Syntax.TitleAndSubtitle"), "%")));
+					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.TitleAndSubtitle"));
+					return;
+				}
+				else if (objtype == TriggerObjectType.TELEPORT)
+				{
+					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING,
+							"mq e edit evt " + type.toString() + " " + stage + " " + index + " " + objtype.toString(), Syntax.of("S:I:I:I", I18n.locMsg("Syntax.Teleport"), ":")));
+					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.Teleport"));
+					return;
+				}
 				EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING,
-						"mq e edit evt " + type.toString() + " " + stage + " " + index + " " + objtype.toString()));
+						"mq e edit evt " + type.toString() + " " + stage + " " + index + " " + objtype.toString(), null));
 				QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 			}
 	}
@@ -438,48 +494,48 @@ public class CommandEditQuest
 				{
 					case "block":
 						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.BLOCK, "mq e edit object " + stage + " " + obj + " " + args[5]));
+								new EditorListenerObject(ListeningType.BLOCK, "mq e edit object " + stage + " " + obj + " " + args[5], null));
 						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.BreakBlock"));
 						break;
 					case "amount":
 						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.STRING, "mq e edit object " + stage + " " + obj + " " + args[5]));
+								new EditorListenerObject(ListeningType.STRING, "mq e edit object " + stage + " " + obj + " " + args[5], Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
 						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterAmount"));
 						break;
-					case "item":
-						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.ITEM, "mq e edit object " + stage + " " + obj + " " + args[5]));
-						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.RightClick"));
-						break;
+//					case "item":
+//						EditorListenerHandler.register(sender,
+//								new EditorListenerObject(ListeningType.ITEM, "mq e edit object " + stage + " " + obj + " " + args[5]));
+//						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.RightClick"));
+//						break;
 					case "itemnpc":
 					case "npc":
 						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, "mq e edit object " + stage + " " + obj + " " + args[5]));
+								new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, "mq e edit object " + stage + " " + obj + " " + args[5], Syntax.of("N", I18n.locMsg("Syntax.NPCID"), "")));
 						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ClickNPC"));
 						break;
 					case "mtmmob":
 						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.MTMMOB_LEFT_CLICK, "mq e edit object " + stage + " " + obj + " " + args[5]));
+								new EditorListenerObject(ListeningType.MTMMOB_LEFT_CLICK, "mq e edit object " + stage + " " + obj + " " + args[5], null));
 						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterMobID"));
 						break;
 					case "mobname":
 						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.STRING, "mq e edit object " + stage + " " + obj + " " + args[5]));
+								new EditorListenerObject(ListeningType.STRING, "mq e edit object " + stage + " " + obj + " " + args[5], null));
 						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterMobName"));
 						break;
 					case "mobtype":
 						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.MOB_LEFT_CLICK, "mq e edit object " + stage + " " + obj + " " + args[5]));
+								new EditorListenerObject(ListeningType.MOB_LEFT_CLICK, "mq e edit object " + stage + " " + obj + " " + args[5], null));
 						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.HitMob"));
 						break;
 					case "loc":
 						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.LOCATION, "mq e edit object " + stage + " " + obj + " " + args[5]));
+								new EditorListenerObject(ListeningType.LOCATION, "mq e edit object " + stage + " " + obj + " " + args[5], null));
 						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ReachLocation"));
 						break;
 					case "locname":
 						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.STRING, "mq e edit object " + stage + " " + obj + " " + args[5]));
+								new EditorListenerObject(ListeningType.STRING, "mq e edit object " + stage + " " + obj + " " + args[5], null));
 						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.LocationName"));
 						break;
 					case "type":
@@ -629,8 +685,11 @@ public class CommandEditQuest
 				case "item":
 					EditorListenerHandler.registerGUI(sender, "reward");
 					return;
+				default:
+					QuestEditorManager.editQuest(sender);
+					return;
 			}
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit reward " + args[3]));
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit reward " + args[3], null));
 			return;
 		}
 		else
@@ -680,12 +739,12 @@ public class CommandEditQuest
 					case "fp":
 						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPoint"));
 						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.STRING, "mq e edit reward fp " + Integer.parseInt(args[4])));
+								new EditorListenerObject(ListeningType.STRING, "mq e edit reward fp " + Integer.parseInt(args[4]), Syntax.of("I:I", I18n.locMsg("Syntax.FriendPoint"), ":")));
 						return;
 					case "command":
 						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterCommand"));
 						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.STRING, "mq e edit reward command " + Integer.parseInt(args[4])));
+								new EditorListenerObject(ListeningType.STRING, "mq e edit reward command " + Integer.parseInt(args[4]), null));
 						return;
 				}
 				QuestEditorManager.editQuest(sender);

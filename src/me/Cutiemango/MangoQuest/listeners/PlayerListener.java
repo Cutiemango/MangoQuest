@@ -8,6 +8,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import me.Cutiemango.MangoQuest.ConfigSettings;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
@@ -23,6 +24,7 @@ public class PlayerListener
 	{
 		QuestPlayerData qd = new QuestPlayerData(p);
 		QuestStorage.Players.put(p.getName(), qd);
+		qd.checkQuestFail();
 	}
 
 	public static void onPlayerQuit(Player p)
@@ -34,6 +36,8 @@ public class PlayerListener
 	
 	public static void onNPCRightClick(Player p, NPC npc, Cancellable event)
 	{
+		if (!ConfigSettings.USE_RIGHT_CLICK_MENU)
+			return;
 		if (p.isSneaking())
 			return;
 		event.setCancelled(true);

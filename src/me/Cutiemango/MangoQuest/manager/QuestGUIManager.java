@@ -155,7 +155,7 @@ public class QuestGUIManager
 		QuestBookPage page = book.getLastEditingPage();
 		
 		// Page 1
-		page.add("&0&l[進行中的任務]").changeLine();
+		page.add(I18n.locMsg("QuestJourney.QuestProgress")).changeLine();
 		for (QuestProgress qp : qd.getProgresses())
 		{
 			if (!qp.getQuest().getSettings().displayOnProgress())
@@ -164,8 +164,13 @@ public class QuestGUIManager
 			page.add(new InteractiveText("").showQuest(qp.getQuest())).endNormally();
 			page.add("：").endNormally();
 			if (qp.getQuest().isQuitable())
-				page.add(new InteractiveText("&c&l【放棄】").clickCommand("/mq quest quit " + qp.getQuest().getInternalID())).changeLine();
-			for (QuestObjectProgress qop : qp.getCurrentObjects())
+				page.add(new InteractiveText(I18n.locMsg("QuestJourney.QuitButton")).clickCommand("/mq quest quit " + qp.getQuest().getInternalID())).changeLine();
+			if (qp.getQuest().isTimeLimited())
+			{
+				long timeleft = (qp.getTakeTime() + qp.getQuest().getTimeLimit()) - System.currentTimeMillis();
+				page.add(new InteractiveText(I18n.locMsg("QuestJourney.TimeLeft", QuestUtil.convertTime(timeleft)))).changeLine();
+			}
+				for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
 				page.add("- ").endNormally();
 				if (qop.isFinished())
@@ -183,7 +188,7 @@ public class QuestGUIManager
 		book.newPage();
 		page = book.getLastEditingPage();
 		// Page 2
-		page.add("&0&l[可進行的任務]").changeLine();
+		page.add(I18n.locMsg("QuestJourney.QuestToTake")).changeLine();
 
 		for (Quest q : QuestStorage.Quests.values())
 		{
@@ -198,7 +203,7 @@ public class QuestGUIManager
 				page.add("- ");
 				page.add(new InteractiveText("").showQuest(q));
 				if (q.isCommandQuest())
-					page.add(new InteractiveText("&2&l【接受】").clickCommand("/mq quest take " + q.getInternalID()));
+					page.add(new InteractiveText(I18n.locMsg("QuestJourney.TakeButton")).clickCommand("/mq quest take " + q.getInternalID()));
 				page.changeLine();
 			}
 		}
@@ -206,7 +211,7 @@ public class QuestGUIManager
 		
 		book.newPage();
 		page = book.getLastEditingPage();
-		page.add("&0&l[已完成的任務]").changeLine();
+		page.add(I18n.locMsg("QuestJourney.QuestFinished")).changeLine();
 		
 		for (QuestFinishData qfd : qd.getFinishQuests())
 		{
@@ -216,7 +221,8 @@ public class QuestGUIManager
 			page = book.getLastEditingPage();
 			page.add("- ").endNormally();
 			page.add(new InteractiveText("").showQuest(qfd.getQuest())).endNormally();
-			page.add("： 已完成 " + qfd.getFinishedTimes() + " 次").changeLine();
+			page.add("：").endNormally();
+			page.add(I18n.locMsg("QuestJourney.FinishedTimes", Integer.toString(qfd.getFinishedTimes()))).changeLine();
 		}
 
 		QuestGUIManager.openBook(p, book.toSendableBook());
@@ -226,7 +232,7 @@ public class QuestGUIManager
 	{
 		QuestBookPage p1 = new QuestBookPage();
 		p1.add(msg).changeLine();
-		p1.add("&7(取消請輸入cancel。)").changeLine();
+		p1.add(I18n.locMsg("EditorMessage.EnterCancel")).changeLine();
 		openBook(p, p1);
 	}
 

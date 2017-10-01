@@ -213,6 +213,7 @@ public class QuestConfigLoader
 
 	public void loadConfig()
 	{
+		// Load i18n
 		if (config.getString("language") != null)
 		{
 			String[] lang = config.getString("language").split("_");
@@ -230,11 +231,18 @@ public class QuestConfigLoader
 			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.LocaleNotFound"));
 			QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.UsingDefaultLocale", ConfigSettings.DEFAULT_LOCALE.toString()));
 		}
+		
+		// Debug mode
+		ConfigSettings.DEBUG_MODE = config.getBoolean("debug");
 		if (config.getBoolean("debug"))
-		{
-			ConfigSettings.DEBUG_MODE = true;
 			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.DebugMode"));
-		}
+		
+		// Rightclick Settings
+		ConfigSettings.USE_RIGHT_CLICK_MENU = config.getBoolean("useRightClickMenu");
+		
+		// Maxium Quests
+		if (config.getInt("maxQuestAmount") != 0)
+			ConfigSettings.MAXIUM_QUEST_AMOUNT = config.getInt("maxQuestAmount");
 	}
 
 	public void loadConversation()
@@ -373,6 +381,11 @@ public class QuestConfigLoader
 										quest.getBoolean(qpath + "Visibility.onProgress"),
 										quest.getBoolean(qpath + "Visibility.onFinish"));
 				q.setQuitable(quest.getBoolean(qpath + "QuitSettings.Quitable"));
+				if (quest.getBoolean(qpath + "TImeLimited"))
+				{
+					q.setTimeLimited(quest.getBoolean(qpath + "TimeLimited"));
+					q.setTimeLimit(quest.getLong(qpath + "TimeLimitMilliseconds"));
+				}
 				q.setQuitAcceptMsg(quest.getString(qpath + "QuitSettings.QuitAcceptMsg"));
 				q.setQuitCancelMsg(quest.getString(qpath + "QuitSettings.QuitCancelMsg"));
 				

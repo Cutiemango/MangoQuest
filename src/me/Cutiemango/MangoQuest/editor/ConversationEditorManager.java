@@ -192,11 +192,11 @@ public class ConversationEditorManager
 						String[] split = act.getObject().split("@");
 						NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
 						page.add(new InteractiveText(act.getActionType().toCustomString())
-								.showText(I18n.locMsg("ConversationEditor.ActionObject") + npc.getName() + "&0：「" + split[0] + "」")).endNormally();
+								.showText(I18n.locMsg("ConversationEditor.ActionObject") + npc.getName() + "&f：「" + split[0] + "」")).endNormally();
 					}
 					else
 						page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject())).endNormally();
-				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new acceptact " + counter)).endNormally();
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new acceptact " + (counter + 1))).endNormally();
 				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq ce edit acceptact " + counter)).endNormally();
 				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq ce remove acceptact " + counter)).endNormally();
 				page.changeLine();
@@ -226,11 +226,11 @@ public class ConversationEditorManager
 					{
 						String[] split = act.getObject().split("@");
 						NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
-						page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + npc.getName() + "&0：「" + split[0] + "」")).endNormally();
+						page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + npc.getName() + "&f：「" + split[0] + "」")).endNormally();
 					}
 					else
 						page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject())).endNormally();
-				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new denyact " + counter)).endNormally();
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new denyact " + (counter + 1))).endNormally();
 				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq ce edit denyact " + counter)).endNormally();
 				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq ce remove denyact " + counter)).endNormally();
 				page.changeLine();
@@ -265,11 +265,11 @@ public class ConversationEditorManager
 				{
 					String[] split = act.getObject().split("@");
 					NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
-					page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + npc.getName() + "&0：「" + split[0] + "」")).endNormally();
+					page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + npc.getName() + "&f：「" + split[0] + "」")).endNormally();
 				}
 				else
 					page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject())).endNormally();
-			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new act " + counter)).endNormally();
+			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq ce new act " + (counter + 1))).endNormally();
 			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq ce edit act " + counter)).endNormally();
 			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq ce remove act " + counter)).endNormally();
 			page.changeLine();

@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import me.Cutiemango.MangoQuest.commands.AdminCommand;
 import me.Cutiemango.MangoQuest.commands.CommandReceiver;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
@@ -31,6 +32,8 @@ public class Main extends JavaPlugin
 	public PluginHooker pluginHooker;
 	public VersionHandler handler;
 	public QuestConfigManager configManager;
+	
+	private BukkitTask counterTask;
 	
 	private static boolean VERSION_HIGHER_THAN_1_12 = false;
 
@@ -103,11 +106,14 @@ public class Main extends JavaPlugin
 				this.cancel();
 			}
 		}.runTaskLater(this, 5L);
+		
+		startCounter();
 	}
 
 	@Override
 	public void onDisable()
 	{
+		stopCounter();
 		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.Disabled"));
 		savePlayers();
 	}
@@ -147,6 +153,26 @@ public class Main extends JavaPlugin
 	{
 		if (ConfigSettings.DEBUG_MODE)
 			QuestChatManager.logCmd(Level.INFO, "[DEBUG] " + msg);
+	}
+	
+	public void startCounter()
+	{
+		counterTask = new BukkitRunnable()
+		{
+			@Override
+			public void run()
+			{
+				for (Player p : Bukkit.getOnlinePlayers())
+				{
+					QuestUtil.getData(p).checkQuestFail();
+				}
+			}
+		}.runTaskTimer(this, 0L, 1L);
+	}
+	
+	public void stopCounter()
+	{
+		counterTask.cancel();
 	}
 
 }

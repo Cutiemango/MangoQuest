@@ -21,26 +21,28 @@ public class QuestProgress
 	{
 		this.quest = quest;
 		this.owner = owner;
-		CurrentStage = 0;
+		currentStage = 0;
 		objlist = new ArrayList<>();
-		for (SimpleQuestObject o : quest.getStage(CurrentStage).getObjects())
+		for (SimpleQuestObject o : quest.getStage(currentStage).getObjects())
 		{
 			objlist.add(new QuestObjectProgress(o, 0));
 		}
+		takeStamp = System.currentTimeMillis();
 	}
 
 	public QuestProgress(Quest q, Player p, int s, List<QuestObjectProgress> o)
 	{
 		quest = q;
 		owner = p;
-		CurrentStage = s;
+		currentStage = s;
 		objlist = o;
 	}
 
 	private Quest quest;
 	private Player owner;
-	private int CurrentStage;
+	private int currentStage;
 	private List<QuestObjectProgress> objlist;
+	private long takeStamp;
 
 	public void finish()
 	{
@@ -54,8 +56,9 @@ public class QuestProgress
 
 	public void save(QuestIO io)
 	{
-		io.set("QuestProgress." + quest.getInternalID() + ".QuestStage", CurrentStage);
+		io.set("QuestProgress." + quest.getInternalID() + ".QuestStage", currentStage);
 		io.set("QuestProgress." + quest.getInternalID() + ".Version", quest.getVersion().getVersion());
+		io.set("QuestProgress." + quest.getInternalID() + ".TakeStamp", takeStamp);
 		int t = 0;
 		int value = 0;
 		for (QuestObjectProgress qop : objlist)
@@ -87,22 +90,20 @@ public class QuestProgress
 
 	public void nextStage()
 	{
-		quest.trigger(owner, 0, TriggerType.TRIGGER_STAGE_FINISH, CurrentStage + 1);
-		quest.trigger(owner, 0, TriggerType.TRIGGER_STAGE_START, CurrentStage + 2);
-		if (CurrentStage + 1 < quest.getStages().size())
+		quest.trigger(owner, 0, TriggerType.TRIGGER_STAGE_FINISH, currentStage);
+		if (currentStage + 1 < quest.getStages().size())
 		{
-			CurrentStage++;
-			QuestChatManager.info(owner, I18n.locMsg("CommandInfo.ProgressMessage", quest.getQuestName(), Integer.toString(CurrentStage),
+			currentStage++;
+			QuestChatManager.info(owner, I18n.locMsg("CommandInfo.ProgressMessage", quest.getQuestName(), Integer.toString(currentStage),
 					Integer.toString(quest.getStages().size())));
 			objlist = new ArrayList<>();
-			for (SimpleQuestObject o : quest.getStage(CurrentStage).getObjects())
+			for (SimpleQuestObject o : quest.getStage(currentStage).getObjects())
 			{
 				objlist.add(new QuestObjectProgress(o, 0));
 			}
+			quest.trigger(owner, 0, TriggerType.TRIGGER_STAGE_START, currentStage + 1);
 		}
-		else
-			if (CurrentStage + 1 >= quest.getStages().size())
-				finish();
+		else finish();
 	}
 
 	public List<QuestObjectProgress> getCurrentObjects()
@@ -112,7 +113,7 @@ public class QuestProgress
 
 	public int getCurrentStage()
 	{
-		return CurrentStage;
+		return currentStage;
 	}
 
 	public Quest getQuest()
@@ -123,5 +124,15 @@ public class QuestProgress
 	public Player getOwner()
 	{
 		return this.owner;
+	}
+	
+	public long getTakeTime()
+	{
+		return takeStamp;
+	}
+	
+	public void setTakeTime(long l)
+	{
+		takeStamp = l;
 	}
 }

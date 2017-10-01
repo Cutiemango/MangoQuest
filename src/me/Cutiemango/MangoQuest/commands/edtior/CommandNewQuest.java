@@ -37,7 +37,7 @@ public class CommandNewQuest {
 	private static void setInternalID(Player p, String[] args){
 		if (args.length == 3){
 			QuestGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewQuest.EnterID"));
-			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq e newquest id"));
+			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq e newquest id", null));
 			return;
 		}
 		if (args[3].equalsIgnoreCase("cancel")){
@@ -52,7 +52,7 @@ public class CommandNewQuest {
 	private static void setQuestName(Player p, String[] args){
 		if (args.length == 3){
 			QuestGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewQuest.EnterName"));
-			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq e newquest name"));
+			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq e newquest name", null));
 			return;
 		}
 		if (args[3].equalsIgnoreCase("cancel")){

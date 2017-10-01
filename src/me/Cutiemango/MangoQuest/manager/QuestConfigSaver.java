@@ -90,6 +90,10 @@ public class QuestConfigSaver
 		if (q.isRedoable())
 			quest.set(qpath + "RedoDelayMilliseconds", q.getRedoDelay());
 		
+		quest.set(qpath + "TimeLimited", q.isTimeLimited());
+		if (q.isTimeLimited())
+			quest.set(qpath + "TimeLimitMilliseconds", q.getTimeLimit());
+		
 		saveRequirements(q);
 		saveTrigger(q);
 		saveStages(q);

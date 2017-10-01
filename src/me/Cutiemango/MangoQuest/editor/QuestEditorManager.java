@@ -193,7 +193,16 @@ public class QuestEditorManager
 		p1.add(I18n.locMsg("QuestEditor." + vs.displayOnProgress())).changeLine();
 		p1.add(new InteractiveText(I18n.locMsg("QuestVisibility.OnFinish")).clickCommand("/mq e edit vis finish " + !vs.displayOnFinish()).showText(I18n.locMsg("QuestVisibility." + !vs.displayOnFinish()))).endNormally();
 		p1.add(I18n.locMsg("QuestEditor." + vs.displayOnFinish())).changeLine();
-
+		
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.IsTimeLimited")).clickCommand("/mq e edit limit " + !q.isTimeLimited()).showText(I18n.locMsg("QuestEditor.IsTimeLimited.ShowText." + !q.isTimeLimited()))).endNormally();
+		p1.add(I18n.locMsg("QuestEditor." + q.isTimeLimited())).changeLine();
+		if (q.isTimeLimited())
+		{
+			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.TimeLimit")).clickCommand("/mq e edit timelimit")
+					.showText(I18n.locMsg("QuestEditor.TimeLimit.ShowText"))).endNormally();
+			p1.add(QuestUtil.convertTime(q.getTimeLimit())).changeLine();
+		}
+		
 		QuestBookPage p2 = new QuestBookPage();
 		p2.add(I18n.locMsg("QuestEditor.ReqEventStageInfo")).changeLine();
 		p2.changeLine();
@@ -305,13 +314,16 @@ public class QuestEditorManager
 				
 				page.add(new InteractiveText(obj.getObjType().toCustomString())
 						.showText(I18n.locMsg("QuestEditor.EditTriggerObjectType") + obj.getObject().toString())).endNormally();
-				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew evt " + type.toString() + " " + stage + " " + realIndex + " ")).endNormally();
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew evt " + type.toString() + " " + stage + " " + (realIndex+1) + " ")).endNormally();
 				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit evt " + type.toString() + " " + stage + " " + realIndex + " " + obj.getObjType().toString())).endNormally();
 				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove evt " + type.toString() + " " + stage + " " + realIndex)).endNormally();
 				page.changeLine();
 				index++;
 			}
 		}
+		
+		if (q.getTriggerMap().get(type) == null || q.getTriggerMap().get(type).size() == 0)
+			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew evt " + type.toString() + " " + stage + " " + 0 + " ")).changeLine();
 		page.changeLine();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e gui")).endNormally();
 		QuestGUIManager.openBook(p, book.toSendableBook());
@@ -554,6 +566,7 @@ public class QuestEditorManager
 			p1.add(new InteractiveText("- [" + t.toCustomString() + "]").clickCommand("/mq e " + mode + " evt " + t.toString())).endNormally();
 			p1.changeLine();
 		}
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e gui")).changeLine();
 		QuestGUIManager.openBook(p, p1);
 	}
 
@@ -567,6 +580,7 @@ public class QuestEditorManager
 			p1.add(new InteractiveText("- " + I18n.locMsg("QuestEditor.Stage", Integer.toString(s))).clickCommand("/mq e " + mode + " evt " + t.toString() + " " + s)).endNormally();
 			p1.changeLine();
 		}
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e " + mode + " evt " + t.toString())).changeLine();
 		QuestGUIManager.openBook(p, p1);
 	}
 
@@ -579,6 +593,7 @@ public class QuestEditorManager
 			p1.add(new InteractiveText("- [" + otype.toCustomString() + "]").clickCommand("/mq e addnew evt " + t.toString() + " " + stage + " " + index + " " + otype.toString())).endNormally();
 			p1.changeLine();
 		}
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e addnew evt " + t.toString())).changeLine();
 		QuestGUIManager.openBook(p, p1);
 	}
 
@@ -591,6 +606,7 @@ public class QuestEditorManager
 			p1.add(new InteractiveText("- [" + SimpleQuestObject.ALL_OBJECTS.get(s) + "]").clickCommand("/mq e edit object " + stage + " " + obj + " type " + s)).endNormally();
 			p1.changeLine();
 		}
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e edit object " + stage + " " + obj)).changeLine();
 		QuestGUIManager.openBook(p, p1);
 	}
 	

@@ -18,6 +18,9 @@ public class QuestSetting
 	protected String quitDenyMsg = I18n.locMsg("QuestQuitMsg.Denied");
 	protected long redoDelay;
 	
+	protected boolean isTimeLimited = false;
+	protected long timeLimit = 60000L;
+	
 	public boolean displayOnTake()
 	{
 		return displayOnTake;

@@ -153,7 +153,7 @@ public class EditorListenerHandler
 				q.getRequirements().put(RequirementType.ITEM, list);
 				QuestEditorManager.editQuestRequirement(p);
 			}
-		obj.execute(p, "item");
+		unreigster(p);
 		QuestChatManager.info(p, I18n.locMsg("EditorMessage.ItemSaved"));
 		return;
 	}
@@ -190,7 +190,7 @@ public class EditorListenerHandler
 							(List<ItemStack>) QuestEditorManager.getCurrentEditingQuest(p).getRequirements().get(RequirementType.ITEM));
 				else
 					return;
-			CurrentListening.put(p.getName(), new EditorListenerObject(ListeningType.OPEN_INVENTORY, obj));
+			CurrentListening.put(p.getName(), new EditorListenerObject(ListeningType.OPEN_INVENTORY, obj, null));
 		}
 	}
 

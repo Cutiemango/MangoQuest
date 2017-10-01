@@ -56,6 +56,20 @@ public class QuestUtil
 			QuestStorage.NPCMap.put(id, new QuestNPCData());
 		return QuestStorage.NPCMap.get(id).getNPCMessage(fp);
 	}
+	
+	public static String convertArgsString(String[] array, int startIndex)
+	{
+		String s = "";
+		for (int i = startIndex; i < array.length; i++)
+		{
+			s = s + array[i];
+			if (i + 1 == array.length)
+				break;
+			else
+				s += " ";
+		}
+		return s;
+	}
 
 	public static Set<FriendConversation> getConversations(NPC npc, int fp)
 	{
@@ -99,11 +113,23 @@ public class QuestUtil
 		}
 		
 		if (days > 0)
-			s += days + " " + I18n.locMsg("TimeFormat.Day") + ",";
+		{
+			s += days + " " + I18n.locMsg("TimeFormat.Day");
+			if (hours > 0 || minutes > 0 || seconds > 0)
+				s += ", ";
+		}
 		if (hours > 0)
-			s += hours + " " + I18n.locMsg("TimeFormat.Hour") + ",";
+		{
+			s += hours + " " + I18n.locMsg("TimeFormat.Hour");
+			if (minutes > 0 || seconds > 0)
+				s += ", ";
+		}
 		if (minutes > 0)
-			s += minutes + " " + I18n.locMsg("TimeFormat.Minute") + ",";
+		{
+			s += minutes + " " + I18n.locMsg("TimeFormat.Minute");
+			if (seconds > 0)
+				s += ", ";
+		}
 		if (seconds > 0)
 			s += seconds + " " + I18n.locMsg("TimeFormat.Second");
 		return s;

@@ -216,14 +216,21 @@ public class QuestReward
 		{
 			for (String cmd : command)
 			{
-				cmd = cmd.replace("<player>", p.getName());
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+				if (!Bukkit.isPrimaryThread())
+					Bukkit.getScheduler().runTask(Main.instance, new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("<player>", p.getName()));
+						}
+					});
 			}
 		}
 		
 		if (this.hasSkillAPIExp())
 		{
-			SkillAPI.getPlayerData(p).giveExp(skillAPIexp, ExpSource.SPECIAL);
+			SkillAPI.getPlayerData(p).giveExp(skillAPIexp, ExpSource.COMMAND);
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.GiveSkillAPIExpReward", Integer.toString(skillAPIexp)));
 		}
 	}

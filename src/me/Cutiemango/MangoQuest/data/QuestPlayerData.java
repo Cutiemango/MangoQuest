@@ -15,6 +15,7 @@ import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.ConfigSettings;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
@@ -36,13 +37,13 @@ import net.citizensnpcs.api.npc.NPC;
 public class QuestPlayerData
 {
 	private Player p;
-	private Set<QuestProgress> CurrentQuest = new HashSet<>();
-	private Set<QuestFinishData> FinishedQuest = new HashSet<>();
-	private Set<QuestConversation> FinishedConversation = new HashSet<>();
+	private Set<QuestProgress> currentQuests = new HashSet<>();
+	private Set<QuestFinishData> finishedQuests = new HashSet<>();
+	private Set<QuestConversation> finishedConversations = new HashSet<>();
 	
 	private QuestIO save;
 
-	private HashMap<Integer, Integer> NPCfp = new HashMap<>();
+	private HashMap<Integer, Integer> friendPointStorage = new HashMap<>();
 
 	public QuestPlayerData(Player p)
 	{
@@ -85,7 +86,10 @@ public class QuestPlayerData
 					qplist.add(qp);
 					t++;
 				}
-				CurrentQuest.add(new QuestProgress(q, p, s, qplist));
+				QuestProgress qp = new QuestProgress(q, p, s, qplist);
+				if (save.getLong("QuestProgress." + index + ".TakeStamp") != 0)
+					qp.setTakeTime(save.getLong("QuestProgress." + index + ".TakeStamp"));
+				currentQuests.add(qp);
 			}
 		}
 
@@ -102,7 +106,7 @@ public class QuestPlayerData
 				QuestFinishData qd = new QuestFinishData(QuestUtil.getQuest(s),
 						save.getInt("FinishedQuest." + s + ".FinishedTimes"),
 						save.getLong("FinishedQuest." + s + ".LastFinishTime"));
-				FinishedQuest.add(qd);
+				finishedQuests.add(qd);
 			}
 		}
 
@@ -110,7 +114,7 @@ public class QuestPlayerData
 		{
 			for (String s : save.getSection("FriendPoint"))
 			{
-				NPCfp.put(Integer.parseInt(s), save.getInt("FriendPoint." + s));
+				friendPointStorage.put(Integer.parseInt(s), save.getInt("FriendPoint." + s));
 			}
 		}
 
@@ -119,8 +123,8 @@ public class QuestPlayerData
 			for (String s : save.getStringList("FinishedConversation"))
 			{
 				QuestConversation qc = ConversationManager.getConversation(s);
-				if (qc != null && !FinishedConversation.contains(s))
-					FinishedConversation.add(qc);
+				if (qc != null && !finishedConversations.contains(s))
+					finishedConversations.add(qc);
 			}
 		}
 
@@ -132,7 +136,7 @@ public class QuestPlayerData
 	public void save()
 	{
 		save.set("LastKnownID", p.getName());
-		for (QuestFinishData q : FinishedQuest)
+		for (QuestFinishData q : finishedQuests)
 		{
 			String id = q.getQuest().getInternalID();
 			save.set("FinishedQuest." + id + ".FinishedTimes", q.getFinishedTimes());
@@ -141,21 +145,21 @@ public class QuestPlayerData
 
 		save.set("QuestProgress", "");
 
-		if (!CurrentQuest.isEmpty())
+		if (!currentQuests.isEmpty())
 		{
-			for (QuestProgress qp : CurrentQuest)
+			for (QuestProgress qp : currentQuests)
 			{
 				qp.save(save);
 			}
 		}
 
-		for (int i : NPCfp.keySet())
+		for (int i : friendPointStorage.keySet())
 		{
-			save.set("FriendPoint." + i, NPCfp.get(i));
+			save.set("FriendPoint." + i, friendPointStorage.get(i));
 		}
 
 		Set<String> s = new HashSet<>();
-		for (QuestConversation conv : FinishedConversation)
+		for (QuestConversation conv : finishedConversations)
 		{
 			s.add(conv.getInternalID());
 		}
@@ -173,7 +177,7 @@ public class QuestPlayerData
 	{
 		if (q == null)
 			 return false;
-		for (QuestFinishData qd : FinishedQuest)
+		for (QuestFinishData qd : finishedQuests)
 		{
 			if (qd.getQuest() == null)
 				continue;
@@ -185,12 +189,12 @@ public class QuestPlayerData
 
 	public boolean hasFinished(QuestConversation qc)
 	{
-		return FinishedConversation.contains(qc);
+		return finishedConversations.contains(qc);
 	}
 
 	public QuestProgress getProgress(Quest q)
 	{
-		for (QuestProgress qp : CurrentQuest)
+		for (QuestProgress qp : currentQuests)
 		{
 			if (q.getInternalID().equals(qp.getQuest().getInternalID()))
 				return qp;
@@ -200,26 +204,26 @@ public class QuestPlayerData
 
 	public Set<QuestProgress> getProgresses()
 	{
-		return CurrentQuest;
+		return currentQuests;
 	}
 
 	public int getNPCfp(int id)
 	{
-		if (!NPCfp.containsKey(id))
-			NPCfp.put(id, 0);
-		return NPCfp.get(id);
+		if (!friendPointStorage.containsKey(id))
+			friendPointStorage.put(id, 0);
+		return friendPointStorage.get(id);
 	}
 
 	public void addNPCfp(int id, int value)
 	{
-		if (!NPCfp.containsKey(id))
-			NPCfp.put(id, 0);
-		NPCfp.put(id, NPCfp.get(id) + value);
+		if (!friendPointStorage.containsKey(id))
+			friendPointStorage.put(id, 0);
+		friendPointStorage.put(id, friendPointStorage.get(id) + value);
 	}
 
 	public void addFinishConversation(QuestConversation qc)
 	{
-		FinishedConversation.add(qc);
+		finishedConversations.add(qc);
 	}
 	
 	public boolean checkStartConv(Quest q)
@@ -241,7 +245,7 @@ public class QuestPlayerData
 
 	public boolean checkQuestSize(boolean msg)
 	{
-		if (CurrentQuest.size() + 1 > 4)
+		if (currentQuests.size() + 1 > ConfigSettings.MAXIUM_QUEST_AMOUNT)
 		{
 			if (msg)
 				QuestChatManager.info(p, I18n.locMsg("CommandInfo.QuestListFull"));
@@ -270,10 +274,10 @@ public class QuestPlayerData
 	}
 	
 	public void forceTake(Quest q, boolean msg){
-		if (CurrentQuest.size() + 1 > 4)
+		if (!checkQuestSize(true))
 			return;
 		q.trigger(p, 0, TriggerType.TRIGGER_ON_TAKE, -1);
-		CurrentQuest.add(new QuestProgress(q, p));
+		currentQuests.add(new QuestProgress(q, p));
 		if (msg)
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.ForceTakeQuest", q.getQuestName()));
 		return;
@@ -334,7 +338,7 @@ public class QuestPlayerData
 	public List<QuestProgress> getNPCtoTalkWith(NPC npc)
 	{
 		List<QuestProgress> l = new ArrayList<>();
-		for (QuestProgress qp : CurrentQuest)
+		for (QuestProgress qp : currentQuests)
 		{
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
@@ -356,7 +360,7 @@ public class QuestPlayerData
 
 	public void breakBlock(Material m, short subID)
 	{
-		for (QuestProgress qp : CurrentQuest)
+		for (QuestProgress qp : currentQuests)
 		{
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
@@ -378,7 +382,7 @@ public class QuestPlayerData
 
 	public void talkToNPC(NPC npc)
 	{
-		for (QuestProgress qp : CurrentQuest)
+		for (QuestProgress qp : currentQuests)
 		{
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
@@ -403,7 +407,7 @@ public class QuestPlayerData
 
 	public boolean deliverItem(NPC npc)
 	{
-		for (QuestProgress qp : CurrentQuest)
+		for (QuestProgress qp : currentQuests)
 		{
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
@@ -440,7 +444,7 @@ public class QuestPlayerData
 
 	public void killEntity(Entity e)
 	{
-		for (QuestProgress qp : CurrentQuest)
+		for (QuestProgress qp : currentQuests)
 		{
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
@@ -476,7 +480,7 @@ public class QuestPlayerData
 
 	public void killMythicMob(MythicMob m)
 	{
-		for (QuestProgress qp : CurrentQuest)
+		for (QuestProgress qp : currentQuests)
 		{
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
@@ -503,7 +507,7 @@ public class QuestPlayerData
 
 	public void consumeItem(ItemStack is)
 	{
-		for (QuestProgress qp : CurrentQuest)
+		for (QuestProgress qp : currentQuests)
 		{
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
@@ -525,7 +529,7 @@ public class QuestPlayerData
 
 	public void reachLocation(Location l)
 	{
-		for (QuestProgress qp : CurrentQuest)
+		for (QuestProgress qp : currentQuests)
 		{
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
@@ -549,13 +553,13 @@ public class QuestPlayerData
 
 	public void removeProgress(Quest q)
 	{
-		Iterator<QuestProgress> it = CurrentQuest.iterator();
+		Iterator<QuestProgress> it = currentQuests.iterator();
 		while (it.hasNext())
 		{
 			QuestProgress qp = it.next();
 			if (q.getInternalID().equals(qp.getQuest().getInternalID()))
 			{
-				CurrentQuest.remove(qp);
+				currentQuests.remove(qp);
 				return;
 			}
 		}
@@ -563,7 +567,7 @@ public class QuestPlayerData
 
 	public Set<QuestFinishData> getFinishQuests()
 	{
-		return FinishedQuest;
+		return finishedQuests;
 	}
 	
 	public QuestIO getSaveFile()
@@ -575,7 +579,7 @@ public class QuestPlayerData
 	{
 		if (!hasFinished(q))
 			return null;
-		for (QuestFinishData qd : FinishedQuest)
+		for (QuestFinishData qd : finishedQuests)
 		{
 			if (qd.getQuest().getInternalID().equals(q.getInternalID()))
 				return qd;
@@ -590,13 +594,13 @@ public class QuestPlayerData
 			getFinishData(q).finish();
 			return;
 		}
-		FinishedQuest.add(new QuestFinishData(q, 1, System.currentTimeMillis()));
+		finishedQuests.add(new QuestFinishData(q, 1, System.currentTimeMillis()));
 		return;
 	}
 
 	public boolean isCurrentlyDoing(Quest q)
 	{
-		for (QuestProgress qp : CurrentQuest)
+		for (QuestProgress qp : currentQuests)
 		{
 			if (QuestValidater.weakValidate(qp.getQuest(), q))
 				return true;
@@ -638,6 +642,24 @@ public class QuestPlayerData
 			}
 		}
 		return true;
+	}
+	
+	public void checkQuestFail()
+	{
+		Iterator<QuestProgress> it = currentQuests.iterator();
+		while(it.hasNext())
+		{
+			QuestProgress qp = it.next();
+			if (!qp.getQuest().isTimeLimited())
+				continue;
+			if (System.currentTimeMillis() > qp.getQuest().getTimeLimit() + qp.getTakeTime())
+			{
+				forceQuit(qp.getQuest(), false);
+				QuestChatManager.info(p, "&c由於時間已到，任務 &r" + qp.getQuest().getQuestName() + " &c已經失敗！");
+			}
+			else continue;
+		}
+		return;
 	}
 
 	public long getDelay(long last, long quest)

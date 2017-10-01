@@ -69,7 +69,7 @@ public class AdminCommand implements CommandExecutor
 						else
 							pd.forceFinish(q, true);
 					break;
-					// /mqa finishobject [玩家ID] [任務] [物件編號]
+				// /mqa finishobject [玩家ID] [任務] [物件編號]
 				case "finishobject":
 					if (args.length < 4)
 						break;

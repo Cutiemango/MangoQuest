@@ -8,6 +8,7 @@ import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.advancements.QuestAdvancementManager;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
 public class TriggerObject
 {
@@ -91,7 +92,7 @@ public class TriggerObject
 				}
 				break;
 			case SEND_MESSAGE:
-				p.sendMessage(object);
+				p.sendMessage(QuestChatManager.translateColor(object));
 				break;
 			case SEND_SUBTITLE:
 				QuestUtil.sendTitle(p, 5, 5, 5, null, object);

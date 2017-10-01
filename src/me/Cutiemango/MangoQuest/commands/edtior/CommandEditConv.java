@@ -4,6 +4,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Syntax;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
@@ -104,7 +105,7 @@ public class CommandEditConv
 	{
 		if (args.length == 3)
 		{
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce edit name"));
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce edit name", null));
 			QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 			return;
 		}
@@ -121,7 +122,7 @@ public class CommandEditConv
 	{
 		if (args.length == 3)
 		{
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, "mq ce edit npc"));
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, "mq ce edit npc", Syntax.of("I", "[NPCID]", "")));
 			QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ClickNPC"));
 			return;
 		}
@@ -138,7 +139,7 @@ public class CommandEditConv
 	{
 		if (args.length == 3)
 		{
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce edit fconvp"));
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce edit fconvp", Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
 			QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 			return;
 		}
@@ -159,7 +160,7 @@ public class CommandEditConv
 		if (args.length == 3)
 		{
 			String type = args[2];
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce edit " + type));
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce edit " + type, null));
 			return;
 		}
 		else
@@ -222,8 +223,7 @@ public class CommandEditConv
 							List<QuestBaseAction> list = conv.getActions();
 							if (list.size() - 1 >= index)
 							{
-								list.add(index, new QuestBaseAction(act, null));
-								list.remove(index + 1);
+								list.set(index, new QuestBaseAction(act, null));
 								conv.setActions(list);
 							}
 							break;
@@ -233,8 +233,7 @@ public class CommandEditConv
 								list = ((StartTriggerConversation) conv).getAcceptActions();
 								if (list.size() - 1 >= index)
 								{
-									list.add(index, new QuestBaseAction(act, null));
-									list.remove(index + 1);
+									list.set(index, new QuestBaseAction(act, null));
 									((StartTriggerConversation) conv).setAcceptActions(list);
 								}
 							}
@@ -245,8 +244,7 @@ public class CommandEditConv
 								list = ((StartTriggerConversation) conv).getDenyActions();
 								if (list.size() - 1 >= index)
 								{
-									list.add(index, new QuestBaseAction(act, null));
-									list.remove(index + 1);
+									list.set(index, new QuestBaseAction(act, null));
 									((StartTriggerConversation) conv).setDenyActions(list);
 								}
 							}
@@ -255,8 +253,15 @@ public class CommandEditConv
 					ConversationEditorManager.editConversation(sender);
 					return;
 				}
+				if (act == EnumAction.NPC_TALK)
+				{
+					EditorListenerHandler.register(sender,
+							new EditorListenerObject(ListeningType.STRING, "/mq ce edit " + type + " " + index + " " + act.toString(), Syntax.of("S@I", I18n.locMsg("Syntax.NPCTalk"), "@")));
+					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.NPCTalk"));
+					return;
+				}
 				EditorListenerHandler.register(sender,
-						new EditorListenerObject(ListeningType.STRING, "/mq ce edit " + type + " " + index + " " + act.toString()));
+						new EditorListenerObject(ListeningType.STRING, "/mq ce edit " + type + " " + index + " " + act.toString(), null));
 				QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 			}
 			else
@@ -276,8 +281,7 @@ public class CommandEditConv
 							List<QuestBaseAction> list = conv.getActions();
 							if (list.size() - 1 >= index)
 							{
-								list.add(index, new QuestBaseAction(act, s));
-								list.remove(index + 1);
+								list.set(index, new QuestBaseAction(act, s));
 								conv.setActions(list);
 							}
 							break;
@@ -287,8 +291,7 @@ public class CommandEditConv
 								list = ((StartTriggerConversation) conv).getAcceptActions();
 								if (list.size() - 1 >= index)
 								{
-									list.add(index, new QuestBaseAction(act, s));
-									list.remove(index + 1);
+									list.set(index, new QuestBaseAction(act, s));
 									((StartTriggerConversation) conv).setAcceptActions(list);
 								}
 							}
@@ -299,8 +302,7 @@ public class CommandEditConv
 								list = ((StartTriggerConversation) conv).getDenyActions();
 								if (list.size() - 1 >= index)
 								{
-									list.add(index, new QuestBaseAction(act, s));
-									list.remove(index + 1);
+									list.set(index, new QuestBaseAction(act, s));
 									((StartTriggerConversation) conv).setDenyActions(list);
 								}
 							}
