@@ -8,8 +8,9 @@ import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.RequirementManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.Quest.FailResult;
+import me.Cutiemango.MangoQuest.objects.RequirementFailResult;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -92,7 +93,7 @@ public class TextComponentFactory
 			else
 				if (q.hasRequirement())
 				{
-					FailResult f = q.meetRequirementWith(qd.getPlayer());
+					RequirementFailResult f = RequirementManager.meetRequirementWith(qd.getPlayer(), q);
 					if (!f.succeed())
 						return regHoverEvent(text, f.getMessage());
 					else

@@ -108,14 +108,15 @@ public class Version_v1_12_R1 implements VersionHandler
 	@Override
 	public TextComponent textFactoryConvertItem(ItemStack it, boolean f)
 	{
-		TextComponent itemname = new TextComponent();
+		String base = "";
 		ItemStack is = it.clone();
+		
 		if (is.hasItemMeta() && is.getItemMeta().hasDisplayName())
 		{
 			if (f)
-				itemname = new TextComponent(QuestChatManager.translateColor("&8&m&o") + QuestUtil.translate(is.getType(), is.getDurability()));
+				base = QuestChatManager.translateColor("&8&m&o") + QuestUtil.translate(is.getType(), is.getDurability());
 			else
-				itemname = new TextComponent(is.getItemMeta().getDisplayName());
+				base = is.getItemMeta().getDisplayName();
 		}
 		else
 		{
@@ -123,20 +124,20 @@ public class Version_v1_12_R1 implements VersionHandler
 			im.setDisplayName(ChatColor.WHITE + QuestUtil.translate(is.getType(), it.getDurability()));
 			is.setItemMeta(im);
 			if (f)
-				itemname = new TextComponent(QuestChatManager.translateColor("&8&m&o") + QuestUtil.translate(is.getType(), is.getDurability()));
+				base = QuestChatManager.translateColor("&8&m&o") + QuestUtil.translate(is.getType(), is.getDurability());
 			else
-				itemname = new TextComponent(ChatColor.BLACK + QuestUtil.translate(is.getType(), is.getDurability()));
+				base = ChatColor.BLACK + QuestUtil.translate(is.getType(), is.getDurability());
 		}
-
+		
+		TextComponent text = new TextComponent(base);
 		net.minecraft.server.v1_12_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
 		NBTTagCompound tag = i.save(new NBTTagCompound());
 		String itemJson = tag.toString();
 
-		BaseComponent[] hoverEventComponents = new BaseComponent[]
-		{ new TextComponent(itemJson) };
-		itemname.setHoverEvent(new HoverEvent(Action.SHOW_ITEM, hoverEventComponents));
+		BaseComponent[] hoverEventComponents = new BaseComponent[]{ new TextComponent(itemJson) };
+		text.setHoverEvent(new HoverEvent(Action.SHOW_ITEM, hoverEventComponents));
 
-		return itemname;
+		return text;
 	}
 
 	@Override
@@ -155,6 +156,24 @@ public class Version_v1_12_R1 implements VersionHandler
 	public void setItemInMainHand(Player p, ItemStack is)
 	{
 		p.getInventory().setItemInMainHand(is);
+	}
+	
+	@Override
+	public ItemStack addGUITag(ItemStack item)
+	{
+		net.minecraft.server.v1_12_R1.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
+		NBTTagCompound stag = (nmscopy.hasTag()) ? nmscopy.getTag() : new NBTTagCompound();
+		stag.setBoolean("GUIitem", true);
+		nmscopy.setTag(stag);
+		return CraftItemStack.asBukkitCopy(nmscopy);
+	}
+
+	@Override
+	public boolean hasGUITag(ItemStack item)
+	{
+		net.minecraft.server.v1_12_R1.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
+		NBTTagCompound tag = (nmscopy.hasTag()) ? nmscopy.getTag() : new NBTTagCompound();
+		return tag.hasKey("GUIitem");
 	}
 
 }

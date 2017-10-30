@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.model;
+package me.Cutiemango.MangoQuest.objects;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -9,6 +9,8 @@ import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.advancements.QuestAdvancementManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.model.TriggerType;
 
 public class TriggerObject
 {

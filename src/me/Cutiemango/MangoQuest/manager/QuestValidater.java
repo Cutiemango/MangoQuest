@@ -1,5 +1,6 @@
 package me.Cutiemango.MangoQuest.manager;
 
+import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
@@ -78,5 +79,48 @@ public class QuestValidater
 		if (!before.getQuestName().equals(after.getQuestName()))
 			return false;
 		return true;
+	}
+	
+	public static boolean compareItem(ItemStack one, ItemStack two, boolean ignoreAmount)
+	{
+		if (one == null && two != null || one != null && two == null)
+			return false;
+		if (one == null && two == null)
+			return true;
+		if (one.getType().name() != two.getType().name())
+			return false;
+		else
+			if ((one.getAmount() != two.getAmount()) && ignoreAmount == false)
+				return false;
+			else
+				if (one.getData().equals(two.getData()) == false)
+					return false;
+		if (one.hasItemMeta() || two.hasItemMeta())
+			if (one.hasItemMeta() != two.hasItemMeta())
+				return false;
+			else
+				if (one.getItemMeta().hasDisplayName() != two.getItemMeta().hasDisplayName())
+					return false;
+				else
+					if (one.getItemMeta().hasLore() != two.getItemMeta().hasLore())
+						return false;
+					else
+					{
+						if (one.getItemMeta().hasDisplayName() && two.getItemMeta().hasDisplayName())
+						{
+							if (!one.getItemMeta().getDisplayName().equals(two.getItemMeta().getDisplayName()))
+								return false;
+						}
+						else
+							if (one.getItemMeta().hasLore() && two.getItemMeta().hasLore())
+							{
+								if (!one.getItemMeta().getLore().equals(two.getItemMeta().getLore()))
+									return false;
+							}
+					}
+		if (one.getEnchantments().equals(two.getEnchantments()) == false)
+			return false;
+		else
+			return true;
 	}
 }

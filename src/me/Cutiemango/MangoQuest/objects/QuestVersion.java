@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.model;
+package me.Cutiemango.MangoQuest.objects;
 
 public class QuestVersion
 {

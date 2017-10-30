@@ -23,9 +23,9 @@ import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestSetting;
 import me.Cutiemango.MangoQuest.model.RequirementType;
-import me.Cutiemango.MangoQuest.model.TriggerObject;
-import me.Cutiemango.MangoQuest.model.TriggerObject.TriggerObjectType;
 import me.Cutiemango.MangoQuest.model.TriggerType;
+import me.Cutiemango.MangoQuest.objects.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.TriggerObject.TriggerObjectType;
 import me.Cutiemango.MangoQuest.questobjects.ItemObject;
 import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
@@ -502,11 +502,11 @@ public class CommandEditQuest
 								new EditorListenerObject(ListeningType.STRING, "mq e edit object " + stage + " " + obj + " " + args[5], Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
 						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterAmount"));
 						break;
-//					case "item":
-//						EditorListenerHandler.register(sender,
-//								new EditorListenerObject(ListeningType.ITEM, "mq e edit object " + stage + " " + obj + " " + args[5]));
-//						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.RightClick"));
-//						break;
+					case "item":
+						EditorListenerHandler.register(sender,
+								new EditorListenerObject(ListeningType.ITEM, "mq e edit object " + stage + " " + obj + " " + args[5], null));
+						QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.RightClick"));
+						break;
 					case "itemnpc":
 					case "npc":
 						EditorListenerHandler.register(sender,

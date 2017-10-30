@@ -13,6 +13,7 @@
     TriggerEvents:
       TRIGGER_ON_FINISH:
       - "SEND_SUBTITLE §e§l村長§f：「感謝你！這些烤鮭魚拿去吃，可不要餓著了！」"
+      - "WAIT 3"
       - "SEND_SUBTITLE §e§l村長§f：「還有一把不會壞的木劍，希望在你的冒險中能派上用場！」"
     QuitSettings:
       Quitable: true
@@ -29,18 +30,31 @@
           Amount: 10
           MobType: SPIDER
     Rewards:
-      Item:
+      RewardAmount: 2
+      InstantGiveReward: false
+      Choice:
         '1':
-          ==: org.bukkit.inventory.ItemStack
-          type: COOKED_FISH
-          damage: 1
-          amount: 10
+          '1':
+            ==: org.bukkit.inventory.ItemStack
+            type: COOKED_FISH
+            damage: 1
+            amount: 10
+          '2':
+            ==: org.bukkit.inventory.ItemStack
+            type: WOOD_SWORD
+            meta:
+              ==: ItemMeta
+              meta-type: UNSPECIFIC
+              Unbreakable: true
         '2':
-          ==: org.bukkit.inventory.ItemStack
-          type: WOOD_SWORD
-          meta:
-            ==: ItemMeta
-            meta-type: UNSPECIFIC
-            Unbreakable: true
+          '1':
+            ==: org.bukkit.inventory.ItemStack
+            type: DIAMOND
+            amount: 5
+        '3':
+          '1':
+            ==: org.bukkit.inventory.ItemStack
+            type: COOKED_FISH
+            amount: 3
       Money: 100.0
       Experience: 50

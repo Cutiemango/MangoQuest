@@ -12,7 +12,7 @@ import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestConfigManager;
+import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
 
 public class ConversationEditorCommand
 {

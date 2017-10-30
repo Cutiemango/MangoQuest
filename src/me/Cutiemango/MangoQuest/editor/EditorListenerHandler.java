@@ -142,12 +142,12 @@ public class EditorListenerHandler
 			else
 				list.add(is);
 		}
-		if (inv.getName().contains("Reward"))
-		{
-			q.getQuestReward().setItemReward(list);
-			QuestEditorManager.editQuest(p);
-		}
-		else
+//		if (inv.getName().contains("Reward"))
+//		{
+//			q.getQuestReward().setItemReward(list);
+//			QuestEditorManager.editQuest(p);
+//		}
+//		else
 			if (inv.getName().contains("Requirement"))
 			{
 				q.getRequirements().put(RequirementType.ITEM, list);
@@ -171,10 +171,15 @@ public class EditorListenerHandler
 			CurrentListening.remove(p.getName());
 		}
 	}
+	
+	public static boolean isListening(Player p)
+	{
+		return CurrentListening.containsKey(p.getName());
+	}
 
 	public static boolean preCondition(Player p)
 	{
-		return CurrentListening.containsKey(p.getName()) && ((QuestEditorManager.checkEditorMode(p, false) || ConversationEditorManager.checkEditorMode(p, false)));
+		return isListening(p) && ((QuestEditorManager.checkEditorMode(p, false) || ConversationEditorManager.checkEditorMode(p, false)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -182,9 +187,9 @@ public class EditorListenerHandler
 	{
 		if (QuestEditorManager.checkEditorMode(p, false))
 		{
-			if (obj.equalsIgnoreCase("reward"))
-				QuestEditorManager.generateEditItemGUI(p, "Reward", QuestEditorManager.getCurrentEditingQuest(p).getQuestReward().getItems());
-			else
+//			if (obj.equalsIgnoreCase("reward"))
+//				QuestEditorManager.generateEditItemGUI(p, "Reward", QuestEditorManager.getCurrentEditingQuest(p).getQuestReward().getItems());
+//			else
 				if (obj.equalsIgnoreCase("requirement"))
 					QuestEditorManager.generateEditItemGUI(p, "Requirement",
 							(List<ItemStack>) QuestEditorManager.getCurrentEditingQuest(p).getRequirements().get(RequirementType.ITEM));

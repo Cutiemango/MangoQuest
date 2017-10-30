@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -103,6 +104,16 @@ public class QuestIO
 	public Set<String> getSection(String path)
 	{
 		return config.getConfigurationSection(path).getKeys(false);
+	}
+	
+	public Set<Integer> getIntegerSection(String path)
+	{
+		Set<Integer> set = new HashSet<>();
+		for (String key : config.getConfigurationSection(path).getKeys(false))
+		{
+			set.add(Integer.parseInt(key));
+		}
+		return set;
 	}
 
 	public void set(String path, Object value)

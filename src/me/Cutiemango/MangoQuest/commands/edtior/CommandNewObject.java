@@ -14,11 +14,11 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.QuestStage;
 import me.Cutiemango.MangoQuest.model.RequirementType;
-import me.Cutiemango.MangoQuest.model.TriggerObject;
-import me.Cutiemango.MangoQuest.model.TriggerObject.TriggerObjectType;
 import me.Cutiemango.MangoQuest.model.TriggerType;
+import me.Cutiemango.MangoQuest.objects.QuestStage;
+import me.Cutiemango.MangoQuest.objects.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.TriggerObject.TriggerObjectType;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 

@@ -18,9 +18,9 @@ import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestSetting;
 import me.Cutiemango.MangoQuest.model.RequirementType;
-import me.Cutiemango.MangoQuest.model.TriggerObject;
 import me.Cutiemango.MangoQuest.model.TriggerType;
-import me.Cutiemango.MangoQuest.model.TriggerObject.TriggerObjectType;
+import me.Cutiemango.MangoQuest.objects.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.TriggerObject.TriggerObjectType;
 import me.Cutiemango.MangoQuest.questobjects.ItemObject;
 import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
@@ -184,6 +184,15 @@ public class QuestEditorManager
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.IsQuitable")).clickCommand("/mq e edit quit " + !q.isQuitable())
 			.showText(I18n.locMsg("QuestEditor.IsQuitable.ShowText." + !q.isQuitable()))).endNormally();
 		p1.add(I18n.locMsg("QuestEditor." + q.isQuitable())).changeLine();
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.UsePermission")).clickCommand("/mq e edit perm " + !q.usePermission())
+				.showText(I18n.locMsg("QuestEditor.UsePermission.ShowText." + !q.usePermission()))).endNormally();
+		p1.add(I18n.locMsg("QuestEditor." + q.usePermission())).changeLine();
+		p1.add(new InteractiveText((I18n.locMsg("QuestEditor.WorldLimit"))).clickCommand("/mq e edit world")
+				.showText(I18n.locMsg("QuestEditor.WorldLimit.ShowText"))).endNormally();
+		if (q.hasWorldLimit())
+			p1.add(q.getWorldLimit().getName()).changeLine();
+		else
+			p1.add(I18n.locMsg("QuestEditor.NotSet")).changeLine();
 		
 		p1.changeLine();
 
@@ -452,7 +461,7 @@ public class QuestEditorManager
 		if (o instanceof NumerableObject)
 		{
 			p1.add(I18n.locMsg("QuestEditor.TargetAmount") + ((NumerableObject) o).getAmount());
-			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " amount"));
+			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " "));
 			p1.changeLine();
 		}
 		p1.changeLine();
@@ -580,7 +589,7 @@ public class QuestEditorManager
 			p1.add(new InteractiveText("- " + I18n.locMsg("QuestEditor.Stage", Integer.toString(s))).clickCommand("/mq e " + mode + " evt " + t.toString() + " " + s)).endNormally();
 			p1.changeLine();
 		}
-		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e " + mode + " evt " + t.toString())).changeLine();
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e gui")).changeLine();
 		QuestGUIManager.openBook(p, p1);
 	}
 
@@ -614,7 +623,7 @@ public class QuestEditorManager
 	{
 		FlexiableBook book = new FlexiableBook();
 		QuestBookPage page = book.getLastEditingPage();
-		page.add(I18n.locMsg("QuestEditor.ChooseEditQuest")).changeLine();
+		page.add(I18n.locMsg("QuestEditor.ChooseTargetQuest")).changeLine();
 		for (Quest q : QuestStorage.Quests.values())
 		{
 			QuestUtil.checkOutOfBounds(page, book);

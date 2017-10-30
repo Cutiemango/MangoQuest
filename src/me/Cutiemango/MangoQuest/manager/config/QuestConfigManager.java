@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.manager;
+package me.Cutiemango.MangoQuest.manager.config;
 
 import me.Cutiemango.MangoQuest.QuestIO;
 

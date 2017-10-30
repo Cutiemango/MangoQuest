@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.manager;
+package me.Cutiemango.MangoQuest.manager.config;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -31,15 +31,17 @@ import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.QuestNPCData;
-import me.Cutiemango.MangoQuest.model.QuestReward;
-import me.Cutiemango.MangoQuest.model.QuestStage;
-import me.Cutiemango.MangoQuest.model.QuestVersion;
 import me.Cutiemango.MangoQuest.model.RequirementType;
-import me.Cutiemango.MangoQuest.model.TriggerObject;
-import me.Cutiemango.MangoQuest.model.TriggerObject.TriggerObjectType;
 import me.Cutiemango.MangoQuest.model.TriggerType;
+import me.Cutiemango.MangoQuest.objects.QuestNPCData;
+import me.Cutiemango.MangoQuest.objects.QuestReward;
+import me.Cutiemango.MangoQuest.objects.QuestStage;
+import me.Cutiemango.MangoQuest.objects.QuestVersion;
+import me.Cutiemango.MangoQuest.objects.RewardChoice;
+import me.Cutiemango.MangoQuest.objects.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.TriggerObject.TriggerObjectType;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectConsumeItem;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectDeliverItem;
@@ -240,6 +242,9 @@ public class QuestConfigLoader
 		// Rightclick Settings
 		ConfigSettings.USE_RIGHT_CLICK_MENU = config.getBoolean("useRightClickMenu");
 		
+		// Login Message
+		ConfigSettings.POP_LOGIN_MESSAGE = config.getBoolean("popLoginMessage");
+		
 		// Maxium Quests
 		if (config.getInt("maxQuestAmount") != 0)
 			ConfigSettings.MAXIUM_QUEST_AMOUNT = config.getInt("maxQuestAmount");
@@ -381,11 +386,14 @@ public class QuestConfigLoader
 										quest.getBoolean(qpath + "Visibility.onProgress"),
 										quest.getBoolean(qpath + "Visibility.onFinish"));
 				q.setQuitable(quest.getBoolean(qpath + "QuitSettings.Quitable"));
+				if (quest.getString(qpath + "WorldLimit") != null && Bukkit.getWorld(quest.getString(qpath + "WorldLimit")) != null)
+					q.setWorldLimit(Bukkit.getWorld(quest.getString(qpath + "WorldLimit")));
 				if (quest.getBoolean(qpath + "TImeLimited"))
 				{
 					q.setTimeLimited(quest.getBoolean(qpath + "TimeLimited"));
 					q.setTimeLimit(quest.getLong(qpath + "TimeLimitMilliseconds"));
 				}
+				q.setUsePermission(quest.getBoolean(qpath + "UsePermission"));
 				q.setQuitAcceptMsg(quest.getString(qpath + "QuitSettings.QuitAcceptMsg"));
 				q.setQuitCancelMsg(quest.getString(qpath + "QuitSettings.QuitCancelMsg"));
 				
@@ -597,12 +605,21 @@ public class QuestConfigLoader
 	{
 		String qpath = "Quests." + id + ".";
 		QuestReward reward = new QuestReward();
-		if (quest.isSection(qpath + "Rewards.Item"))
+		reward.setRewardAmount(quest.getInt(qpath + "Rewards.RewardAmount"));
+		reward.setInstantGiveReward(quest.getBoolean(qpath + "Rewards.InstantGiveReward"));
+		if (quest.isSection(qpath + "Rewards.Choice"))
 		{
-			for (String temp : quest.getSection(qpath + "Rewards.Item"))
+			List<RewardChoice> list = new ArrayList<>();
+			for (int index : quest.getIntegerSection(qpath + "Rewards.Choice"))
 			{
-				reward.addItem(quest.getItemStack(qpath + "Rewards.Item." + Integer.parseInt(temp)));
+				RewardChoice choice = new RewardChoice(new ArrayList<ItemStack>());
+				for (int itemIndex : quest.getIntegerSection(qpath + "Rewards.Choice." + index))
+				{
+					choice.addItem(quest.getItemStack(qpath + "Rewards.Choice." + index + "." + itemIndex));
+				}
+				list.add(choice);
 			}
+			reward.setChoice(list);
 		}
 		if (quest.getDouble(qpath + "Rewards.Money") != 0)
 			reward.addMoney(quest.getDouble(qpath + "Rewards.Money"));

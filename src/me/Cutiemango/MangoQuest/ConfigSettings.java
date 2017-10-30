@@ -10,4 +10,5 @@ public class ConfigSettings
 	public static int MAXIUM_QUEST_AMOUNT = 4;
 	
 	public static boolean DEBUG_MODE = false;
+	public static boolean POP_LOGIN_MESSAGE = true;
 }

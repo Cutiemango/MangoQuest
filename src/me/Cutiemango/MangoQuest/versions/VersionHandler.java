@@ -21,4 +21,8 @@ public abstract interface VersionHandler
 	public abstract ItemStack getItemInMainHand(Player p);
 	
 	public abstract void setItemInMainHand(Player p, ItemStack is);
+	
+	public abstract ItemStack addGUITag(ItemStack is);
+	
+	public abstract boolean hasGUITag(ItemStack is);
 }

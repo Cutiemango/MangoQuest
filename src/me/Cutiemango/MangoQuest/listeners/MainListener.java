@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -24,7 +25,7 @@ import net.citizensnpcs.api.event.NPCDamageByEntityEvent;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 
-public class QuestListener implements Listener
+public class MainListener implements Listener
 {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e)
@@ -104,6 +105,15 @@ public class QuestListener implements Listener
 		if (!(e.getPlayer() instanceof Player))
 			return;
 		EditorListenerHandler.onInventoryClose((Player)e.getPlayer(), e.getInventory());
+		RewardGUIListener.onInventoryClose(e);
+	}
+	
+	@EventHandler
+	public void onInventoryClick(InventoryClickEvent e)
+	{
+		if (e.getClickedInventory() == null || e.getClickedInventory().getTitle() == null || !(e.getWhoClicked() instanceof Player))
+			return;
+		RewardGUIListener.onInventoryClick(e);
 	}
 	
 	@EventHandler (ignoreCancelled = true)

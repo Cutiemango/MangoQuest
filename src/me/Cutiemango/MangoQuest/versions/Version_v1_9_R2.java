@@ -156,5 +156,23 @@ public class Version_v1_9_R2 implements VersionHandler
 	{
 		p.getInventory().setItemInMainHand(is);
 	}
+	
+	@Override
+	public ItemStack addGUITag(ItemStack item)
+	{
+		net.minecraft.server.v1_9_R2.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
+		NBTTagCompound stag = (nmscopy.hasTag()) ? nmscopy.getTag() : new NBTTagCompound();
+		stag.setBoolean("GUIitem", true);
+		nmscopy.setTag(stag);
+		return CraftItemStack.asBukkitCopy(nmscopy);
+	}
+
+	@Override
+	public boolean hasGUITag(ItemStack item)
+	{
+		net.minecraft.server.v1_9_R2.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
+		NBTTagCompound tag = (nmscopy.hasTag()) ? nmscopy.getTag() : new NBTTagCompound();
+		return tag.hasKey("GUIitem");
+	}
 
 }

@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.manager;
+package me.Cutiemango.MangoQuest.manager.config;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,12 +16,15 @@ import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.QuestReward;
-import me.Cutiemango.MangoQuest.model.QuestStage;
 import me.Cutiemango.MangoQuest.model.RequirementType;
-import me.Cutiemango.MangoQuest.model.TriggerObject;
 import me.Cutiemango.MangoQuest.model.TriggerType;
+import me.Cutiemango.MangoQuest.objects.QuestReward;
+import me.Cutiemango.MangoQuest.objects.QuestStage;
+import me.Cutiemango.MangoQuest.objects.RewardChoice;
+import me.Cutiemango.MangoQuest.objects.TriggerObject;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectConsumeItem;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectDeliverItem;
@@ -99,6 +102,9 @@ public class QuestConfigSaver
 		saveStages(q);
 		saveReward(q);
 
+		if (q.hasWorldLimit())
+			quest.set(qpath + "WorldLimit", q.getWorldLimit().getName());
+		quest.set(qpath + "UsePermission", q.usePermission());
 		quest.set(qpath + "Visibility.onTake", q.getSettings().displayOnTake());
 		quest.set(qpath + "Visibility.onProgress", q.getSettings().displayOnProgress());
 		quest.set(qpath + "Visibility.onFinish", q.getSettings().displayOnFinish());
@@ -230,30 +236,37 @@ public class QuestConfigSaver
 	{
 		String qpath = "Quests." + q.getInternalID() + ".";
 		QuestReward r = q.getQuestReward();
+		quest.set(qpath + "Rewards.RewardAmount", r.getRewardAmount());
+		quest.set(qpath + "Rewards.InstantGiveReward", r.instantGiveReward());
 		if (r.hasItem())
 		{
-			int c = 0;
-			for (ItemStack is : q.getQuestReward().getItems())
+			int index = 0;
+			for (RewardChoice choice : r.getChoices())
 			{
-				c++;
-				quest.set(qpath + "Rewards.Item." + c, is);
+				index++;
+				int itemIndex = 0;
+				for (ItemStack item : choice.getItems())
+				{
+					itemIndex++;
+					quest.set(qpath + "Rewards.Choice." + index + "." + itemIndex, item);
+				}
 			}
 		}
 		if (r.hasMoney())
-			quest.set(qpath + "Rewards.Money", q.getQuestReward().getMoney());
+			quest.set(qpath + "Rewards.Money", r.getMoney());
 		if (r.hasExp())
-			quest.set(qpath + "Rewards.Experience", q.getQuestReward().getExp());
+			quest.set(qpath + "Rewards.Experience", r.getExp());
 		if (r.hasFriendPoint())
 		{
-			for (Integer npc : q.getQuestReward().getFp().keySet())
+			for (Integer npc : r.getFp().keySet())
 			{
-				quest.set(qpath + "Rewards.FriendlyPoint." + npc, q.getQuestReward().getFp().get(npc));
+				quest.set(qpath + "Rewards.FriendlyPoint." + npc, r.getFp().get(npc));
 			}
 		}
 		if (r.hasCommand())
-			quest.set(qpath + "Rewards.Commands", q.getQuestReward().getCommands());
+			quest.set(qpath + "Rewards.Commands", r.getCommands());
 		if (r.hasSkillAPIExp() && Main.instance.pluginHooker.hasSkillAPIEnabled())
-			quest.set(qpath + "Rewards.SkillAPIExp", q.getQuestReward().getSkillAPIExp());
+			quest.set(qpath + "Rewards.SkillAPIExp", r.getSkillAPIExp());
 	}
 	
 	public void removeConversation(QuestConversation qc)

@@ -9,6 +9,7 @@ import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.TriggerType;
+import me.Cutiemango.MangoQuest.objects.QuestReward;
 import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
@@ -48,8 +49,11 @@ public class QuestProgress
 	{
 		quest.trigger(owner, 0, TriggerType.TRIGGER_ON_FINISH, -1);
 		QuestPlayerData pd = QuestUtil.getData(owner);
-		pd.addFinishedQuest(quest);
-		quest.getQuestReward().giveRewardTo(owner);
+		QuestReward reward = quest.getQuestReward();
+		pd.addFinishedQuest(quest, reward.instantGiveReward());
+		reward.executeReward(owner);
+		if (reward.instantGiveReward())
+			reward.executeItemReward(owner);
 		QuestChatManager.info(owner, I18n.locMsg("CommandInfo.CompleteMessage", quest.getQuestName()));
 		pd.removeProgress(quest);
 	}

@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.model;
+package me.Cutiemango.MangoQuest.objects;
 
 import java.util.ArrayList;
 import java.util.List;

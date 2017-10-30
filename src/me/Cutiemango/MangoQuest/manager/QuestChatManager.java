@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest.manager;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestStorage;
@@ -14,13 +15,13 @@ public class QuestChatManager
 		return ChatColor.translateAlternateColorCodes('&', s);
 	}
 	
-	public static void info(Player p, String s)
+	public static void info(CommandSender p, String s)
 	{
 		p.sendMessage(QuestStorage.prefix + " " + translateColor(s));
 		return;
 	}
 
-	public static void error(Player p, String s)
+	public static void error(CommandSender p, String s)
 	{
 		p.sendMessage(translateColor("&c&lError> " + s));
 		return;

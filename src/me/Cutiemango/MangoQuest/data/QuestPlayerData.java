@@ -22,6 +22,7 @@ import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
+import me.Cutiemango.MangoQuest.manager.RequirementManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
@@ -103,9 +104,13 @@ public class QuestPlayerData
 					save.removeSection("FinishedQuest." + s);
 					continue;
 				}
+
+				boolean rewardTaken = save.getBoolean("FinishQuest." + s + ".RewardTaken");
+				
 				QuestFinishData qd = new QuestFinishData(QuestUtil.getQuest(s),
 						save.getInt("FinishedQuest." + s + ".FinishedTimes"),
-						save.getLong("FinishedQuest." + s + ".LastFinishTime"));
+						save.getLong("FinishedQuest." + s + ".LastFinishTime"),
+						rewardTaken);
 				finishedQuests.add(qd);
 			}
 		}
@@ -141,6 +146,7 @@ public class QuestPlayerData
 			String id = q.getQuest().getInternalID();
 			save.set("FinishedQuest." + id + ".FinishedTimes", q.getFinishedTimes());
 			save.set("FinishedQuest." + id + ".LastFinishTime", q.getLastFinish());
+			save.set("FinishedQuest." + id + ".RewardTaken", q.isRewardTaken());
 		}
 
 		save.set("QuestProgress", "");
@@ -362,6 +368,8 @@ public class QuestPlayerData
 	{
 		for (QuestProgress qp : currentQuests)
 		{
+			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
+				continue;
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
 				if (qop.isFinished())
@@ -384,6 +392,8 @@ public class QuestPlayerData
 	{
 		for (QuestProgress qp : currentQuests)
 		{
+			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
+				continue;
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
 				if (qop.isFinished())
@@ -409,6 +419,8 @@ public class QuestPlayerData
 	{
 		for (QuestProgress qp : currentQuests)
 		{
+			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
+				continue;
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
 				if (qop.isFinished())
@@ -418,7 +430,7 @@ public class QuestPlayerData
 					QuestObjectDeliverItem o = (QuestObjectDeliverItem) qop.getObject();
 					ItemStack itemtoDeliver = Main.instance.handler.getItemInMainHand(p);
 					int amountNeeded = o.getAmount() - qop.getProgress();
-					if (o.getTargetNPC().equals(npc) && QuestUtil.compareItem(o.getItem(), itemtoDeliver, true))
+					if (o.getTargetNPC().equals(npc) && QuestValidater.compareItem(o.getItem(), itemtoDeliver, true))
 					{
 						if (itemtoDeliver.getAmount() > amountNeeded)
 						{
@@ -446,6 +458,8 @@ public class QuestPlayerData
 	{
 		for (QuestProgress qp : currentQuests)
 		{
+			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
+				continue;
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
 				if (qop.isFinished())
@@ -482,6 +496,8 @@ public class QuestPlayerData
 	{
 		for (QuestProgress qp : currentQuests)
 		{
+			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
+				continue;
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
 				if (qop.isFinished())
@@ -509,6 +525,8 @@ public class QuestPlayerData
 	{
 		for (QuestProgress qp : currentQuests)
 		{
+			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
+				continue;
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
 				if (qop.isFinished())
@@ -531,6 +549,8 @@ public class QuestPlayerData
 	{
 		for (QuestProgress qp : currentQuests)
 		{
+			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
+				continue;
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
 				if (qop.isFinished())
@@ -587,15 +607,57 @@ public class QuestPlayerData
 		return null;
 	}
 
-	public void addFinishedQuest(Quest q)
+	public void addFinishedQuest(Quest q, boolean reward)
 	{
 		if (hasFinished(q))
 		{
 			getFinishData(q).finish();
 			return;
 		}
-		finishedQuests.add(new QuestFinishData(q, 1, System.currentTimeMillis()));
+		finishedQuests.add(new QuestFinishData(q, 1, System.currentTimeMillis(), reward));
 		return;
+	}
+	
+	public boolean hasTakenReward(Quest q)
+	{
+		if (!hasFinished(q))
+			return false;
+		QuestFinishData data = getFinishData(q);
+		return data.isRewardTaken();
+	}
+	
+	public void rewardClaimed(Quest q)
+	{
+		getFinishData(q).setRewardTaken(true);
+		save();
+	}
+	
+	public void checkRewardUnclaimed()
+	{
+		Set<NPC> set = new HashSet<>();
+		for (QuestFinishData data : finishedQuests)
+		{
+			if (!data.isRewardTaken())
+			{
+				Quest q = data.getQuest();
+				if (!q.isCommandQuest())
+				{
+					QuestChatManager.info(p, I18n.locMsg("QuestReward.RewardUnclaimed", q.getQuestNPC().getName()));
+					set.add(q.getQuestNPC());
+				}
+			}
+		}
+	}
+	
+	public Set<Quest> getUnclaimedReward()
+	{
+		Set<Quest> set = new HashSet<>();
+		for (QuestFinishData data : finishedQuests)
+		{
+			if (!data.isRewardTaken())
+				set.add(data.getQuest());
+		}
+		return set;
 	}
 
 	public boolean isCurrentlyDoing(Quest q)
@@ -622,9 +684,15 @@ public class QuestPlayerData
 				QuestChatManager.info(p, I18n.locMsg("CommandInfo.NotRedoable"));
 			return false;
 		}
+		if (q.usePermission() && !p.hasPermission("MangoQuest.takeQuest." + q.getInternalID()))
+		{
+			if (sendmsg)
+				QuestChatManager.info(p, I18n.locMsg("CommandInfo.CommandInfo.NoPermTakeQuest"));
+			return false;
+		}
 		if (q.hasRequirement())
 		{
-			if (!q.meetRequirementWith(p).succeed())
+			if (!RequirementManager.meetRequirementWith(p, q).succeed())
 			{
 				if (sendmsg)
 					QuestChatManager.info(p, q.getFailMessage());

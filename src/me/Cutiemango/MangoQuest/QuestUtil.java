@@ -3,7 +3,9 @@ package me.Cutiemango.MangoQuest;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -13,7 +15,7 @@ import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.QuestNPCData;
+import me.Cutiemango.MangoQuest.objects.QuestNPCData;
 import net.citizensnpcs.api.npc.NPC;
 
 public class QuestUtil
@@ -22,6 +24,21 @@ public class QuestUtil
 	public static void sendTitle(Player p, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle)
 	{
 		Main.instance.handler.sendTitle(p, fadeIn, stay, fadeOut, title, subtitle);
+	}
+	
+	public static ItemStack addUnstealableTag(ItemStack item)
+	{
+		return Main.instance.handler.addGUITag(item);
+	}
+	
+	public static boolean hasUnstealableTag(ItemStack item)
+	{
+		return Main.instance.handler.hasGUITag(item);
+	}
+	
+	public static int randomInteger(int min, int max)
+	{
+		return new Random().nextInt(max - min + 1) + min;
 	}
 
 	public static List<Quest> getGivenNPCQuests(NPC npc)
@@ -56,7 +73,27 @@ public class QuestUtil
 			QuestStorage.NPCMap.put(id, new QuestNPCData());
 		return QuestStorage.NPCMap.get(id).getNPCMessage(fp);
 	}
-	
+
+	public static final double cut(double d)
+	{
+		return Math.floor((d * 100)) / 100;
+	}
+
+	public static void executeCommandAsync(Player p, String command)
+	{
+		if (!Bukkit.isPrimaryThread())
+			Bukkit.getScheduler().runTask(Main.instance, new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					p.performCommand(command);
+				}
+			});
+		else
+			p.performCommand(command);
+	}
+
 	public static String convertArgsString(String[] array, int startIndex)
 	{
 		String s = "";
@@ -86,7 +123,7 @@ public class QuestUtil
 	{
 		return QuestStorage.Quests.get(s);
 	}
-	
+
 	public static void checkOutOfBounds(QuestBookPage page, FlexiableBook book)
 	{
 		if (page.pageOutOfBounds())
@@ -105,13 +142,13 @@ public class QuestUtil
 		long hours = (l % 86400000) / 3600000;
 		long minutes = ((l % 86400000) % 3600000) / 60000;
 		long seconds = (((l % 86400000) % 3600000) % 60000) / 1000;
-		
+
 		if (l == 0)
 		{
 			s = I18n.locMsg("TimeFormat.NoCooldown");
 			return s;
 		}
-		
+
 		if (days > 0)
 		{
 			s += days + " " + I18n.locMsg("TimeFormat.Day");
@@ -135,46 +172,17 @@ public class QuestUtil
 		return s;
 	}
 
-	public static boolean compareItem(ItemStack one, ItemStack two, boolean ignoreAmount)
+	public static boolean isNumeric(String s)
 	{
-		if (one == null && two != null || one != null && two == null)
-			return false;
-		if (one == null && two == null)
-			return true;
-		if (one.getType().name() != two.getType().name())
-			return false;
+		return s != null && s.matches("[-+]?\\d*\\.?\\d+");
+	}
+
+	public static String getItemName(ItemStack is)
+	{
+		if (is.hasItemMeta() && is.getItemMeta().hasDisplayName())
+			return is.getItemMeta().getDisplayName();
 		else
-			if ((one.getAmount() != two.getAmount()) && ignoreAmount == false)
-				return false;
-			else
-				if (one.getData().equals(two.getData()) == false)
-					return false;
-		if (one.hasItemMeta() || two.hasItemMeta())
-			if (one.hasItemMeta() != two.hasItemMeta())
-				return false;
-			else
-				if (one.getItemMeta().hasDisplayName() != two.getItemMeta().hasDisplayName())
-					return false;
-				else
-					if (one.getItemMeta().hasLore() != two.getItemMeta().hasLore())
-						return false;
-					else
-					{
-						if (one.getItemMeta().hasDisplayName() && two.getItemMeta().hasDisplayName())
-						{
-							if (!one.getItemMeta().getDisplayName().equals(two.getItemMeta().getDisplayName()))
-									return false;
-						}
-						else if (one.getItemMeta().hasLore() && two.getItemMeta().hasLore())
-						{
-							if (!one.getItemMeta().getLore().equals(two.getItemMeta().getLore()))
-								return false;
-						}
-					}
-		if (one.getEnchantments().equals(two.getEnchantments()) == false)
-			return false;
-		else
-			return true;
+			return translate(is.getType(), is.getDurability());
 	}
 
 	@SafeVarargs

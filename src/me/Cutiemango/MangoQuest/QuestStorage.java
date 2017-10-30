@@ -14,7 +14,7 @@ import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.QuestNPCData;
+import me.Cutiemango.MangoQuest.objects.QuestNPCData;
 import net.md_5.bungee.api.ChatColor;
 
 public class QuestStorage

@@ -10,12 +10,12 @@ import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestConfigManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
+import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.RequirementType;
-import me.Cutiemango.MangoQuest.model.TriggerObject;
 import me.Cutiemango.MangoQuest.model.TriggerType;
+import me.Cutiemango.MangoQuest.objects.TriggerObject;
 
 public class CommandRemoveQuest
 {
@@ -63,7 +63,7 @@ public class CommandRemoveQuest
 			switch (args[3].toLowerCase())
 			{
 				case "item":
-					q.getQuestReward().getItems().remove(Integer.parseInt(args[4]));
+					q.getQuestReward().getChoices().remove(Integer.parseInt(args[4]));
 					break;
 				case "fp":
 					q.getQuestReward().getFp().remove(Integer.parseInt(args[4]));

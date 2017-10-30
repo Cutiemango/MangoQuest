@@ -19,9 +19,9 @@ import me.Cutiemango.MangoQuest.data.QuestObjectProgress;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.objects.RewardChoice;
 import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
-import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -31,18 +31,18 @@ public class QuestGUIManager
 	public static void openGUI(Player p, QuestProgress q)
 	{
 		QuestBookPage p1 = new QuestBookPage();
-		p1.add("&l任務名稱： ").add(q.getQuest().getQuestName()).changeLine();
+		p1.add(I18n.locMsg("QuestEditor.QuestName", q.getQuest().getQuestName())).changeLine();
 
 		// NPC
 		if (!q.getQuest().isCommandQuest())
 		{
 			NPC npc = q.getQuest().getQuestNPC();
-			p1.add("&l任務NPC： ").add(new InteractiveText("").showNPCInfo(npc)).changeLine();
+			p1.add(I18n.locMsg("QuestEditor.QuestNPC")).add(new InteractiveText("").showNPCInfo(npc)).changeLine();
 			p1.changeLine();
 		}
 
 		// Objects
-		p1.add("&l任務內容：").changeLine();
+		p1.add(I18n.locMsg("QuestEditor.QuestObjects")).changeLine();
 		;
 		for (int i = 0; i < q.getQuest().getStages().size(); i++)
 		{
@@ -81,7 +81,7 @@ public class QuestGUIManager
 
 			// OutLine
 			QuestBookPage p2 = new QuestBookPage();
-			p2.add("&l任務提要：").changeLine();
+			p2.add(I18n.locMsg("QuestEditor.Outline")).changeLine();
 			for (String out : q.getQuest().getQuestOutline())
 			{
 				p2.add(out).changeLine();
@@ -89,35 +89,54 @@ public class QuestGUIManager
 
 			// Reward
 			QuestBookPage p3 = new QuestBookPage();
-			p3.add("&l任務獎勵：").changeLine();
+			p3.add(I18n.locMsg("QuestEditor.Reward")).changeLine();
 
 			if (q.getQuest().getQuestReward().hasItem())
 			{
-				for (ItemStack is : q.getQuest().getQuestReward().getItems())
+				if (q.getQuest().getQuestReward().hasMultipleChoices())
 				{
-					if (is != null)
+					p3.add(I18n.locMsg("QuestReward.SelectReward", Integer.toString(q.getQuest().getQuestReward().getChoiceAmount()), Integer.toString(q.getQuest().getQuestReward().getRewardAmount()))).changeLine();
+					for (RewardChoice choice : q.getQuest().getQuestReward().getChoices())
 					{
-						p3.add(new InteractiveText("").showItem(is));
-						p3.add(" &l" + is.getAmount() + " &0個").changeLine();
+						p3.add("- ").endNormally();
+						for (ItemStack item : choice.getItems())
+						{
+							p3.add(new InteractiveText("").showItem(item)).endNormally();
+							p3.add(", ").endNormally();
+						}
+						p3.changeLine();
+					}
+				}
+				else
+				{
+					for (ItemStack is : q.getQuest().getQuestReward().getDefaultChoice().getItems())
+					{
+						if (is != null)
+						{
+							p3.add(new InteractiveText("").showItem(is)).endNormally();
+							p3.add(" ").endNormally();
+							p3.add(I18n.locMsg("QuestEditor.RewardAmount", Integer.toString(is.getAmount()))).changeLine();
+						}
 					}
 				}
 			}
 
 			if (q.getQuest().getQuestReward().hasMoney())
-				p3.add("&6金錢&0 " + q.getQuest().getQuestReward().getMoney() + " &6元").changeLine();
+				p3.add(I18n.locMsg("QuestEditor.RewardMoney", Double.toString(QuestUtil.cut(q.getQuest().getQuestReward().getMoney())))).changeLine();
 
 			if (q.getQuest().getQuestReward().hasExp())
-				p3.add("&a經驗值&0 " + q.getQuest().getQuestReward().getExp() + " &a點").changeLine();
+				p3.add(I18n.locMsg("QuestEditor.RewardExp", Integer.toString(q.getQuest().getQuestReward().getExp()))).changeLine();
 
-			if (q.getQuest().getQuestReward().hasFriendPoint())
-			{
-				for (Integer id : q.getQuest().getQuestReward().getFp().keySet())
-				{
-					NPC npc = CitizensAPI.getNPCRegistry().getById(id);
-					p3.add(new InteractiveText("").showNPCInfo(npc)).endNormally();
-					p3.add(" &c將會感激你").changeLine();
-				}
-			}
+			// Removed due to prevention of awkward situation
+//			if (q.getQuest().getQuestReward().hasFriendPoint())
+//			{
+//				for (Integer id : q.getQuest().getQuestReward().getFp().keySet())
+//				{
+//					NPC npc = CitizensAPI.getNPCRegistry().getById(id);
+//					p3.add(new InteractiveText("").showNPCInfo(npc)).endNormally();
+//					p3.add(" &c將會感激你").changeLine();
+//				}
+//			}
 
 			openBook(p, p1, p2, p3);
 		}
@@ -137,7 +156,7 @@ public class QuestGUIManager
 	{
 		FlexiableBook book = new FlexiableBook();
 		QuestBookPage page = book.getLastEditingPage();
-		page.add("       &0=》 &c&l選擇 &0《=").changeLine();
+		page.add(I18n.locMsg("Conversation.ChoiceTitle")).changeLine();
 		page.add(q).changeLine();
 		for (int i = 0; i < c.size(); i++)
 		{
@@ -267,21 +286,21 @@ public class QuestGUIManager
 		page.changeLine();
 
 		// Interaction List
-		page.add("&0&l[互動列表]").changeLine();
+		page.add(I18n.locMsg("QuestGUI.InteractionList")).changeLine();
 		if (trade)
-			page.add(new InteractiveText("&0- &6&l＄&0【交易物品】").clickCommand("/mq quest trade " + npc.getId())).changeLine();
+			page.add(new InteractiveText(I18n.locMsg("QuestGUI.Trade")).clickCommand("/mq quest trade " + npc.getId())).changeLine();
 		for (QuestProgress q : qd.getNPCtoTalkWith(npc))
 		{
 			QuestUtil.checkOutOfBounds(page, book);
 			page = book.getLastEditingPage();
-			page.add("&0- &6&l？ &0").endNormally();
+			page.add(I18n.locMsg("QuestGUI.QuestReturnSymbol")).endNormally();
 			page.add(TextComponentFactory.convertViewQuest(q.getQuest())).endNormally();
-			page.add(new InteractiveText("&9&l【對話】").clickCommand("/mq conv npc " + npc.getId()).showText("&9點擊&f以開始對話")).endNormally();
+			page.add(new InteractiveText(I18n.locMsg("QuestGUI.Conversation")).clickCommand("/mq conv npc " + npc.getId()).showText(I18n.locMsg("QuestGUI.Hover.ClickToChat"))).endNormally();
 			if (q.getQuest().isQuitable())
 				if (qd.isCurrentlyDoing(q.getQuest()) && !q.getQuest().isCommandQuest() && q.getQuest().getQuestNPC().equals(npc))
 				{
-					page.add(new InteractiveText("&c&l【放棄】").clickCommand("/mq quest quit " + q.getQuest().getInternalID())
-							.showText("&c放棄任務 &f" + q.getQuest().getQuestName() + "\n&4所有的任務進度都會消失。")).endNormally();
+					page.add(new InteractiveText(I18n.locMsg("QuestJourney.QuitButton")).clickCommand("/mq quest quit " + q.getQuest().getInternalID())
+							.showText(I18n.locMsg("QuestGUI.Hover.QuitWarning", q.getQuest().getQuestName()))).endNormally();
 					holder.add(q.getQuest());
 				}
 			page.changeLine();
@@ -290,16 +309,26 @@ public class QuestGUIManager
 		{
 			QuestUtil.checkOutOfBounds(page, book);
 			page = book.getLastEditingPage();
+			if (qd.hasFinished(q))
+			{
+				if (!qd.getFinishData(q).isRewardTaken())
+				{
+					page.add(I18n.locMsg("QuestGUI.NewQuestSymbol")).endNormally();
+					page.add(new InteractiveText("").showQuest(q)).endNormally();
+					page.add(new InteractiveText(I18n.locMsg("QuestJourney.RewardButton")).clickCommand("/mq q reward select " + q.getInternalID()).showText(I18n.locMsg("QuestGUI.Hover.ClaimReward"))).endNormally();
+					page.changeLine();
+				}
+			}
 			if (!q.isRedoable() && qd.hasFinished(q))
 				continue;
 			if (qd.canTake(q, false))
 			{
 				if (qd.hasFinished(q))
-					page.add("&0- &8&l！ &0").endNormally();
+					page.add(I18n.locMsg("QuestGUI.RedoableQuestSymbol")).endNormally();
 				else
-					page.add("&0- &6&l！ &0").endNormally();
+					page.add(I18n.locMsg("QuestGUI.NewQuestSymbol")).endNormally();
 				page.add(new InteractiveText("").showQuest(q)).endNormally();
-				page.add(new InteractiveText("&2&l【接受】").clickCommand("/mq quest take " + q.getInternalID()).showText("&a接受任務 &f" + q.getQuestName()));
+				page.add(new InteractiveText(I18n.locMsg("QuestJourney.TakeButton")).clickCommand("/mq quest take " + q.getInternalID()).showText(I18n.locMsg("QuestGUI.Hover.TakeQuest", q.getQuestName()))).endNormally();
 				page.changeLine();
 				continue;
 			}
@@ -308,11 +337,11 @@ public class QuestGUIManager
 				{
 					if (holder.contains(q))
 						continue;
-					page.add("&0- &8&l？ &0");
+					page.add(I18n.locMsg("QuestGUI.QuestDoingSymbol"));
 					page.add(new InteractiveText("").showQuest(q)).endNormally();
 					if (q.isQuitable())
-						page.add(new InteractiveText("&c&l【放棄】").clickCommand("/mq quest quit " + q.getInternalID())
-							.showText("&c放棄任務 &f" + q.getQuestName() + "\n&4所有的任務進度都會消失。"));
+						page.add(new InteractiveText(I18n.locMsg("QuestJourney.QuitButton")).clickCommand("/mq quest quit " + q.getInternalID())
+							.showText(I18n.locMsg("QuestGUI.Hover.QuitWarning", q.getQuestName()))).endNormally();
 					page.changeLine();
 					continue;
 				}
@@ -324,23 +353,17 @@ public class QuestGUIManager
 					continue;
 				}
 		}
+		
 		for (FriendConversation qc : QuestUtil.getConversations(npc, qd.getNPCfp(npc.getId())))
 		{
 			QuestUtil.checkOutOfBounds(page, book);
 			page = book.getLastEditingPage();
 			if (qd.hasFinished(qc))
-			{
-				page.add("&0- &7&o").endNormally();
-				page.add(new InteractiveText(qc.getName() + " 〈&c&o♥&7&o〉").clickCommand("/mq conv opennew " + qc.getInternalID()));
-			}
+				page.add(new InteractiveText(I18n.locMsg("QuestGUI.OldFriendConversation", qc.getName())).clickCommand("/mq conv opennew " + qc.getInternalID()));
 			else
-			{
-				page.add("&0- &6&l！ &0&l").endNormally();
-				page.add(new InteractiveText(qc.getName() + " 〈&c♥&0&l〉").clickCommand("/mq conv opennew " + qc.getInternalID()));
-			}
+				page.add(new InteractiveText(I18n.locMsg("QuestGUI.NewFriendConversation", qc.getName())).clickCommand("/mq conv opennew " + qc.getInternalID()));
 			page.changeLine();
 		}
 		openBook(p, book.toSendableBook());
 	}
-
 }

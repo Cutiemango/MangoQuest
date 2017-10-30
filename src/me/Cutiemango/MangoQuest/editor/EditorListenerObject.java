@@ -1,8 +1,7 @@
 package me.Cutiemango.MangoQuest.editor;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Syntax;
 
 public class EditorListenerObject
@@ -27,17 +26,7 @@ public class EditorListenerObject
 			EditorListenerHandler.unreigster(p);
 			return;
 		}
-		if (!Bukkit.isPrimaryThread())
-			Bukkit.getScheduler().runTask(Main.instance, new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					p.performCommand(command + " " + obj);
-				}
-			});
-		else
-			p.performCommand(command + " " + obj);
+		QuestUtil.executeCommandAsync(p, command + " " + obj);
 		EditorListenerHandler.CurrentListening.remove(p.getName());
 		return;
 	}

@@ -4,16 +4,18 @@ import me.Cutiemango.MangoQuest.model.Quest;
 
 public class QuestFinishData
 {
-
 	private Quest q;
 	private int times;
 	private long lastFinish;
+	
+	private boolean rewardTaken = false;
 
-	public QuestFinishData(Quest quest, int time, long lastFinishTime)
+	public QuestFinishData(Quest quest, int time, long lastFinishTime, boolean reward)
 	{
 		q = quest;
 		times = time;
 		lastFinish = lastFinishTime;
+		rewardTaken = reward;
 	}
 
 	public Quest getQuest()
@@ -40,6 +42,16 @@ public class QuestFinishData
 	public void setLastFinish(long l)
 	{
 		lastFinish = l;
+	}
+	
+	public boolean isRewardTaken()
+	{
+		return rewardTaken;
+	}
+	
+	public void setRewardTaken(boolean b)
+	{
+		rewardTaken = b;
 	}
 
 }

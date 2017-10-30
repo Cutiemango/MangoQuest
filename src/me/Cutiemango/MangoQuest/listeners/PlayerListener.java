@@ -13,6 +13,7 @@ import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
 import net.citizensnpcs.api.npc.NPC;
@@ -25,6 +26,7 @@ public class PlayerListener
 		QuestPlayerData qd = new QuestPlayerData(p);
 		QuestStorage.Players.put(p.getName(), qd);
 		qd.checkQuestFail();
+		qd.checkRewardUnclaimed();
 	}
 
 	public static void onPlayerQuit(Player p)
@@ -41,7 +43,7 @@ public class PlayerListener
 		if (p.isSneaking())
 			return;
 		event.setCancelled(true);
-		if (QuestEditorManager.checkEditorMode(p, false))
+		if (QuestEditorManager.checkEditorMode(p, false) || EditorListenerHandler.isListening(p))
 			return;
 		QuestPlayerData pd = QuestUtil.getData(p);
 		if (pd.deliverItem(npc))

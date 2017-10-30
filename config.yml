@@ -1,4 +1,20 @@
+#【選擇插件運作語言】
+#目前僅支援：
+#zh_TW: 繁體中文
+#zh_CN: 簡體中文
 language: "zh_TW"
+
+#【除錯模式】
+# 沒事不要亂開，小黑窗會悲劇。 
 debug: false
+
+
+#【是否右鍵NPC開啟對話選單】
+#關掉就只能使用指令來接任務。
 useRightClickMenu: true
+
+#【玩家最大任務數量】
 maxQuestAmount: 4
+
+#【登入時傳送讀取完成訊息】
+popLoginMessage: true

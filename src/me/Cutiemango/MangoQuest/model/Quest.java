@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import com.sucy.skill.SkillAPI;
-import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
@@ -17,9 +15,12 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
+import me.Cutiemango.MangoQuest.objects.QuestReward;
+import me.Cutiemango.MangoQuest.objects.QuestStage;
+import me.Cutiemango.MangoQuest.objects.QuestVersion;
+import me.Cutiemango.MangoQuest.objects.TriggerObject;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
-import net.md_5.bungee.api.ChatColor;
 
 public class Quest
 {
@@ -178,6 +179,31 @@ public class Quest
 	public boolean isCommandQuest()
 	{
 		return QuestNPC == null;
+	}
+	
+	public boolean usePermission()
+	{
+		return setting.usePermission;
+	}
+	
+	public boolean hasWorldLimit()
+	{
+		return setting.worldLimit != null;
+	}
+	
+	public World getWorldLimit()
+	{
+		return setting.worldLimit;
+	}
+	
+	public void setWorldLimit(World w)
+	{
+		setting.worldLimit = w;
+	}
+	
+	public void setUsePermission(boolean b)
+	{
+		setting.usePermission = b;
 	}
 
 	public List<QuestStage> getStages()
@@ -344,121 +370,6 @@ public class Quest
 		setting = s;
 	}
 
-	@SuppressWarnings("unchecked")
-	public FailResult meetRequirementWith(Player p)
-	{
-		QuestPlayerData pd = QuestUtil.getData(p);
-		for (RequirementType t : requirements.keySet())
-		{
-			Object value = requirements.get(t);
-			switch (t)
-			{
-				case QUEST:
-					for (String q : (List<String>) value)
-					{
-						if (!pd.hasFinished(QuestUtil.getQuest(q)))
-							return new FailResult(RequirementType.QUEST, QuestUtil.getQuest(q));
-					}
-					break;
-				case LEVEL:
-					if (!(p.getLevel() >= (Integer) value))
-						return new FailResult(RequirementType.LEVEL, (Integer) value);
-					break;
-				case MONEY:
-					if (Main.instance.pluginHooker.hasEconomyEnabled())
-					{
-						if (!(Main.instance.pluginHooker.getEconomy().getBalance(p) >= (Double) value))
-							return new FailResult(RequirementType.MONEY, (Double) value);
-					}
-					break;
-				case ITEM:
-					for (ItemStack i : (List<ItemStack>) value)
-					{
-						if (i == null)
-							continue;
-						if (!p.getInventory().containsAtLeast(i, i.getAmount()))
-							return new FailResult(RequirementType.ITEM, i);
-					}
-					break;
-				case SCOREBOARD:
-					for (String s : (List<String>) value)
-					{
-						s = s.replace(" ", "");
-						String[] split;
-						if (s.contains(">="))
-						{
-							split = s.split(">=");
-							if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]) == null)
-							{
-								QuestChatManager.logCmd(Level.WARNING, "任務 " + InternalID + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
-								return new FailResult(RequirementType.SCOREBOARD, "");
-							}
-							if (!(Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]).getScore(p.getName()).getScore() >= Integer
-									.parseInt(split[1])))
-								return new FailResult(RequirementType.SCOREBOARD, "");
-						}
-						else
-							if (s.contains("<="))
-							{
-								split = s.split("<=");
-								if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]) == null)
-								{
-									QuestChatManager.logCmd(Level.WARNING, "任務 " + InternalID + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
-									return new FailResult(RequirementType.SCOREBOARD, "");
-								}
-								if (!(Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]).getScore(p.getName())
-										.getScore() <= Integer.parseInt(split[1])))
-									return new FailResult(RequirementType.SCOREBOARD, "");
-							}
-							else
-								if (s.contains("=="))
-								{
-									split = s.split("==");
-									if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]) == null)
-									{
-										QuestChatManager.logCmd(Level.WARNING, "任務 " + InternalID + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
-										return new FailResult(RequirementType.SCOREBOARD, "");
-									}
-									if (!(Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]).getScore(p.getName())
-											.getScore() == Integer.parseInt(split[1])))
-										return new FailResult(RequirementType.SCOREBOARD, "");
-								}
-					}
-					break;
-				case NBTTAG:
-					for (String n : (List<String>) value)
-					{
-						if (!Main.instance.handler.hasTag(p, n))
-							return new FailResult(RequirementType.NBTTAG, "");
-					}
-					break;
-				case SKILLAPI_CLASS:
-					if (!Main.instance.pluginHooker.hasSkillAPIEnabled())
-						break;
-					if (SkillAPI.hasPlayerData(p))
-					{
-						if (((String)value).equalsIgnoreCase("none"))
-							break;
-						if (SkillAPI.getClass((String)value) == null)
-							return new FailResult(RequirementType.SKILLAPI_CLASS, I18n.locMsg("Requirements.NotMeet.BadConfig") + "沒有名為 " + value + "的職業。");
-						if (!SkillAPI.getPlayerData(p).isClass(SkillAPI.getClass((String)value)))
-								return new FailResult(RequirementType.SKILLAPI_CLASS, SkillAPI.getClass((String)value).getName());
-					}
-					break;
-				case SKILLAPI_LEVEL:
-					if (!Main.instance.pluginHooker.hasSkillAPIEnabled())
-						break;
-					if (SkillAPI.hasPlayerData(p))
-					{
-						if (!(SkillAPI.getPlayerData(p).getMainClass().getLevel() >= (Integer)value))
-							return new FailResult(RequirementType.SKILLAPI_LEVEL, value);
-					}
-					break;
-			}
-		}
-		return new FailResult(null, "");
-	}
-
 	@Override
 	public Quest clone()
 	{
@@ -491,69 +402,5 @@ public class Quest
 		QuestStorage.Quests.put(q.getInternalID(), q);
 	}
 
-	public class FailResult
-	{
-		Object obj;
-		RequirementType type;
-
-		public FailResult(RequirementType t, Object o)
-		{
-			type = t;
-			obj = o;
-		}
-
-		public boolean succeed()
-		{
-			return type == null;
-		}
-
-		public RequirementType getFailType()
-		{
-			return type;
-		}
-
-		public String getMessage()
-		{
-			String s = "";
-			if (type == null)
-				return s;
-			switch (type)
-			{
-				case ITEM:
-					ItemStack item = (ItemStack) obj;
-					if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
-						s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.Item") + item.getItemMeta().getDisplayName();
-					else
-						s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.Item")
-								+ QuestUtil.translate(item.getType(), item.getDurability());
-					break;
-				case LEVEL:
-					s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.Level") + (Integer) obj;
-					break;
-				case MONEY:
-					s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.Money") + (Double) obj;
-					break;
-				case SCOREBOARD:
-				case NBTTAG:
-					s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.Special");
-					break;
-				case QUEST:
-					if (obj == null)
-						s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.Special");
-					else
-						s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.Quest") + ((Quest) obj).getQuestName();
-					break;
-				case SKILLAPI_CLASS:
-					s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.SkillAPIClass") + obj.toString();
-					break;
-				case SKILLAPI_LEVEL:
-					s = ChatColor.RED + I18n.locMsg("Requirements.NotMeet.SkillAPILevel") + (Integer) obj;
-					break;
-
-			}
-			return s;
-		}
-
-	}
 
 }

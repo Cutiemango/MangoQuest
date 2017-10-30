@@ -11,7 +11,7 @@ import me.Cutiemango.MangoQuest.commands.edtior.CommandNewQuest;
 import me.Cutiemango.MangoQuest.commands.edtior.CommandRemoveQuest;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestConfigManager;
+import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 
 public class QuestEditorCommand

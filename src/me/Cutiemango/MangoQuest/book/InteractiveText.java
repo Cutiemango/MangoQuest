@@ -1,5 +1,6 @@
 package me.Cutiemango.MangoQuest.book;
 
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
@@ -102,7 +103,10 @@ public class InteractiveText
 		{
 			ItemStack item = itemToShow.clone();
 			ItemMeta im = item.getItemMeta();
-			im.setDisplayName(s);
+			if (!im.hasDisplayName())
+				im.setDisplayName(ChatColor.WHITE + ChatColor.stripColor(s));
+			else
+				im.setDisplayName(s);
 			item.setItemMeta(im);
 			text = TextComponentFactory.convertItemHoverEvent(item, false);
 		}
