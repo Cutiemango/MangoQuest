@@ -12,7 +12,7 @@ import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
-import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 
 public class CommandNewAction
 {
@@ -61,11 +61,11 @@ public class CommandNewAction
 				{
 					EditorListenerHandler.register(sender,
 							new EditorListenerObject(ListeningType.STRING, "mq ce new " + acttype + " " + index + " " + act.toString(), Syntax.of("S@I", I18n.locMsg("Syntax.NPCTalk"), "@")));
-					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.NPCTalk"));
+					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.NPCTalk"));
 					return;
 				}
 				EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce new " + acttype + " " + index + " " + act.toString(), null));
-				QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 				return;
 			}
 			else if (args.length >= 6)

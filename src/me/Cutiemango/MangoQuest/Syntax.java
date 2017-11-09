@@ -3,9 +3,9 @@ package me.Cutiemango.MangoQuest;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import net.citizensnpcs.api.CitizensAPI;
 
 public class Syntax
@@ -13,7 +13,6 @@ public class Syntax
 	// S - Normal String
 	// I - Integer (must be positive)
 	// N - NPC's ID
-	
 	
 	// The order of customRegex
 	private String order = "";
@@ -101,7 +100,7 @@ public class Syntax
 			}
 			else if (order.toCharArray()[i] == 'W')
 			{
-				if (Bukkit.getWorld(inputArray.get(i)) == null)
+				if (!QuestValidater.isWorld(inputArray.get(i)))
 				{
 					QuestChatManager.error(p, I18n.locMsg("SyntaxError.WorldNotValid"));
 					return false;

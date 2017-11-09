@@ -9,11 +9,12 @@ import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
 import me.Cutiemango.MangoQuest.manager.PluginHooker;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.RewardCache;
+import me.old.RPGshop.InventoryGUI.TradeGUI;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -34,21 +35,24 @@ public class QuestCommand
 				switch (args[1])
 				{
 					case "list":
-						QuestGUIManager.openJourney(sender);
+						QuestBookGUIManager.openJourney(sender);
 						return;
 					case "help":
 						sendHelp(sender);
 						return;
 					case "trade":
-						PluginHooker im = Main.instance.pluginHooker;
-						if (im.hasCitizensEnabled())
+						PluginHooker hooker = Main.instance.pluginHooker;
+						if (hooker.hasCitizensEnabled())
 						{
 							NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[2]));
 							if (npc == null || npc.getEntity().getLocation().distance(sender.getLocation()) > 20)
 								return;
 							Shopkeeper s = Main.instance.pluginHooker.getShopkeepers().getShopkeeperByEntity(npc.getEntity());
 							if (s == null)
+							{
+								new TradeGUI(Integer.toString(npc.getId()), sender);
 								return;
+							}
 							else
 							{
 								sender.closeInventory();
@@ -64,7 +68,10 @@ public class QuestCommand
 							{
 								case "select":
 									if (QuestRewardManager.hasRewardCache(sender))
+									{
+										QuestRewardManager.getRewardCache(sender).openGUI();
 										return;
+									}
 									if (args.length == 4)
 									{
 										Quest target = QuestUtil.getQuest(args[3]);
@@ -110,9 +117,9 @@ public class QuestCommand
 				{
 					case "view":
 						if (!QuestUtil.getData(sender).isCurrentlyDoing(quest))
-							QuestGUIManager.openGUI(sender, new QuestProgress(quest, sender));
+							QuestBookGUIManager.openGUIwithProgress(sender, new QuestProgress(quest, sender));
 						else
-							QuestGUIManager.openGUI(sender, qd.getProgress(quest));
+							QuestBookGUIManager.openGUIwithProgress(sender, qd.getProgress(quest));
 						return;
 					case "take":
 						qd.takeQuest(quest, true);
@@ -124,7 +131,7 @@ public class QuestCommand
 							return;
 						}
 						qd.quitQuest(quest);
-						QuestGUIManager.openJourney(sender);
+						QuestBookGUIManager.openJourney(sender);
 						return;
 					case "quit":
 						if (!quest.isQuitable())
@@ -132,7 +139,7 @@ public class QuestCommand
 							QuestChatManager.error(sender, I18n.locMsg("QuestQuitMsg.Denied"));
 							return;
 						}
-						QuestGUIManager.openQuitGUI(sender, quest);
+						QuestBookGUIManager.openQuitGUI(sender, quest);
 						return;
 					default:
 						sendHelp(sender);

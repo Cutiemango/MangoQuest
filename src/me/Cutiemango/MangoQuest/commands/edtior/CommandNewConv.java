@@ -9,7 +9,7 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -47,7 +47,7 @@ public class CommandNewConv
 	{
 		if (args.length == 3)
 		{
-			QuestGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewConv.EnterID"));
+			QuestBookGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewConv.EnterID"));
 			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq ce newconv id", null));
 			return;
 		}
@@ -64,7 +64,7 @@ public class CommandNewConv
 	private static void setConvName(Player p, String[] args)
 	{
 		if (args.length == 3){
-			QuestGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewConv.EnterName"));
+			QuestBookGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewConv.EnterName"));
 			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq ce newconv name", null));
 			return;
 		}
@@ -80,7 +80,7 @@ public class CommandNewConv
 	private static void setConvNPC(Player p, String[] args)
 	{
 		if (args.length == 3){
-			QuestGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewConv.EnterNPC"));
+			QuestBookGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewConv.EnterNPC"));
 			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, "mq ce newconv npc", Syntax.of("N", I18n.locMsg("Syntax.NPCID"), "")));
 			return;
 		}

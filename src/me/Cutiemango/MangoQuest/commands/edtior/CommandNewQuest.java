@@ -7,7 +7,7 @@ import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 
 public class CommandNewQuest {
@@ -36,7 +36,7 @@ public class CommandNewQuest {
 	
 	private static void setInternalID(Player p, String[] args){
 		if (args.length == 3){
-			QuestGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewQuest.EnterID"));
+			QuestBookGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewQuest.EnterID"));
 			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq e newquest id", null));
 			return;
 		}
@@ -51,7 +51,7 @@ public class CommandNewQuest {
 	
 	private static void setQuestName(Player p, String[] args){
 		if (args.length == 3){
-			QuestGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewQuest.EnterName"));
+			QuestBookGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewQuest.EnterName"));
 			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq e newquest name", null));
 			return;
 		}

@@ -14,7 +14,7 @@ import me.Cutiemango.MangoQuest.book.FlexiableBook;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestSetting;
 import me.Cutiemango.MangoQuest.model.RequirementType;
@@ -84,7 +84,7 @@ public class QuestEditorManager
 			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.ExitEditor")).clickCommand("/mq e exit")
 					.showText(I18n.locMsg("QuestEditor.ExitEditor.ShowText"))).changeLine();
 		}
-		QuestGUIManager.openBook(p, p1);
+		QuestBookGUIManager.openBook(p, p1);
 	}
 
 	public static void editGUI(Player p)
@@ -107,7 +107,7 @@ public class QuestEditorManager
 		page.changeLine();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e"));
 		page.endNormally();
-		QuestGUIManager.openBook(p, book.toSendableBook());
+		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 
 	public static void removeGUI(Player p)
@@ -130,7 +130,7 @@ public class QuestEditorManager
 		page.changeLine();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e"));
 		page.endNormally();
-		QuestGUIManager.openBook(p, book.toSendableBook());
+		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 
 	public static void removeConfirmGUI(Player p, Quest q)
@@ -147,7 +147,7 @@ public class QuestEditorManager
 		p1.add(" &8&l/ ");
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.WarnDeny")).clickCommand("/mq e remove"));
 		p1.endNormally();
-		QuestGUIManager.openBook(p, p1);
+		QuestBookGUIManager.openBook(p, p1);
 	}
 
 	public static void editQuest(Player p)
@@ -295,7 +295,7 @@ public class QuestEditorManager
 		p5.changeLine();
 		p5.add(new InteractiveText(I18n.locMsg("QuestEditor.QuitEditor")).clickCommand("/mq e exit").showText(I18n.locMsg("QuestEditor.ExitEditor.ShowText"))).changeLine();
 
-		QuestGUIManager.openBook(p, p1, p2, p3, p4, p5);
+		QuestBookGUIManager.openBook(p, p1, p2, p3, p4, p5);
 	}
 
 	public static void editQuestTrigger(Player p, TriggerType type, int stage)
@@ -335,7 +335,7 @@ public class QuestEditorManager
 			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew evt " + type.toString() + " " + stage + " " + 0 + " ")).changeLine();
 		page.changeLine();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e gui")).endNormally();
-		QuestGUIManager.openBook(p, book.toSendableBook());
+		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 
 	public static void editQuestStages(Player p)
@@ -353,7 +353,7 @@ public class QuestEditorManager
 		}
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew stage")).changeLine();
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e gui")).changeLine();
-		QuestGUIManager.openBook(p, p1);
+		QuestBookGUIManager.openBook(p, p1);
 	}
 
 	public static void editQuestObjects(Player p, int stage)
@@ -371,7 +371,7 @@ public class QuestEditorManager
 		}
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew object " + stage)).changeLine();
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e edit stage")).changeLine();
-		QuestGUIManager.openBook(p, p1);
+		QuestBookGUIManager.openBook(p, p1);
 	}
 
 	public static void editQuestObject(Player p, int stage, int obj)
@@ -466,7 +466,7 @@ public class QuestEditorManager
 		}
 		p1.changeLine();
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e edit stage " + stage)).changeLine();
-		QuestGUIManager.openBook(p, p1);
+		QuestBookGUIManager.openBook(p, p1);
 		return;
 	}
 
@@ -563,7 +563,7 @@ public class QuestEditorManager
 		}
 		p2.changeLine();
 		p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e gui")).changeLine();
-		QuestGUIManager.openBook(p, p1, p2);
+		QuestBookGUIManager.openBook(p, p1, p2);
 	}
 
 	public static void selectTriggerType(Player p, String mode)
@@ -576,7 +576,7 @@ public class QuestEditorManager
 			p1.changeLine();
 		}
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e gui")).changeLine();
-		QuestGUIManager.openBook(p, p1);
+		QuestBookGUIManager.openBook(p, p1);
 	}
 
 	public static void selectTriggerStage(Player p, String mode, TriggerType t)
@@ -590,7 +590,7 @@ public class QuestEditorManager
 			p1.changeLine();
 		}
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e gui")).changeLine();
-		QuestGUIManager.openBook(p, p1);
+		QuestBookGUIManager.openBook(p, p1);
 	}
 
 	public static void selectTriggerObjType(Player p, TriggerType t, int stage, int index)
@@ -603,7 +603,7 @@ public class QuestEditorManager
 			p1.changeLine();
 		}
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e addnew evt " + t.toString())).changeLine();
-		QuestGUIManager.openBook(p, p1);
+		QuestBookGUIManager.openBook(p, p1);
 	}
 
 	public static void selectObjectType(Player p, int stage, int obj)
@@ -616,7 +616,7 @@ public class QuestEditorManager
 			p1.changeLine();
 		}
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e edit object " + stage + " " + obj)).changeLine();
-		QuestGUIManager.openBook(p, p1);
+		QuestBookGUIManager.openBook(p, p1);
 	}
 	
 	public static void selectQuest(Player p, String cmd)
@@ -634,7 +634,7 @@ public class QuestEditorManager
 		}
 		QuestUtil.checkOutOfBounds(page, book);
 		page = book.getLastEditingPage();
-		QuestGUIManager.openBook(p, book.toSendableBook());
+		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 
 	public static void createQuest(Player p)
@@ -655,7 +655,7 @@ public class QuestEditorManager
 		p1.add(name).changeLine();
 		p1.changeLine();
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e")).changeLine();
-		QuestGUIManager.openBook(p, p1);
+		QuestBookGUIManager.openBook(p, p1);
 	}
 
 	public static void generateEditItemGUI(Player p, String type, List<ItemStack> list)

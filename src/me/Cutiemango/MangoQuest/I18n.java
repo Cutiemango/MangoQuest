@@ -22,8 +22,8 @@ public class I18n
 		try
 		{
 			Main.instance.saveResource("messages_" + ConfigSettings.LOCALE_USING.toString() + ".properties", true);
-			Main.instance.saveResource("original_" + ConfigSettings.LOCALE_USING.toString() + ".yml", 
-					!new File("original_" + ConfigSettings.LOCALE_USING.toString() + ".yml").exists());
+			Main.instance.saveResource("lang/original_" + ConfigSettings.LOCALE_USING.toString() + ".yml", 
+					!new File("lang/original_" + ConfigSettings.LOCALE_USING.toString() + ".yml").exists());
 			bundle = ResourceBundle.getBundle("messages", local);
 		}
 		catch (MissingResourceException e)

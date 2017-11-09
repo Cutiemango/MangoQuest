@@ -10,8 +10,11 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
 import me.Cutiemango.MangoQuest.model.Quest;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 
 public class AdminCommand implements CommandExecutor
 {
@@ -40,6 +43,12 @@ public class AdminCommand implements CommandExecutor
 		}
 		else if (args.length > 1)
 		{
+			Player target = Bukkit.getPlayer(args[1]);
+			if (target == null)
+			{
+				QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
+				return false;
+			}
 			switch (args[0])
 			{
 				// /mqa nextstage [玩家ID] [任務]
@@ -49,10 +58,9 @@ public class AdminCommand implements CommandExecutor
 				case "forcetake":
 				case "forcefinish":
 					if (args.length < 3)
-						break;
-					Player target = Bukkit.getPlayer(args[1]);
+						return false;
 					Quest q = QuestUtil.getQuest(args[2]);
-					if (target == null || q == null)
+					if (q == null)
 					{
 						QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
 						return false;
@@ -69,11 +77,10 @@ public class AdminCommand implements CommandExecutor
 				// /mqa finishobject [玩家ID] [任務] [物件編號]
 				case "finishobject":
 					if (args.length < 4)
-						break;
-					target = Bukkit.getPlayer(args[1]);
+						return false;
 					q = QuestUtil.getQuest(args[2]);
 					Integer obj = Integer.parseInt(args[3]);
-					if (target == null || q == null)
+					if (q == null)
 					{
 						QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
 						return false;
@@ -83,13 +90,34 @@ public class AdminCommand implements CommandExecutor
 					break;
 					// /mqa removedata [玩家ID]
 				case "removedata":
-					target = Bukkit.getPlayer(args[1]);
 					target.kickPlayer(I18n.locMsg("CommandInfo.KickForDataClearing"));
 					QuestConfigManager.getSaver().clearPlayerData(target);
 					QuestChatManager.info(sender, I18n.locMsg("CommandInfo.PlayerDataRemoved"));
 					break;
+				// /mqa friendpoint add/set [ID] [NPC] [amount]
+				case "friendpoint":
+					if (args.length < 5)
+						return false;
+					if (QuestValidater.validateNPC(sender, args[3], true) && QuestValidater.validateInteger(sender, args[4], true))
+					{
+						NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[3]));
+						int amount = Integer.parseInt(args[4]);
+						pd = QuestUtil.getData(target);
+						switch (args[1])
+						{
+							case "add":
+								pd.addNPCfp(npc.getId(), amount);
+								QuestChatManager.info(target, I18n.locMsg("CommandInfo.FriendPointAdded", target.getName(), npc.getName(), Integer.toString(amount)));
+								return false;
+							case "set":
+								pd.setNPCfp(npc.getId(), amount);
+								QuestChatManager.info(target, I18n.locMsg("CommandInfo.FriendPointSet", target.getName(), npc.getName(), Integer.toString(amount)));
+								return false;
+						}
+					}
+					
 			}
-			QuestChatManager.info(sender, I18n.locMsg("CommandInfo.CommandPerformed"));
+			QuestChatManager.info(sender, I18n.locMsg("CommandInfo.CommandExecuted"));
 			return true;
 		}
 		sendAdminHelp(sender);
@@ -105,6 +133,7 @@ public class AdminCommand implements CommandExecutor
 		QuestChatManager.info(p, I18n.locMsg("AdminCommandHelp.TakeQuest"));
 		QuestChatManager.info(p, I18n.locMsg("AdminCommandHelp.FinishQuest"));
 		QuestChatManager.info(p, I18n.locMsg("AdminCommandHelp.RemovePlayerData"));
+		QuestChatManager.info(p, I18n.locMsg("AdminCommandHelp.FriendPoint"));
 	}
 
 }

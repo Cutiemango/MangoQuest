@@ -226,6 +226,11 @@ public class QuestPlayerData
 			friendPointStorage.put(id, 0);
 		friendPointStorage.put(id, friendPointStorage.get(id) + value);
 	}
+	
+	public void setNPCfp(int id, int value)
+	{
+		friendPointStorage.put(id, value);
+	}
 
 	public void addFinishConversation(QuestConversation qc)
 	{

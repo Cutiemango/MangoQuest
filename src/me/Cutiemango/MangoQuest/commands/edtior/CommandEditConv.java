@@ -16,7 +16,7 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.citizensnpcs.api.CitizensAPI;
 
@@ -106,7 +106,7 @@ public class CommandEditConv
 		if (args.length == 3)
 		{
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce edit name", null));
-			QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 			return;
 		}
 		else
@@ -123,7 +123,7 @@ public class CommandEditConv
 		if (args.length == 3)
 		{
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, "mq ce edit npc", Syntax.of("I", "[NPCID]", "")));
-			QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ClickNPC"));
+			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ClickNPC"));
 			return;
 		}
 		else
@@ -140,7 +140,7 @@ public class CommandEditConv
 		if (args.length == 3)
 		{
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce edit fconvp", Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
-			QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 			return;
 		}
 		else
@@ -257,12 +257,12 @@ public class CommandEditConv
 				{
 					EditorListenerHandler.register(sender,
 							new EditorListenerObject(ListeningType.STRING, "/mq ce edit " + type + " " + index + " " + act.toString(), Syntax.of("S@I", I18n.locMsg("Syntax.NPCTalk"), "@")));
-					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.NPCTalk"));
+					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.NPCTalk"));
 					return;
 				}
 				EditorListenerHandler.register(sender,
 						new EditorListenerObject(ListeningType.STRING, "/mq ce edit " + type + " " + index + " " + act.toString(), null));
-				QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 			}
 			else
 				if (args.length >= 6)

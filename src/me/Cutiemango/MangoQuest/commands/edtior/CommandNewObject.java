@@ -12,7 +12,7 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.RequirementType;
 import me.Cutiemango.MangoQuest.model.TriggerType;
@@ -69,7 +69,7 @@ public class CommandNewObject
 			{
 				case 7:
 					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e addnew evt " + type.toString() + " " + stage + " " + index + " " + obj.toString(), null));
-					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 					break;
 				default:
 					String s = QuestUtil.convertArgsString(args, 7);
@@ -104,7 +104,7 @@ public class CommandNewObject
 				case SCOREBOARD:
 				case NBTTAG:
 					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req " + t.toString() + " " + index, null));
-					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 					((List<String>) q.getRequirements().get(t)).add("");
 					break;
 				default:
@@ -157,11 +157,11 @@ public class CommandNewObject
 			{
 				case "fp":
 					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e addnew reward fp", Syntax.of("I:I", I18n.locMsg("Syntax.FriendPoint"), ":")));
-					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPoint"));
+					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPoint"));
 					return;
 				case "command":
 					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e addnew reward command", null));
-					QuestGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterCommand"));
+					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterCommand"));
 					return;
 			}
 		}

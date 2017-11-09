@@ -1,13 +1,47 @@
 package me.Cutiemango.MangoQuest.manager;
 
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.model.Quest;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 
 public class QuestValidater
 {
+	
+	public static boolean isWorld(String s)
+	{
+		return s != null && Bukkit.getWorld(s) != null;
+	}
+	
+	public static boolean validateNPC(CommandSender sender, String id, boolean msg)
+	{
+		NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(id));
+		boolean result = npc != null;
+		if (msg && !result)
+			QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
+		return result;
+	}
+
+	public static boolean validateInteger(CommandSender sender, String number, boolean msg)
+	{
+		try
+		{
+			Integer.parseInt(number);
+		}
+		catch (NumberFormatException | NullPointerException e)
+		{
+			QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
+			return false;
+		}
+		return true;
+	}
+	
 	public static boolean detailedValidate(Quest before, Quest after)
 	{
 		if (before == null || after == null)

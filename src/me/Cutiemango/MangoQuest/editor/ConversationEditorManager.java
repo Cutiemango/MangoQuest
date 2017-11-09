@@ -14,7 +14,7 @@ import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -68,7 +68,7 @@ public class ConversationEditorManager
 			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.ExitEditor")).clickCommand("/mq ce exit")
 					.showText(I18n.locMsg("QuestEditor.ExitEditor.ShowText"))).changeLine();
 		}
-		QuestGUIManager.openBook(p, p1);
+		QuestBookGUIManager.openBook(p, p1);
 	}
 	
 	public static void editGUI(Player p)
@@ -90,7 +90,7 @@ public class ConversationEditorManager
 		page.changeLine();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq ce"));
 		page.endNormally();
-		QuestGUIManager.openBook(p, book.toSendableBook());
+		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 	
 	public static void removeGUI(Player p)
@@ -112,7 +112,7 @@ public class ConversationEditorManager
 		page.changeLine();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq ce"));
 		page.endNormally();
-		QuestGUIManager.openBook(p, book.toSendableBook());
+		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 	
 	public static void editConversation(Player p)
@@ -293,7 +293,7 @@ public class ConversationEditorManager
 		page.changeLine();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.QuitEditor")).clickCommand("/mq ce exit").showText(I18n.locMsg("QuestEditor.ExitEditor.ShowText"))).changeLine();
 		
-		QuestGUIManager.openBook(p, book.toSendableBook());
+		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 	
 	public static void createConversation(Player p)
@@ -323,7 +323,7 @@ public class ConversationEditorManager
 		
 		page.changeLine();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq ce")).changeLine();
-		QuestGUIManager.openBook(p, page);
+		QuestBookGUIManager.openBook(p, page);
 	}
 	
 	
@@ -341,7 +341,7 @@ public class ConversationEditorManager
 		p1.add(" &8&l/ ");
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.WarnDeny")).clickCommand("/mq ce remove"));
 		p1.endNormally();
-		QuestGUIManager.openBook(p, p1);
+		QuestBookGUIManager.openBook(p, p1);
 	}
 	
 	
@@ -354,7 +354,7 @@ public class ConversationEditorManager
 			p1.add(new InteractiveText("- [" + act.toCustomString() + "]").clickCommand("/mq ce " + mode + " " + type + " " + index + " " + act.toString()));
 			p1.changeLine();
 		}
-		QuestGUIManager.openBook(p, p1);
+		QuestBookGUIManager.openBook(p, p1);
 	}
 	
 	public static void selectConvType(Player p)
@@ -367,7 +367,7 @@ public class ConversationEditorManager
 		p1.changeLine();
 		p1.add(new InteractiveText("[" + I18n.locMsg("ConversationEditor.StartTriggerConv") + "]").clickCommand("/mq ce edit convtype start"));
 		p1.changeLine();
-		QuestGUIManager.openBook(p, p1);
+		QuestBookGUIManager.openBook(p, p1);
 	}
 
 }

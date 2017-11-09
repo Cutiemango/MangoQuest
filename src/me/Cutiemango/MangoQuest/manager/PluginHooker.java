@@ -8,6 +8,7 @@ import com.sucy.skill.SkillAPI;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.api.bukkit.BukkitAPIHelper;
 import me.Cutiemango.MangoQuest.Main;
+import me.old.RPGshop.RPGshop;
 import me.Cutiemango.MangoQuest.I18n;
 import net.citizensnpcs.api.CitizensPlugin;
 import net.milkbowl.vault.Vault;
@@ -29,6 +30,7 @@ public class PluginHooker
 	private MythicMobs MTMplugin;
 	private ShopkeepersPlugin shopkeepers;
 	private SkillAPI skillapi;
+	private RPGshop rpgshop;
 
 	public void hookPlugins()
 	{
@@ -72,6 +74,9 @@ public class PluginHooker
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.SkillAPIHooked"));
 			else
 				Main.debug(I18n.locMsg("PluginHooker.SkillAPINotHooked"));
+			rpgshop = (RPGshop) plugin.getServer().getPluginManager().getPlugin("RPGshop");
+			if (rpgshop != null)
+				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.RPGshopHooked"));
 		}
 		catch (Exception e){}
 

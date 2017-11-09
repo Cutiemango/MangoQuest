@@ -25,10 +25,10 @@ import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class QuestGUIManager
+public class QuestBookGUIManager
 {
 
-	public static void openGUI(Player p, QuestProgress q)
+	public static void openGUIwithProgress(Player p, QuestProgress q)
 	{
 		QuestBookPage p1 = new QuestBookPage();
 		p1.add(I18n.locMsg("QuestEditor.QuestName", q.getQuest().getQuestName())).changeLine();
@@ -238,13 +238,23 @@ public class QuestGUIManager
 				continue;
 			QuestUtil.checkOutOfBounds(page, book);
 			page = book.getLastEditingPage();
-			page.add("- ").endNormally();
-			page.add(new InteractiveText("").showQuest(qfd.getQuest())).endNormally();
-			page.add("：").endNormally();
-			page.add(I18n.locMsg("QuestJourney.FinishedTimes", Integer.toString(qfd.getFinishedTimes()))).changeLine();
+			if (!qfd.isRewardTaken() && qfd.getQuest().isCommandQuest())
+			{
+				page.add(I18n.locMsg("QuestGUI.NewQuestSymbol")).endNormally();
+				page.add(new InteractiveText("").showQuest(qfd.getQuest())).endNormally();
+				page.add(new InteractiveText(I18n.locMsg("QuestJourney.RewardButton")).clickCommand("/mq q reward select " + qfd.getQuest().getInternalID()).showText(I18n.locMsg("QuestGUI.Hover.ClaimReward"))).endNormally();
+				page.changeLine();
+			}
+			else
+			{
+				page.add("- ").endNormally();
+				page.add(new InteractiveText("").showQuest(qfd.getQuest())).endNormally();
+				page.add("： ").endNormally();
+				page.add(I18n.locMsg("QuestJourney.FinishedTimes", Integer.toString(qfd.getFinishedTimes()))).changeLine();
+			}
 		}
 
-		QuestGUIManager.openBook(p, book.toSendableBook());
+		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 
 	public static void openInfo(Player p, String msg)

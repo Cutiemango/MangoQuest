@@ -15,7 +15,7 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
-import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import net.citizensnpcs.api.npc.NPC;
 
 public class PlayerListener
@@ -53,11 +53,11 @@ public class PlayerListener
 			{
 				if (Main.instance.pluginHooker.getShopkeepers().isShopkeeper(npc.getEntity()))
 				{
-					QuestGUIManager.openNPCInfo(p, npc, true);
+					QuestBookGUIManager.openNPCInfo(p, npc, true);
 					return;
 				}
 			}
-		QuestGUIManager.openNPCInfo(p, npc, false);
+		QuestBookGUIManager.openNPCInfo(p, npc, false);
 		return;
 	}
 

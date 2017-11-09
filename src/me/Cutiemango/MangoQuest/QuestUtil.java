@@ -26,16 +26,6 @@ public class QuestUtil
 		Main.instance.handler.sendTitle(p, fadeIn, stay, fadeOut, title, subtitle);
 	}
 	
-	public static ItemStack addUnstealableTag(ItemStack item)
-	{
-		return Main.instance.handler.addGUITag(item);
-	}
-	
-	public static boolean hasUnstealableTag(ItemStack item)
-	{
-		return Main.instance.handler.hasGUITag(item);
-	}
-	
 	public static int randomInteger(int min, int max)
 	{
 		return new Random().nextInt(max - min + 1) + min;
@@ -170,11 +160,6 @@ public class QuestUtil
 		if (seconds > 0)
 			s += seconds + " " + I18n.locMsg("TimeFormat.Second");
 		return s;
-	}
-
-	public static boolean isNumeric(String s)
-	{
-		return s != null && s.matches("[-+]?\\d*\\.?\\d+");
 	}
 
 	public static String getItemName(ItemStack is)

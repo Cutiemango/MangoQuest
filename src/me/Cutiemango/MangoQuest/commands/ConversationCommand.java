@@ -9,7 +9,7 @@ import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
-import me.Cutiemango.MangoQuest.manager.QuestGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -47,7 +47,7 @@ public class ConversationCommand {
 				return;
 			case "openchoice":
 				if (choice != null)
-					QuestGUIManager.openChoice(sender, choice.getQuestion(), choice.getChoices());
+					QuestBookGUIManager.openChoice(sender, choice.getQuestion(), choice.getChoices());
 				return;
 			case "choose":
 				if (choice != null)

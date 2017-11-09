@@ -15,6 +15,7 @@ public class EditorListenerObject
 
 	private Syntax syntax;
 	private ListeningType type = ListeningType.STRING;
+	// No "/" needed
 	private String command = "";
 
 	public void execute(Player p, String obj)

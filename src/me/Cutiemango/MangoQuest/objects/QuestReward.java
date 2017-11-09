@@ -185,6 +185,8 @@ public class QuestReward
 	
 	public void setRewardAmount(int i)
 	{
+		if (i > itemChoices.size())
+			return;
 		rewardAmount = i;
 	}
 	

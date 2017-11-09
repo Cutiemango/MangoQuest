@@ -6,17 +6,15 @@ import java.util.List;
 import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestGUIItem;
 import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.md_5.bungee.api.ChatColor;
@@ -89,18 +87,13 @@ public class RewardCache
 	public void openGUI()
 	{
 		Inventory inv = Bukkit.createInventory(null, 27, I18n.locMsg("QuestReward.RewardTitle"));
-		for (int i = 0; i < 27; i++)
-		{
-			if (inv.getItem(i) == null || inv.getItem(i).getType().equals(Material.AIR))
-				inv.setItem(i, glassPane(reward.getRewardAmount()));
-		}
 		
 		for (int i = 0; i < reward.getChoiceAmount(); i++)
 		{
 			ItemStack item = itemButton(reward.getChoice(i), i);
 			if (choice.contains(i))
 				item = selectedItem(item);
-			inv.setItem(9 + getSlot(reward.getChoiceAmount(), i), item);
+			inv.setItem(QuestRewardManager.getRewardSlot(reward.getChoiceAmount(), i), item);
 			
 		}
 
@@ -114,63 +107,30 @@ public class RewardCache
 	
 	private ItemStack glassPane(int amount)
 	{
-		ItemStack item = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)QuestUtil.randomInteger(0, 15));
-		ItemMeta im = item.getItemMeta();
-		im.setDisplayName(I18n.locMsg("QuestReward.RewardGlassPane", Integer.toString(amount)));
-		item.setItemMeta(im);
-		return QuestUtil.addUnstealableTag(item);
+		QuestGUIItem glassPane = new QuestGUIItem(Material.STAINED_GLASS_PANE, 1, (short)QuestUtil.randomInteger(0, 15));
+		glassPane.setName(I18n.locMsg("QuestReward.RewardGlassPane", Integer.toString(amount)));
+		return glassPane.get();
 	}
 	
 	private ItemStack itemButton(RewardChoice rc, int index)
 	{
 		ItemStack firstItem = rc.getItems().get(0);
-		ItemStack target = new ItemStack(firstItem.getType(), firstItem.getAmount(), (short)firstItem.getDurability());
-		ItemMeta im = target.getItemMeta();
+		QuestGUIItem button = new QuestGUIItem(firstItem.getType(), firstItem.getAmount(), (short)firstItem.getDurability());
 		List<String> lore = new ArrayList<>();
-		im.setDisplayName(QuestChatManager.translateColor("&f" + getItemName(firstItem)));
 		for (ItemStack item : rc.getItems())
 		{
-			lore.add(QuestChatManager.translateColor("&f- " + getItemName(item)));
+			lore.add(QuestChatManager.translateColor("&f- " + QuestRewardManager.getItemName(item)));
 		}
 		lore.add(ChatColor.BLACK + "" + index);
-		im.setLore(lore);
-		target.setItemMeta(im);
-		return target;
-	}
-	
-	private String getItemName(ItemStack item)
-	{
-		String name = "";
-		if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
-			name = QuestChatManager.translateColor(item.getItemMeta().getDisplayName() + " &f" + ChatColor.stripColor(I18n.locMsg("QuestEditor.Amount", Integer.toString(item.getAmount()))));
-		else
-			name = QuestChatManager.translateColor(QuestUtil.translate(item.getType(), item.getDurability()) + " &f" + ChatColor.stripColor(I18n.locMsg("QuestEditor.Amount", Integer.toString(item.getAmount()))));
-		return name;
+		button.setName("&f" + QuestRewardManager.getItemName(firstItem));
+		button.setLore(lore);
+		return button.get();
 	}
 	
 	private ItemStack selectedItem(ItemStack is)
 	{
-		ItemStack item = is.clone();
-		ItemMeta im = item.getItemMeta();
-		im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
-		item.setItemMeta(im);
-		item.addUnsafeEnchantment(Enchantment.LURE, 9);
-		return item;
-	}
-	
-	private int getSlot(int amount, int x)
-	{
-		if (amount % 2 == 0)
-		{
-			int[] arySlot = new int[]
-			{ 3, 5, 1, 7, 2, 6, 0, 8 };
-			return arySlot[x];
-		}
-		else
-		{
-			int[] arySlot = new int[]
-			{ 4, 2, 6, 3, 5, 1, 7, 0, 8 };
-			return arySlot[x];
-		}
+		QuestGUIItem guiItem = new QuestGUIItem(is);
+		guiItem.glowEffect();
+		return guiItem.get();
 	}
 }
