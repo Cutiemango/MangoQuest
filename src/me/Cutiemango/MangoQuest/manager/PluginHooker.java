@@ -136,6 +136,11 @@ public class PluginHooker
 	{
 		return skillapi != null;
 	}
+	
+	public boolean hasRPGshopEnabled()
+	{
+		return rpgshop != null;
+	}
 
 	public BukkitAPIHelper getMythicMobsAPI()
 	{

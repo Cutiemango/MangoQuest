@@ -461,7 +461,7 @@ public class QuestEditorManager
 		if (o instanceof NumerableObject)
 		{
 			p1.add(I18n.locMsg("QuestEditor.TargetAmount") + ((NumerableObject) o).getAmount());
-			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " "));
+			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " amount"));
 			p1.changeLine();
 		}
 		p1.changeLine();

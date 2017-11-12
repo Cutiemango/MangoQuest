@@ -612,6 +612,8 @@ public class QuestConfigLoader
 			List<RewardChoice> list = new ArrayList<>();
 			for (int index : quest.getIntegerSection(qpath + "Rewards.Choice"))
 			{
+				if (index > 9)
+					continue;
 				RewardChoice choice = new RewardChoice(new ArrayList<ItemStack>());
 				for (int itemIndex : quest.getIntegerSection(qpath + "Rewards.Choice." + index))
 				{

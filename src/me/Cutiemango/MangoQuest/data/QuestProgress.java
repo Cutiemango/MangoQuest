@@ -56,6 +56,7 @@ public class QuestProgress
 			reward.executeItemReward(owner);
 		QuestChatManager.info(owner, I18n.locMsg("CommandInfo.CompleteMessage", quest.getQuestName()));
 		pd.removeProgress(quest);
+		pd.save();
 	}
 
 	public void save(QuestIO io)

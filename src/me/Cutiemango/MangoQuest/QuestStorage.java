@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.bukkit.Material;
@@ -21,7 +22,7 @@ public class QuestStorage
 {
 
 	// Saved With InternalID
-	public static Map<String, Quest> Quests = new HashMap<>();
+	public static LinkedHashMap<String, Quest> Quests = new LinkedHashMap<>();
 
 	// Saved With PlayerName
 	public static Map<String, QuestPlayerData> Players = new HashMap<>();
@@ -43,7 +44,7 @@ public class QuestStorage
 
 	public static void clear()
 	{
-		Quests = new HashMap<>();
+		Quests = new LinkedHashMap<>();
 		Players = new HashMap<>();
 		ConvProgresses = new HashMap<>();
 		FriendConvs = new HashSet<>();

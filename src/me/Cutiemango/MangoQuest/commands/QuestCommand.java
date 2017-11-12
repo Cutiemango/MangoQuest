@@ -14,6 +14,7 @@ import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
 import me.Cutiemango.MangoQuest.manager.PluginHooker;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.RewardCache;
+import me.old.RPGshop.GUIManager;
 import me.old.RPGshop.InventoryGUI.TradeGUI;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -47,14 +48,14 @@ public class QuestCommand
 							NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[2]));
 							if (npc == null || npc.getEntity().getLocation().distance(sender.getLocation()) > 20)
 								return;
-							Shopkeeper s = Main.instance.pluginHooker.getShopkeepers().getShopkeeperByEntity(npc.getEntity());
-							if (s == null)
+							if (!hooker.hasShopkeepersEnabled() && hooker.hasRPGshopEnabled())
 							{
-								new TradeGUI(Integer.toString(npc.getId()), sender);
+								GUIManager.openGUI(new TradeGUI(Integer.toString(npc.getId()), sender));
 								return;
 							}
-							else
+							else if (hooker.hasShopkeepersEnabled())
 							{
+								Shopkeeper s = hooker.getShopkeepers().getShopkeeperByEntity(npc.getEntity());
 								sender.closeInventory();
 								s.openTradingWindow(sender);
 								return;

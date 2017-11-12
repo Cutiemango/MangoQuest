@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
@@ -32,6 +33,7 @@ public class ConversationProgress
 	protected FlexiableBook currentBook = new FlexiableBook();
 	protected FlexiableBook history = new FlexiableBook();
 	protected boolean isFinished;
+	private BukkitTask currentTask;
 
 	private int page = 0;
 
@@ -46,18 +48,34 @@ public class ConversationProgress
 		ConversationManager.openConversation(owner, this);
 		if (!(STOP_ACTIONS.contains(actQueue.getFirst().getActionType())))
 		{
-			new BukkitRunnable()
-			{
-				@Override
-				public void run()
-				{
-					update();
-					nextAction();
-					return;
-				}
-			}.runTaskLater(Main.instance, 25L);
+			cancelTask();
+			registerTask();
 		}
 		actQueue.removeFirst();
+	}
+	
+	private void registerTask()
+	{
+		currentTask = new BukkitRunnable()
+		{
+			@Override
+			public void run()
+			{
+				update();
+				nextAction();
+				currentTask = null;
+				return;
+			}
+		}.runTaskLater(Main.instance, 25L);
+	}
+	
+	private void cancelTask()
+	{
+		if (currentTask != null)
+		{
+			currentTask.cancel();
+			currentTask = null;
+		}
 	}
 
 	public void finish(boolean questFinish)

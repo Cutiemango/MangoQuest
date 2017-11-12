@@ -1,5 +1,6 @@
 package me.Cutiemango.MangoQuest;
 
+import java.io.IOException;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -108,6 +109,14 @@ public class Main extends JavaPlugin
 		}.runTaskLater(this, 5L);
 		
 		startCounter();
+		
+		try
+		{
+			Metrics metrics = new Metrics(this);
+			metrics.start();
+		}
+		catch (IOException e)
+		{}
 	}
 
 	@Override

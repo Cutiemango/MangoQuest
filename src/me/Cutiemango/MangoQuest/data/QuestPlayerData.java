@@ -105,7 +105,7 @@ public class QuestPlayerData
 					continue;
 				}
 
-				boolean rewardTaken = save.getBoolean("FinishQuest." + s + ".RewardTaken");
+				boolean rewardTaken = save.getBoolean("FinishedQuest." + s + ".RewardTaken");
 				
 				QuestFinishData qd = new QuestFinishData(QuestUtil.getQuest(s),
 						save.getInt("FinishedQuest." + s + ".FinishedTimes"),
