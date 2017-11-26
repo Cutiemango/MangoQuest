@@ -1,0 +1,128 @@
+package me.Cutiemango.MangoQuest.manager;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.bukkit.Bukkit;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
+import me.Cutiemango.MangoQuest.ConfigSettings;
+import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.QuestStorage;
+import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.data.QuestObjectProgress;
+import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import me.Cutiemango.MangoQuest.data.QuestProgress;
+import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
+import me.Cutiemango.MangoQuest.questobjects.QuestObjectDeliverItem;
+import net.md_5.bungee.api.ChatColor;
+
+public class ScoreboardManager
+{
+	public static void update(QuestPlayerData pd)
+	{
+		Scoreboard s = Bukkit.getScoreboardManager().getNewScoreboard();
+		Objective o = s.getObjective("quest");
+		String title = I18n.locMsg("Scoreboard.Title");
+		if (o == null)
+		{
+			o = s.registerNewObjective("quest", "dummy");
+			o.setDisplayName(title);
+			o.setDisplaySlot(DisplaySlot.SIDEBAR);
+		}
+		List<String> scoreList = new ArrayList<>();
+		
+		scoreList.add(I18n.locMsg("Scoreboard.CurrentQuests"));
+		
+		for (QuestProgress qp : pd.getProgresses())
+		{
+			if (!qp.getQuest().getSettings().displayOnProgress())
+				continue;
+			scoreList.add(pd.getQuestDisplayFormat(qp.getQuest()));
+			for (QuestObjectProgress qop : qp.getCurrentObjects())
+			{
+				if (formatObjectDisplayText(qop).length() > 40)
+				{
+					if (qop.getObject() instanceof QuestObjectDeliverItem)
+					{
+						scoreList.add(formatObjectDeliverItem(qop)[0]);
+						scoreList.add(formatObjectDeliverItem(qop)[1]);
+						continue;
+					}
+				}
+				scoreList.add(formatObjectDisplayText(qop));
+			}
+		}
+		
+		int count = 0;
+		scoreList.add(I18n.locMsg("Scoreboard.AvailableQuests"));
+		for (Quest q : QuestStorage.Quests.values())
+		{
+			if (!q.getSettings().displayOnTake())
+				continue;
+			count++;
+			if (count > ConfigSettings.MAXMIUM_DISPLAY_TAKEQUEST_AMOUNT)
+				break;
+			if (pd.canTake(q, false))
+			{
+				scoreList.add(pd.getQuestDisplayFormat(q));
+				if (!q.isCommandQuest())
+					scoreList.add(QuestChatManager.trimColor(" &f - " + I18n.locMsg("Scoreboard.GoFindNPC", q.getQuestNPC().getName())));
+				else
+					scoreList.add(QuestChatManager.trimColor(" &f - " + I18n.locMsg("Scoreboard.TakeFromGUI")));
+			}
+		}
+		
+		formatScoreboard(o, scoreList);
+		pd.getPlayer().setScoreboard(s);
+	}
+	
+	private static void formatScoreboard(Objective o, List<String> list)
+	{
+		int scoreIndex = 0;
+		for (int i = 0; i < list.size(); i++)
+		{
+			String text = list.get(list.size() - (i+1));
+			if (text.length() > 40)
+			{
+				o.getScore(text.substring(0, 40)).setScore(scoreIndex+1);
+				o.getScore(QuestChatManager.trimColor("    " + text.substring(40, text.length()))).setScore(scoreIndex);
+				scoreIndex+=2;
+				continue;
+			}
+			o.getScore(text).setScore(scoreIndex);
+			scoreIndex++;
+		}
+		return;
+	}
+	
+	private static String formatObjectDisplayText(QuestObjectProgress qop)
+	{
+		if (qop.isFinished())
+			return QuestChatManager.trimColor(" &8&m&o - " + ChatColor.stripColor(qop.getObject().toDisplayText()));
+		else
+		{
+			if (qop.getObject() instanceof NumerableObject)	
+				return QuestChatManager.trimColor(" &f - " + qop.getObject().toDisplayText() + " " +
+			I18n.locMsg("CommandInfo.Progress", Integer.toString(qop.getProgress()), Integer.toString(((NumerableObject) qop.getObject()).getAmount())));
+			else
+				return QuestChatManager.trimColor(" &f - " + qop.getObject().toDisplayText());
+		}
+	}
+	
+	private static String[] formatObjectDeliverItem(QuestObjectProgress qop)
+	{
+		QuestObjectDeliverItem obj = (QuestObjectDeliverItem)qop.getObject();
+		String[] array = new String[2];
+		array[0] = QuestChatManager.trimColor(" &f - " + I18n.locMsg("Scoreboard.QuestObject.ItemToDeliver", Integer.toString(obj.getAmount()), QuestUtil.translate(obj.getItem())));
+		array[1] = QuestChatManager.trimColor("    " + I18n.locMsg("Scoreboard.QuestObject.TargetNPC", obj.getTargetNPC().getName()) + " " +
+				I18n.locMsg("CommandInfo.Progress", Integer.toString(qop.getProgress()), Integer.toString(((NumerableObject) qop.getObject()).getAmount())));
+		if (qop.isFinished())
+		{
+			QuestChatManager.trimColor(" &8&m&o - " + ChatColor.stripColor(array[0]));
+			QuestChatManager.trimColor("&8&m&o     " + ChatColor.stripColor(array[1]));
+		}
+		return array;
+	}
+}

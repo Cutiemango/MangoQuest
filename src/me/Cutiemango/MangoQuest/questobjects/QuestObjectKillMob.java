@@ -1,34 +1,52 @@
 package me.Cutiemango.MangoQuest.questobjects;
 
+import java.util.logging.Level;
 import org.bukkit.entity.EntityType;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.book.InteractiveText;
+import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestObjectKillMob extends NumerableObject
 {
+	public QuestObjectKillMob(){}
 
 	public QuestObjectKillMob(EntityType t, int i, String customname)
 	{
 		type = t;
 		amount = i;
-		config = "KILL_MOB";
-		CustomName = customname;
+		customName = customname;
 	}
 
 	public QuestObjectKillMob(MythicMob mmMob, int i)
 	{
 		mtmMob = mmMob;
 		amount = i;
-		config = "KILL_MOB";
 		type = EntityType.valueOf(mmMob.getEntityType().toUpperCase());
-		CustomName = mmMob.getDisplayName();
+		customName = mmMob.getDisplayName();
+	}
+	
+	@Override
+	public String getConfigString()
+	{
+		return "KILL_MOB";
+	}
+
+	@Override
+	public String getObjectName()
+	{
+		return I18n.locMsg("QuestObjectName.KillMob");
 	}
 
 	private EntityType type;
-	private String CustomName;
+	private String customName;
 	private MythicMob mtmMob;
 
 	public EntityType getType()
@@ -38,12 +56,12 @@ public class QuestObjectKillMob extends NumerableObject
 
 	public boolean hasCustomName()
 	{
-		return !(CustomName == null);
+		return !(customName == null);
 	}
 
 	public String getCustomName()
 	{
-		return CustomName;
+		return customName;
 	}
 
 	public MythicMob getMythicMob()
@@ -53,13 +71,13 @@ public class QuestObjectKillMob extends NumerableObject
 
 	public void setCustomName(String s)
 	{
-		CustomName = s;
+		customName = s;
 	}
 
 	public void setMythicMob(MythicMob m)
 	{
 		mtmMob = m;
-		CustomName = m.getDisplayName();
+		customName = m.getDisplayName();
 		type = EntityType.valueOf(m.getEntityType().toUpperCase());
 	}
 
@@ -77,28 +95,94 @@ public class QuestObjectKillMob extends NumerableObject
 	public TextComponent toTextComponent(boolean isFinished)
 	{
 		if (hasCustomName())
-			return super.toTextComponent(I18n.locMsg("QuestObject.KillMob"), isFinished, amount, CustomName);
+			return super.toTextComponent(ChatColor.stripColor(I18n.locMsg("QuestObject.KillMob")), isFinished, amount, customName);
 		else
-			return super.toTextComponent(I18n.locMsg("QuestObject.KillMob"), isFinished, amount, type);
-	}
-
-	@Override
-	public String toPlainText()
-	{
-		if (CustomName != null)
-			return I18n.locMsg("QuestObject.KillMob", Integer.toString(amount), QuestChatManager.translateColor(CustomName));
-		else
-			return I18n.locMsg("QuestObject.KillMob", Integer.toString(amount), QuestUtil.translate(type));
+			return super.toTextComponent(ChatColor.stripColor(I18n.locMsg("QuestObject.KillMob")), isFinished, amount, type);
 	}
 	
 	@Override
 	public String toDisplayText()
 	{
-		if (CustomName != null)
-			return I18n.locMsg("QuestObject.FinishMessage.KillMob", Integer.toString(amount), QuestChatManager.translateColor(CustomName));
+		if (hasCustomName())
+			return I18n.locMsg("QuestObject.KillMob", Integer.toString(amount), QuestChatManager.translateColor(customName));
 		else
-			return I18n.locMsg("QuestObject.FinishMessage.KillMob", Integer.toString(amount), QuestUtil.translate(type));
+			return I18n.locMsg("QuestObject.KillMob", Integer.toString(amount), QuestUtil.translate(type));
+	}
+
+	@Override
+	public void formatEditorPage(QuestBookPage page, int stage, int obj)
+	{
+		if (Main.instance.pluginHooker.hasMythicMobEnabled())
+		{
+			page.add(I18n.locMsg("QuestEditor.MythicMobs"));
+			if (isMythicObject())
+				page.add(mtmMob.getDisplayName() + "(" + mtmMob.getInternalName() + ")").endNormally();
+			else
+				page.add(I18n.locMsg("QuestEditor.NotSet")).endNormally();
+			page.changeLine();
+			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " mtmmob")).changeLine();
+		}
+		page.add(I18n.locMsg("QuestEditor.MobName"));
+		if (hasCustomName())
+			page.add(customName).endNormally();
+		else
+			page.add(I18n.locMsg("QuestEditor.NotSet"));
+		page.changeLine();
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " mobname")).changeLine();
+		page.changeLine();
+
+		page.add(I18n.locMsg("QuestEditor.MobType") + QuestUtil.translate(type)).endNormally();
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " mobtype")).changeLine();
+		page.changeLine();
+		super.formatEditorPage(page, stage, obj);
 	}
 	
+	@Override
+	public boolean load(QuestIO config, String qpath, int scount, int ocount)
+	{
+		if (config.getString(qpath + "Stages." + scount + "." + ocount + ".MythicMob") != null)
+		{
+			if (!Main.instance.pluginHooker.hasMythicMobEnabled())
+			{
+				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.MTMNotInstalled"));
+				return false;
+			}
+			String id = config.getString(qpath + "Stages." + scount + "." + ocount + ".MythicMob");
+			if (!QuestValidater.validateMythicMob(id))
+			{
+				QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.MTMMobNotFound", id));
+				return false;
+			}
+			mtmMob = Main.getHooker().getMythicMob(id);
+			customName = mtmMob.getDisplayName();
+			type = EntityType.valueOf(mtmMob.getEntityType().toUpperCase());
+		}
+		else
+			if (config.getString(qpath + "Stages." + scount + "." + ocount + ".MobName") != null)
+			{
+				customName = config.getString(qpath + "Stages." + scount + "." + ocount + ".MobName");
+				type = EntityType.valueOf(config.getString(qpath + "Stages." + scount + "." + ocount + ".MobType"));
+			}
+			else
+				if (config.getString(qpath + "Stages." + scount + "." + ocount + ".MobType") != null)
+					type = EntityType.valueOf(config.getString(qpath + "Stages." + scount + "." + ocount + ".MobType"));
+				else return false;
+		super.load(config, qpath, scount, ocount);
+		return true;
+	}
+
+	@Override
+	public void save(QuestIO config, String objpath)
+	{
+		if (isMythicObject())
+			config.set(objpath + "MythicMob", mtmMob.getInternalName());
+		else
+		{
+			config.set(objpath + "MobType", type.toString());
+			if (hasCustomName())
+				config.set(objpath + "MobName", customName);
+		}
+		super.save(config, objpath);
+	}
 
 }

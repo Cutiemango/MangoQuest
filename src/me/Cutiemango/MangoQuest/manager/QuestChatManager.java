@@ -15,6 +15,39 @@ public class QuestChatManager
 		return ChatColor.translateAlternateColorCodes('&', s);
 	}
 	
+	public static String trimColor(String s)
+	{	
+		String targetText = translateColor(s);
+		boolean escape = false;
+		boolean nextTextSplit = false;
+		int index = 0;
+		String savedText = "";
+		for (int i = 0; i < targetText.toCharArray().length; i++)
+		{
+			if (escape)
+			{
+				escape = false;
+				continue;
+			}
+			if (targetText.charAt(i) == '§')
+			{
+				if (nextTextSplit)
+				{
+					String split = targetText.substring(index, i);
+					savedText += ChatColor.getLastColors(split) + ChatColor.stripColor(split);
+					index = i;
+					nextTextSplit = false;
+				}
+				escape = true;
+				continue;
+			}
+			nextTextSplit = true;
+		}
+		String split = targetText.substring(index, targetText.toCharArray().length);
+		savedText += ChatColor.getLastColors(split) + ChatColor.stripColor(split);
+		return savedText;
+	}
+	
 	public static void info(CommandSender p, String s)
 	{
 		p.sendMessage(QuestStorage.prefix + " " + translateColor(s));

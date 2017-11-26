@@ -114,7 +114,7 @@ public class ConversationManager
 	{
 		if (QuestStorage.ConvProgresses.get(p.getName()) == null)
 			return false;
-		return QuestValidater.detailedValidate(conv, QuestStorage.ConvProgresses.get(p.getName()).getConvseration());
+		return QuestValidater.detailedValidate(conv, QuestStorage.ConvProgresses.get(p.getName()).getConversation());
 	}
 
 	public static void forceQuit(Player p, QuestConversation conv)

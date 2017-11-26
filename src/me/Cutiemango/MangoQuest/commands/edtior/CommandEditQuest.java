@@ -20,6 +20,7 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.RequirementType;
@@ -27,6 +28,7 @@ import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.objects.TriggerObject;
 import me.Cutiemango.MangoQuest.objects.TriggerObject.TriggerObjectType;
 import me.Cutiemango.MangoQuest.questobjects.ItemObject;
+import me.Cutiemango.MangoQuest.questobjects.NPCObject;
 import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectConsumeItem;
@@ -489,15 +491,17 @@ public class CommandEditQuest
 						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ItemRegistered"));
 						break;
 					case "itemnpc":
-						((QuestObjectDeliverItem) o).setTargetNPC(CitizensAPI.getNPCRegistry().getById(Integer.valueOf(args[6])));
-						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRegistered", args[6]));
-						break;
 					case "npc":
-						((QuestObjectTalkToNPC) o).setTargetNPC(CitizensAPI.getNPCRegistry().getById(Integer.valueOf(args[6])));
+						((NPCObject) o).setTargetNPC(Main.getHooker().getNPC(args[6]));
 						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRegistered", args[6]));
 						break;
 					case "mtmmob":
-						MythicMob mob = Main.instance.pluginHooker.getMythicMobsAPI().getMythicMob(args[6]);
+						if (!QuestValidater.validateMythicMob(args[6]))
+						{
+							QuestChatManager.error(sender, I18n.locMsg("Cmdlog.MTMMobNotFound", args[6]));
+							break;
+						}
+						MythicMob mob = Main.getHooker().getMythicMob(args[6]);
 						((QuestObjectKillMob) o).setMythicMob(mob);
 						((QuestObjectKillMob) o).setCustomName(mob.getDisplayName());
 						((QuestObjectKillMob) o).setType(EntityType.valueOf(mob.getEntityType().toUpperCase()));
@@ -545,7 +549,7 @@ public class CommandEditQuest
 										I18n.locMsg("EditorMessage.DefaultLocation"));
 								break;
 							case "TALK_TO_NPC":
-								ob = new QuestObjectTalkToNPC(CitizensAPI.getNPCRegistry().getById(0));
+								ob = new QuestObjectTalkToNPC(Main.getHooker().getNPC(0));
 								break;
 							default:
 								return;

@@ -106,9 +106,9 @@ public class QuestBaseAction
 					break;
 				}
 			case TAKE_QUEST:
-				if (!(cp.getConvseration() instanceof StartTriggerConversation))
+				if (!(cp.getConversation() instanceof StartTriggerConversation))
 					break;
-				StartTriggerConversation conv = (StartTriggerConversation)cp.getConvseration();
+				StartTriggerConversation conv = (StartTriggerConversation)cp.getConversation();
 				QuestPlayerData data = QuestUtil.getData(cp.getOwner());
 				if (!data.checkQuestSize(false))
 				{

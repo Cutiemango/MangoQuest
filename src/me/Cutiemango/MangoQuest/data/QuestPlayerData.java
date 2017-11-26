@@ -34,6 +34,7 @@ import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
 import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
+import net.md_5.bungee.api.ChatColor;
 
 public class QuestPlayerData
 {
@@ -598,6 +599,26 @@ public class QuestPlayerData
 	public QuestIO getSaveFile()
 	{
 		return save;
+	}
+	
+	public String getQuestDisplayFormat(Quest q)
+	{
+		if (canTake(q, false))
+		{
+			if (hasFinished(q))
+				return I18n.locMsg("QuestGUI.RedoableQuestSymbol").replaceAll("§0", "§f") + ChatColor.BOLD + q.getQuestName();
+			else
+				return I18n.locMsg("QuestGUI.NewQuestSymbol").replaceAll("§0", "§f") + ChatColor.BOLD + q.getQuestName();
+		}
+		else
+		{
+			for (QuestObjectProgress op : getProgress(q).getCurrentObjects())
+			{
+				if (op.getObject() instanceof QuestObjectTalkToNPC)
+					return I18n.locMsg("QuestGUI.QuestReturnSymbol").replaceAll("§0", "§f") + ChatColor.BOLD + q.getQuestName();
+			}
+			return I18n.locMsg("QuestGUI.QuestDoingSymbol").replaceAll("§0", "§f") + ChatColor.BOLD + q.getQuestName();
+		}
 	}
 
 	public QuestFinishData getFinishData(Quest q)

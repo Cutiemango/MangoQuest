@@ -115,7 +115,7 @@ public class QuestBookGUIManager
 						{
 							p3.add(new InteractiveText("").showItem(is)).endNormally();
 							p3.add(" ").endNormally();
-							p3.add(I18n.locMsg("QuestEditor.RewardAmount", Integer.toString(is.getAmount()))).changeLine();
+							p3.add(I18n.locMsg("QuestReward.RewardAmount", Integer.toString(is.getAmount()))).changeLine();
 						}
 					}
 				}
@@ -126,17 +126,6 @@ public class QuestBookGUIManager
 
 			if (q.getQuest().getQuestReward().hasExp())
 				p3.add(I18n.locMsg("QuestEditor.RewardExp", Integer.toString(q.getQuest().getQuestReward().getExp()))).changeLine();
-
-			// Removed due to prevention of awkward situation
-//			if (q.getQuest().getQuestReward().hasFriendPoint())
-//			{
-//				for (Integer id : q.getQuest().getQuestReward().getFp().keySet())
-//				{
-//					NPC npc = CitizensAPI.getNPCRegistry().getById(id);
-//					p3.add(new InteractiveText("").showNPCInfo(npc)).endNormally();
-//					p3.add(" &c將會感激你").changeLine();
-//				}
-//			}
 
 			openBook(p, p1, p2, p3);
 		}

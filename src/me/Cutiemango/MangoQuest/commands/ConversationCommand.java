@@ -59,9 +59,9 @@ public class ConversationCommand {
 					QuestUtil.getData(sender).talkToNPC(npc);
 				return;
 			case "takequest":
-				if (cp.getConvseration() instanceof StartTriggerConversation)
+				if (cp.getConversation() instanceof StartTriggerConversation)
 				{
-					StartTriggerConversation trigger = (StartTriggerConversation)cp.getConvseration();
+					StartTriggerConversation trigger = (StartTriggerConversation)cp.getConversation();
 					QuestPlayerData pd = QuestUtil.getData(sender);
 					pd.takeQuest(trigger.getQuest(), false);
 					cp.retrieve();
@@ -71,9 +71,9 @@ public class ConversationCommand {
 					return;
 				}
 			case "denyquest":
-				if (cp.getConvseration() instanceof StartTriggerConversation)
+				if (cp.getConversation() instanceof StartTriggerConversation)
 				{
-					StartTriggerConversation trigger = (StartTriggerConversation)cp.getConvseration();
+					StartTriggerConversation trigger = (StartTriggerConversation)cp.getConversation();
 					cp.retrieve();
 					cp.getCurrentPage().add(trigger.getDenyMessage()).changeLine();
 					cp.getActionQueue().addAll(trigger.getDenyActions());

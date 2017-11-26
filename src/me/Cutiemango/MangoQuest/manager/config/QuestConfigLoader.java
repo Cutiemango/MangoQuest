@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
@@ -31,6 +30,7 @@ import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
+import me.Cutiemango.MangoQuest.manager.CustomObjectManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.RequirementType;
@@ -319,11 +319,11 @@ public class QuestConfigLoader
 		for (String id : conv.getSection("Choices"))
 		{
 			TextComponent q = new TextComponent(QuestChatManager.translateColor(conv.getString("Choices." + id + ".Question")));
-			for (String num : conv.getSection("Choices." + id + ".Options"))
+			for (int i : conv.getIntegerSection("Choices." + id + ".Options"))
 			{
-				String name = conv.getString("Choices." + id + ".Options." + num + ".OptionName");
-				Choice c = new Choice(name, loadConvAction(conv.getStringList("Choices." + id + ".Options." + num + ".OptionActions")));
-				list.add(Integer.parseInt(num) - 1, c);
+				String name = conv.getString("Choices." + id + ".Options." + i + ".OptionName");
+				Choice c = new Choice(name, loadConvAction(conv.getStringList("Choices." + id + ".Options." + i + ".OptionActions")));
+				list.add(i - 1, c);
 			}
 			QuestChoice choice = new QuestChoice(q, list);
 			QuestStorage.Choices.put(id, choice);
@@ -421,92 +421,43 @@ public class QuestConfigLoader
 			for (String objcount : quest.getSection(qpath + "Stages." + scount))
 			{
 				int ocount = Integer.parseInt(objcount);
-				String s = quest.getString(qpath + "Stages." + scount + "." + ocount + ".ObjectType");
+				String objType = quest.getString(qpath + "Stages." + scount + "." + ocount + ".ObjectType");
 				SimpleQuestObject obj = null;
-				int n;
-				switch (s)
+				switch (objType)
 				{
 					case "DELIVER_ITEM":
-						n = quest.getInt(qpath + "Stages." + scount + "." + ocount + ".TargetNPC");
-						if (CitizensAPI.getNPCRegistry().getById(n) == null)
-						{
-							QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NPCNotValid", Integer.toString(n)));
-							continue;
-						}
-						obj = new QuestObjectDeliverItem(CitizensAPI.getNPCRegistry().getById(n),
-								quest.getItemStack(qpath + "Stages." + scount + "." + ocount + ".Item"),
-								quest.getItemStack(qpath + "Stages." + scount + "." + ocount + ".Item").getAmount());
+						obj = new QuestObjectDeliverItem();
 						break;
 					case "TALK_TO_NPC":
-						n = quest.getInt(qpath + "Stages." + scount + "." + ocount + ".TargetNPC");
-						if (CitizensAPI.getNPCRegistry().getById(n) == null)
-						{
-							QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NPCNotValid", Integer.toString(n)));
-							continue;
-						}
-						obj = new QuestObjectTalkToNPC(CitizensAPI.getNPCRegistry().getById(n));
+						obj = new QuestObjectTalkToNPC();
+						break;
 					case "KILL_MOB":
-						String name = null;
-						if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".MythicMob") != null)
-						{
-							if (!Main.instance.pluginHooker.hasMythicMobEnabled())
-							{
-								QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.MTMNotInstalled"));
-								continue;
-							}
-							name = quest.getString(qpath + "Stages." + scount + "." + ocount + ".MythicMob");
-							try
-							{
-								obj = new QuestObjectKillMob(Main.instance.pluginHooker.getMTMPlugin().getAPIHelper().getMythicMob(name),
-										quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Amount"));
-							}
-							catch (Exception e)
-							{
-								QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.MTMMobNotFound", name));
-								continue;
-							}
-						}
-						else
-							if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".MobName") != null)
-							{
-								name = quest.getString(qpath + "Stages." + scount + "." + ocount + ".MobName");
-								obj = new QuestObjectKillMob(
-										EntityType.valueOf(
-												quest.getString(qpath + "Stages." + scount + "." + ocount + ".MobType")),
-										quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Amount"), name);
-							}
-							else
-								if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".MobType") != null)
-									obj = new QuestObjectKillMob(
-											EntityType.valueOf(
-													quest.getString(qpath + "Stages." + scount + "." + ocount + ".MobType")),
-											quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Amount"), null);
+						obj = new QuestObjectKillMob();
 						break;
 					case "BREAK_BLOCK":
-						obj = new QuestObjectBreakBlock(
-								Material.getMaterial(
-										quest.getString(qpath + "Stages." + scount + "." + ocount + ".BlockType")),
-								Short.parseShort(
-										Integer.toString(quest.getInt(qpath + "Stages." + scount + "." + ocount + ".SubID"))),
-								quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Amount"));
+						obj = new QuestObjectBreakBlock();
 						break;
 					case "CONSUME_ITEM":
-						obj = new QuestObjectConsumeItem(
-								quest.getItemStack(qpath + "Stages." + scount + "." + ocount + ".Item"),
-								quest.getItemStack(qpath + "Stages." + scount + "." + ocount + ".Item").getAmount());
+						obj = new QuestObjectConsumeItem();
 						break;
 					case "REACH_LOCATION":
-						String[] splited = quest.getString(qpath + "Stages." + scount + "." + ocount + ".Location").split(":");
-						Location loc = new Location(Bukkit.getWorld(splited[0]), Double.parseDouble(splited[1]), Double.parseDouble(splited[2]),
-								Double.parseDouble(splited[3]));
-						obj = new QuestObjectReachLocation(loc,
-								quest.getInt(qpath + "Stages." + scount + "." + ocount + ".Range"),
-								quest.getString(qpath + "Stages." + scount + "." + ocount + ".LocationName"));
+						obj = new QuestObjectReachLocation();
+						break;
+					case "CUSTOM_OBJECT":
+						if (CustomObjectManager.exist(quest.getString(qpath + "ObjectClass")))
+							obj = CustomObjectManager.getSpecificObject(quest.getString(qpath + "ObjectClass"));
+						else
+						{
+							QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("CustomObject.ObjectNotFound", quest.getString(qpath + "ObjectClass")));
+							continue;
+						}
 						break;
 					default:
 						QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NoValidObject", id));
 						continue;
 				}
+				if (!obj.load(config, qpath, scount, ocount))
+					continue;
 				if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".ActivateConversation") != null)
 				{
 					QuestConversation conv = ConversationManager.getConversation(
@@ -590,7 +541,7 @@ public class QuestConfigLoader
 						{
 							String[] split = obj.split(" ");
 							String object = QuestUtil.convertArgsString(split, 2);
-							list.add(new TriggerObject(TriggerObjectType.valueOf(split[1]), object, Integer.parseInt(split[0])));
+							list.add(new TriggerObject(TriggerObjectType.valueOf(split[1]), object, Integer.parseInt(split[0]) - 1));
 						}
 						break;
 				}

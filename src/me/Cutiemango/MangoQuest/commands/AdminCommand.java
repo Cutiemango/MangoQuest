@@ -98,24 +98,32 @@ public class AdminCommand implements CommandExecutor
 				case "friendpoint":
 					if (args.length < 5)
 						return false;
-					if (QuestValidater.validateNPC(sender, args[3], true) && QuestValidater.validateInteger(sender, args[4], true))
+					if (!QuestValidater.validateNPC(args[3]))
 					{
-						NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[3]));
-						int amount = Integer.parseInt(args[4]);
-						pd = QuestUtil.getData(target);
-						switch (args[1])
-						{
-							case "add":
-								pd.addNPCfp(npc.getId(), amount);
-								QuestChatManager.info(target, I18n.locMsg("CommandInfo.FriendPointAdded", target.getName(), npc.getName(), Integer.toString(amount)));
-								return false;
-							case "set":
-								pd.setNPCfp(npc.getId(), amount);
-								QuestChatManager.info(target, I18n.locMsg("CommandInfo.FriendPointSet", target.getName(), npc.getName(), Integer.toString(amount)));
-								return false;
-						}
+						QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
+						return false;
 					}
-					
+					if (!QuestValidater.validateInteger(args[4]))
+					{
+						QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
+						return false;
+					}
+					NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[3]));
+					int amount = Integer.parseInt(args[4]);
+					pd = QuestUtil.getData(target);
+					switch (args[1])
+					{
+						case "add":
+							pd.addNPCfp(npc.getId(), amount);
+							QuestChatManager.info(target,
+									I18n.locMsg("CommandInfo.FriendPointAdded", target.getName(), npc.getName(), Integer.toString(amount)));
+							return false;
+						case "set":
+							pd.setNPCfp(npc.getId(), amount);
+							QuestChatManager.info(target,
+									I18n.locMsg("CommandInfo.FriendPointSet", target.getName(), npc.getName(), Integer.toString(amount)));
+							return false;
+					}
 			}
 			QuestChatManager.info(sender, I18n.locMsg("CommandInfo.CommandExecuted"));
 			return true;

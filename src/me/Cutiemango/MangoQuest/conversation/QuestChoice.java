@@ -6,7 +6,6 @@ import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestChoice
@@ -59,7 +58,6 @@ public class QuestChoice
 		QuestStorage.ChoiceProgresses.put(cp.getOwner().getName(), this);
 		cp.getCurrentPage().add(new InteractiveText(question.getText()).showText(I18n.locMsg("Conversation.ClickToAnswer"))
 				.clickCommand("/mq conv openchoice")).endNormally();
-		QuestBookGUIManager.openChoice(cp.getOwner(), question, choices);
 	}
 
 	public void choose(Player p, int i)

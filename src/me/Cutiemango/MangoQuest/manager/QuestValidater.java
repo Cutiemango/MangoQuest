@@ -1,14 +1,13 @@
 package me.Cutiemango.MangoQuest.manager;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
-import me.Cutiemango.MangoQuest.I18n;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.model.Quest;
-import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
 public class QuestValidater
@@ -19,16 +18,23 @@ public class QuestValidater
 		return s != null && Bukkit.getWorld(s) != null;
 	}
 	
-	public static boolean validateNPC(CommandSender sender, String id, boolean msg)
+	public static boolean validateMythicMob(String id)
 	{
-		NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(id));
-		boolean result = npc != null;
-		if (msg && !result)
-			QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
-		return result;
+		if (!Main.getHooker().hasMythicMobEnabled())
+			return false;
+		MythicMob m = Main.getHooker().getMythicMob(id);
+		return m != null;
 	}
 
-	public static boolean validateInteger(CommandSender sender, String number, boolean msg)
+	public static boolean validateNPC(String id)
+	{
+		if (!validateInteger(id))
+			return false;
+		NPC npc = Main.getHooker().getNPC(id);
+		return npc != null;
+	}
+
+	public static boolean validateInteger(String number)
 	{
 		try
 		{
@@ -36,7 +42,6 @@ public class QuestValidater
 		}
 		catch (NumberFormatException | NullPointerException e)
 		{
-			QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
 			return false;
 		}
 		return true;

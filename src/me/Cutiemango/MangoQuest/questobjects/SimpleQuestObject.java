@@ -7,10 +7,13 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.QuestIO;
+import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.book.TextComponentFactory;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.citizensnpcs.api.npc.NPC;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public abstract class SimpleQuestObject
@@ -110,21 +113,24 @@ public abstract class SimpleQuestObject
 		return text;
 	}
 
-	public abstract String toPlainText();
+	/**
+	 * This is used for converting objects into text in order to display in chat.
+	 * @return e.g. Talk to [%0] ([%0] represents the NPC's name)
+	 */
 	public abstract String toDisplayText();
-
-	protected String config;
+	public abstract void formatEditorPage(QuestBookPage page, int stage, int obj);
+	public abstract boolean load(QuestIO config, String qpath, int scount, int ocount);
+	public abstract void save(QuestIO config, String objpath);
+	public abstract String getConfigString();
+	public abstract String getObjectName();
+	
 	protected QuestConversation conv = null;
-
-	public String getConfigString()
+	
+	public String toPlainText()
 	{
-		return config;
+		return ChatColor.stripColor(toDisplayText());
 	}
 
-	public String getObjectName()
-	{
-		return ALL_OBJECTS.get(config);
-	}
 
 	public QuestConversation getConversation()
 	{

@@ -13,6 +13,7 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.listeners.MythicListener;
 import me.Cutiemango.MangoQuest.listeners.MainListener;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.ScoreboardManager;
 import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
 import me.Cutiemango.MangoQuest.manager.PluginHooker;
 import me.Cutiemango.MangoQuest.versions.VersionHandler;
@@ -27,7 +28,6 @@ import me.Cutiemango.MangoQuest.versions.Version_v1_9_R2;
 
 public class Main extends JavaPlugin
 {
-
 	public static Main instance;
 
 	public PluginHooker pluginHooker;
@@ -49,8 +49,6 @@ public class Main extends JavaPlugin
 		pluginHooker = new PluginHooker(this);
 		pluginHooker.hookPlugins();
 		configManager.loadFile();
-
-		
 
 		getServer().getPluginManager().registerEvents(new MainListener(), this);
 
@@ -149,6 +147,11 @@ public class Main extends JavaPlugin
 		return VERSION_HIGHER_THAN_1_12;
 	}
 	
+	public static PluginHooker getHooker()
+	{
+		return instance.pluginHooker;
+	}
+	
 	public void savePlayers()
 	{
 		for (Player p : Bukkit.getOnlinePlayers())
@@ -173,12 +176,15 @@ public class Main extends JavaPlugin
 			{
 				for (Player p : Bukkit.getOnlinePlayers())
 				{
-					if (QuestUtil.getData(p) == null)
+					QuestPlayerData pd = QuestUtil.getData(p);
+					if (pd == null)
 						continue;
-					QuestUtil.getData(p).checkQuestFail();
+					pd.checkQuestFail();
+					if (ConfigSettings.ENABLE_SCOREBOARD)
+						ScoreboardManager.update(pd);
 				}
 			}
-		}.runTaskTimer(this, 0L, 1L);
+		}.runTaskTimer(this, 0L, 20L);
 	}
 	
 	public void stopCounter()

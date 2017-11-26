@@ -25,12 +25,6 @@ import me.Cutiemango.MangoQuest.objects.QuestReward;
 import me.Cutiemango.MangoQuest.objects.QuestStage;
 import me.Cutiemango.MangoQuest.objects.RewardChoice;
 import me.Cutiemango.MangoQuest.objects.TriggerObject;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectConsumeItem;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectDeliverItem;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectKillMob;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 
 public class QuestConfigSaver
@@ -158,7 +152,7 @@ public class QuestConfigSaver
 				case TRIGGER_STAGE_START:
 					for (TriggerObject obj : q.getTriggerMap().get(type))
 					{
-						list.add(obj.getStage() + " " + obj.getObjType().toString() + " " + obj.getObject().toString());
+						list.add((obj.getStage()+1) + " " + obj.getObjType().toString() + " " + obj.getObject().toString());
 					}
 					break;
 				default:
@@ -184,49 +178,7 @@ public class QuestConfigSaver
 				if (obj.hasConversation())
 					quest.set(objpath + "ActivateConversation", obj.getConversation().getInternalID());
 				quest.set(objpath + "ObjectType", obj.getConfigString());
-				switch (obj.getConfigString())
-				{
-					case "DELIVER_ITEM":
-						QuestObjectDeliverItem o = (QuestObjectDeliverItem) obj;
-						quest.set(objpath + "TargetNPC", o.getTargetNPC().getId());
-						quest.set(objpath + "Item", o.getItem());
-						break;
-					case "TALK_TO_NPC":
-						QuestObjectTalkToNPC on = (QuestObjectTalkToNPC) obj;
-						quest.set(objpath + "TargetNPC", on.getTargetNPC().getId());
-						break;
-					case "KILL_MOB":
-						QuestObjectKillMob om = (QuestObjectKillMob) obj;
-						quest.set(objpath + "Amount", om.getAmount());
-						if (om.isMythicObject())
-						{
-							quest.set(objpath + "MythicMob", om.getMythicMob().getInternalName());
-							break;
-						}
-						quest.set(objpath + "MobType", om.getType().toString());
-						if (om.hasCustomName())
-							quest.set(objpath + "MobName", om.getCustomName());
-						break;
-					case "BREAK_BLOCK":
-						QuestObjectBreakBlock ob = (QuestObjectBreakBlock) obj;
-						quest.set(objpath + "BlockType", ob.getType().toString());
-						quest.set(objpath + "SubID", ob.getShort());
-						quest.set(objpath + "Amount", ob.getAmount());
-						break;
-					case "CONSUME_ITEM":
-						QuestObjectConsumeItem oi = (QuestObjectConsumeItem) obj;
-						quest.set(objpath + "Item", oi.getItem());
-						break;
-					case "REACH_LOCATION":
-						QuestObjectReachLocation or = (QuestObjectReachLocation) obj;
-						String loc = or.getLocation().getWorld().getName() + ":" + or.getLocation().getX() + ":" + or.getLocation().getY() + ":"
-								+ or.getLocation().getZ();
-						quest.set(objpath + "Location", loc);
-						quest.set(objpath + "LocationName", or.getName());
-						quest.set(objpath + "Range", or.getRadius());
-						break;
-				}
-				continue;
+				obj.save(quest, objpath);
 			}
 			objCount = 0;
 		}

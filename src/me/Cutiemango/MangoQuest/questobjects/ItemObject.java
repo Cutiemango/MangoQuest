@@ -4,7 +4,6 @@ import org.bukkit.inventory.ItemStack;
 
 public abstract class ItemObject extends NumerableObject
 {
-
 	protected ItemStack item;
 
 	public ItemStack getItem()

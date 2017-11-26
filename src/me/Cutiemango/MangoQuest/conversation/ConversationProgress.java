@@ -102,7 +102,7 @@ public class ConversationProgress
 		return actQueue;
 	}
 
-	public QuestConversation getConvseration()
+	public QuestConversation getConversation()
 	{
 		return conv;
 	}

@@ -14,6 +14,7 @@ import me.Cutiemango.MangoQuest.book.FlexiableBook;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.QuestNPCData;
 import net.citizensnpcs.api.npc.NPC;
@@ -187,7 +188,18 @@ public class QuestUtil
 			return "未知的物品";
 		if (QuestStorage.TranslateMap.get(mat).get(data) == null)
 			return QuestStorage.TranslateMap.get(mat).get(0);
-		return QuestStorage.TranslateMap.get(mat).get(data);
+		else
+			return QuestStorage.TranslateMap.get(mat).get(data);
+	}
+	
+	public static String translate(ItemStack item)
+	{
+		if (item == null)
+			return "未知的物品";
+		if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+			return QuestChatManager.trimColor(item.getItemMeta().getDisplayName());
+		else
+			return translate(item.getType(), item.getDurability());	
 	}
 
 	public static String translate(EntityType e)

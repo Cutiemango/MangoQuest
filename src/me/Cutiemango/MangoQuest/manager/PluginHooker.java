@@ -7,10 +7,13 @@ import com.nisovin.shopkeepers.ShopkeepersPlugin;
 import com.sucy.skill.SkillAPI;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.api.bukkit.BukkitAPIHelper;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.Main;
 import me.old.RPGshop.RPGshop;
 import me.Cutiemango.MangoQuest.I18n;
+import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.CitizensPlugin;
+import net.citizensnpcs.api.npc.NPC;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 
@@ -145,5 +148,26 @@ public class PluginHooker
 	public BukkitAPIHelper getMythicMobsAPI()
 	{
 		return MTMplugin.getAPIHelper();
+	}
+	
+	public MythicMob getMythicMob(String id)
+	{
+		if (!hasMythicMobEnabled())
+			return null;
+		return getMythicMobsAPI().getMythicMob(id);
+	}
+	
+	public NPC getNPC(String id)
+	{
+		if (!hasCitizensEnabled() || !QuestValidater.validateInteger(id))
+			return null;
+		return CitizensAPI.getNPCRegistry().getById(Integer.parseInt(id));
+	}
+	
+	public NPC getNPC(int id)
+	{
+		if (!hasCitizensEnabled())
+			return null;
+		return CitizensAPI.getNPCRegistry().getById(id);
 	}
 }

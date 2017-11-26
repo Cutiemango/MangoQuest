@@ -130,12 +130,10 @@ public class QuestRewardManager implements Listener
 		String name = "";
 		if (item == null)
 			return "Unknown Item";
-		if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
-			name = QuestChatManager.translateColor(item.getItemMeta().getDisplayName() + " &f" + ChatColor.stripColor(I18n.locMsg("QuestEditor.Amount", Integer.toString(item.getAmount()))));
-		else if (item.getType() == Material.BARRIER)
+		if (item.getType() == Material.BARRIER)
 			name = I18n.locMsg("QuestReward.DefaultRewardIcon");
 		else
-			name = QuestChatManager.translateColor(QuestUtil.translate(item.getType(), item.getDurability()) + " &f" + ChatColor.stripColor(I18n.locMsg("QuestEditor.Amount", Integer.toString(item.getAmount()))));
+			name = QuestChatManager.translateColor(QuestUtil.translate(item) + " &f" + ChatColor.stripColor(I18n.locMsg("QuestEditor.Amount", Integer.toString(item.getAmount()))));
 		return name;
 	}
 	

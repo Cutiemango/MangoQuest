@@ -18,3 +18,9 @@ maxQuestAmount: 4
 
 #【登入時傳送讀取完成訊息】
 popLoginMessage: true
+
+#【是否啟用記分板系統】
+enableScoreboard: true
+
+#【記分板上可接受的任務之顯示數量】
+scoreboardMaxCanTakeQuestAmount: 3

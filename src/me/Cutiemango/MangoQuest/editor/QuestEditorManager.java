@@ -21,13 +21,7 @@ import me.Cutiemango.MangoQuest.model.RequirementType;
 import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.objects.TriggerObject;
 import me.Cutiemango.MangoQuest.objects.TriggerObject.TriggerObjectType;
-import me.Cutiemango.MangoQuest.questobjects.ItemObject;
-import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectKillMob;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectDeliverItem;
+import me.Cutiemango.MangoQuest.questobjects.CustomQuestObject;
 import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -380,90 +374,17 @@ public class QuestEditorManager
 			return;
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 		SimpleQuestObject o = q.getStage(stage - 1).getObject(obj - 1);
+		if (o instanceof CustomQuestObject)
+		{
+			QuestEditorManager.editQuestObjects(p, stage);
+			QuestChatManager.error(p, I18n.locMsg("CustomObject.NotEditable"));
+			return;
+		}
 		QuestBookPage p1 = new QuestBookPage();
 		p1.add(I18n.locMsg("QuestEditor.EditObject", Integer.toString(stage), Integer.toString(obj))).changeLine();
 		p1.add(I18n.locMsg("QuestEditor.ObjectName") + o.getObjectName()).changeLine();
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " type")).changeLine();
-		switch (o.getConfigString())
-		{
-			case "BREAK_BLOCK":
-				p1.add(I18n.locMsg("QuestEditor.BreakBlock") + QuestUtil.translate(((QuestObjectBreakBlock) o).getType(), ((QuestObjectBreakBlock) o).getShort())).endNormally();
-				p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " block")).changeLine();
-				break;
-			case "CONSUME_ITEM":
-				p1.add(I18n.locMsg("QuestEditor.ConsumeItem"));
-				p1.add(new InteractiveText("").showItem(((ItemObject) o).getItem())).endNormally();
-				p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " item")).changeLine();
-				break;
-			case "DELIVER_ITEM":
-				p1.add(I18n.locMsg("QuestEditor.DeliverItem"));
-				p1.add(new InteractiveText("").showItem(((ItemObject) o).getItem())).endNormally();
-				p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " item")).changeLine();
-
-				p1.add(I18n.locMsg("QuestEditor.DeliverNPC"));
-				NPC npc = ((QuestObjectDeliverItem) o).getTargetNPC();
-				if (npc == null)
-					p1.add(new InteractiveText(I18n.locMsg("QuestEditor.NotSet"))).endNormally();
-				else
-					p1.add(new InteractiveText("").showNPCInfo(npc)).endNormally();
-				p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " itemnpc")).changeLine();
-				break;
-			case "KILL_MOB":
-				if (Main.instance.pluginHooker.hasMythicMobEnabled())
-				{
-					p1.add(I18n.locMsg("QuestEditor.MythicMobs"));
-					if (((QuestObjectKillMob) o).isMythicObject())
-						p1.add(((QuestObjectKillMob) o).getMythicMob().getDisplayName() + "("
-								+ ((QuestObjectKillMob) o).getMythicMob().getInternalName() + ")").endNormally();
-					else
-						p1.add(I18n.locMsg("QuestEditor.NotSet")).endNormally();
-					p1.changeLine();
-					p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " mtmmob")).changeLine();
-				}
-				p1.add(I18n.locMsg("QuestEditor.MobName"));
-				if (((QuestObjectKillMob) o).hasCustomName())
-					p1.add(((QuestObjectKillMob) o).getCustomName()).endNormally();
-				else
-					p1.add(I18n.locMsg("QuestEditor.NotSet"));
-				p1.changeLine();
-				p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " mobname")).changeLine();
-				p1.changeLine();
-
-				p1.add(I18n.locMsg("QuestEditor.MobType") + QuestUtil.translate(((QuestObjectKillMob) o).getType())).endNormally();
-				p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " mobtype")).changeLine();
-				p1.changeLine();
-				break;
-			case "REACH_LOCATION":
-				p1.add(I18n.locMsg("QuestEditor.ReachLocation")).endNormally();
-				p1.add("(" + ((QuestObjectReachLocation) o).getLocation().getBlockX() + ", "
-						+ ((QuestObjectReachLocation) o).getLocation().getBlockY() + ", " + ((QuestObjectReachLocation) o).getLocation().getBlockZ()
-						+ ")").endNormally();
-				p1.changeLine();
-				p1.add(I18n.locMsg("QuestEditor.ReachRadius") + ((QuestObjectReachLocation) o).getRadius() + I18n.locMsg("QuestEditor.WithinBlocks")).endNormally();
-				p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " loc")).endNormally();
-				p1.changeLine();
-				p1.add(I18n.locMsg("QuestEditor.LocationName") + ((QuestObjectReachLocation) o).getName()).endNormally();
-				p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " locname")).endNormally();
-				p1.changeLine();
-				break;
-			case "TALK_TO_NPC":
-				p1.add(I18n.locMsg("QuestEditor.TalkNPC")).endNormally();
-				npc = ((QuestObjectTalkToNPC) o).getTargetNPC();
-				if (npc == null)
-					p1.add(new InteractiveText(I18n.locMsg("QuestEditor.NotSet"))).endNormally();
-				else
-					p1.add(new InteractiveText("").showNPCInfo(npc)).endNormally();
-				p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " npc")).changeLine();
-				p1.changeLine();
-				break;
-
-		}
-		if (o instanceof NumerableObject)
-		{
-			p1.add(I18n.locMsg("QuestEditor.TargetAmount") + ((NumerableObject) o).getAmount());
-			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " amount"));
-			p1.changeLine();
-		}
+		o.formatEditorPage(p1, stage, obj);
 		p1.changeLine();
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e edit stage " + stage)).changeLine();
 		QuestBookGUIManager.openBook(p, p1);
