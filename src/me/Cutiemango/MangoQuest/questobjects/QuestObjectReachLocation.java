@@ -94,13 +94,13 @@ public class QuestObjectReachLocation extends SimpleQuestObject
 	}
 
 	@Override
-	public boolean load(QuestIO config, String qpath, int scount, int ocount)
+	public boolean load(QuestIO config, String path)
 	{
-		String[] splited = config.getString(qpath + "Stages." + scount + "." + ocount + ".Location").split(":");
+		String[] splited = config.getString(path + "Location").split(":");
 		loc = new Location(Bukkit.getWorld(splited[0]), Double.parseDouble(splited[1]), Double.parseDouble(splited[2]),
 				Double.parseDouble(splited[3]));
-		radius = config.getInt(qpath + "Stages." + scount + "." + ocount + ".Range");
-		name = config.getString(qpath + "Stages." + scount + "." + ocount + ".LocationName");
+		radius = config.getInt(path + "Range");
+		name = config.getString(path + "LocationName");
 		return true;
 	}
 

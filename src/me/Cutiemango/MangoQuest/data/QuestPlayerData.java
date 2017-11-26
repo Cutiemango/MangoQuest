@@ -314,7 +314,7 @@ public class QuestPlayerData
 		if (qop != null)
 		{
 			qop.finish();
-			this.checkFinished(p, qp, qop);
+			this.checkFinished(qp, qop);
 			if (msg)
 				QuestChatManager.info(p, I18n.locMsg("CommandInfo.ForceFinishObject", qop.getObject().toPlainText()));
 			return;
@@ -386,7 +386,7 @@ public class QuestPlayerData
 					if (o.getType().equals(m) && o.getShort() == subID)
 					{
 						qop.setProgress(qop.getProgress() + 1);
-						this.checkFinished(p, qp, qop);
+						this.checkFinished(qp, qop);
 						return;
 					}
 				}
@@ -413,7 +413,7 @@ public class QuestPlayerData
 							QuestChatManager.error(p, I18n.locMsg("CommandInfo.OutRanged"));
 							return;
 						}
-						this.checkFinished(p, qp, qop);
+						this.checkFinished(qp, qop);
 						return;
 					}
 				}
@@ -451,7 +451,7 @@ public class QuestPlayerData
 							else
 								qop.setProgress(qop.getProgress() + itemtoDeliver.getAmount());
 						}
-						this.checkFinished(p, qp, qop);
+						this.checkFinished(qp, qop);
 						return true;
 					}
 				}
@@ -480,7 +480,7 @@ public class QuestPlayerData
 						else
 						{
 							qop.setProgress(qop.getProgress() + 1);
-							this.checkFinished(p, qp, qop);
+							this.checkFinished(qp, qop);
 							return;
 						}
 					}
@@ -489,7 +489,7 @@ public class QuestPlayerData
 						if (e.getType().equals(o.getType()))
 						{
 							qop.setProgress(qop.getProgress() + 1);
-							this.checkFinished(p, qp, qop);
+							this.checkFinished(qp, qop);
 							return;
 						}
 					}
@@ -516,7 +516,7 @@ public class QuestPlayerData
 						if (o.getMythicMob().equals(m))
 						{
 							qop.setProgress(qop.getProgress() + 1);
-							this.checkFinished(p, qp, qop);
+							this.checkFinished(qp, qop);
 							return;
 						}
 					}
@@ -543,7 +543,7 @@ public class QuestPlayerData
 					if (is.isSimilar(o.getItem()))
 					{
 						qop.setProgress(qop.getProgress() + 1);
-						this.checkFinished(p, qp, qop);
+						this.checkFinished(qp, qop);
 						return;
 					}
 				}
@@ -569,7 +569,7 @@ public class QuestPlayerData
 							if (l.getZ() < (o.getLocation().getZ() + o.getRadius()) && l.getZ() > (o.getLocation().getZ() - o.getRadius()))
 							{
 								qop.finish();
-								this.checkFinished(p, qp, qop);
+								this.checkFinished(qp, qop);
 								return;
 							}
 				}
@@ -761,7 +761,7 @@ public class QuestPlayerData
 		return quest - (System.currentTimeMillis() - last);
 	}
 
-	private boolean checkFinished(Player p, QuestProgress qp, QuestObjectProgress qop)
+	public boolean checkFinished(QuestProgress qp, QuestObjectProgress qop)
 	{
 		SimpleQuestObject o = qop.getObject();
 		qop.checkIfFinished();
@@ -789,7 +789,7 @@ public class QuestPlayerData
 					else
 					{
 						qop.finish();
-						checkFinished(p, qp, qop);
+						checkFinished(qp, qop);
 						return true;
 					}
 				}

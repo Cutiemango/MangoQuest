@@ -91,18 +91,18 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject
 	}
 	
 	@Override
-	public boolean load(QuestIO config, String qpath, int scount, int ocount)
+	public boolean load(QuestIO config, String path)
 	{
-		String s = config.getString(qpath + "Stages." + scount + "." + ocount + ".TargetNPC");
+		String s = config.getString(path + "TargetNPC");
 		if (!QuestValidater.validateNPC(s))
 		{
 			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NPCNotValid", s));
 			return false;
 		}
 		npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(s));
-		item = config.getItemStack(qpath + "Stages." + scount + "." + ocount + ".Item");
+		item = config.getItemStack(path + "Item");
 		amount = item.getAmount();
-		super.load(config, qpath, scount, ocount);
+		super.load(config, path);
 		return true;
 	}
 

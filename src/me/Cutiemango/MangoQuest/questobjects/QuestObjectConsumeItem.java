@@ -65,11 +65,11 @@ public class QuestObjectConsumeItem extends ItemObject
 	}
 	
 	@Override
-	public boolean load(QuestIO config, String qpath, int scount, int ocount)
+	public boolean load(QuestIO config, String path)
 	{
-		item = config.getItemStack(qpath + "Stages." + scount + "." + ocount + ".Item");
+		item = config.getItemStack(path + "Item");
 		amount = item.getAmount();
-		super.load(config, qpath, scount, ocount);
+		super.load(config, path);
 		return true;
 	}
 

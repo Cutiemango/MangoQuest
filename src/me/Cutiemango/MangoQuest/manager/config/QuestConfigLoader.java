@@ -421,7 +421,8 @@ public class QuestConfigLoader
 			for (String objcount : quest.getSection(qpath + "Stages." + scount))
 			{
 				int ocount = Integer.parseInt(objcount);
-				String objType = quest.getString(qpath + "Stages." + scount + "." + ocount + ".ObjectType");
+				String loadPath = qpath + "Stages." + scount + "." + ocount + ".";
+				String objType = quest.getString(loadPath + "ObjectType");
 				SimpleQuestObject obj = null;
 				switch (objType)
 				{
@@ -456,7 +457,7 @@ public class QuestConfigLoader
 						QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NoValidObject", id));
 						continue;
 				}
-				if (!obj.load(config, qpath, scount, ocount))
+				if (!obj.load(config, loadPath))
 					continue;
 				if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".ActivateConversation") != null)
 				{

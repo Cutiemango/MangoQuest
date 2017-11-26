@@ -2,6 +2,7 @@ package me.Cutiemango.MangoQuest.questobjects;
 
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestIO;
+import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public abstract class CustomQuestObject extends SimpleQuestObject
@@ -33,7 +34,10 @@ public abstract class CustomQuestObject extends SimpleQuestObject
 		return I18n.locMsg("QuestObject.CustomObject");
 	}
 
-	public abstract boolean load(QuestIO config, String qpath, int scount, int ocount);
+	public abstract boolean load(QuestIO config, String path);
+
+	@Override
+	public void formatEditorPage(QuestBookPage page, int stage, int obj){};
 	
 	@Override
 	public void save(QuestIO config, String objpath)

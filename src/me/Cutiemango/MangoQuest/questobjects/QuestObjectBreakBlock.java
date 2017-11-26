@@ -84,11 +84,11 @@ public class QuestObjectBreakBlock extends NumerableObject
 	}
 
 	@Override
-	public boolean load(QuestIO config, String qpath, int scount, int ocount)
+	public boolean load(QuestIO config, String path)
 	{
-		block = Material.getMaterial(config.getString(qpath + "Stages." + scount + "." + ocount + ".BlockType"));
-		subID = Short.parseShort(Integer.toString(config.getInt(qpath + "Stages." + scount + "." + ocount + ".SubID")));
-		super.load(config, qpath, scount, ocount);
+		block = Material.getMaterial(config.getString(path + "BlockType"));
+		subID = Short.parseShort(Integer.toString(config.getInt(path + "SubID")));
+		super.load(config, path);
 		return true;
 	}
 

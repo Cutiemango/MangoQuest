@@ -77,9 +77,9 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 	}
 
 	@Override
-	public boolean load(QuestIO config, String qpath, int scount, int ocount)
+	public boolean load(QuestIO config, String path)
 	{
-		String id = config.getString(qpath + "Stages." + scount + "." + ocount + ".TargetNPC");
+		String id = config.getString(path + "TargetNPC");
 		if (!QuestValidater.validateNPC(id))
 		{
 			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NPCNotValid", id));

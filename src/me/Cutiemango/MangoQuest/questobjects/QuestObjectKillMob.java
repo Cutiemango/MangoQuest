@@ -138,16 +138,16 @@ public class QuestObjectKillMob extends NumerableObject
 	}
 	
 	@Override
-	public boolean load(QuestIO config, String qpath, int scount, int ocount)
+	public boolean load(QuestIO config, String path)
 	{
-		if (config.getString(qpath + "Stages." + scount + "." + ocount + ".MythicMob") != null)
+		if (config.getString(path + "MythicMob") != null)
 		{
 			if (!Main.instance.pluginHooker.hasMythicMobEnabled())
 			{
 				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.MTMNotInstalled"));
 				return false;
 			}
-			String id = config.getString(qpath + "Stages." + scount + "." + ocount + ".MythicMob");
+			String id = config.getString(path + "MythicMob");
 			if (!QuestValidater.validateMythicMob(id))
 			{
 				QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.MTMMobNotFound", id));
@@ -158,16 +158,16 @@ public class QuestObjectKillMob extends NumerableObject
 			type = EntityType.valueOf(mtmMob.getEntityType().toUpperCase());
 		}
 		else
-			if (config.getString(qpath + "Stages." + scount + "." + ocount + ".MobName") != null)
+			if (config.getString(path + "MobName") != null)
 			{
-				customName = config.getString(qpath + "Stages." + scount + "." + ocount + ".MobName");
-				type = EntityType.valueOf(config.getString(qpath + "Stages." + scount + "." + ocount + ".MobType"));
+				customName = config.getString(path + "MobName");
+				type = EntityType.valueOf(config.getString(path + "MobType"));
 			}
 			else
-				if (config.getString(qpath + "Stages." + scount + "." + ocount + ".MobType") != null)
-					type = EntityType.valueOf(config.getString(qpath + "Stages." + scount + "." + ocount + ".MobType"));
+				if (config.getString(path + "MobType") != null)
+					type = EntityType.valueOf(config.getString(path + "MobType"));
 				else return false;
-		super.load(config, qpath, scount, ocount);
+		super.load(config, path);
 		return true;
 	}
 

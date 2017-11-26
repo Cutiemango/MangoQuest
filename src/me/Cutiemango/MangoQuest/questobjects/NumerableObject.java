@@ -29,9 +29,9 @@ public abstract class NumerableObject extends SimpleQuestObject
 	}
 	
 	@Override
-	public boolean load(QuestIO config, String qpath, int scount, int ocount)
+	public boolean load(QuestIO config, String path)
 	{
-		amount = config.getInt(qpath + "Stages." + scount + "." + ocount + ".Amount");
+		amount = config.getInt(path + "Amount");
 		return true;
 	}
 	

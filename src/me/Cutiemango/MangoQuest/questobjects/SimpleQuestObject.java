@@ -119,7 +119,7 @@ public abstract class SimpleQuestObject
 	 */
 	public abstract String toDisplayText();
 	public abstract void formatEditorPage(QuestBookPage page, int stage, int obj);
-	public abstract boolean load(QuestIO config, String qpath, int scount, int ocount);
+	public abstract boolean load(QuestIO config, String path);
 	public abstract void save(QuestIO config, String objpath);
 	public abstract String getConfigString();
 	public abstract String getObjectName();
