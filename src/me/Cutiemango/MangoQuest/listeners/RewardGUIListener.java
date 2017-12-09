@@ -17,8 +17,8 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestGUIItem;
-import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
+import me.Cutiemango.MangoQuest.manager.reward.QuestRewardManager;
+import me.Cutiemango.MangoQuest.objects.QuestGUIItem;
 import net.md_5.bungee.api.ChatColor;
 
 public class RewardGUIListener

@@ -1,18 +1,27 @@
-package me.Cutiemango.MangoQuest.questobjects;
+package me.Cutiemango.MangoQuest.questobject.objects;
 
 import java.util.logging.Level;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestIO;
+import me.Cutiemango.MangoQuest.Syntax;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
+import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
+import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
+import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
+import me.Cutiemango.MangoQuest.questobject.interfaces.NPCObject;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
+public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject, EditorObject
 {
 	
 	public QuestObjectTalkToNPC(){}
@@ -43,7 +52,10 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 
 	public void setTargetNPC(NPC targetNPC)
 	{
+		if (npc != null)
+			QuestNPCManager.unregister(npc);
 		npc = targetNPC;
+		QuestNPCManager.registerNPC(npc);
 	}
 
 	@Override
@@ -86,6 +98,7 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 			return false;
 		}
 		npc = Main.getHooker().getNPC(id);
+		QuestNPCManager.registerNPC(npc);
 		return true;
 	}
 
@@ -93,6 +106,34 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 	public void save(QuestIO config, String objpath)
 	{
 		config.set(objpath + "TargetNPC", npc.getId());
+	}
+
+	@Override
+	public boolean receiveCommandInput(Player sender, String type, String obj)
+	{
+		switch (type)
+		{
+			case "npc":
+				if (!QuestValidater.validateNPC(obj))
+					return false;
+				setTargetNPC(Main.getHooker().getNPC(obj));
+				break;
+		}
+		return true;
+	}
+
+	@Override
+	public EditorListenerObject createCommandOutput(Player sender, String command, String type)
+	{
+		EditorListenerObject obj = null;
+		switch (type)
+		{
+			case "npc":
+				obj = new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, command, Syntax.of("N", I18n.locMsg("Syntax.NPCID"), ""));
+				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ClickNPC"));
+				break;
+		}
+		return obj;
 	}
 
 }

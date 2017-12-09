@@ -13,7 +13,6 @@ import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
 public class AdminCommand implements CommandExecutor
@@ -94,7 +93,7 @@ public class AdminCommand implements CommandExecutor
 					QuestConfigManager.getSaver().clearPlayerData(target);
 					QuestChatManager.info(sender, I18n.locMsg("CommandInfo.PlayerDataRemoved"));
 					break;
-				// /mqa friendpoint add/set [ID] [NPC] [amount]
+				// /mqa friendpoint [ID] add/set [NPC] [amount]
 				case "friendpoint":
 					if (args.length < 5)
 						return false;
@@ -108,10 +107,10 @@ public class AdminCommand implements CommandExecutor
 						QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
 						return false;
 					}
-					NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[3]));
+					NPC npc = Main.getHooker().getNPC(args[3]);
 					int amount = Integer.parseInt(args[4]);
 					pd = QuestUtil.getData(target);
-					switch (args[1])
+					switch (args[2])
 					{
 						case "add":
 							pd.addNPCfp(npc.getId(), amount);

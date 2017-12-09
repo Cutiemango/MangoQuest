@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.manager;
+package me.Cutiemango.MangoQuest.manager.reward;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +12,9 @@ import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.objects.QuestGUIItem;
 import me.Cutiemango.MangoQuest.objects.QuestReward;
 import me.Cutiemango.MangoQuest.objects.RewardCache;
 import me.Cutiemango.MangoQuest.objects.RewardChoice;

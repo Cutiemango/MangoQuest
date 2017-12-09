@@ -11,8 +11,10 @@ import net.citizensnpcs.api.CitizensAPI;
 public class Syntax
 {
 	// S - Normal String
-	// I - Integer (must be positive)
+	// I - Positive Integer
 	// N - NPC's ID
+	// W - World
+	// D - Positive and negative integer (except for 0)
 	
 	// The order of customRegex
 	private String order = "";
@@ -33,10 +35,11 @@ public class Syntax
 				dividers.add(div);
 			}
 		}
-		s = s.replaceAll("S", "\\\\S\\+");
-		s = s.replaceAll("I", "\\\\d\\+");
-		s = s.replaceAll("N", "\\\\S\\+");
-		s = s.replaceAll("W", "\\\\S\\+");
+		s = s.replaceAll("S", "\\\\S+");
+		s = s.replaceAll("I", "\\\\d+");
+		s = s.replaceAll("N", "-1|\\\\d+");
+		s = s.replaceAll("W", "\\\\S+");
+		s = s.replaceAll("D", "-?[1-9]\\\\d*");
 		regex = s;
 		desc = d;
 	}

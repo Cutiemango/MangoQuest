@@ -13,8 +13,10 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.listeners.MythicListener;
 import me.Cutiemango.MangoQuest.listeners.MainListener;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
 import me.Cutiemango.MangoQuest.manager.ScoreboardManager;
 import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
+import me.Cutiemango.MangoQuest.manager.CustomObjectManager;
 import me.Cutiemango.MangoQuest.manager.PluginHooker;
 import me.Cutiemango.MangoQuest.versions.VersionHandler;
 import me.Cutiemango.MangoQuest.versions.Version_v1_10_R1;
@@ -96,6 +98,7 @@ public class Main extends JavaPlugin
 			@Override
 			public void run()
 			{
+				CustomObjectManager.loadCustomObjects();
 				QuestConfigManager.getLoader().loadAll();
 				for (Player p : Bukkit.getOnlinePlayers())
 				{
@@ -129,6 +132,7 @@ public class Main extends JavaPlugin
 	{
 		savePlayers();
 		QuestStorage.clear();
+		QuestNPCManager.clear();
 
 		configManager = new QuestConfigManager();
 		configManager.loadFile();

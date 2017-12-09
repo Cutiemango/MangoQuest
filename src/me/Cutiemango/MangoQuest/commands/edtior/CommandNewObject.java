@@ -19,8 +19,8 @@ import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.objects.QuestStage;
 import me.Cutiemango.MangoQuest.objects.TriggerObject;
 import me.Cutiemango.MangoQuest.objects.TriggerObject.TriggerObjectType;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
-import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectBreakBlock;
 
 public class CommandNewObject
 {
@@ -68,6 +68,20 @@ public class CommandNewObject
 			switch(args.length)
 			{
 				case 7:
+					if (obj == TriggerObjectType.SEND_TITLE_AND_SUBTITLE)
+					{
+						EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING,
+								"mq e addnew evt " + type.toString() + " " + stage + " " + index + " " + obj.toString(), Syntax.of("S%S", I18n.locMsg("Syntax.TitleAndSubtitle"), "%")));
+						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.TitleAndSubtitle"));
+						return;
+					}
+					else if (obj == TriggerObjectType.TELEPORT)
+					{
+						EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING,
+								"mq e addnew evt " + type.toString() + " " + stage + " " + index + " " + obj.toString(), Syntax.of("S:I:I:I", I18n.locMsg("Syntax.Teleport"), ":")));
+						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.Teleport"));
+						return;
+					}
 					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e addnew evt " + type.toString() + " " + stage + " " + index + " " + obj.toString(), null));
 					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 					break;

@@ -16,7 +16,6 @@ import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.objects.QuestNPCData;
 import net.citizensnpcs.api.npc.NPC;
 
 public class QuestUtil
@@ -32,22 +31,6 @@ public class QuestUtil
 		return new Random().nextInt(max - min + 1) + min;
 	}
 
-	public static List<Quest> getGivenNPCQuests(NPC npc)
-	{
-		List<Quest> l = new ArrayList<>();
-		for (Quest q : QuestStorage.Quests.values())
-		{
-			if (q.isCommandQuest())
-				continue;
-			else
-				if (q.getQuestNPC().equals(npc))
-					l.add(q);
-				else
-					continue;
-		}
-		return l;
-	}
-
 	public static <T> List<T> convert(Set<T> set)
 	{
 		return new ArrayList<T>(set);
@@ -56,13 +39,6 @@ public class QuestUtil
 	public static QuestPlayerData getData(Player p)
 	{
 		return QuestStorage.Players.get(p.getName());
-	}
-
-	public static String getNPCMessage(int id, int fp)
-	{
-		if (!QuestStorage.NPCMap.containsKey(id))
-			QuestStorage.NPCMap.put(id, new QuestNPCData());
-		return QuestStorage.NPCMap.get(id).getNPCMessage(fp);
 	}
 
 	public static final double cut(double d)

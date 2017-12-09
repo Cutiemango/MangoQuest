@@ -1,17 +1,24 @@
-package me.Cutiemango.MangoQuest.questobjects;
+package me.Cutiemango.MangoQuest.questobject.objects;
 
 import java.util.logging.Level;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
+import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
+import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestIO;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
+import me.Cutiemango.MangoQuest.questobject.NumerableObject;
+import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class QuestObjectBreakBlock extends NumerableObject
+public class QuestObjectBreakBlock extends NumerableObject implements EditorObject
 {
 	// Reserved for initializing with load()
 	public QuestObjectBreakBlock(){}
@@ -60,7 +67,7 @@ public class QuestObjectBreakBlock extends NumerableObject
 		return block;
 	}
 
-	public short getShort()
+	public short getSubID()
 	{
 		return subID;
 	}
@@ -88,8 +95,7 @@ public class QuestObjectBreakBlock extends NumerableObject
 	{
 		block = Material.getMaterial(config.getString(path + "BlockType"));
 		subID = Short.parseShort(Integer.toString(config.getInt(path + "SubID")));
-		super.load(config, path);
-		return true;
+		return super.load(config, path);
 	}
 
 	@Override
@@ -98,5 +104,39 @@ public class QuestObjectBreakBlock extends NumerableObject
 		config.set(objpath + "BlockType", block.toString());
 		config.set(objpath + "SubID", subID);
 		super.save(config, objpath);
+	}
+
+	@Override
+	public boolean receiveCommandInput(Player sender, String type, String obj)
+	{
+		switch (type)
+		{
+			case "block":
+				String[] split = obj.split(":");
+				if (!QuestValidater.validateInteger(split[1]) || Material.getMaterial(split[0]) == null)
+					return false;
+				setType(Material.getMaterial(split[0]));
+				setSubID(Short.parseShort(split[1]));
+				break;
+			default:
+				return super.receiveCommandInput(sender, type, obj);
+		}
+		return true;
+	}
+
+	@Override
+	public EditorListenerObject createCommandOutput(Player sender, String command, String type)
+	{
+		EditorListenerObject obj = null;
+		switch (type)
+		{
+			case "block":
+				obj = new EditorListenerObject(ListeningType.BLOCK, command, null);
+				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.BreakBlock"));
+				break;
+			default:
+				return super.createCommandOutput(sender, command, type);
+		}
+		return obj;
 	}
 }

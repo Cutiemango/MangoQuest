@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.questobjects;
+package me.Cutiemango.MangoQuest.questobject;
 
 import java.util.HashMap;
 import org.bukkit.Location;
@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestIO;
-import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.book.TextComponentFactory;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
@@ -33,6 +32,10 @@ public abstract class SimpleQuestObject
 		ALL_OBJECTS.put("TALK_TO_NPC", I18n.locMsg("QuestObjectName.TalkToNPC"));
 	}
 
+	
+	/**
+	 * This is used for a TextComponent version of toDisplayText.
+	 */
 	protected TextComponent toTextComponent(String s, boolean isFinished, Object... args)
 	{
 		TextComponent text = new TextComponent("");
@@ -118,9 +121,10 @@ public abstract class SimpleQuestObject
 	 * @return e.g. Talk to [%0] ([%0] represents the NPC's name)
 	 */
 	public abstract String toDisplayText();
-	public abstract void formatEditorPage(QuestBookPage page, int stage, int obj);
+	
 	public abstract boolean load(QuestIO config, String path);
 	public abstract void save(QuestIO config, String objpath);
+	
 	public abstract String getConfigString();
 	public abstract String getObjectName();
 	
@@ -130,7 +134,6 @@ public abstract class SimpleQuestObject
 	{
 		return ChatColor.stripColor(toDisplayText());
 	}
-
 
 	public QuestConversation getConversation()
 	{

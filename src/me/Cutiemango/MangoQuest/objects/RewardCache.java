@@ -14,8 +14,7 @@ import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestGUIItem;
-import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
+import me.Cutiemango.MangoQuest.manager.reward.QuestRewardManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.md_5.bungee.api.ChatColor;
 

@@ -14,8 +14,9 @@ import me.Cutiemango.MangoQuest.data.QuestObjectProgress;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectDeliverItem;
+import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
+import me.Cutiemango.MangoQuest.questobject.NumerableObject;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectDeliverItem;
 import net.md_5.bungee.api.ChatColor;
 
 public class ScoreboardManager
@@ -106,6 +107,8 @@ public class ScoreboardManager
 			if (qop.getObject() instanceof NumerableObject)	
 				return QuestChatManager.trimColor(" &f - " + qop.getObject().toDisplayText() + " " +
 			I18n.locMsg("CommandInfo.Progress", Integer.toString(qop.getProgress()), Integer.toString(((NumerableObject) qop.getObject()).getAmount())));
+			else if (qop.getObject() instanceof CustomQuestObject)
+				return QuestChatManager.trimColor(" &f - " + ((CustomQuestObject)qop.getObject()).getProgressText(qop));
 			else
 				return QuestChatManager.trimColor(" &f - " + qop.getObject().toDisplayText());
 		}

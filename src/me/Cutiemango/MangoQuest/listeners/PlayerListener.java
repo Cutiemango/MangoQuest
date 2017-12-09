@@ -16,6 +16,7 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
 import net.citizensnpcs.api.npc.NPC;
 
 public class PlayerListener
@@ -46,6 +47,8 @@ public class PlayerListener
 		if (QuestEditorManager.checkEditorMode(p, false) || EditorListenerHandler.isListening(p))
 			return;
 		QuestPlayerData pd = QuestUtil.getData(p);
+		if (!QuestNPCManager.hasData(npc.getId()))
+			return;
 		if (pd.deliverItem(npc))
 			return;
 		else

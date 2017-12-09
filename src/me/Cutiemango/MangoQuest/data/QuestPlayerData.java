@@ -25,14 +25,15 @@ import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.manager.RequirementManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.TriggerType;
-import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectConsumeItem;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectDeliverItem;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectKillMob;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
-import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
+import me.Cutiemango.MangoQuest.questobject.NumerableObject;
+import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectBreakBlock;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectConsumeItem;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectDeliverItem;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectKillMob;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectReachLocation;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectTalkToNPC;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatColor;
 
@@ -383,7 +384,7 @@ public class QuestPlayerData
 				if (qop.getObject() instanceof QuestObjectBreakBlock)
 				{
 					QuestObjectBreakBlock o = (QuestObjectBreakBlock) qop.getObject();
-					if (o.getType().equals(m) && o.getShort() == subID)
+					if (o.getType().equals(m) && o.getSubID() == subID)
 					{
 						qop.setProgress(qop.getProgress() + 1);
 						this.checkFinished(qp, qop);
@@ -778,6 +779,8 @@ public class QuestPlayerData
 			if (o instanceof NumerableObject)
 				QuestChatManager.info(p, "&f「" + qp.getQuest().getQuestName() + "&f」" + o.toDisplayText() + " " + I18n.locMsg("CommandInfo.Progress", Integer.toString(qop.getProgress()),
 						Integer.toString(((NumerableObject) o).getAmount())));
+			else if (o instanceof CustomQuestObject)
+				QuestChatManager.info(p, "&f「" + qp.getQuest().getQuestName() + "&f」" + ((CustomQuestObject)o).getProgressText(qop));
 			else
 				if (o instanceof QuestObjectTalkToNPC)
 				{

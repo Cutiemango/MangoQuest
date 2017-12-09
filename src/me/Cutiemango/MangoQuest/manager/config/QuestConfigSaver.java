@@ -25,7 +25,7 @@ import me.Cutiemango.MangoQuest.objects.QuestReward;
 import me.Cutiemango.MangoQuest.objects.QuestStage;
 import me.Cutiemango.MangoQuest.objects.RewardChoice;
 import me.Cutiemango.MangoQuest.objects.TriggerObject;
-import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 
 public class QuestConfigSaver
 {

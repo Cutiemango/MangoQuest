@@ -32,23 +32,25 @@ import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
 import me.Cutiemango.MangoQuest.manager.CustomObjectManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.RequirementType;
 import me.Cutiemango.MangoQuest.model.TriggerType;
-import me.Cutiemango.MangoQuest.objects.QuestNPCData;
+import me.Cutiemango.MangoQuest.objects.QuestNPC;
 import me.Cutiemango.MangoQuest.objects.QuestReward;
 import me.Cutiemango.MangoQuest.objects.QuestStage;
 import me.Cutiemango.MangoQuest.objects.QuestVersion;
 import me.Cutiemango.MangoQuest.objects.RewardChoice;
 import me.Cutiemango.MangoQuest.objects.TriggerObject;
 import me.Cutiemango.MangoQuest.objects.TriggerObject.TriggerObjectType;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectConsumeItem;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectDeliverItem;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectKillMob;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
-import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectBreakBlock;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectConsumeItem;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectDeliverItem;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectKillMob;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectReachLocation;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectTalkToNPC;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -178,36 +180,29 @@ public class QuestConfigLoader
 	public void loadNPC()
 	{
 		int count = 0;
-		for (NPC npc : CitizensAPI.getNPCRegistry())
-		{
-			QuestStorage.NPCMap.put(npc.getId(), new QuestNPCData());
-		}
 		if (npc.isSection("NPC"))
 		{
 			for (String s : npc.getSection("NPC"))
 			{
-				int id = Integer.parseInt(s);
-				if (CitizensAPI.getNPCRegistry().getById(id) != null)
-				{
-					count++;
-					QuestNPCData npcdata = QuestStorage.NPCMap.get(id);
-					if (npc.isSection("NPC." + id + ".Messages"))
-					{
-						for (String i : npc.getSection("NPC." + id + ".Messages"))
-						{
-							List<String> list = npc.getStringList("NPC." + id + ".Messages." + i);
-							Set<String> set = new HashSet<>();
-							set.addAll(list);
-							npcdata.putMessage(Integer.parseInt(i), set);
-						}
-					}
-					QuestStorage.NPCMap.put(id, npcdata);
-				}
-				else
+				if (!QuestValidater.validateNPC(s))
 				{
 					QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NPCNotValid", s));
 					continue;
 				}
+				NPC npcReal = Main.getHooker().getNPC(s);
+				QuestNPC npcdata = new QuestNPC(npcReal);
+				if (npc.isSection("NPC." + s + ".Messages"))
+				{
+					for (String i : npc.getSection("NPC." + s + ".Messages"))
+					{
+						List<String> list = npc.getStringList("NPC." + s + ".Messages." + i);
+						Set<String> set = new HashSet<>();
+						set.addAll(list);
+						npcdata.putMessage(Integer.parseInt(i), set);
+					}
+				}
+				QuestNPCManager.registerNPC(npcReal, npcdata);
+				count++;
 			}
 		}
 		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.NPCLoaded", Integer.toString(count)));
@@ -315,9 +310,9 @@ public class QuestConfigLoader
 		if (!conv.isSection("Choices"))
 			return;
 		int count = 0;
-		List<Choice> list = new ArrayList<>();
 		for (String id : conv.getSection("Choices"))
 		{
+			List<Choice> list = new ArrayList<>();
 			TextComponent q = new TextComponent(QuestChatManager.translateColor(conv.getString("Choices." + id + ".Question")));
 			for (int i : conv.getIntegerSection("Choices." + id + ".Options"))
 			{
@@ -352,8 +347,9 @@ public class QuestConfigLoader
 			{
 				NPC npc = null;
 				if (!(quest.getInt(qpath + "QuestNPC") == -1)
-						&& CitizensAPI.getNPCRegistry().getById(quest.getInt(qpath + "QuestNPC")) != null)
-					npc = CitizensAPI.getNPCRegistry().getById(quest.getInt(qpath + "QuestNPC"));
+						&& QuestValidater.validateNPC(Integer.toString(quest.getInt(qpath + "QuestNPC"))))
+					npc = Main.getHooker().getNPC(quest.getInt(qpath + "QuestNPC"));
+				QuestNPCManager.registerNPC(npc);
 				
 				Quest q = new Quest(internal, questname, questoutline, reward, stages, npc);
 				if (quest.getString(qpath + "MessageRequirementNotMeet") != null)
@@ -398,6 +394,7 @@ public class QuestConfigLoader
 				q.setQuitCancelMsg(quest.getString(qpath + "QuitSettings.QuitCancelMsg"));
 				
 				QuestStorage.Quests.put(internal, q);
+				QuestNPCManager.getNPCData(npc.getId()).registerQuest(q);
 				totalcount++;
 			}
 			else
@@ -445,11 +442,11 @@ public class QuestConfigLoader
 						obj = new QuestObjectReachLocation();
 						break;
 					case "CUSTOM_OBJECT":
-						if (CustomObjectManager.exist(quest.getString(qpath + "ObjectClass")))
-							obj = CustomObjectManager.getSpecificObject(quest.getString(qpath + "ObjectClass"));
+						if (CustomObjectManager.exist(quest.getString(loadPath + "ObjectClass")))
+							obj = CustomObjectManager.getSpecificObject(quest.getString(loadPath + "ObjectClass"));
 						else
 						{
-							QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("CustomObject.ObjectNotFound", quest.getString(qpath + "ObjectClass")));
+							QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("CustomObject.ObjectNotFound", quest.getString(loadPath + "ObjectClass")));
 							continue;
 						}
 						break;
@@ -457,8 +454,11 @@ public class QuestConfigLoader
 						QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NoValidObject", id));
 						continue;
 				}
-				if (!obj.load(config, loadPath))
+				if (!obj.load(quest, loadPath))
+				{
+					QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.ObjectLoadingError", id, Integer.toString(scount), Integer.toString(ocount)));
 					continue;
+				}
 				if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".ActivateConversation") != null)
 				{
 					QuestConversation conv = ConversationManager.getConversation(

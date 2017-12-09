@@ -1,15 +1,19 @@
-package me.Cutiemango.MangoQuest.questobjects;
+package me.Cutiemango.MangoQuest.questobject.objects;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
+import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
+import me.Cutiemango.MangoQuest.questobject.ItemObject;
+import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestIO;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class QuestObjectConsumeItem extends ItemObject
+public class QuestObjectConsumeItem extends ItemObject implements EditorObject
 {
 	// Reserved for initializing with load()
 	public QuestObjectConsumeItem(){}
@@ -69,8 +73,7 @@ public class QuestObjectConsumeItem extends ItemObject
 	{
 		item = config.getItemStack(path + "Item");
 		amount = item.getAmount();
-		super.load(config, path);
-		return true;
+		return super.load(config, path);
 	}
 
 	@Override
@@ -78,6 +81,17 @@ public class QuestObjectConsumeItem extends ItemObject
 	{
 		config.set(objpath + "Item", item);
 		super.save(config, objpath);
+	}
+
+	@Override
+	public boolean receiveCommandInput(Player sender, String type, String obj)
+	{
+		return super.receiveCommandInput(sender, type, obj);
+	}
+	@Override
+	public EditorListenerObject createCommandOutput(Player sender, String command, String type)
+	{
+		return super.createCommandOutput(sender, command, type);
 	}
 
 }

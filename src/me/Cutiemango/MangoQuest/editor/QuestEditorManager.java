@@ -21,8 +21,8 @@ import me.Cutiemango.MangoQuest.model.RequirementType;
 import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.objects.TriggerObject;
 import me.Cutiemango.MangoQuest.objects.TriggerObject.TriggerObjectType;
-import me.Cutiemango.MangoQuest.questobjects.CustomQuestObject;
-import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -374,7 +374,7 @@ public class QuestEditorManager
 			return;
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 		SimpleQuestObject o = q.getStage(stage - 1).getObject(obj - 1);
-		if (o instanceof CustomQuestObject)
+		if (!(o instanceof EditorObject))
 		{
 			QuestEditorManager.editQuestObjects(p, stage);
 			QuestChatManager.error(p, I18n.locMsg("CustomObject.NotEditable"));
@@ -384,7 +384,7 @@ public class QuestEditorManager
 		p1.add(I18n.locMsg("QuestEditor.EditObject", Integer.toString(stage), Integer.toString(obj))).changeLine();
 		p1.add(I18n.locMsg("QuestEditor.ObjectName") + o.getObjectName()).changeLine();
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " type")).changeLine();
-		o.formatEditorPage(p1, stage, obj);
+		((EditorObject)o).formatEditorPage(p1, stage, obj);
 		p1.changeLine();
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e edit stage " + stage)).changeLine();
 		QuestBookGUIManager.openBook(p, p1);

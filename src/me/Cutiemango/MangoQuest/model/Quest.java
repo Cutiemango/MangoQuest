@@ -19,7 +19,7 @@ import me.Cutiemango.MangoQuest.objects.QuestReward;
 import me.Cutiemango.MangoQuest.objects.QuestStage;
 import me.Cutiemango.MangoQuest.objects.QuestVersion;
 import me.Cutiemango.MangoQuest.objects.TriggerObject;
-import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
 
 public class Quest

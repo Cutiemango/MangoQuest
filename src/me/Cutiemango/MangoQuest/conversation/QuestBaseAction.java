@@ -56,6 +56,7 @@ public class QuestBaseAction
 
 	public void execute(final ConversationProgress cp)
 	{
+		obj = obj.replace("<player>", cp.getOwner().getName());
 		switch (action)
 		{
 			case BUTTON:

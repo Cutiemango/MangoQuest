@@ -20,8 +20,8 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.RewardChoice;
-import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
-import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.NumerableObject;
+import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -281,7 +281,7 @@ public class QuestBookGUIManager
 		List<Quest> holder = new ArrayList<>();
 
 		// Message
-		page.add("&0&l" + npc.getName() + "&0：「").add(QuestUtil.getNPCMessage(npc.getId(), qd.getNPCfp(npc.getId()))).add("」").changeLine();
+		page.add("&0&l" + npc.getName() + "&0：「").add(QuestNPCManager.getNPCMessage(npc.getId(), qd.getNPCfp(npc.getId()))).add("」").changeLine();
 		page.changeLine();
 
 		// Interaction List
@@ -304,7 +304,7 @@ public class QuestBookGUIManager
 				}
 			page.changeLine();
 		}
-		for (Quest q : QuestUtil.getGivenNPCQuests(npc))
+		for (Quest q : QuestNPCManager.getNPCData(npc.getId()).getGivenQuests())
 		{
 			QuestUtil.checkOutOfBounds(page, book);
 			page = book.getLastEditingPage();

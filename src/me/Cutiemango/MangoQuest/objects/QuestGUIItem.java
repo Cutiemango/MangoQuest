@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.manager;
+package me.Cutiemango.MangoQuest.objects;
 
 import java.util.List;
 import org.bukkit.Material;
@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
 public class QuestGUIItem
 {

@@ -15,7 +15,6 @@ import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.objects.QuestNPCData;
 import net.md_5.bungee.api.ChatColor;
 
 public class QuestStorage
@@ -38,8 +37,6 @@ public class QuestStorage
 	public static Map<Material, Map<Short, String>> TranslateMap = new EnumMap<>(Material.class);
 	public static Map<EntityType, String> EntityTypeMap = new EnumMap<>(EntityType.class);
 
-	public static HashMap<Integer, QuestNPCData> NPCMap = new HashMap<>();
-
 	public static final String prefix = ChatColor.GOLD + "MangoQuest>";
 
 	public static void clear()
@@ -51,7 +48,6 @@ public class QuestStorage
 		Choices = new HashMap<>();
 		ChoiceProgresses = new HashMap<>();
 		Conversations = new HashMap<>();
-		NPCMap = new HashMap<>();
 	}
 
 }

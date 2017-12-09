@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.questobjects;
+package me.Cutiemango.MangoQuest.questobject.interfaces;
 
 import net.citizensnpcs.api.npc.NPC;
 

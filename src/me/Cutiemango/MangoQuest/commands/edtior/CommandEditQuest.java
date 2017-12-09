@@ -9,7 +9,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import com.sucy.skill.SkillAPI;
-import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Syntax;
@@ -19,24 +18,21 @@ import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
-import me.Cutiemango.MangoQuest.manager.QuestValidater;
+import me.Cutiemango.MangoQuest.manager.reward.QuestRewardManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.RequirementType;
 import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.objects.TriggerObject;
 import me.Cutiemango.MangoQuest.objects.TriggerObject.TriggerObjectType;
-import me.Cutiemango.MangoQuest.questobjects.ItemObject;
-import me.Cutiemango.MangoQuest.questobjects.NPCObject;
-import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectBreakBlock;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectConsumeItem;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectDeliverItem;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectKillMob;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
-import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectBreakBlock;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectConsumeItem;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectDeliverItem;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectKillMob;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectReachLocation;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectTalkToNPC;
 import net.citizensnpcs.api.CitizensAPI;
 
 public class CommandEditQuest
@@ -414,152 +410,61 @@ public class CommandEditQuest
 				QuestEditorManager.editQuestObject(sender, stage, obj);
 				return;
 			case 6:
-				switch (args[5].toLowerCase())
+				if (args[5].equalsIgnoreCase("type"))
 				{
-					case "block":
-						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.BLOCK, "mq e edit object " + stage + " " + obj + " " + args[5], null));
-						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.BreakBlock"));
-						break;
-					case "amount":
-						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.STRING, "mq e edit object " + stage + " " + obj + " " + args[5], Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
-						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterAmount"));
-						break;
-					case "item":
-						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.ITEM, "mq e edit object " + stage + " " + obj + " " + args[5], null));
-						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.RightClick"));
-						break;
-					case "itemnpc":
-					case "npc":
-						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, "mq e edit object " + stage + " " + obj + " " + args[5], Syntax.of("N", I18n.locMsg("Syntax.NPCID"), "")));
-						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ClickNPC"));
-						break;
-					case "mtmmob":
-						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.MTMMOB_LEFT_CLICK, "mq e edit object " + stage + " " + obj + " " + args[5], null));
-						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterMobID"));
-						break;
-					case "mobname":
-						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.STRING, "mq e edit object " + stage + " " + obj + " " + args[5], null));
-						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterMobName"));
-						break;
-					case "mobtype":
-						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.MOB_LEFT_CLICK, "mq e edit object " + stage + " " + obj + " " + args[5], null));
-						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.HitMob"));
-						break;
-					case "loc":
-						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.LOCATION, "mq e edit object " + stage + " " + obj + " " + args[5], null));
-						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ReachLocation"));
-						break;
-					case "locname":
-						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.STRING, "mq e edit object " + stage + " " + obj + " " + args[5], null));
-						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.LocationName"));
-						break;
-					case "type":
-						QuestEditorManager.selectObjectType(sender, stage, obj);
-						return;
-					default:
-						return;
+					QuestEditorManager.selectObjectType(sender, stage, obj);
+					return;
 				}
+				SimpleQuestObject qobj = q.getStage(stage).getObject(obj);
+				if (!(qobj instanceof EditorObject))
+					return;
+				EditorListenerObject eobj = ((EditorObject)qobj).createCommandOutput(sender, "mq e edit object " + stage + " " + obj + " " + args[5], args[5]);
+				EditorListenerHandler.register(sender, eobj);
 				return;
 			case 7:
 				SimpleQuestObject o = q.getStage(stage - 1).getObject(obj - 1);
 				if (args[6].equalsIgnoreCase("cancel"))
 					break;
-				switch (args[5].toLowerCase())
+				else if (args[6].equalsIgnoreCase("type"))
 				{
-					case "block":
-						String[] split = args[6].split(":");
-						((QuestObjectBreakBlock) o).setType(Material.getMaterial(split[0]));
-						((QuestObjectBreakBlock) o).setSubID(Short.parseShort(split[1]));
-						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRegistered",
-								QuestUtil.translate(Material.getMaterial(split[0]), Short.parseShort(split[1]))));
-						break;
-					case "amount":
-						((NumerableObject) o).setAmount(Integer.parseInt(args[6]));
-						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRegistered", args[6]));
-						break;
-					case "item":
-						((ItemObject) o).setItem(Main.instance.handler.getItemInMainHand(sender));
-						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ItemRegistered"));
-						break;
-					case "itemnpc":
-					case "npc":
-						((NPCObject) o).setTargetNPC(Main.getHooker().getNPC(args[6]));
-						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRegistered", args[6]));
-						break;
-					case "mtmmob":
-						if (!QuestValidater.validateMythicMob(args[6]))
-						{
-							QuestChatManager.error(sender, I18n.locMsg("Cmdlog.MTMMobNotFound", args[6]));
+					SimpleQuestObject ob = null;
+					switch (args[6].toUpperCase())
+					{
+						case "BREAK_BLOCK":
+							ob = new QuestObjectBreakBlock(Material.GRASS, (short) 0, 1);
 							break;
-						}
-						MythicMob mob = Main.getHooker().getMythicMob(args[6]);
-						((QuestObjectKillMob) o).setMythicMob(mob);
-						((QuestObjectKillMob) o).setCustomName(mob.getDisplayName());
-						((QuestObjectKillMob) o).setType(EntityType.valueOf(mob.getEntityType().toUpperCase()));
-						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRegistered", args[6]));
-						break;
-					case "mobname":
-						((QuestObjectKillMob) o).setCustomName(QuestChatManager.translateColor(args[6]));
-						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRegistered", args[6]));
-						break;
-					case "mobtype":
-						((QuestObjectKillMob) o).setType(EntityType.valueOf(args[6]));
-						QuestChatManager.info(sender,
-								I18n.locMsg("EditorMessage.ObjectRegistered", QuestUtil.translate(EntityType.valueOf(args[6]))));
-						break;
-					case "loc":
-						((QuestObjectReachLocation) o).setRadius(Integer.parseInt(args[6]));
-						Location l = sender.getLocation();
-						((QuestObjectReachLocation) o).setLocation(new Location(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ()));
-						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRegistered",
-								"(" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ")"));
-						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRegistered", args[6]));
-						break;
-					case "locname":
-						((QuestObjectReachLocation) o).setName(QuestChatManager.translateColor(args[6]));
-						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRegistered", args[6]));
-						break;
-					case "type":
-						SimpleQuestObject ob = null;
-						switch (args[6].toUpperCase())
-						{
-							case "BREAK_BLOCK":
-								ob = new QuestObjectBreakBlock(Material.GRASS, (short) 0, 1);
-								break;
-							case "CONSUME_ITEM":
-								ob = new QuestObjectConsumeItem(new ItemStack(Material.BREAD), 1);
-								break;
-							case "DELIVER_ITEM":
-								ob = new QuestObjectDeliverItem(CitizensAPI.getNPCRegistry().getById(0), new ItemStack(Material.APPLE), 1);
-								break;
-							case "KILL_MOB":
-								ob = new QuestObjectKillMob(EntityType.ZOMBIE, 1, null);
-								break;
-							case "REACH_LOCATION":
-								ob = new QuestObjectReachLocation(new Location(Bukkit.getWorld("world"), 0, 0, 0), 0,
-										I18n.locMsg("EditorMessage.DefaultLocation"));
-								break;
-							case "TALK_TO_NPC":
-								ob = new QuestObjectTalkToNPC(Main.getHooker().getNPC(0));
-								break;
-							default:
-								return;
-						}
-						if (ob != null)
-						{
-							q.getStage(stage - 1).getObjects().set(obj - 1, ob);
-							QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ChangeObject"));
-						}
-						break;
+						case "CONSUME_ITEM":
+							ob = new QuestObjectConsumeItem(new ItemStack(Material.BREAD), 1);
+							break;
+						case "DELIVER_ITEM":
+							ob = new QuestObjectDeliverItem(CitizensAPI.getNPCRegistry().getById(0), new ItemStack(Material.APPLE), 1);
+							break;
+						case "KILL_MOB":
+							ob = new QuestObjectKillMob(EntityType.ZOMBIE, 1, null);
+							break;
+						case "REACH_LOCATION":
+							ob = new QuestObjectReachLocation(new Location(Bukkit.getWorld("world"), 0, 0, 0), 0,
+									I18n.locMsg("EditorMessage.DefaultLocation"));
+							break;
+						case "TALK_TO_NPC":
+							ob = new QuestObjectTalkToNPC(Main.getHooker().getNPC(0));
+							break;
+						default:
+							return;
+					}
+					if (ob != null)
+					{
+						q.getStage(stage - 1).getObjects().set(obj - 1, ob);
+						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ChangeObject"));
+					}
+					break;
+				}
+				if (!(o instanceof EditorObject))
+					return;
+				if (!((EditorObject)o).receiveCommandInput(sender, args[5], args[6]))
+				{
+					QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument", args[6]));
+					break;
 				}
 				QuestEditorManager.editQuestObject(sender, stage, obj);
 		}
@@ -626,7 +531,7 @@ public class CommandEditQuest
 					case "fp":
 						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPoint"));
 						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.STRING, "mq e edit reward fp " + Integer.parseInt(args[4]), Syntax.of("I:I", I18n.locMsg("Syntax.FriendPoint"), ":")));
+								new EditorListenerObject(ListeningType.STRING, "mq e edit reward fp " + Integer.parseInt(args[4]), Syntax.of("N:D", I18n.locMsg("Syntax.FriendPoint"), ":")));
 						return;
 					case "command":
 						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterCommand"));

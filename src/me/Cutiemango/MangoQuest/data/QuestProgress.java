@@ -10,10 +10,10 @@ import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.objects.QuestReward;
-import me.Cutiemango.MangoQuest.questobjects.NumerableObject;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectReachLocation;
-import me.Cutiemango.MangoQuest.questobjects.QuestObjectTalkToNPC;
-import me.Cutiemango.MangoQuest.questobjects.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.NumerableObject;
+import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectReachLocation;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectTalkToNPC;
 
 public class QuestProgress
 {
