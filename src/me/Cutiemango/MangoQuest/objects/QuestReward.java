@@ -3,7 +3,6 @@ package me.Cutiemango.MangoQuest.objects;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
@@ -25,7 +24,6 @@ public class QuestReward
 	protected boolean instantGiveReward = false;
 	
 	private int skillAPIexp;
-
 
 	public void addMoney(double d)
 	{
@@ -240,15 +238,8 @@ public class QuestReward
 		{
 			for (String cmd : command)
 			{
-				if (!Bukkit.isPrimaryThread())
-					Bukkit.getScheduler().runTask(Main.instance, new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("<player>", p.getName()));
-						}
-					});
+				cmd = cmd.replace("<player>", p.getName());
+				QuestUtil.executeConsoleAsync(cmd);
 			}
 		}
 		

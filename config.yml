@@ -24,3 +24,6 @@ enableScoreboard: true
 
 #【記分板上可接受的任務之顯示數量】
 scoreboardMaxCanTakeQuestAmount: 3
+
+#【使用NPC效果】
+useParticleEffect: true

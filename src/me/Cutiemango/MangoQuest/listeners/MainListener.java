@@ -32,47 +32,53 @@ public class MainListener implements Listener
 	{
 		PlayerListener.onPlayerJoin(e.getPlayer());
 	}
-	
+
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e)
 	{
 		PlayerListener.onPlayerQuit(e.getPlayer());
 	}
-	
+
 	@EventHandler
-	public void onEntityDeath(EntityDeathEvent e){
+	public void onEntityDeath(EntityDeathEvent e)
+	{
 		PlayerListener.onEntityDeath(e.getEntity());
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@EventHandler
-	public void onBlockBreak(BlockBreakEvent e){
+	public void onBlockBreak(BlockBreakEvent e)
+	{
 		if (e.getBlock() != null && e.getBlock().getType() != null)
 		{
 			PlayerListener.onBreakBlock(e.getPlayer(), e.getBlock().getType(), e.getBlock().getData());
 			EditorListenerHandler.onBlockBreak(e.getPlayer(), e.getBlock(), e);
 		}
 	}
-	
+
 	@EventHandler
-	public void onConsumeItem(PlayerItemConsumeEvent e){
+	public void onConsumeItem(PlayerItemConsumeEvent e)
+	{
 		if (e.getItem() != null && !e.isCancelled())
 			PlayerListener.onConsumeItem(e.getPlayer(), e.getItem());
 	}
-	
+
 	@EventHandler
-	public void onMove(PlayerMoveEvent e){
+	public void onMove(PlayerMoveEvent e)
+	{
 		if (QuestUtil.getData(e.getPlayer()) != null && e.getTo() != null)
 			PlayerListener.onMove(e.getPlayer(), e.getTo());
 	}
-	
+
 	@EventHandler
-	public void onChat(AsyncPlayerChatEvent e){
+	public void onChat(AsyncPlayerChatEvent e)
+	{
 		EditorListenerHandler.onChat(e.getPlayer(), e.getMessage(), e);
 	}
-	
+
 	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent e){
+	public void onPlayerInteract(PlayerInteractEvent e)
+	{
 		EditorListenerHandler.onPlayerInteract(e.getPlayer(), e.getAction(), e.getItem(), e);
 	}
 
@@ -81,8 +87,8 @@ public class MainListener implements Listener
 	{
 		PlayerListener.onNPCRightClick(e.getClicker(), e.getNPC(), e);
 	}
-	
-	@EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = true)
+
+	@EventHandler(priority = EventPriority.LOWEST , ignoreCancelled = true)
 	public void onNPCDamage(NPCDamageByEntityEvent e)
 	{
 		if (!(e.getDamager() instanceof Player))
@@ -93,21 +99,22 @@ public class MainListener implements Listener
 			e.setCancelled(true);
 		return;
 	}
-	
-	@EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = true)
-	public void onNPCLeftClick(NPCLeftClickEvent e){
-		Main.debug(e.getEventName() + " has triggered.");
+
+	@EventHandler(priority = EventPriority.LOWEST , ignoreCancelled = true)
+	public void onNPCLeftClick(NPCLeftClickEvent e)
+	{
 		EditorListenerHandler.onNPCLeftClick(e.getClicker(), e.getNPC(), e);
 	}
-	
+
 	@EventHandler
-	public void onInventoryClose(InventoryCloseEvent e){
+	public void onInventoryClose(InventoryCloseEvent e)
+	{
 		if (!(e.getPlayer() instanceof Player))
 			return;
-		EditorListenerHandler.onInventoryClose((Player)e.getPlayer(), e.getInventory());
+		EditorListenerHandler.onInventoryClose((Player) e.getPlayer(), e.getInventory());
 		RewardGUIListener.onInventoryClose(e);
 	}
-	
+
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e)
 	{
@@ -115,13 +122,14 @@ public class MainListener implements Listener
 			return;
 		RewardGUIListener.onInventoryClick(e);
 	}
-	
-	@EventHandler (ignoreCancelled = true)
-	public void onEntityDamage(EntityDamageByEntityEvent e){
-		Main.debug(e.getEventName() + " has triggered.");
+
+	@EventHandler(ignoreCancelled = true)
+	public void onEntityDamage(EntityDamageByEntityEvent e)
+	{
 		if (e.getDamager() instanceof Player && e.getEntity() instanceof Damageable)
-			EditorListenerHandler.onEntityDamage((Player)e.getDamager(), e.getEntity(), e);
-		else return;
+			EditorListenerHandler.onEntityDamage((Player) e.getDamager(), e.getEntity(), e);
+		else
+			return;
 	}
 
 }

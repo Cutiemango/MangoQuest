@@ -64,7 +64,7 @@ public class QuestIO
 			{
 				e.printStackTrace();
 			}
-			QuestChatManager.logCmd(Level.INFO, "新玩家 " + p.getName() + " 已經註冊資料！");
+			QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.NewRegister", p.getName()));
 		}
 		loadFrom(f);
 		

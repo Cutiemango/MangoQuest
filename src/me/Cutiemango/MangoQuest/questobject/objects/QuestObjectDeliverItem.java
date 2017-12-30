@@ -64,10 +64,9 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject, Edi
 
 	public void setTargetNPC(NPC targetNPC)
 	{
-		if (npc != null)
-			QuestNPCManager.unregister(npc);
 		npc = targetNPC;
-		QuestNPCManager.registerNPC(npc);
+		if (!QuestNPCManager.hasData(npc.getId()))
+			QuestNPCManager.registerNPC(npc);
 	}
 
 	@Override
@@ -112,7 +111,8 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject, Edi
 			return false;
 		}
 		npc = Main.getHooker().getNPC(s);
-		QuestNPCManager.registerNPC(npc);
+		if (!QuestNPCManager.hasData(npc.getId()))
+			QuestNPCManager.registerNPC(npc);
 		item = config.getItemStack(path + "Item");
 		amount = item.getAmount();
 		return super.load(config, path);
@@ -148,9 +148,9 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject, Edi
 		EditorListenerObject obj = null;
 		switch (type)
 		{
-			case "npc":
+			case "itemnpc":
 				obj = new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, command, Syntax.of("N", I18n.locMsg("Syntax.NPCID"), ""));
-				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.RightClick"));
+				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ClickNPC"));
 				break;
 			default:
 				return super.createCommandOutput(sender, command, type);

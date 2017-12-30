@@ -132,7 +132,7 @@ public class QuestConfigLoader
 				count++;
 			}
 		}
-		QuestChatManager.logCmd(Level.INFO, "讀取了 " + count + " 個進度檔案(測試中)。");
+		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.AdvancementLoaded", Integer.toString(count)));
 	}
 
 	public void loadTranslation()
@@ -189,8 +189,8 @@ public class QuestConfigLoader
 					QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NPCNotValid", s));
 					continue;
 				}
-				NPC npcReal = Main.getHooker().getNPC(s);
-				QuestNPC npcdata = new QuestNPC(npcReal);
+				NPC npcReal = Main.getHooker().getNPC(s);		
+				QuestNPC npcdata = QuestNPCManager.hasData(npcReal.getId()) ? QuestNPCManager.getNPCData(npcReal.getId()) : new QuestNPC(npcReal);
 				if (npc.isSection("NPC." + s + ".Messages"))
 				{
 					for (String i : npc.getSection("NPC." + s + ".Messages"))
@@ -201,7 +201,7 @@ public class QuestConfigLoader
 						npcdata.putMessage(Integer.parseInt(i), set);
 					}
 				}
-				QuestNPCManager.registerNPC(npcReal, npcdata);
+				QuestNPCManager.updateNPC(npcReal, npcdata);
 				count++;
 			}
 		}
@@ -243,6 +243,19 @@ public class QuestConfigLoader
 		// Maxium Quests
 		if (config.getInt("maxQuestAmount") != 0)
 			ConfigSettings.MAXIUM_QUEST_AMOUNT = config.getInt("maxQuestAmount");
+		
+		// Scoreboard settings
+		if (!config.contains("enableScoreboard"))
+			config.set("enableScoreboard", true);
+		ConfigSettings.ENABLE_SCOREBOARD = config.getBoolean("enableScoreboard");
+		if (!config.contains("scoreboardMaxCanTakeQuestAmount"))
+			config.set("scoreboardMaxCanTakeQuestAmount", 3);
+		ConfigSettings.MAXMIUM_DISPLAY_TAKEQUEST_AMOUNT = config.getInt("scoreboardMaxCanTakeQuestAmount");
+		
+		// Particle Settings
+		if (!config.contains("useParticleEffect"))
+			config.set("useParticleEffect", true);
+		ConfigSettings.USE_PARTICLE_EFFECT = config.getBoolean("useParticleEffect");
 	}
 
 	public void loadConversation()
@@ -346,10 +359,14 @@ public class QuestConfigLoader
 			if (Main.instance.pluginHooker.hasCitizensEnabled() && quest.contains(qpath + "QuestNPC"))
 			{
 				NPC npc = null;
-				if (!(quest.getInt(qpath + "QuestNPC") == -1)
+				if (quest.getInt(qpath + "QuestNPC") != -1
 						&& QuestValidater.validateNPC(Integer.toString(quest.getInt(qpath + "QuestNPC"))))
 					npc = Main.getHooker().getNPC(quest.getInt(qpath + "QuestNPC"));
-				QuestNPCManager.registerNPC(npc);
+				if (npc != null && !QuestNPCManager.hasData(npc.getId()))
+				{
+					Main.debug("NPC registered in quest loading: " + npc.getId());
+					QuestNPCManager.registerNPC(npc);
+				}
 				
 				Quest q = new Quest(internal, questname, questoutline, reward, stages, npc);
 				if (quest.getString(qpath + "MessageRequirementNotMeet") != null)
@@ -394,7 +411,11 @@ public class QuestConfigLoader
 				q.setQuitCancelMsg(quest.getString(qpath + "QuitSettings.QuitCancelMsg"));
 				
 				QuestStorage.Quests.put(internal, q);
-				QuestNPCManager.getNPCData(npc.getId()).registerQuest(q);
+				if (npc != null)
+				{
+					QuestNPCManager.getNPCData(npc.getId()).registerQuest(q);
+					Main.debug("NPC: " + npc.getId() + ", Quest: " + q.getInternalID());
+				}
 				totalcount++;
 			}
 			else

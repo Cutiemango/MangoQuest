@@ -523,7 +523,7 @@ public class QuestEditorManager
 			p1.add(new InteractiveText("- [" + otype.toCustomString() + "]").clickCommand("/mq e addnew evt " + t.toString() + " " + stage + " " + index + " " + otype.toString())).endNormally();
 			p1.changeLine();
 		}
-		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e addnew evt " + t.toString())).changeLine();
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e edit evt " + t.toString())).changeLine();
 		QuestBookGUIManager.openBook(p, p1);
 	}
 
@@ -584,7 +584,7 @@ public class QuestEditorManager
 		if (checkEditorMode(p, false))
 		{
 			Quest q = QuestEditorManager.getCurrentEditingQuest(p);
-			Inventory inv = Bukkit.createInventory(null, 27, "〈" + type + "〉" + q.getQuestName());
+			Inventory inv = Bukkit.createInventory(null, 27, "[" + type + "]" + q.getQuestName());
 			inv.addItem(list.toArray(new ItemStack[list.size()]));
 			p.openInventory(inv);
 		}

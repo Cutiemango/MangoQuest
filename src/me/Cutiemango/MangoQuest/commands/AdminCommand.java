@@ -50,9 +50,9 @@ public class AdminCommand implements CommandExecutor
 			}
 			switch (args[0])
 			{
-				// /mqa nextstage [玩家ID] [任務]
-				// /mqa forcetake [玩家ID] [任務]
-				// /mqa forcefinish [玩家ID] [任務]
+				// /mqa nextstage [ID] [quest]
+				// /mqa forcetake [ID] [quest]
+				// /mqa forcefinish [ID] [quest]
 				case "nextstage":
 				case "forcetake":
 				case "forcefinish":
@@ -73,7 +73,7 @@ public class AdminCommand implements CommandExecutor
 						else
 							pd.forceFinish(q, true);
 					break;
-				// /mqa finishobject [玩家ID] [任務] [物件編號]
+				// /mqa finishobject [ID] [quest] [objindex]
 				case "finishobject":
 					if (args.length < 4)
 						return false;
@@ -87,7 +87,7 @@ public class AdminCommand implements CommandExecutor
 					pd = QuestUtil.getData(target);
 					pd.forceFinishObj(q, obj, true);
 					break;
-					// /mqa removedata [玩家ID]
+					// /mqa removedata [ID]
 				case "removedata":
 					target.kickPlayer(I18n.locMsg("CommandInfo.KickForDataClearing"));
 					QuestConfigManager.getSaver().clearPlayerData(target);

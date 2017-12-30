@@ -57,7 +57,7 @@ public class QuestEditorCommand
 					case "saveall":
 						if (!QuestEditorManager.checkEditorMode(sender, true))
 							return;
-						if (q.getStages().isEmpty())
+						if (q.getStages().isEmpty() || q.getStage(0).getObjects().isEmpty())
 						{
 							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.QuestEmpty"));
 							return;

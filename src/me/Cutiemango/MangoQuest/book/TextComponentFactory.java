@@ -73,7 +73,7 @@ public class TextComponentFactory
 			return new TextComponent(I18n.locMsg("QuestEditor.NotSet"));
 		TextComponent t = new TextComponent(ChatColor.BOLD + q.getQuestName());
 		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]
-		{ new TextComponent(QuestChatManager.translateColor("&e點擊以查看 " + q.getQuestName() + " &e的詳細資料")) }));
+		{ new TextComponent(I18n.locMsg("QuestJourney.ClickToView", q.getQuestName())) }));
 		t.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mq quest view " + q.getInternalID()));
 		return t;
 	}
@@ -82,23 +82,22 @@ public class TextComponentFactory
 	{
 		TextComponent text = new TextComponent(QuestChatManager.translateColor("&7&o" + q.getQuestName()));
 		if (!q.isRedoable() && qd.hasFinished(q))
-			return regHoverEvent(text, "&c此為一次性任務。");
+			return regHoverEvent(text, I18n.locMsg("CommandInfo.NotRedoable"));
 		else
 			if (qd.hasFinished(q))
 			{
 				long d = qd.getDelay(qd.getFinishData(q).getLastFinish(), q.getRedoDelay());
 				if (d > 0)
-					return regHoverEvent(text, "&c你必須再等待 " + QuestUtil.convertTime(d) + " 才能再度接取這個任務。");
+					return regHoverEvent(text, I18n.locMsg("QuestJourney.WaitFor", QuestUtil.convertTime(d)));
 			}
-			else
-				if (q.hasRequirement())
-				{
-					RequirementFailResult f = RequirementManager.meetRequirementWith(qd.getPlayer(), q);
-					if (!f.succeed())
-						return regHoverEvent(text, f.getMessage());
-					else
-						return convertViewQuest(q);
-				}
+			if (q.hasRequirement())
+			{
+				RequirementFailResult f = RequirementManager.meetRequirementWith(qd.getPlayer(), q);
+				if (!f.succeed())
+					return regHoverEvent(text, f.getMessage());
+				else
+					return convertViewQuest(q);
+			}
 		return text;
 	}
 

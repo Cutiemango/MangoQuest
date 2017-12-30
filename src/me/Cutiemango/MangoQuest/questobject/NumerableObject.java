@@ -14,8 +14,7 @@ import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
 
 public abstract class NumerableObject extends SimpleQuestObject implements EditorObject
 {
-
-	protected int amount;
+	protected int amount = 1;
 
 	public int getAmount()
 	{
@@ -43,10 +42,8 @@ public abstract class NumerableObject extends SimpleQuestObject implements Edito
 			case "amount":
 				if (!QuestValidater.validateInteger(obj))
 					return false;
-				setAmount(Integer.parseInt(obj));
+				this.setAmount(Integer.parseInt(obj));
 				break;
-			default:
-				return false;
 		}
 		return true;
 	}

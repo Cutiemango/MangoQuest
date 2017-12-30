@@ -2,9 +2,11 @@ package me.Cutiemango.MangoQuest.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.event.QuestFinishEvent;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
@@ -55,11 +57,17 @@ public class QuestProgress
 			giveItem = true;
 		pd.addFinishedQuest(quest, giveItem);
 		if (giveItem)
+		{
 			reward.executeItemReward(owner);
+			pd.getFinishData(quest).setRewardTaken(true);
+		}
+		else
+			pd.getFinishData(quest).setRewardTaken(false);
 		reward.executeReward(owner);
 		QuestChatManager.info(owner, I18n.locMsg("CommandInfo.CompleteMessage", quest.getQuestName()));
 		pd.removeProgress(quest);
 		pd.save();
+		Bukkit.getPluginManager().callEvent(new QuestFinishEvent(owner, quest));
 	}
 
 	public void save(QuestIO io)

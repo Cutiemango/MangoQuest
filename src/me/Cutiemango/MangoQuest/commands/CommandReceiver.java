@@ -39,9 +39,6 @@ public class CommandReceiver implements CommandExecutor
 			case "ce":
 				ConversationEditorCommand.execute(p, args);
 				break;
-			case "reload":
-				QuestChatManager.info(p, "&c請更換使用 /mqa reload 來重讀插件！");
-				break;
 			default:
 				sendHelp(p);
 				break;

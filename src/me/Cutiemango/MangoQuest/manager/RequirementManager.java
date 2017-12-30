@@ -2,8 +2,6 @@ package me.Cutiemango.MangoQuest.manager;
 
 import java.util.EnumMap;
 import java.util.List;
-import java.util.logging.Level;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import com.sucy.skill.SkillAPI;
@@ -55,49 +53,6 @@ public class RequirementManager
 					}
 					break;
 				case SCOREBOARD:
-					for (String s : (List<String>) value)
-					{
-						s = s.replace(" ", "");
-						String[] split;
-						if (s.contains(">="))
-						{
-							split = s.split(">=");
-							if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]) == null)
-							{
-								QuestChatManager.logCmd(Level.WARNING, "任務 " + q.getInternalID() + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
-								return new RequirementFailResult(RequirementType.SCOREBOARD, "");
-							}
-							if (!(Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]).getScore(p.getName()).getScore() >= Integer
-									.parseInt(split[1])))
-								return new RequirementFailResult(RequirementType.SCOREBOARD, "");
-						}
-						else
-							if (s.contains("<="))
-							{
-								split = s.split("<=");
-								if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]) == null)
-								{
-									QuestChatManager.logCmd(Level.WARNING, "任務 " + q.getInternalID() + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
-									return new RequirementFailResult(RequirementType.SCOREBOARD, "");
-								}
-								if (!(Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]).getScore(p.getName())
-										.getScore() <= Integer.parseInt(split[1])))
-									return new RequirementFailResult(RequirementType.SCOREBOARD, "");
-							}
-							else
-								if (s.contains("=="))
-								{
-									split = s.split("==");
-									if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]) == null)
-									{
-										QuestChatManager.logCmd(Level.WARNING, "任務 " + q.getInternalID() + " 的記分板內容有錯誤，找不到伺服器上名為 " + split[0] + " 的記分板物件資料！");
-										return new RequirementFailResult(RequirementType.SCOREBOARD, "");
-									}
-									if (!(Bukkit.getScoreboardManager().getMainScoreboard().getObjective(split[0]).getScore(p.getName())
-											.getScore() == Integer.parseInt(split[1])))
-										return new RequirementFailResult(RequirementType.SCOREBOARD, "");
-								}
-					}
 					break;
 				case NBTTAG:
 					for (String n : (List<String>) value)
@@ -114,7 +69,7 @@ public class RequirementManager
 						if (((String)value).equalsIgnoreCase("none"))
 							break;
 						if (SkillAPI.getClass((String)value) == null)
-							return new RequirementFailResult(RequirementType.SKILLAPI_CLASS, I18n.locMsg("Requirements.NotMeet.BadConfig") + "沒有名為 " + value + "的職業。");
+							return new RequirementFailResult(RequirementType.SKILLAPI_CLASS, I18n.locMsg("Requirements.NotMeet.NoClass", (String)value));
 						if (!SkillAPI.getPlayerData(p).isClass(SkillAPI.getClass((String)value)))
 								return new RequirementFailResult(RequirementType.SKILLAPI_CLASS, SkillAPI.getClass((String)value).getName());
 					}

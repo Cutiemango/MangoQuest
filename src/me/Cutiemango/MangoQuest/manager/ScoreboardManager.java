@@ -2,7 +2,6 @@ package me.Cutiemango.MangoQuest.manager;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -21,17 +20,16 @@ import net.md_5.bungee.api.ChatColor;
 
 public class ScoreboardManager
 {
-	public static void update(QuestPlayerData pd)
+	public static Scoreboard update(QuestPlayerData pd)
 	{
-		Scoreboard s = Bukkit.getScoreboardManager().getNewScoreboard();
+		Scoreboard s = pd.getScoreboard();
 		Objective o = s.getObjective("quest");
 		String title = I18n.locMsg("Scoreboard.Title");
-		if (o == null)
-		{
-			o = s.registerNewObjective("quest", "dummy");
-			o.setDisplayName(title);
-			o.setDisplaySlot(DisplaySlot.SIDEBAR);
-		}
+		if (o != null)
+			o.unregister();
+		o = s.registerNewObjective("quest", "dummy");
+		o.setDisplayName(title);
+		o.setDisplaySlot(DisplaySlot.SIDEBAR);
 		List<String> scoreList = new ArrayList<>();
 		
 		scoreList.add(I18n.locMsg("Scoreboard.CurrentQuests"));
@@ -76,7 +74,7 @@ public class ScoreboardManager
 		}
 		
 		formatScoreboard(o, scoreList);
-		pd.getPlayer().setScoreboard(s);
+		return s;
 	}
 	
 	private static void formatScoreboard(Objective o, List<String> list)

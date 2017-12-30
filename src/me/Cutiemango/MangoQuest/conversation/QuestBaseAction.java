@@ -2,7 +2,6 @@ package me.Cutiemango.MangoQuest.conversation;
 
 import java.util.Arrays;
 import java.util.List;
-import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
@@ -56,11 +55,12 @@ public class QuestBaseAction
 
 	public void execute(final ConversationProgress cp)
 	{
-		obj = obj.replace("<player>", cp.getOwner().getName());
+		if (obj != null && obj instanceof String)
+			obj = obj.replace("<player>", cp.getOwner().getName());
 		switch (action)
 		{
 			case BUTTON:
-				cp.getCurrentPage().add(new InteractiveText("&0[▼]").clickCommand("/mq conv next")).changeLine();
+				cp.getCurrentPage().add(new InteractiveText(I18n.locMsg("Conversation.Button")).clickCommand("/mq conv next")).changeLine();
 				break;
 			case CHANGE_LINE:
 				cp.getCurrentPage().changeLine();
@@ -75,7 +75,7 @@ public class QuestBaseAction
 				c.apply(cp);
 				break;
 			case COMMAND:
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), obj);
+				QuestUtil.executeConsoleAsync(obj);
 				break;
 			case SENTENCE:
 				cp.getCurrentPage().add(QuestChatManager.translateColor(obj)).changeLine();
@@ -84,7 +84,7 @@ public class QuestBaseAction
 				String[] split = obj.split("@");
 				NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
 				if (npc != null)
-					cp.getCurrentPage().add(QuestChatManager.translateColor(npc.getName() + "&0：「" + split[0] + "」")).changeLine();
+					cp.getCurrentPage().add(I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), split[0])).changeLine();
 				break;
 			case WAIT:
 				new BukkitRunnable()

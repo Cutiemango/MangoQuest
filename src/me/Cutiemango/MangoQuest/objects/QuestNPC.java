@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -12,11 +13,14 @@ public class QuestNPC
 	public QuestNPC(NPC npc)
 	{
 		npcReal = npc;
+		HashSet<String> defSet = new HashSet<>();
+		defSet.add(I18n.locMsg("QuestJourney.DefaultNPCTalk"));
+		friendMessageMap.put(0, defSet);
 	}
 	
 	private NPC npcReal;
 	private HashMap<Integer, Set<String>> friendMessageMap = new HashMap<>();
-	private Set<Quest> givenQuests;
+	private Set<Quest> givenQuests = new HashSet<>();
 	
 	/**
 	 * This method is used to get npc's message according to given player's friend point.

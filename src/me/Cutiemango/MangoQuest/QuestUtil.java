@@ -57,8 +57,18 @@ public class QuestUtil
 					p.performCommand(command);
 				}
 			});
-		else
-			p.performCommand(command);
+	}
+	
+	public static void executeConsoleAsync(String command)
+	{
+		Bukkit.getScheduler().runTask(Main.instance, new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+			}
+		});
 	}
 
 	public static String convertArgsString(String[] array, int startIndex)
@@ -161,7 +171,7 @@ public class QuestUtil
 	public static String translate(Material mat, short data)
 	{
 		if (!QuestStorage.TranslateMap.containsKey(mat))
-			return "未知的物品";
+			return I18n.locMsg("Translation.UnknownItem");
 		if (QuestStorage.TranslateMap.get(mat).get(data) == null)
 			return QuestStorage.TranslateMap.get(mat).get(0);
 		else
@@ -171,7 +181,7 @@ public class QuestUtil
 	public static String translate(ItemStack item)
 	{
 		if (item == null)
-			return "未知的物品";
+			return I18n.locMsg("Translation.UnknownItem");
 		if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
 			return QuestChatManager.trimColor(item.getItemMeta().getDisplayName());
 		else
@@ -181,7 +191,7 @@ public class QuestUtil
 	public static String translate(EntityType e)
 	{
 		if (!QuestStorage.EntityTypeMap.containsKey(e))
-			return "未知的生物";
+			return I18n.locMsg("Translation.UnknownEntity");
 		else
 			return QuestStorage.EntityTypeMap.get(e);
 	}

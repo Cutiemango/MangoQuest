@@ -48,8 +48,10 @@ public abstract class ItemObject extends NumerableObject
 		{
 			case "item":
 				obj = new EditorListenerObject(ListeningType.ITEM, command, null);
-				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterAmount"));
+				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.RightClick"));
 				break;
+			default:
+				return super.createCommandOutput(sender, command, type);
 		}
 		return obj;
 	}

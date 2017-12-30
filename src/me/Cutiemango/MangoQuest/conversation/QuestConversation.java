@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -13,8 +14,8 @@ public class QuestConversation
 	public QuestConversation()
 	{
 		action = new ArrayList<>();
-		name = "未設定";
-		id = "未設定";
+		name = I18n.locMsg("QuestEditor.NotSet");
+		id = I18n.locMsg("QuestEditor.NotSet");
 		npc = null;
 	}
 	

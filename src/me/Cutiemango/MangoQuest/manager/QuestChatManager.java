@@ -15,6 +15,11 @@ public class QuestChatManager
 		return ChatColor.translateAlternateColorCodes('&', s);
 	}
 	
+	public static String finishedObjectFormat(String s)
+	{
+		return translateColor("&8&m&o") + ChatColor.stripColor(s);
+	}
+	
 	public static String trimColor(String s)
 	{	
 		String targetText = translateColor(s);

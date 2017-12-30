@@ -85,7 +85,7 @@ public class TriggerObject
 				}.runTaskLater(Main.instance, Long.parseLong(object) * 20);
 				return;
 			case COMMAND:
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), object);
+				QuestUtil.executeConsoleAsync(object);
 				break;
 			case GIVE_ADVANCEMENT:
 				if (Main.isUsingUpdatedVersion())

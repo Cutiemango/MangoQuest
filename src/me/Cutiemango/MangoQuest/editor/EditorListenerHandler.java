@@ -56,7 +56,7 @@ public class EditorListenerHandler
 				if (obj.getType().equals(ListeningType.ITEM))
 				{
 					event.setCancelled(true);
-					obj.execute(p, "hand");
+					obj.execute(p, "item");
 				}
 				else
 					return;
@@ -88,8 +88,8 @@ public class EditorListenerHandler
 		event.setCancelled(true);
 		if (obj.getType().equals(ListeningType.MTMMOB_LEFT_CLICK))
 		{
-			if (Main.instance.pluginHooker.hasMythicMobEnabled() && Main.instance.pluginHooker.getMythicMobsAPI().isMythicMob(e))
-				obj.execute(p, Main.instance.pluginHooker.getMythicMobsAPI().getMythicMobInstance(e).getType().getInternalName());
+			if (Main.getHooker().hasMythicMobEnabled() && Main.getHooker().getMythicMobsAPI().isMythicMob(e))
+				obj.execute(p, Main.getHooker().getMythicMobsAPI().getMythicMobInstance(e).getType().getInternalName());
 		}
 		else if (obj.getType().equals(ListeningType.MOB_LEFT_CLICK))
 			obj.execute(p, e.getType().toString());

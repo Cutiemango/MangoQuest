@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scoreboard.Scoreboard;
 import me.Cutiemango.MangoQuest.commands.AdminCommand;
 import me.Cutiemango.MangoQuest.commands.CommandReceiver;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
@@ -183,9 +184,20 @@ public class Main extends JavaPlugin
 					QuestPlayerData pd = QuestUtil.getData(p);
 					if (pd == null)
 						continue;
+					QuestNPCManager.effectTask(pd);
 					pd.checkQuestFail();
 					if (ConfigSettings.ENABLE_SCOREBOARD)
-						ScoreboardManager.update(pd);
+					{
+						Bukkit.getScheduler().runTask(Main.instance, new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								Scoreboard score = ScoreboardManager.update(pd);
+								pd.getPlayer().setScoreboard(score);
+							}
+						});
+					}
 				}
 			}
 		}.runTaskTimer(this, 0L, 20L);

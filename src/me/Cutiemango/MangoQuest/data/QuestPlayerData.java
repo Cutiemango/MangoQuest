@@ -6,11 +6,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.Scoreboard;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestIO;
@@ -19,6 +21,9 @@ import me.Cutiemango.MangoQuest.ConfigSettings;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
+import me.Cutiemango.MangoQuest.event.QuestFinishEvent;
+import me.Cutiemango.MangoQuest.event.QuestObjectProgressEvent;
+import me.Cutiemango.MangoQuest.event.QuestTakeEvent;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
@@ -28,6 +33,7 @@ import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
 import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.interfaces.NPCObject;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectBreakBlock;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectConsumeItem;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectDeliverItem;
@@ -47,6 +53,8 @@ public class QuestPlayerData
 	private QuestIO save;
 
 	private HashMap<Integer, Integer> friendPointStorage = new HashMap<>();
+	
+	private Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
 	public QuestPlayerData(Player p)
 	{
@@ -293,6 +301,7 @@ public class QuestPlayerData
 		currentQuests.add(new QuestProgress(q, p));
 		if (msg)
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.ForceTakeQuest", q.getQuestName()));
+		Bukkit.getPluginManager().callEvent(new QuestTakeEvent(p, q));
 		return;
 	}
 	
@@ -329,6 +338,7 @@ public class QuestPlayerData
 		qp.finish();
 		if (msg)
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.ForceFinishQuest", q.getQuestName()));
+		Bukkit.getPluginManager().callEvent(new QuestFinishEvent(p, q));
 		return;
 	}
 	
@@ -355,7 +365,7 @@ public class QuestPlayerData
 		{
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
-				if (qop.getObject() instanceof QuestObjectTalkToNPC && ((QuestObjectTalkToNPC) qop.getObject()).getTargetNPC().equals(npc)
+				if (qop.getObject() instanceof NPCObject && ((NPCObject)qop.getObject()).getTargetNPC().equals(npc)
 						&& !qop.isFinished())
 					l.add(qp);
 			}
@@ -750,7 +760,7 @@ public class QuestPlayerData
 			if (System.currentTimeMillis() > qp.getQuest().getTimeLimit() + qp.getTakeTime())
 			{
 				forceQuit(qp.getQuest(), false);
-				QuestChatManager.info(p, "&c由於時間已到，任務 &r" + qp.getQuest().getQuestName() + " &c已經失敗！");
+				QuestChatManager.info(p, I18n.locMsg("QuestJourney.QuestFailed", qp.getQuest().getQuestName()));
 			}
 			else continue;
 		}
@@ -761,6 +771,11 @@ public class QuestPlayerData
 	{
 		return quest - (System.currentTimeMillis() - last);
 	}
+	
+	public Scoreboard getScoreboard()
+	{
+		return scoreboard;
+	}
 
 	public boolean checkFinished(QuestProgress qp, QuestObjectProgress qop)
 	{
@@ -768,19 +783,18 @@ public class QuestPlayerData
 		qop.checkIfFinished();
 		if (qop.isFinished())
 		{
-			if (!(o instanceof QuestObjectTalkToNPC))
-				qop.newConversation(p);
-			QuestChatManager.info(p,"&f「" + qp.getQuest().getQuestName() + "&f」" + o.toDisplayText() + " " + I18n.locMsg("CommandInfo.Finished"));
+			QuestChatManager.info(p, I18n.locMsg("QuestJourney.ProgressText", qp.getQuest().getQuestName()) + o.toDisplayText() + " " + I18n.locMsg("CommandInfo.Finished"));
 			qp.checkIfnextStage();
+			Bukkit.getPluginManager().callEvent(new QuestObjectProgressEvent(this, qp.getQuest(), qop.getObject()));
 			return true;
 		}
 		else
 		{
 			if (o instanceof NumerableObject)
-				QuestChatManager.info(p, "&f「" + qp.getQuest().getQuestName() + "&f」" + o.toDisplayText() + " " + I18n.locMsg("CommandInfo.Progress", Integer.toString(qop.getProgress()),
+				QuestChatManager.info(p, I18n.locMsg("QuestJourney.ProgressText", qp.getQuest().getQuestName()) + o.toDisplayText() + " " + I18n.locMsg("CommandInfo.Progress", Integer.toString(qop.getProgress()),
 						Integer.toString(((NumerableObject) o).getAmount())));
 			else if (o instanceof CustomQuestObject)
-				QuestChatManager.info(p, "&f「" + qp.getQuest().getQuestName() + "&f」" + ((CustomQuestObject)o).getProgressText(qop));
+				QuestChatManager.info(p, I18n.locMsg("QuestJourney.ProgressText", qp.getQuest().getQuestName()) + ((CustomQuestObject)o).getProgressText(qop));
 			else
 				if (o instanceof QuestObjectTalkToNPC)
 				{

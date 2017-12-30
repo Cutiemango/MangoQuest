@@ -75,7 +75,7 @@ public class QuestBookGUIManager
 				{
 					for (int j = 0; j < q.getQuest().getStage(i).getObjects().size(); j++)
 					{
-						p1.add("&8&l？？？").changeLine();
+						p1.add(I18n.locMsg("QuestJourney.NotRevealed")).changeLine();
 					}
 				}
 
@@ -170,7 +170,7 @@ public class QuestBookGUIManager
 				continue;
 			page.changeLine();
 			page.add(new InteractiveText("").showQuest(qp.getQuest())).endNormally();
-			page.add("：").endNormally();
+			page.add(":").endNormally();
 			if (qp.getQuest().isQuitable())
 				page.add(new InteractiveText(I18n.locMsg("QuestJourney.QuitButton")).clickCommand("/mq quest quit " + qp.getQuest().getInternalID())).changeLine();
 			if (qp.getQuest().isTimeLimited())
@@ -238,7 +238,7 @@ public class QuestBookGUIManager
 			{
 				page.add("- ").endNormally();
 				page.add(new InteractiveText("").showQuest(qfd.getQuest())).endNormally();
-				page.add("： ").endNormally();
+				page.add(": ").endNormally();
 				page.add(I18n.locMsg("QuestJourney.FinishedTimes", Integer.toString(qfd.getFinishedTimes()))).changeLine();
 			}
 		}
@@ -281,7 +281,7 @@ public class QuestBookGUIManager
 		List<Quest> holder = new ArrayList<>();
 
 		// Message
-		page.add("&0&l" + npc.getName() + "&0：「").add(QuestNPCManager.getNPCMessage(npc.getId(), qd.getNPCfp(npc.getId()))).add("」").changeLine();
+		page.add(I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), QuestNPCManager.getNPCMessage(npc.getId(), qd.getNPCfp(npc.getId())))).changeLine();
 		page.changeLine();
 
 		// Interaction List
@@ -304,53 +304,50 @@ public class QuestBookGUIManager
 				}
 			page.changeLine();
 		}
-		for (Quest q : QuestNPCManager.getNPCData(npc.getId()).getGivenQuests())
+		if (QuestNPCManager.hasData(npc.getId()))
 		{
-			QuestUtil.checkOutOfBounds(page, book);
-			page = book.getLastEditingPage();
-			if (qd.hasFinished(q))
+			for (Quest q : QuestNPCManager.getNPCData(npc.getId()).getGivenQuests())
 			{
-				if (!qd.getFinishData(q).isRewardTaken())
+				QuestUtil.checkOutOfBounds(page, book);
+				page = book.getLastEditingPage();
+				if (qd.hasFinished(q) && q.getQuestReward().hasMultipleChoices() && !qd.getFinishData(q).isRewardTaken())
 				{
 					page.add(I18n.locMsg("QuestGUI.NewQuestSymbol")).endNormally();
 					page.add(new InteractiveText("").showQuest(q)).endNormally();
 					page.add(new InteractiveText(I18n.locMsg("QuestJourney.RewardButton")).clickCommand("/mq q reward select " + q.getInternalID()).showText(I18n.locMsg("QuestGUI.Hover.ClaimReward"))).endNormally();
 					page.changeLine();
 				}
-			}
-			if (!q.isRedoable() && qd.hasFinished(q))
-				continue;
-			if (qd.canTake(q, false))
-			{
-				if (qd.hasFinished(q))
-					page.add(I18n.locMsg("QuestGUI.RedoableQuestSymbol")).endNormally();
-				else
-					page.add(I18n.locMsg("QuestGUI.NewQuestSymbol")).endNormally();
-				page.add(new InteractiveText("").showQuest(q)).endNormally();
-				page.add(new InteractiveText(I18n.locMsg("QuestJourney.TakeButton")).clickCommand("/mq quest take " + q.getInternalID()).showText(I18n.locMsg("QuestGUI.Hover.TakeQuest", q.getQuestName()))).endNormally();
-				page.changeLine();
-				continue;
-			}
-			else
-				if (qd.isCurrentlyDoing(q))
+				if (!q.isRedoable() && qd.hasFinished(q))
+					continue;
+				if (qd.canTake(q, false))
 				{
-					if (holder.contains(q))
-						continue;
-					page.add(I18n.locMsg("QuestGUI.QuestDoingSymbol"));
+					if (qd.hasFinished(q))
+						page.add(I18n.locMsg("QuestGUI.RedoableQuestSymbol")).endNormally();
+					else
+						page.add(I18n.locMsg("QuestGUI.NewQuestSymbol")).endNormally();
 					page.add(new InteractiveText("").showQuest(q)).endNormally();
-					if (q.isQuitable())
-						page.add(new InteractiveText(I18n.locMsg("QuestJourney.QuitButton")).clickCommand("/mq quest quit " + q.getInternalID())
-							.showText(I18n.locMsg("QuestGUI.Hover.QuitWarning", q.getQuestName()))).endNormally();
+					page.add(new InteractiveText(I18n.locMsg("QuestJourney.TakeButton")).clickCommand("/mq quest take " + q.getInternalID()).showText(I18n.locMsg("QuestGUI.Hover.TakeQuest", q.getQuestName()))).endNormally();
 					page.changeLine();
-					continue;
 				}
 				else
-				{
-					page.add("&0- ").endNormally();
-					page.add(new InteractiveText("").showRequirement(qd, q));
-					page.changeLine();
-					continue;
-				}
+					if (qd.isCurrentlyDoing(q))
+					{
+						if (holder.contains(q))
+							continue;
+						page.add(I18n.locMsg("QuestGUI.QuestDoingSymbol"));
+						page.add(new InteractiveText("").showQuest(q)).endNormally();
+						if (q.isQuitable())
+							page.add(new InteractiveText(I18n.locMsg("QuestJourney.QuitButton")).clickCommand("/mq quest quit " + q.getInternalID())
+								.showText(I18n.locMsg("QuestGUI.Hover.QuitWarning", q.getQuestName()))).endNormally();
+						page.changeLine();
+					}
+					else
+					{
+						page.add("&0- ").endNormally();
+						page.add(new InteractiveText("").showRequirement(qd, q));
+						page.changeLine();
+					}
+			}
 		}
 		
 		for (FriendConversation qc : QuestUtil.getConversations(npc, qd.getNPCfp(npc.getId())))

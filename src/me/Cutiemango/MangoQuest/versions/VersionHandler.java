@@ -25,4 +25,6 @@ public abstract interface VersionHandler
 	public abstract ItemStack addGUITag(ItemStack is);
 	
 	public abstract boolean hasGUITag(ItemStack is);
+	
+	public abstract void playNPCEffect(Player p, Location location);
 }

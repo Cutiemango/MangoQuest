@@ -1,6 +1,5 @@
 package me.Cutiemango.MangoQuest.questobject.objects;
 
-import java.util.logging.Level;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.QuestUtil;
@@ -11,7 +10,6 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
@@ -26,10 +24,7 @@ public class QuestObjectBreakBlock extends NumerableObject implements EditorObje
 	public QuestObjectBreakBlock(Material m, short s, int i)
 	{
 		if (!m.isBlock())
-		{
-			QuestChatManager.logCmd(Level.WARNING, "破壞方塊 物件提供的參數並非能夠破壞的方塊。");
 			return;
-		}
 		subID = s;
 		block = m;
 		amount = i;

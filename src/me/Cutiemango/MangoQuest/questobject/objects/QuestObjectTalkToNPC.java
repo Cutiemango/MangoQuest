@@ -9,6 +9,8 @@ import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.Syntax;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
+import me.Cutiemango.MangoQuest.conversation.ConversationManager;
+import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
@@ -52,10 +54,9 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 
 	public void setTargetNPC(NPC targetNPC)
 	{
-		if (npc != null)
-			QuestNPCManager.unregister(npc);
 		npc = targetNPC;
-		QuestNPCManager.registerNPC(npc);
+		if (!QuestNPCManager.hasData(npc.getId()))
+			QuestNPCManager.registerNPC(npc);
 	}
 
 	@Override
@@ -98,7 +99,8 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 			return false;
 		}
 		npc = Main.getHooker().getNPC(id);
-		QuestNPCManager.registerNPC(npc);
+		if (!QuestNPCManager.hasData(npc.getId()))
+			QuestNPCManager.registerNPC(npc);
 		return true;
 	}
 
@@ -118,6 +120,10 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 					return false;
 				setTargetNPC(Main.getHooker().getNPC(obj));
 				break;
+			case "conv":
+				if (ConversationManager.getConversation(obj) != null)
+					setConversation(ConversationManager.getConversation(obj));
+				break;
 		}
 		return true;
 	}
@@ -131,6 +137,9 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 			case "npc":
 				obj = new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, command, Syntax.of("N", I18n.locMsg("Syntax.NPCID"), ""));
 				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ClickNPC"));
+				break;
+			case "conv":
+				ConversationEditorManager.selectConversation(sender, command);
 				break;
 		}
 		return obj;

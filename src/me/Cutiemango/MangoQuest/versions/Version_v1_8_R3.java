@@ -1,6 +1,5 @@
 package me.Cutiemango.MangoQuest.versions;
 
-import java.util.Arrays;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import io.netty.buffer.Unpooled;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -22,6 +22,8 @@ import net.minecraft.server.v1_8_R3.NBTTagString;
 import net.minecraft.server.v1_8_R3.PacketDataSerializer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutCustomPayload;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_8_R3.EnumParticle;
+import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle.EnumTitleAction;
@@ -32,23 +34,19 @@ public class Version_v1_8_R3 implements VersionHandler
 	@Override
 	public void sendTitle(Player p, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle)
 	{
-		String t;
-		if (title == null)
-			t = "";
-		else
-			t = QuestChatManager.translateColor(title);
+		if (title != null)
+		{
+			PacketPlayOutTitle ppot = new PacketPlayOutTitle(EnumTitleAction.TITLE, ChatSerializer.a("{\"text\":\"" + QuestChatManager.translateColor(title) + "\"}"), fadeIn, stay, fadeOut);
+			((CraftPlayer) p).getHandle().playerConnection.sendPacket(ppot);
+		}
 		
-		String subt;
-		if (subtitle == null)
-			subt = "";
-		else
-			subt = QuestChatManager.translateColor(subtitle);
-		
-		PacketPlayOutTitle ppot = new PacketPlayOutTitle(EnumTitleAction.TITLE, ChatSerializer.a("{\"text\":\"" + t + "\"}"), fadeIn, stay, fadeOut);
-		((CraftPlayer) p).getHandle().playerConnection.sendPacket(ppot);
-		ppot = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, ChatSerializer.a("{\"text\":\"" + subt + "\"}"), fadeIn, stay, fadeOut);
-		((CraftPlayer) p).getHandle().playerConnection.sendPacket(ppot);
+		if (subtitle != null)
+		{
+			PacketPlayOutTitle ppot = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, ChatSerializer.a("{\"text\":\"" + QuestChatManager.translateColor(subtitle) + "\"}"), fadeIn, stay, fadeOut);
+			((CraftPlayer) p).getHandle().playerConnection.sendPacket(ppot);
+		}
 	}
+
 
 	@Override
 	public void openBook(Player p, TextComponent... texts)
@@ -82,9 +80,8 @@ public class Version_v1_8_R3 implements VersionHandler
 		ItemStack is = new ItemStack(Material.SIGN);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(name);
-		im.setLore(Arrays.asList(new String[]
-		{ ChatColor.GOLD + "地點位於：", ChatColor.WHITE + "- 世界： " + loc.getWorld().getName(),
-				ChatColor.WHITE + "- 座標： (" + Math.floor(loc.getX()) + " , " + loc.getY() + " , " + Math.floor(loc.getZ()) + ")" }));
+		if (loc != null)
+			im.setLore(QuestUtil.createList(I18n.locMsg("QuestJourney.NPCLocDisplay", loc.getWorld().getName(), Double.toString(Math.floor(loc.getX())), Double.toString(Math.floor(loc.getY())), Double.toString(Math.floor(loc.getZ())))));
 		is.setItemMeta(im);
 		if (isFinished)
 			t = new TextComponent(QuestChatManager.translateColor("&8&m&o") + ChatColor.stripColor(name));
@@ -174,6 +171,14 @@ public class Version_v1_8_R3 implements VersionHandler
 		net.minecraft.server.v1_8_R3.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound tag = (nmscopy.hasTag()) ? nmscopy.getTag() : new NBTTagCompound();
 		return tag.hasKey("GUIitem");
+	}
+	
+	@Override
+	public void playNPCEffect(Player p, Location location)
+	{
+		location.setY(location.getY() + 2);
+		PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.NOTE, false, (float) location.getX(), (float) location.getY(), (float) location.getZ(), 0, 0, 0, 1, 1, null);
+		((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
 	}
 
 }

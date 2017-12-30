@@ -122,8 +122,7 @@ public class ConversationEditorManager
 		QuestConversation conv = getEditingConversation(p);
 		FlexiableBook book = new FlexiableBook();
 		QuestBookPage page = book.getLastEditingPage();
-		// 基本資料：
-		// 對話內部ID、對話名稱、對話NPC
+		// Basic Info
 		page.add(I18n.locMsg("QuestEditor.BasicInfo")).changeLine();
 		page.add(new InteractiveText(I18n.locMsg("ConversationEditor.ConvInternalID", conv.getInternalID()))
 				.showText(I18n.locMsg("ConversationEditor.ConvInternalID.ShowText"))).changeLine();
@@ -140,8 +139,8 @@ public class ConversationEditorManager
 		page.changeLine();
 		
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq ce edit")).changeLine();
-		// 特殊對話：
-		// 是否為 友好度對話、接受任務對話
+
+		// Speical conv
 		book.newPage();
 		page = book.getLastEditingPage();
 		page.add(new InteractiveText(I18n.locMsg("ConversationEditor.ConvType"))
@@ -192,7 +191,7 @@ public class ConversationEditorManager
 						String[] split = act.getObject().split("@");
 						NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
 						page.add(new InteractiveText(act.getActionType().toCustomString())
-								.showText(I18n.locMsg("ConversationEditor.ActionObject") + npc.getName() + "&f：「" + split[0] + "」")).endNormally();
+								.showText(I18n.locMsg("ConversationEditor.ActionObject") + I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), split[0]))).endNormally();
 					}
 					else
 						page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject())).endNormally();
@@ -226,7 +225,7 @@ public class ConversationEditorManager
 					{
 						String[] split = act.getObject().split("@");
 						NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
-						page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + npc.getName() + "&f：「" + split[0] + "」")).endNormally();
+						page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), split[0]))).endNormally();
 					}
 					else
 						page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject())).endNormally();
@@ -265,7 +264,7 @@ public class ConversationEditorManager
 				{
 					String[] split = act.getObject().split("@");
 					NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
-					page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + npc.getName() + "&f：「" + split[0] + "」")).endNormally();
+					page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), split[0]))).endNormally();
 				}
 				else
 					page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject())).endNormally();
@@ -283,7 +282,7 @@ public class ConversationEditorManager
 		QuestUtil.checkOutOfBounds(page, book);
 		page.changeLine();
 		
-		// 儲存頁面
+		// Saving Page
 		book.newPage();
 		page = book.getLastEditingPage();
 		page.add(I18n.locMsg("QuestEditor.SaveAndExit")).changeLine();
@@ -368,6 +367,24 @@ public class ConversationEditorManager
 		p1.add(new InteractiveText("[" + I18n.locMsg("ConversationEditor.StartTriggerConv") + "]").clickCommand("/mq ce edit convtype start"));
 		p1.changeLine();
 		QuestBookGUIManager.openBook(p, p1);
+	}
+	
+	public static void selectConversation(Player p, String cmd)
+	{
+		FlexiableBook book = new FlexiableBook();
+		QuestBookPage page = book.getLastEditingPage();
+		page.add(I18n.locMsg("ConversationEditor.ChooseTargetConv")).changeLine();
+		for (QuestConversation conv : QuestStorage.Conversations.values())
+		{
+			QuestUtil.checkOutOfBounds(page, book);
+			page = book.getLastEditingPage();
+			page.add(new InteractiveText("&0- &l" + conv.getName() + "&0(" + conv.getInternalID() + ")")
+					.clickCommand("/" + cmd + " " + conv.getInternalID())).endNormally();
+			page.changeLine();
+		}
+		QuestUtil.checkOutOfBounds(page, book);
+		page = book.getLastEditingPage();
+		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 
 }

@@ -350,7 +350,7 @@ public class CommandEditQuest
 				else if (objtype == TriggerObjectType.TELEPORT)
 				{
 					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING,
-							"mq e edit evt " + type.toString() + " " + stage + " " + index + " " + objtype.toString(), Syntax.of("S:I:I:I", I18n.locMsg("Syntax.Teleport"), ":")));
+							"mq e edit evt " + type.toString() + " " + stage + " " + index + " " + objtype.toString(), Syntax.of("S:D:D:D", I18n.locMsg("Syntax.Teleport"), ":")));
 					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.Teleport"));
 					return;
 				}
@@ -384,7 +384,7 @@ public class CommandEditQuest
 			}
 	}
 
-	// /mq e edit object [stage] [objcount] [obj] [內容]...
+	// /mq e edit object [stage] [objcount] [obj] [content]...
 	private static void editObject(Quest q, Player sender, String[] args)
 	{
 		if (args.length <= 4)
@@ -415,17 +415,19 @@ public class CommandEditQuest
 					QuestEditorManager.selectObjectType(sender, stage, obj);
 					return;
 				}
-				SimpleQuestObject qobj = q.getStage(stage).getObject(obj);
+				SimpleQuestObject qobj = q.getStage(stage - 1).getObject(obj - 1);
 				if (!(qobj instanceof EditorObject))
 					return;
 				EditorListenerObject eobj = ((EditorObject)qobj).createCommandOutput(sender, "mq e edit object " + stage + " " + obj + " " + args[5], args[5]);
+				if (eobj == null)
+					return;
 				EditorListenerHandler.register(sender, eobj);
 				return;
 			case 7:
 				SimpleQuestObject o = q.getStage(stage - 1).getObject(obj - 1);
 				if (args[6].equalsIgnoreCase("cancel"))
 					break;
-				else if (args[6].equalsIgnoreCase("type"))
+				else if (args[5].equalsIgnoreCase("type"))
 				{
 					SimpleQuestObject ob = null;
 					switch (args[6].toUpperCase())

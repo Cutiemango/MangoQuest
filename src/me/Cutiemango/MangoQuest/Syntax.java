@@ -14,7 +14,7 @@ public class Syntax
 	// I - Positive Integer
 	// N - NPC's ID
 	// W - World
-	// D - Positive and negative integer (except for 0)
+	// D - Positive and negative integer
 	
 	// The order of customRegex
 	private String order = "";

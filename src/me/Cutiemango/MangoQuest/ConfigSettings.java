@@ -13,5 +13,6 @@ public class ConfigSettings
 	public static boolean DEBUG_MODE = false;
 	public static boolean POP_LOGIN_MESSAGE = true;
 	public static boolean ENABLE_SCOREBOARD = true;
+	public static boolean USE_PARTICLE_EFFECT = true;
 	
 }

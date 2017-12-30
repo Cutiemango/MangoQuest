@@ -209,9 +209,9 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 					QuestChatManager.error(sender, I18n.locMsg("Cmdlog.MTMMobNotFound", obj));
 					return false;
 				}
-				setCustomName(obj);
-				setType(EntityType.valueOf(obj));
 				setMythicMob(Main.getHooker().getMythicMob(obj));
+				setCustomName(mtmMob.getDisplayName());
+				setType(EntityType.valueOf(mtmMob.getEntityType()));
 				break;
 			default:
 				return super.receiveCommandInput(sender, type, obj);

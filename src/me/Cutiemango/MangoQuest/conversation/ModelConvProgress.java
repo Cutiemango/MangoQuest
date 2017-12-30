@@ -12,7 +12,7 @@ public class ModelConvProgress extends ConversationProgress
 	{
 		super(p, qc);
 		QuestBookPage page = new QuestBookPage();
-		page.add(new InteractiveText("&0「" + conv.getName() + "」").showText(I18n.locMsg("ConversationEditor.EndOfSimulation.ShowText")).clickCommand("/mq ce gui"));
+		page.add(new InteractiveText(I18n.locMsg("Conversation.Title", conv.getName())).showText(I18n.locMsg("ConversationEditor.EndOfSimulation.ShowText")).clickCommand("/mq ce gui"));
 		page.changeLine();
 		currentBook.setPage(0, page);
 	}
