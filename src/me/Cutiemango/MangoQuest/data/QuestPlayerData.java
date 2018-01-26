@@ -138,14 +138,15 @@ public class QuestPlayerData
 			for (String s : save.getStringList("FinishedConversation"))
 			{
 				QuestConversation qc = ConversationManager.getConversation(s);
-				if (qc != null && !finishedConversations.contains(s))
+				if (qc != null && !finishedConversations.contains(qc))
 					finishedConversations.add(qc);
 			}
 		}
 
 		save.save();
-
-		QuestChatManager.info(p, I18n.locMsg("CommandInfo.PlayerLoadComplete"));
+		
+		if (ConfigSettings.POP_LOGIN_MESSAGE)
+			QuestChatManager.info(p, I18n.locMsg("CommandInfo.PlayerLoadComplete"));
 	}
 
 	public void save()

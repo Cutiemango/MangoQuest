@@ -48,7 +48,7 @@ public class QuestCommand
 							NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[2]));
 							if (npc == null || npc.getEntity().getLocation().distance(sender.getLocation()) > 20)
 								return;
-							if (!hooker.hasShopkeepersEnabled() && hooker.hasRPGshopEnabled())
+							if (hooker.hasRPGshopEnabled())
 							{
 								GUIManager.openGUI(new TradeGUI(Integer.toString(npc.getId()), sender));
 								return;

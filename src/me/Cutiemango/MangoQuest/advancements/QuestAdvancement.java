@@ -2,6 +2,8 @@ package me.Cutiemango.MangoQuest.advancements;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.minecraft.server.v1_12_R1.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -13,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.json.simple.JSONObject;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * @author charliej - the very API
@@ -267,13 +270,9 @@ public class QuestAdvancement
 		for (String criteria : getAdvancement().getCriteria())
 		{
 			if (player.getAdvancementProgress(getAdvancement()).getDateAwarded(criteria) != null)
-			{
 				criteriaString = criteria;
-			}
 			else
-			{
 				break;
-			}
 		}
 		if (criteriaString == null)
 			return false;
@@ -287,13 +286,9 @@ public class QuestAdvancement
 		for (String criteria : getAdvancement().getCriteria())
 		{
 			if (player.getAdvancementProgress(getAdvancement()).getDateAwarded(criteria) != null)
-			{
 				criteriaString = criteria;
-			}
 			else
-			{
 				break;
-			}
 		}
 		if (criteriaString == null)
 			return false;
@@ -306,9 +301,7 @@ public class QuestAdvancement
 		for (String criteria : getAdvancement().getCriteria())
 		{
 			if (player.getAdvancementProgress(getAdvancement()).getDateAwarded(criteria) != null)
-			{
 				player.getAdvancementProgress(getAdvancement()).revokeCriteria(criteria);
-			}
 		}
 	}
 
@@ -318,12 +311,9 @@ public class QuestAdvancement
 		try
 		{
 			Bukkit.getUnsafe().loadAdvancement(id, getJSON());
-			Bukkit.getLogger().info("[src.QuestAdvancement] Successfully registered advancement");
+			QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.AdvancementLoading", id.getKey()));
 		}
-		catch (IllegalArgumentException e)
-		{
-			Bukkit.getLogger().info("[src.QuestAdvancement] Error registering advancement. It seems to already exist");
-		}
+		catch (IllegalArgumentException e){}
 		return this;
 	}
 
@@ -338,15 +328,11 @@ public class QuestAdvancement
 	{
 		add();
 		grant(players);
-		Bukkit.getScheduler().runTaskLater(plugin, new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				revoke(players);
-				remove();
-			}
-		}, 20L);
+        Bukkit.getScheduler().runTaskLater(plugin, () ->
+        {
+            revoke(players);
+            remove();
+        }, 20L);
 		return this;
 	}
 

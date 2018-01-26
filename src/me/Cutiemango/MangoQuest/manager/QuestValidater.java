@@ -104,7 +104,7 @@ public class QuestValidater
 		if (!(before instanceof StartTriggerConversation && after instanceof StartTriggerConversation))
 			return false;
 		if (before instanceof StartTriggerConversation && after instanceof StartTriggerConversation)
-			if (!((StartTriggerConversation)before).equals(((StartTriggerConversation)after).getQuest()))
+			if (!((StartTriggerConversation)before).getQuest().equals(((StartTriggerConversation)after).getQuest()))
 				return false;
 		return true;
 	}

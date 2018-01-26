@@ -52,9 +52,9 @@ public class PlayerListener
 		if (pd.deliverItem(npc))
 			return;
 		else
-			if (Main.instance.pluginHooker.hasShopkeepersEnabled())
+			if (Main.getHooker().hasShopkeepersEnabled())
 			{
-				if (Main.instance.pluginHooker.getShopkeepers().isShopkeeper(npc.getEntity()))
+				if (Main.getHooker().getShopkeepers().isShopkeeper(npc.getEntity()))
 				{
 					QuestBookGUIManager.openNPCInfo(p, npc, true);
 					return;
@@ -71,7 +71,7 @@ public class PlayerListener
 			Entity damager = ((EntityDamageByEntityEvent) e.getLastDamageCause()).getDamager();
 			if (!(damager instanceof Player || damager instanceof Projectile))
 				return;
-			if (Main.instance.pluginHooker.hasMythicMobEnabled() && Main.instance.pluginHooker.getMTMPlugin().getAPIHelper().isMythicMob(e))
+			if (Main.getHooker().hasMythicMobEnabled() && Main.getHooker().getMythicMobsAPI().isMythicMob(e))
 				return;
 			Player attacker;
 			if (damager instanceof Projectile)

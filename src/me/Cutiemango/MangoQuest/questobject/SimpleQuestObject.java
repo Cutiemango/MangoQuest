@@ -9,6 +9,7 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.book.TextComponentFactory;
+import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.citizensnpcs.api.npc.NPC;
@@ -75,8 +76,8 @@ public abstract class SimpleQuestObject
 					if (args[i] instanceof NPC)
 					{
 						NPC npc = (NPC) args[i];
-						if (npc == null)
-							text.addExtra(QuestChatManager.translateColor("&cUnknown NPC"));
+						if (npc == null || npc.getEntity() == null)
+							text.addExtra(I18n.locMsg("Translation.UnknownNPC"));
 						else
 							text.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getEntity().getLocation(), isFinished));
 					}
@@ -128,7 +129,7 @@ public abstract class SimpleQuestObject
 	public abstract String getConfigString();
 	public abstract String getObjectName();
 	
-	protected QuestConversation conv = null;
+	protected String activateConversation = null;
 	
 	public String toPlainText()
 	{
@@ -137,17 +138,17 @@ public abstract class SimpleQuestObject
 
 	public QuestConversation getConversation()
 	{
-		return conv;
+		return ConversationManager.getConversation(activateConversation);
 	}
 
 	public boolean hasConversation()
 	{
-		return !(conv == null);
+		return ConversationManager.getConversation(activateConversation) != null;
 	}
 
-	public void setConversation(QuestConversation qc)
+	public void setConversation(String s)
 	{
-		conv = qc;
+		activateConversation = s;
 	}
 
 }

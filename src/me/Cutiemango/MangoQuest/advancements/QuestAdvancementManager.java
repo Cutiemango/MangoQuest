@@ -14,9 +14,7 @@ public class QuestAdvancementManager
 		for (QuestAdvancement adAPI : advancements.values())
 		{
 			if (adAPI.getID().toString().equalsIgnoreCase(key.toString()))
-			{
 				return;
-			}
 		}
 		advancements.put(ad.getKey(), ad);
 	}

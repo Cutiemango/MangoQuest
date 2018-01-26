@@ -67,7 +67,7 @@ public class InteractiveText
 	public InteractiveText showNPCInfo(NPC npc)
 	{
 		npcToShow = npc;
-		if (!hasShowItem)
+		if (!hasShowNPC && npc != null)
 			target.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getStoredLocation(), false));
 		hasShowNPC = true;
 		return this;

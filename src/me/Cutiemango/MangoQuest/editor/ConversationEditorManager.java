@@ -132,9 +132,12 @@ public class ConversationEditorManager
 				.showText(I18n.locMsg("ConversationEditor.ConvNPC.ShowText")).clickCommand("/mq ce edit npc")).add(new InteractiveText("").showNPCInfo(conv.getNPC())).changeLine();
 		
 		page.changeLine();
+		page.changeLine();
 		
 		page.add(new InteractiveText(I18n.locMsg("ConversationEditor.StartSimulation")).clickCommand("/mq ce modconv")).changeLine();
 		
+		page.changeLine();
+		page.changeLine();
 		page.changeLine();
 		page.changeLine();
 		
@@ -149,7 +152,7 @@ public class ConversationEditorManager
 		int counter = 0;
 		if (conv instanceof FriendConversation)
 		{
-			page.add(I18n.locMsg("ConversationEditor.FriendConv")).changeLine();
+			page.add(I18n.locMsg("ConversationEditor.FriendConvText")).changeLine();
 			
 			page.add(new InteractiveText(I18n.locMsg("ConversationEditor.FriendConvReqPoint"))
 				.showText(I18n.locMsg("ConversationEditor.FriendConvReqPoint.ShowText")).clickCommand("/mq ce edit fconvp")).endNormally();
@@ -158,7 +161,7 @@ public class ConversationEditorManager
 		else if (conv instanceof StartTriggerConversation)
 		{
 			StartTriggerConversation sconv = (StartTriggerConversation)conv;
-			page.add(I18n.locMsg("ConversationEditor.StartTriggerConv")).changeLine();
+			page.add(I18n.locMsg("ConversationEditor.StartTriggerConvText")).changeLine();
 			page.add(new InteractiveText(I18n.locMsg("ConversationEditor.QuestTrigger")).clickCommand("/mq ce edit quest")).endNormally();
 			page.add(new InteractiveText("").showQuest(sconv.getQuest())).changeLine();
 			
@@ -243,7 +246,9 @@ public class ConversationEditorManager
 		}
 		else
 		{
-			page.add(I18n.locMsg("ConversationEditor.QuestConv")).endNormally();
+			page.add(I18n.locMsg("ConversationEditor.QuestConvText")).changeLine();
+			page.changeLine();
+			page.add(I18n.locMsg("ConversationEditor.Empty")).changeLine();
 			page.changeLine();
 		}
 		
@@ -360,11 +365,16 @@ public class ConversationEditorManager
 	{
 		QuestBookPage p1 = new QuestBookPage();
 		p1.add(I18n.locMsg("ConversationEditor.SelectConvType")).changeLine();
-		p1.add(new InteractiveText("[" + I18n.locMsg("ConversationEditor.QuestConv")  + "]").clickCommand("/mq ce edit convtype normal"));
 		p1.changeLine();
-		p1.add(new InteractiveText("[" + I18n.locMsg("ConversationEditor.FriendConv")  + "]").clickCommand("/mq ce edit convtype friend"));
+		p1.add(new InteractiveText(I18n.locMsg("ConversationEditor.QuestConv")).clickCommand("/mq ce edit convtype normal"));
 		p1.changeLine();
-		p1.add(new InteractiveText("[" + I18n.locMsg("ConversationEditor.StartTriggerConv") + "]").clickCommand("/mq ce edit convtype start"));
+		p1.changeLine();
+		p1.changeLine();
+		p1.add(new InteractiveText(I18n.locMsg("ConversationEditor.FriendConv")).clickCommand("/mq ce edit convtype friend"));
+		p1.changeLine();
+		p1.changeLine();
+		p1.changeLine();
+		p1.add(new InteractiveText(I18n.locMsg("ConversationEditor.StartTriggerConv")).clickCommand("/mq ce edit convtype start"));
 		p1.changeLine();
 		QuestBookGUIManager.openBook(p, p1);
 	}

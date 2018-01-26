@@ -288,7 +288,7 @@ public class CommandEditQuest
 					QuestChatManager.info(sender, I18n.locMsg("EditorMessage.NPCRemoved"));
 					return;
 				}
-				q.setQuestNPC(CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[3])));
+				q.setQuestNPC(Main.getHooker().getNPC(args[3]));
 				QuestEditorManager.editQuest(sender);
 				return;
 			}

@@ -20,6 +20,11 @@ public class ConversationEditorCommand
 	
 	public static void execute(Player sender, String[] args)
 	{
+		if (!sender.hasPermission("MangoQuest.ConversationEditor"))
+		{
+			QuestChatManager.error(sender, I18n.locMsg("CommandInfo.NoPermission"));
+			return;
+		}
 		QuestConversation conv = ConversationEditorManager.getEditingConversation(sender);
 		if (args.length == 1)
 		{

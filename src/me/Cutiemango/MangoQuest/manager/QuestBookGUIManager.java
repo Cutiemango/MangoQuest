@@ -266,9 +266,9 @@ public class QuestBookGUIManager
 		page.add(I18n.locMsg("QuestQuitMsg.WarnAccept", q.getQuestName())).changeLine();
 		page.add(I18n.locMsg("QuestQuitMsg.WarnAccept2")).changeLine();
 		page.changeLine();
-		page.add(new InteractiveText(q.getQuitAcceptMsg()).clickCommand("/mq q cquit " + q.getInternalID())).changeLine();
+		page.add(new InteractiveText(I18n.locMsg("QuestQuitMsg.QuitQuest") + q.getQuitAcceptMsg()).clickCommand("/mq q cquit " + q.getInternalID())).changeLine();
 		page.changeLine();
-		page.add(new InteractiveText(q.getQuitCancelMsg()).clickCommand("/mq q list")).changeLine();
+		page.add(new InteractiveText(I18n.locMsg("QuestQuitMsg.Cancel") + q.getQuitCancelMsg()).clickCommand("/mq q list")).changeLine();
 		
 		openBook(p, page);
 	}

@@ -9,6 +9,7 @@ import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
@@ -21,7 +22,7 @@ public class AdminCommand implements CommandExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
-		if (!sender.isOp())
+		if (!sender.hasPermission("MangoQuest.AdminCommand"))
 		{
 			QuestChatManager.error(sender, I18n.locMsg("CommandInfo.NoPermission"));
 			return false;
@@ -123,6 +124,25 @@ public class AdminCommand implements CommandExecutor
 									I18n.locMsg("CommandInfo.FriendPointSet", target.getName(), npc.getName(), Integer.toString(amount)));
 							return false;
 					}
+					break;
+					// /mqa opennpc [ID] [NPCID]
+				case "opennpc":
+					if (args.length < 3)
+						return false;
+					if (!QuestValidater.validateNPC(args[2]))
+					{
+						QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
+						return false;
+					}
+					npc = Main.getHooker().getNPC(args[2]);
+					boolean trade;
+					if (Main.getHooker().hasMythicMobEnabled() && Main.getHooker().getShopkeepers().isShopkeeper(npc.getEntity()))
+						trade = true;
+					else if (Main.getHooker().hasRPGshopEnabled())
+						trade = true;
+					else trade = false;
+					QuestBookGUIManager.openNPCInfo(target, npc, trade);
+					break;
 			}
 			QuestChatManager.info(sender, I18n.locMsg("CommandInfo.CommandExecuted"));
 			return true;

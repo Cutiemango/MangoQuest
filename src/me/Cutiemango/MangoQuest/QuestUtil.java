@@ -48,15 +48,14 @@ public class QuestUtil
 
 	public static void executeCommandAsync(Player p, String command)
 	{
-		if (!Bukkit.isPrimaryThread())
-			Bukkit.getScheduler().runTask(Main.instance, new Runnable()
+		Bukkit.getScheduler().runTask(Main.instance, new Runnable()
+		{
+			@Override
+			public void run()
 			{
-				@Override
-				public void run()
-				{
-					p.performCommand(command);
-				}
-			});
+				p.performCommand(command);
+			}
+		});
 	}
 	
 	public static void executeConsoleAsync(String command)
@@ -173,7 +172,7 @@ public class QuestUtil
 		if (!QuestStorage.TranslateMap.containsKey(mat))
 			return I18n.locMsg("Translation.UnknownItem");
 		if (QuestStorage.TranslateMap.get(mat).get(data) == null)
-			return QuestStorage.TranslateMap.get(mat).get(0);
+			return QuestStorage.TranslateMap.get(mat).get((short)0);
 		else
 			return QuestStorage.TranslateMap.get(mat).get(data);
 	}

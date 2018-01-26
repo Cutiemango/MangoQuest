@@ -78,7 +78,7 @@ public class CommandNewObject
 					else if (obj == TriggerObjectType.TELEPORT)
 					{
 						EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING,
-								"mq e addnew evt " + type.toString() + " " + stage + " " + index + " " + obj.toString(), Syntax.of("S:I:I:I", I18n.locMsg("Syntax.Teleport"), ":")));
+								"mq e addnew evt " + type.toString() + " " + stage + " " + index + " " + obj.toString(), Syntax.of("S:D:D:D", I18n.locMsg("Syntax.Teleport"), ":")));
 						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.Teleport"));
 						return;
 					}

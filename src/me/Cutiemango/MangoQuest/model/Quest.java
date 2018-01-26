@@ -277,10 +277,7 @@ public class Quest
 	
 	public String getQuitAcceptMsg()
 	{
-		String msg = setting.quitAcceptMsg;
-		if (msg == null)
-			msg = I18n.locMsg("QuestQuitMsg.DefaultQuit");
-		return I18n.locMsg("QuestQuitMsg.QuitQuest") + msg;
+		return (setting.quitAcceptMsg == null) ? I18n.locMsg("QuestQuitMsg.DefaultQuit") : setting.quitAcceptMsg;
 	}
 	
 	public void setQuitAcceptMsg(String s)
@@ -290,10 +287,7 @@ public class Quest
 	
 	public String getQuitCancelMsg()
 	{
-		String msg = setting.quitCancelMsg;
-		if (msg == null)
-			msg = I18n.locMsg("QuestQuitMsg.DefaultCancel");
-		return I18n.locMsg("QuestQuitMsg.Cancel") + msg;
+		return (setting.quitCancelMsg == null) ? I18n.locMsg("QuestQuitMsg.DefaultCancel") : setting.quitCancelMsg;
 	}
 	
 	public void setQuitCancelMsg(String s)

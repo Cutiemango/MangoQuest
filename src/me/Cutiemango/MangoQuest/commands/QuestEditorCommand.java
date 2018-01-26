@@ -21,8 +21,11 @@ public class QuestEditorCommand
 	// Command: /mq editor args[1] args[2]
 	public static void execute(Player sender, String[] args)
 	{
-		if (!sender.isOp())
+		if (!sender.hasPermission("MangoQuest.AdminCommand"))
+		{
+			QuestChatManager.error(sender, I18n.locMsg("CommandInfo.NoPermission"));
 			return;
+		}
 		Quest q = QuestEditorManager.getCurrentEditingQuest(sender);
 		if (args.length == 1)
 		{

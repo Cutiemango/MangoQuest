@@ -6,15 +6,14 @@ import java.util.Set;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
-import net.citizensnpcs.api.CitizensAPI;
 
 public class Syntax
 {
 	// S - Normal String
-	// I - Positive Integer
+	// I - Positive Integer (excluding 0)
 	// N - NPC's ID
 	// W - World
-	// D - Positive and negative integer
+	// D - Positive and negative integer (including 0)
 	
 	// The order of customRegex
 	private String order = "";
@@ -39,7 +38,7 @@ public class Syntax
 		s = s.replaceAll("I", "\\\\d+");
 		s = s.replaceAll("N", "-1|\\\\d+");
 		s = s.replaceAll("W", "\\\\S+");
-		s = s.replaceAll("D", "-?[1-9]\\\\d*");
+		s = s.replaceAll("D", "-?[0-9]\\\\d*");
 		regex = s;
 		desc = d;
 	}
@@ -76,26 +75,17 @@ public class Syntax
 		inputArray.add(userInput);
 		
 		if (inputArray.isEmpty() || order.toCharArray().length == 0)
+		{
+			QuestChatManager.error(p, "Error");
 			return false;
+		}
 
 		// Check Object Types (Check NPC)
 		for (int i = 0; i < order.toCharArray().length; i++)
 		{
 			if (order.toCharArray()[i] == 'N')
 			{
-				int id = 0;
-				try
-				{
-					id = Integer.parseInt(inputArray.get(i));
-				}
-				catch(NumberFormatException e)
-				{
-					QuestChatManager.syntaxError(p, desc, originalInput);
-					return false;
-				}
-				if (id == -1)
-					return true;
-				if (CitizensAPI.getNPCRegistry().getById(Integer.parseInt(inputArray.get(i))) == null)
+				if (Main.getHooker().getNPC(inputArray.get(i)) == null)
 				{
 					QuestChatManager.error(p, I18n.locMsg("SyntaxError.NPCNotValid"));
 					return false;

@@ -22,7 +22,6 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.advancements.QuestAdvancement;
 import me.Cutiemango.MangoQuest.advancements.QuestAdvancement.FrameType;
 import me.Cutiemango.MangoQuest.advancements.QuestAdvancement.Trigger;
-import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice;
@@ -180,22 +179,27 @@ public class QuestConfigLoader
 	public void loadNPC()
 	{
 		int count = 0;
+		HashMap<Integer, Integer> cloneMap = new HashMap<>();
 		if (npc.isSection("NPC"))
 		{
-			for (String s : npc.getSection("NPC"))
+			for (Integer id : npc.getIntegerSection("NPC"))
 			{
-				if (!QuestValidater.validateNPC(s))
+				if (!QuestValidater.validateNPC(Integer.toString(id)))
 				{
-					QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NPCNotValid", s));
+					QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NPCNotValid", Integer.toString(id)));
 					continue;
 				}
-				NPC npcReal = Main.getHooker().getNPC(s);		
-				QuestNPC npcdata = QuestNPCManager.hasData(npcReal.getId()) ? QuestNPCManager.getNPCData(npcReal.getId()) : new QuestNPC(npcReal);
-				if (npc.isSection("NPC." + s + ".Messages"))
+				NPC npcReal = Main.getHooker().getNPC(id);
+				QuestNPC npcdata = QuestNPCManager.hasData(id) ? QuestNPCManager.getNPCData(id) : new QuestNPC(npcReal);
+				if (npc.getString("NPC." + id + ".Clone") != null)
 				{
-					for (String i : npc.getSection("NPC." + s + ".Messages"))
+					cloneMap.put(id, npc.getInt("NPC." + id + ".Clone"));
+				}
+				else if (npc.isSection("NPC." + id + ".Messages"))
+				{
+					for (String i : npc.getSection("NPC." + id + ".Messages"))
 					{
-						List<String> list = npc.getStringList("NPC." + s + ".Messages." + i);
+						List<String> list = npc.getStringList("NPC." + id + ".Messages." + i);
 						Set<String> set = new HashSet<>();
 						set.addAll(list);
 						npcdata.putMessage(Integer.parseInt(i), set);
@@ -204,6 +208,10 @@ public class QuestConfigLoader
 				QuestNPCManager.updateNPC(npcReal, npcdata);
 				count++;
 			}
+		}
+		for (Integer id : cloneMap.keySet())
+		{
+			QuestNPCManager.updateNPC(Main.getHooker().getNPC(id), QuestNPCManager.getNPCData(cloneMap.get(id)));
 		}
 		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.NPCLoaded", Integer.toString(count)));
 	}
@@ -481,17 +489,7 @@ public class QuestConfigLoader
 					continue;
 				}
 				if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".ActivateConversation") != null)
-				{
-					QuestConversation conv = ConversationManager.getConversation(
-							quest.getString(qpath + "Stages." + scount + "." + ocount + ".ActivateConversation"));
-					if (conv != null)
-						obj.setConversation(conv);
-					else
-					{
-						QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NoValidConversation", id));
-						continue;
-					}
-				}
+					obj.setConversation(quest.getString(qpath + "Stages." + scount + "." + ocount + ".ActivateConversation"));
 				objs.add(obj);
 			}
 

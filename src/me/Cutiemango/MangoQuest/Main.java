@@ -184,8 +184,9 @@ public class Main extends JavaPlugin
 					QuestPlayerData pd = QuestUtil.getData(p);
 					if (pd == null)
 						continue;
-					QuestNPCManager.effectTask(pd);
 					pd.checkQuestFail();
+					if (ConfigSettings.USE_PARTICLE_EFFECT)
+						QuestNPCManager.effectTask(pd);
 					if (ConfigSettings.ENABLE_SCOREBOARD)
 					{
 						Bukkit.getScheduler().runTask(Main.instance, new Runnable()

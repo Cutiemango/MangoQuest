@@ -81,10 +81,10 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 			page.add(new InteractiveText("").showNPCInfo(npc)).endNormally();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " npc")).changeLine();
 		page.add(I18n.locMsg("QuestEditor.ActivateConversation")).endNormally();
-		if (conv == null)
+		if (!hasConversation())
 			page.add(new InteractiveText(I18n.locMsg("QuestEditor.NotSet"))).endNormally();
 		else
-			page.add(conv.getName() + "(" + conv.getInternalID() + ")").endNormally();
+			page.add(getConversation().getName() + "(" + activateConversation + ")").endNormally();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " conv")).changeLine();
 		page.changeLine();
 	}
@@ -122,7 +122,7 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 				break;
 			case "conv":
 				if (ConversationManager.getConversation(obj) != null)
-					setConversation(ConversationManager.getConversation(obj));
+					setConversation(obj);
 				break;
 		}
 		return true;
