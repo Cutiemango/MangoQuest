@@ -14,13 +14,14 @@ import me.Cutiemango.MangoQuest.book.FlexiableBook;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestSetting;
-import me.Cutiemango.MangoQuest.model.RequirementType;
-import me.Cutiemango.MangoQuest.model.TriggerType;
-import me.Cutiemango.MangoQuest.objects.TriggerObject;
-import me.Cutiemango.MangoQuest.objects.TriggerObject.TriggerObjectType;
+import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject.TriggerObjectType;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
 import net.citizensnpcs.api.CitizensAPI;
@@ -239,7 +240,7 @@ public class QuestEditorManager
 		p4.add(I18n.locMsg("QuestEditor.RewardExp", Integer.toString(q.getQuestReward().getExp()))).endNormally();
 		p4.add(new InteractiveText(" " + I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward exp").showText(I18n.locMsg("QuestEditor.RewardExp.ShowText"))).changeLine();
 		
-		if (Main.instance.pluginHooker.hasSkillAPIEnabled())
+		if (Main.getHooker().hasSkillAPIEnabled())
 		{
 			p4.add(I18n.locMsg("QuestEditor.RewardSkillAPIExp", Integer.toString(q.getQuestReward().getSkillAPIExp()))).endNormally();
 			p4.add(new InteractiveText(" " + I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward saexp").showText(I18n.locMsg("QuestEditor.RewardSkillAPIExp.ShowText"))).changeLine();
@@ -360,7 +361,7 @@ public class QuestEditorManager
 		p1.add(I18n.locMsg("QuestEditor.ChooseObject")).changeLine();
 		for (int i = 1; i <= q.getStage(stage - 1).getObjects().size(); i++)
 		{
-			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Object", Integer.toString(stage))).clickCommand("/mq e edit object " + stage + " " + i));
+			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Object", Integer.toString(i))).clickCommand("/mq e edit object " + stage + " " + i));
 			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove object " + stage + " " + i)).changeLine();
 		}
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew object " + stage)).changeLine();
@@ -421,7 +422,7 @@ public class QuestEditorManager
 					p1.changeLine();
 					break;
 				case SKILLAPI_CLASS:
-					if (Main.instance.pluginHooker.hasSkillAPIEnabled())
+					if (Main.getHooker().hasSkillAPIEnabled())
 					{
 						p1.add(I18n.locMsg("QuestEditor.SkillAPIClassReq") + q.getRequirements().get(t).toString() + " ").endNormally();
 						p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req SKILLAPI_CLASS"));
@@ -429,26 +430,12 @@ public class QuestEditorManager
 					}
 					break;
 				case SKILLAPI_LEVEL:
-					if (Main.instance.pluginHooker.hasSkillAPIEnabled())
+					if (Main.getHooker().hasSkillAPIEnabled())
 					{
 						p1.add(I18n.locMsg("QuestEditor.SkillAPILevelReq") + q.getRequirements().get(t).toString() + " ").endNormally();
 						p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req SKILLAPI_LEVEL"));
 						p1.changeLine();
 					}
-					break;
-				case NBTTAG:
-					p2.add(I18n.locMsg("QuestEditor.NBTReq")).changeLine();
-					i = 0;
-					for (String s : (List<String>) q.getRequirements().get(t))
-					{
-						p2.add("- ").add(s).endNormally();
-						p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req NBTTAG " + i)).endNormally();
-						p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove req NBTTAG " + i)).endNormally();
-						p2.changeLine();
-						i++;
-					}
-					p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew req NBTTAG " + i)).endNormally();
-					p2.changeLine();
 					break;
 				case QUEST:
 					p2.add(I18n.locMsg("QuestEditor.QuestReq"));
@@ -465,19 +452,22 @@ public class QuestEditorManager
 					p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew req QUEST " + i)).endNormally();
 					p2.changeLine();
 					break;
-				case SCOREBOARD:
-					p2.add(I18n.locMsg("QuestEditor.ScoreboardReq"));
+				case FRIEND_POINT:
+					p2.add(I18n.locMsg("QuestEditor.FriendPointReq"));
 					p2.changeLine();
-					i = 0;
-					for (String s : (List<String>) q.getRequirements().get(t))
+					for (Integer id : ((HashMap<Integer, Integer>) q.getRequirements().get(t)).keySet())
 					{
-						p2.add("- ").add(s).endNormally();
-						p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req SCOREBOARD " + i)).endNormally();
-						p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove req SCOREBOARD " + i)).endNormally();
+						if (!QuestValidater.validateNPC(Integer.toString(id)))
+							continue;
+						NPC npc = Main.getHooker().getNPC(id);
+						p2.add("- ").endNormally();
+						p2.add(new InteractiveText("").showNPCInfo(npc)).endNormally();
+						p2.add("&0 " + q.getQuestReward().getFp().get(npc.getId()) + " " + I18n.locMsg("QuestEditor.Point")).endNormally();
+						p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req FRIEND_POINT " + npc.getId())).endNormally();
+						p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove req FRIEND_POINT " + npc.getId())).endNormally();
 						p2.changeLine();
-						i++;
 					}
-					p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew req SCOREBOARD " + i)).endNormally();
+					p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew req FRIEND_POINT")).endNormally();
 					p2.changeLine();
 					break;
 			}

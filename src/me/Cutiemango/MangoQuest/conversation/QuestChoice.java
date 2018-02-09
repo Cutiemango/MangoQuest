@@ -1,5 +1,7 @@
 package me.Cutiemango.MangoQuest.conversation;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.QuestStorage;
@@ -14,7 +16,8 @@ public class QuestChoice
 	public static class Choice
 	{
 		private String s;
-		private List<QuestBaseAction> act;
+		private List<QuestBaseAction> act = new ArrayList<>();
+		private HashMap<Integer, Integer> fpReq = new HashMap<>();
 
 		public Choice(String c, List<QuestBaseAction> action)
 		{
@@ -31,7 +34,18 @@ public class QuestChoice
 		{
 			return act;
 		}
-
+		
+		public HashMap<Integer, Integer> getFriendPointReq()
+		{
+			return fpReq;
+		}
+		
+		public void setFriendPointReq(int npcid, int value)
+		{
+			fpReq.put(npcid, value);
+		}
+		
+		
 	}
 
 	public QuestChoice(TextComponent q, List<Choice> c)

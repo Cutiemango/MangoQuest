@@ -13,7 +13,7 @@ public class MythicListener implements Listener
 	@EventHandler
 	public void onMythicMobDeath(MythicMobDeathEvent e)
 	{
-		if (e.getKiller() != null && e.getKiller() instanceof Player)
+		if (e.getKiller() != null && e.getKiller() instanceof Player && e.getMobType() != null)
 		{
 			Player attacker = (Player) e.getKiller();
 			QuestPlayerData qd = QuestUtil.getData(attacker);

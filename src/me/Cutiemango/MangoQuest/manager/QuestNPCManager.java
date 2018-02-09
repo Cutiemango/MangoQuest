@@ -6,6 +6,7 @@ import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.objects.GUIOption;
 import me.Cutiemango.MangoQuest.objects.QuestNPC;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -13,6 +14,17 @@ import net.citizensnpcs.api.npc.NPC;
 public class QuestNPCManager
 {
 	private static HashMap<Integer, QuestNPC> npcStorage = new HashMap<>();
+	private static HashMap<String, GUIOption> optionStorage = new HashMap<>();
+	
+	public static GUIOption getOption(String s)
+	{
+		return optionStorage.get(s);
+	}
+	
+	public static void registerOption(String s, GUIOption option)
+	{
+		optionStorage.put(s, option);
+	}
 	
 	public static void effectTask(QuestPlayerData pd)
 	{
@@ -28,7 +40,7 @@ public class QuestNPCManager
 					if (!q.isRedoable() && pd.hasFinished(q))
 						continue;
 					if (pd.hasFinished(q) && !pd.hasTakenReward(q) || pd.canTake(q, false) || !pd.getNPCtoTalkWith(npc).isEmpty())
-						Main.instance.handler.playNPCEffect(pd.getPlayer(), e.getLocation());
+						Main.getInstance().handler.playNPCEffect(pd.getPlayer(), e.getLocation());
 				}
 			}
 		}
@@ -77,5 +89,6 @@ public class QuestNPCManager
 	public static void clear()
 	{
 		npcStorage = new HashMap<>();
+		optionStorage = new HashMap<>();
 	}
 }

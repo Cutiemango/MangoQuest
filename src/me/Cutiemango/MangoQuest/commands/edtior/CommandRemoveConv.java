@@ -23,10 +23,10 @@ public class CommandRemoveConv
 			switch (args[2])
 			{
 				case "conv":
-					removeConv(conv, sender, args);
+					removeConv(sender, args);
 					return;
 				case "confirm":
-					removeConfirm(conv, sender, args);
+					removeConfirm(sender, args);
 					return;
 			}
 		}
@@ -43,7 +43,7 @@ public class CommandRemoveConv
 		return;
 	}
 
-	private static void removeConfirm(QuestConversation conv, Player sender, String[] args)
+	private static void removeConfirm(Player sender, String[] args)
 	{
 		if (args.length == 4)
 		{
@@ -56,7 +56,7 @@ public class CommandRemoveConv
 		}
 	}
 
-	private static void removeConv(QuestConversation conv, Player sender, String[] args)
+	private static void removeConv(Player sender, String[] args)
 	{
 		if (args.length == 4)
 		{
@@ -66,11 +66,11 @@ public class CommandRemoveConv
 				for (Player pl : Bukkit.getOnlinePlayers())
 				{
 					if (ConversationManager.isInConvProgress(pl, target))
-						ConversationManager.forceQuit(pl, conv);
+						ConversationManager.forceQuit(pl, target);
 				}
-				QuestConfigManager.getSaver().removeConversation(conv);
+				QuestConfigManager.getSaver().removeConversation(target);
 				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ConversationRemoved", target.getName()));
-				QuestStorage.Conversations.remove(target.getInternalID());
+				QuestStorage.Conversations.remove(args[3]);
 				ConversationEditorManager.removeGUI(sender);
 				return;
 			}

@@ -16,9 +16,10 @@ import me.Cutiemango.MangoQuest.Syntax;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
+import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.reward.QuestRewardManager;
-import me.Cutiemango.MangoQuest.objects.QuestGUIItem;
+import me.Cutiemango.MangoQuest.objects.reward.QuestGUIItem;
 import net.md_5.bungee.api.ChatColor;
 
 public class RewardGUIListener
@@ -51,6 +52,12 @@ public class RewardGUIListener
 					p.closeInventory();
 					return;
 				}
+				else if (e.getCurrentItem().getType().equals(Material.SIGN))
+				{
+					p.closeInventory();
+					QuestEditorManager.editQuest(p);
+					return;
+				}
 				e.setCancelled(true);
 				if (i == -1)
 					return;
@@ -62,9 +69,21 @@ public class RewardGUIListener
 					{
 						QuestRewardManager.openEditRewardGUI(p, i);
 					}
-				}.runTaskLater(Main.instance, 3L);
+				}.runTaskLater(Main.getInstance(), 3L);
 				
 				return;
+			}
+			else if (inv.getTitle().contains(I18n.locMsg("QuestReward.ChoiceEditTitle")))
+			{
+				if (e.getCurrentItem().getType().equals(Material.BARRIER) && QuestGUIItem.isGUIItem(e.getCurrentItem()))
+				{
+					e.setCancelled(true);
+					p.closeInventory();
+					String index = inv.getTitle().replace(I18n.locMsg("QuestReward.ChoiceEditTitle"), "").replaceAll(QuestEditorManager.getCurrentEditingQuest(p).getQuestName() + ":", "");
+					QuestRewardManager.removeRewardChoice(p, Integer.parseInt(ChatColor.stripColor(index)));
+					QuestRewardManager.openEditMainGUI(p);
+					return;
+				}
 			}
 		}
 	}
@@ -95,7 +114,7 @@ public class RewardGUIListener
 				List<ItemStack> l = new ArrayList<>();
 				for (ItemStack item : inv.getContents())
 				{
-					if (item == null || item.getType().equals(Material.AIR))
+					if (item == null || item.getType().equals(Material.AIR) || QuestGUIItem.isGUIItem(item))
 						continue;
 					l.add(item);
 				}
@@ -107,7 +126,7 @@ public class RewardGUIListener
 					{
 						QuestRewardManager.openEditMainGUI(p);	
 					}
-				}.runTaskLater(Main.instance, 3L);
+				}.runTaskLater(Main.getInstance(), 3L);
 			}
 		}
 		

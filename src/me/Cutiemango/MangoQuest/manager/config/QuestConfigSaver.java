@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest.manager.config;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -19,12 +20,12 @@ import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.RequirementType;
-import me.Cutiemango.MangoQuest.model.TriggerType;
-import me.Cutiemango.MangoQuest.objects.QuestReward;
 import me.Cutiemango.MangoQuest.objects.QuestStage;
-import me.Cutiemango.MangoQuest.objects.RewardChoice;
-import me.Cutiemango.MangoQuest.objects.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
+import me.Cutiemango.MangoQuest.objects.reward.QuestReward;
+import me.Cutiemango.MangoQuest.objects.reward.RewardChoice;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 
 public class QuestConfigSaver
@@ -60,6 +61,7 @@ public class QuestConfigSaver
 		else if (qc instanceof StartTriggerConversation)
 		{
 			StartTriggerConversation sconv = (StartTriggerConversation)qc;
+			conv.set(cpath + "StartTriggerConversation", true);
 			conv.set(cpath + "StartQuest", sconv.getQuest().getInternalID());
 			conv.set(cpath + "AcceptMessage", sconv.getAcceptMessage());
 			conv.set(cpath + "DenyMessage", sconv.getDenyMessage());
@@ -110,22 +112,26 @@ public class QuestConfigSaver
 		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.QuestSaved", q.getQuestName(), q.getInternalID()));
 		quest.save();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void saveRequirements(Quest q)
 	{
 		String qpath = "Quests." + q.getInternalID() + ".";
 		quest.set(qpath + "Requirements.Level", q.getRequirements().get(RequirementType.LEVEL));
 		quest.set(qpath + "Requirements.Quest", q.getRequirements().get(RequirementType.QUEST));
+		quest.set(qpath + "Requirements.Money", q.getRequirements().get(RequirementType.MONEY));
 		int i = 0;
 		for (ItemStack is : (List<ItemStack>) q.getRequirements().get(RequirementType.ITEM))
 		{
 			i++;
 			quest.getConfig().set(qpath + "Requirements.Item." + i, is);
 		}
-		quest.set(qpath + "Requirements.Scoreboard", q.getRequirements().get(RequirementType.SCOREBOARD));
-		quest.set(qpath + "Requirements.NBTTag", q.getRequirements().get(RequirementType.NBTTAG));
-		if (Main.instance.pluginHooker.hasSkillAPIEnabled())
+		HashMap<Integer, Integer> fpMap = (HashMap<Integer, Integer>) q.getRequirements().get(RequirementType.FRIEND_POINT);
+		for (Integer id : fpMap.keySet())
+		{
+			quest.set(qpath + "Requirements.FriendPoint." + id, fpMap.get(id));
+		}
+		if (Main.getInstance().pluginHooker.hasSkillAPIEnabled())
 		{
 			quest.set(qpath + "Requirements.SkillAPIClass", q.getRequirements().get(RequirementType.SKILLAPI_CLASS));
 			quest.set(qpath + "Requirements.SkillAPILevel", q.getRequirements().get(RequirementType.SKILLAPI_LEVEL));
@@ -217,12 +223,14 @@ public class QuestConfigSaver
 		}
 		if (r.hasCommand())
 			quest.set(qpath + "Rewards.Commands", r.getCommands());
-		if (r.hasSkillAPIExp() && Main.instance.pluginHooker.hasSkillAPIEnabled())
+		if (r.hasSkillAPIExp() && Main.getInstance().pluginHooker.hasSkillAPIEnabled())
 			quest.set(qpath + "Rewards.SkillAPIExp", r.getSkillAPIExp());
 	}
 	
 	public void removeConversation(QuestConversation qc)
 	{
+		if (qc == null)
+			return;
 		conv.set("Conversations." + qc.getInternalID(), null);
 		QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.ConversationDeleted", qc.getName(), qc.getInternalID()));
 		conv.save();
@@ -230,6 +238,8 @@ public class QuestConfigSaver
 	
 	public void removeQuest(Quest q)
 	{
+		if (q == null)
+			return;
 		quest.set("Quests." + q.getInternalID(), null);
 		QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.QuestDeleted", q.getQuestName(), q.getInternalID()));
 		quest.save();
@@ -237,7 +247,7 @@ public class QuestConfigSaver
 	
 	public void clearPlayerData(Player p)
 	{
-		File f = new File(Main.instance.getDataFolder() + "/data/" , p.getUniqueId() + ".yml");
+		File f = new File(Main.getInstance().getDataFolder() + "/data/" , p.getUniqueId() + ".yml");
 		try
 		{
 			new YamlConfiguration().save(f);

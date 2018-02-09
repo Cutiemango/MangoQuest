@@ -25,11 +25,12 @@ import me.Cutiemango.MangoQuest.event.QuestFinishEvent;
 import me.Cutiemango.MangoQuest.event.QuestObjectProgressEvent;
 import me.Cutiemango.MangoQuest.event.QuestTakeEvent;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
+import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.manager.RequirementManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.TriggerType;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
 import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
 import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
@@ -242,6 +243,16 @@ public class QuestPlayerData
 	{
 		friendPointStorage.put(id, value);
 	}
+	
+	public boolean meetFriendPointReq(Choice choice)
+	{
+		for (Integer npc : choice.getFriendPointReq().keySet())
+		{
+			if (!(friendPointStorage.get(npc) >= choice.getFriendPointReq().get(npc)))
+				return false;
+		}
+		return true;
+	}
 
 	public void addFinishConversation(QuestConversation qc)
 	{
@@ -296,9 +307,9 @@ public class QuestPlayerData
 	}
 	
 	public void forceTake(Quest q, boolean msg){
-		if (!checkQuestSize(true))
+		if (!checkQuestSize(true) || !checkStartConv(q))
 			return;
-		q.trigger(p, 0, TriggerType.TRIGGER_ON_TAKE, -1);
+		q.trigger(p, TriggerType.TRIGGER_ON_TAKE, -1);
 		currentQuests.add(new QuestProgress(q, p));
 		if (msg)
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.ForceTakeQuest", q.getQuestName()));
@@ -347,7 +358,7 @@ public class QuestPlayerData
 	{
 		if (!isCurrentlyDoing(q))
 			return;
-		q.trigger(p, 0, TriggerType.TRIGGER_ON_QUIT, -1);
+		q.trigger(p, TriggerType.TRIGGER_ON_QUIT, -1);
 		removeProgress(q);
 		if (msg)
 			QuestChatManager.error(p, I18n.locMsg("CommandInfo.ForceQuitQuest", q.getQuestName()));
@@ -366,7 +377,7 @@ public class QuestPlayerData
 		{
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
-				if (qop.getObject() instanceof NPCObject && ((NPCObject)qop.getObject()).getTargetNPC().equals(npc)
+				if (qop.getObject() instanceof QuestObjectTalkToNPC && ((NPCObject)qop.getObject()).getTargetNPC().equals(npc)
 						&& !qop.isFinished())
 					l.add(qp);
 			}
@@ -399,7 +410,7 @@ public class QuestPlayerData
 					{
 						qop.setProgress(qop.getProgress() + 1);
 						this.checkFinished(qp, qop);
-						return;
+						continue;
 					}
 				}
 			}
@@ -420,13 +431,8 @@ public class QuestPlayerData
 				{
 					if (((QuestObjectTalkToNPC) qop.getObject()).getTargetNPC().equals(npc))
 					{
-						if (!isNearNPC(npc))
-						{
-							QuestChatManager.error(p, I18n.locMsg("CommandInfo.OutRanged"));
-							return;
-						}
 						this.checkFinished(qp, qop);
-						return;
+						continue;
 					}
 				}
 			}
@@ -435,6 +441,7 @@ public class QuestPlayerData
 
 	public boolean deliverItem(NPC npc)
 	{
+		boolean b = false;
 		for (QuestProgress qp : currentQuests)
 		{
 			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
@@ -446,7 +453,7 @@ public class QuestPlayerData
 				if (qop.getObject() instanceof QuestObjectDeliverItem)
 				{
 					QuestObjectDeliverItem o = (QuestObjectDeliverItem) qop.getObject();
-					ItemStack itemtoDeliver = Main.instance.handler.getItemInMainHand(p);
+					ItemStack itemtoDeliver = Main.getInstance().handler.getItemInMainHand(p);
 					int amountNeeded = o.getAmount() - qop.getProgress();
 					if (o.getTargetNPC().equals(npc) && QuestValidater.compareItem(o.getItem(), itemtoDeliver, true))
 					{
@@ -457,19 +464,20 @@ public class QuestPlayerData
 						}
 						else
 						{
-							 Main.instance.handler.setItemInMainHand(p, null);
+							 Main.getInstance().handler.setItemInMainHand(p, null);
 							if (itemtoDeliver.getAmount() == amountNeeded)
 								qop.setProgress(o.getAmount());
 							else
 								qop.setProgress(qop.getProgress() + itemtoDeliver.getAmount());
 						}
 						this.checkFinished(qp, qop);
-						return true;
+						b = true;
+						continue;
 					}
 				}
 			}
 		}
-		return false;
+		return b;
 	}
 
 	public void killEntity(Entity e)
@@ -488,12 +496,12 @@ public class QuestPlayerData
 					if (o.hasCustomName())
 					{
 						if (e.getCustomName() == null || !e.getCustomName().equals(o.getCustomName()) || !e.getType().equals(o.getType()))
-							return;
+							continue;
 						else
 						{
 							qop.setProgress(qop.getProgress() + 1);
 							this.checkFinished(qp, qop);
-							return;
+							continue;
 						}
 					}
 					else
@@ -502,7 +510,7 @@ public class QuestPlayerData
 						{
 							qop.setProgress(qop.getProgress() + 1);
 							this.checkFinished(qp, qop);
-							return;
+							continue;
 						}
 					}
 				}
@@ -529,11 +537,9 @@ public class QuestPlayerData
 						{
 							qop.setProgress(qop.getProgress() + 1);
 							this.checkFinished(qp, qop);
-							return;
+							continue;
 						}
 					}
-					else
-						continue;
 				}
 			}
 		}
@@ -556,7 +562,7 @@ public class QuestPlayerData
 					{
 						qop.setProgress(qop.getProgress() + 1);
 						this.checkFinished(qp, qop);
-						return;
+						continue;
 					}
 				}
 			}
@@ -582,7 +588,7 @@ public class QuestPlayerData
 							{
 								qop.finish();
 								this.checkFinished(qp, qop);
-								return;
+								continue;
 							}
 				}
 			}
@@ -730,7 +736,7 @@ public class QuestPlayerData
 		}
 		if (q.hasRequirement())
 		{
-			if (!RequirementManager.meetRequirementWith(p, q).succeed())
+			if (!RequirementManager.meetRequirementWith(p, q.getRequirements()).succeed())
 			{
 				if (sendmsg)
 					QuestChatManager.info(p, q.getFailMessage());

@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.objects;
+package me.Cutiemango.MangoQuest.objects.reward;
 
 import java.util.List;
 import org.bukkit.Material;
@@ -54,12 +54,12 @@ public class QuestGUIItem
 	public static ItemStack setGUIItem(ItemStack item)
 	{
 		if (!isGUIItem(item))
-			return Main.instance.handler.addGUITag(item);
+			return Main.getInstance().handler.addGUITag(item);
 		else return item;
 	}
 	
 	public static boolean isGUIItem(ItemStack item)
 	{
-		return Main.instance.handler.hasGUITag(item);
+		return Main.getInstance().handler.hasGUITag(item);
 	}
 }

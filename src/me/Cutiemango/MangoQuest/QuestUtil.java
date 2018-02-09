@@ -1,6 +1,7 @@
 package me.Cutiemango.MangoQuest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -23,7 +24,7 @@ public class QuestUtil
 
 	public static void sendTitle(Player p, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle)
 	{
-		Main.instance.handler.sendTitle(p, fadeIn, stay, fadeOut, title, subtitle);
+		Main.getInstance().handler.sendTitle(p, fadeIn, stay, fadeOut, title, subtitle);
 	}
 	
 	public static int randomInteger(int min, int max)
@@ -48,7 +49,7 @@ public class QuestUtil
 
 	public static void executeCommandAsync(Player p, String command)
 	{
-		Bukkit.getScheduler().runTask(Main.instance, new Runnable()
+		Bukkit.getScheduler().runTask(Main.getInstance(), new Runnable()
 		{
 			@Override
 			public void run()
@@ -60,7 +61,7 @@ public class QuestUtil
 	
 	public static void executeConsoleAsync(String command)
 	{
-		Bukkit.getScheduler().runTask(Main.instance, new Runnable()
+		Bukkit.getScheduler().runTask(Main.getInstance(), new Runnable()
 		{
 			@Override
 			public void run()
@@ -72,16 +73,16 @@ public class QuestUtil
 
 	public static String convertArgsString(String[] array, int startIndex)
 	{
-		String s = "";
-		for (int i = startIndex; i < array.length; i++)
-		{
-			s = s + array[i];
-			if (i + 1 == array.length)
-				break;
-			else
-				s += " ";
-		}
-		return s;
+//		String s = "";
+//		for (int i = startIndex; i < array.length; i++)
+//		{
+//			s = s + array[i];
+//			if (i + 1 == array.length)
+//				break;
+//			else
+//				s += " ";
+//		}
+		return String.join(" ", Arrays.copyOfRange(array, startIndex, array.length));
 	}
 
 	public static Set<FriendConversation> getConversations(NPC npc, int fp)

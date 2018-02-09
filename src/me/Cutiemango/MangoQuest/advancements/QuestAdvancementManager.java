@@ -21,7 +21,7 @@ public class QuestAdvancementManager
 
 	public static QuestAdvancement getAdvancement(String key)
 	{
-		return advancements.get(new NamespacedKey(Main.instance, "story:" + key));
+		return advancements.get(new NamespacedKey(Main.getInstance(), "story:" + key));
 	}
 
 }

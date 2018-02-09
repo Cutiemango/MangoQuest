@@ -612,5 +612,6 @@ EntityType:
   VILLAGER: "村民"
   WITCH: "女巫"
   WITHER: "凋零王"
+  WITHER_SKELETON: "凋零骷髏"
   WOLF: "狼"
   ZOMBIE: "殭屍"

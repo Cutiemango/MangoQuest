@@ -25,7 +25,7 @@ public class ConversationProgress
 		actQueue = new LinkedList<>(conv.getActions());
 	}
 
-	public static final List<EnumAction> STOP_ACTIONS = Arrays.asList(EnumAction.BUTTON, EnumAction.WAIT, EnumAction.CHOICE, EnumAction.FINISH, EnumAction.TAKE_QUEST);
+	public static final List<EnumAction> STOP_ACTIONS = Arrays.asList(EnumAction.BUTTON, EnumAction.WAIT, EnumAction.CHOICE, EnumAction.FINISH, EnumAction.TAKE_QUEST, EnumAction.EXIT);
 	
 	protected Player owner;
 	protected QuestConversation conv;
@@ -45,6 +45,8 @@ public class ConversationProgress
 			return;
 		}
 		actQueue.getFirst().execute(this);
+		if (actQueue.getFirst().getActionType() == EnumAction.EXIT)
+			return;
 		ConversationManager.openConversation(owner, this);
 		if (!(STOP_ACTIONS.contains(actQueue.getFirst().getActionType())))
 		{
@@ -66,7 +68,7 @@ public class ConversationProgress
 				currentTask = null;
 				return;
 			}
-		}.runTaskLater(Main.instance, 25L);
+		}.runTaskLater(Main.getInstance(), 25L);
 	}
 	
 	private void cancelTask()
@@ -90,6 +92,7 @@ public class ConversationProgress
 			if (!(conv instanceof FriendConversation))
 				owner.performCommand("mq conv npc " + conv.getNPC().getId());
 		}
+		ConversationManager.finishConversation(owner);
 	}
 
 	public Player getOwner()

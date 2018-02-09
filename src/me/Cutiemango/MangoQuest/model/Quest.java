@@ -2,6 +2,7 @@ package me.Cutiemango.MangoQuest.model;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import org.bukkit.Bukkit;
@@ -15,10 +16,13 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
-import me.Cutiemango.MangoQuest.objects.QuestReward;
 import me.Cutiemango.MangoQuest.objects.QuestStage;
 import me.Cutiemango.MangoQuest.objects.QuestVersion;
-import me.Cutiemango.MangoQuest.objects.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
+import me.Cutiemango.MangoQuest.objects.reward.QuestReward;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerTask;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -27,38 +31,7 @@ public class Quest
 	// Only Initialize with Command
 	public Quest()
 	{
-		for (RequirementType t : RequirementType.values())
-		{
-			switch (t)
-			{
-				case ITEM:
-					requirements.put(t, new ArrayList<ItemStack>());
-					break;
-				case LEVEL:
-					requirements.put(t, 0);
-					break;
-				case MONEY:
-					requirements.put(t, 0.0D);
-					break;
-				case NBTTAG:
-					requirements.put(t, new ArrayList<String>());
-					break;
-				case QUEST:
-					requirements.put(t, new ArrayList<String>());
-					break;
-				case SCOREBOARD:
-					requirements.put(t, new ArrayList<String>());
-					break;
-				case SKILLAPI_CLASS:
-					requirements.put(t, "none");
-					break;
-				case SKILLAPI_LEVEL:
-					requirements.put(t, 0);
-					break;
-				default:
-					break;
-			}
-		}
+		initRequirements();
 		version = QuestVersion.instantVersion();
 	}
 
@@ -71,40 +44,44 @@ public class Quest
 		this.stages = stages;
 		this.QuestNPC = npc;
 
-		for (RequirementType t : RequirementType.values())
-		{
-			switch (t)
-			{
-				case ITEM:
-					requirements.put(t, new ArrayList<ItemStack>());
-					break;
-				case LEVEL:
-					requirements.put(t, 0);
-					break;
-				case MONEY:
-					requirements.put(t, 0.0D);
-					break;
-				case NBTTAG:
-					requirements.put(t, new ArrayList<String>());
-					break;
-				case QUEST:
-					requirements.put(t, new ArrayList<String>());
-					break;
-				case SCOREBOARD:
-					requirements.put(t, new ArrayList<String>());
-					break;
-				case SKILLAPI_CLASS:
-					requirements.put(t, "none");
-					break;
-				case SKILLAPI_LEVEL:
-					requirements.put(t, 0);
-					break;
-			}
-		}
-
+		initRequirements();
 		version = QuestVersion.instantVersion();
 	}
-
+	
+	public void initRequirements()
+	{
+		for (RequirementType t : RequirementType.values())
+		{
+			if (!requirements.containsKey(t))
+			{
+				switch (t)
+				{
+					case FRIEND_POINT:
+						requirements.put(RequirementType.FRIEND_POINT, new HashMap<Integer, Integer>());
+						break;
+					case ITEM:
+						requirements.put(RequirementType.ITEM, new ArrayList<ItemStack>());
+						break;
+					case LEVEL:
+						requirements.put(RequirementType.LEVEL, 0);
+						break;
+					case MONEY:
+						requirements.put(RequirementType.MONEY, 0);
+						break;
+					case QUEST:
+						requirements.put(RequirementType.QUEST, new ArrayList<String>());
+						break;
+					case SKILLAPI_CLASS:
+						requirements.put(RequirementType.SKILLAPI_CLASS, "none");
+						break;
+					case SKILLAPI_LEVEL:
+						requirements.put(RequirementType.SKILLAPI_LEVEL, 0);
+						break;
+				}
+			}
+		}
+	}
+	
 	private NPC QuestNPC;
 	private String InternalID;
 	private String QuestName;
@@ -240,15 +217,6 @@ public class Quest
 	{
 		return triggerMap.get(type);
 	}
-	
-	public void trigger(Player p, int index, TriggerType type, int stage)
-	{
-		if (!hasTrigger(type))
-			return;
-		if (triggerMap.get(type).isEmpty() || triggerMap.get(type).size() <= index)
-			return;
-		triggerMap.get(type).get(index).trigger(p, index, type, stage, this);
-	}
 
 	public void setTriggers(EnumMap<TriggerType, List<TriggerObject>> map)
 	{
@@ -368,6 +336,16 @@ public class Quest
 	public void registerSettings(QuestSetting s)
 	{
 		setting = s;
+	}
+	
+	public void trigger(Player p, TriggerType type, int stage)
+	{
+		if (!hasTrigger(type) || triggerMap.get(type).isEmpty())
+			return;
+		TriggerTask task = new TriggerTask(p, triggerMap.get(type));
+		if (type.hasStage())
+			task.withStage(stage);
+		task.start();
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 public class TextAlignment
 {
 
-	public static final int MAXIUM_CHAR_PER_LINE = 29;
+	public static final int MAXIUM_CHAR_PER_LINE = 27;
 	public static final int MAXIUM_LINE_PER_PAGE = 14;
 	
 	public static HashMap<UnicodeBlock, Double> CHARACTER_SIZEMAP = new HashMap<>();

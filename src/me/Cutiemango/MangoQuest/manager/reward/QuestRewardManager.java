@@ -14,10 +14,10 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.objects.QuestGUIItem;
-import me.Cutiemango.MangoQuest.objects.QuestReward;
-import me.Cutiemango.MangoQuest.objects.RewardCache;
-import me.Cutiemango.MangoQuest.objects.RewardChoice;
+import me.Cutiemango.MangoQuest.objects.reward.QuestGUIItem;
+import me.Cutiemango.MangoQuest.objects.reward.QuestReward;
+import me.Cutiemango.MangoQuest.objects.reward.RewardCache;
+import me.Cutiemango.MangoQuest.objects.reward.RewardChoice;
 import net.md_5.bungee.api.ChatColor;
 
 public class QuestRewardManager implements Listener
@@ -41,6 +41,7 @@ public class QuestRewardManager implements Listener
 				inv.setItem(getRewardSlot(a+1, i), itemButton(reward.getChoice(i), i));
 		}
 		
+		inv.setItem(18, backToMenu());
 		inv.setItem(26, editRewardAmount(reward.getRewardAmount()));
 
 		for (int i = 0; i < 27; i++)
@@ -69,7 +70,18 @@ public class QuestRewardManager implements Listener
 				continue;
 			inv.addItem(item);
 		}
+		inv.setItem(26, removeRewardChoice());
 		p.openInventory(inv);
+	}
+	
+	public static void removeRewardChoice(Player p, int index)
+	{
+		if (!QuestEditorManager.checkEditorMode(p, false))
+			return;
+		QuestReward reward = QuestEditorManager.getCurrentEditingQuest(p).getQuestReward();
+		if (index >= reward.getChoices().size())
+			return;
+		reward.getChoices().remove(index);
 	}
 	
 	private static ItemStack editRewardAmount(int amount)
@@ -121,10 +133,31 @@ public class QuestRewardManager implements Listener
 		return button.get();
 	}
 	
+	private static ItemStack removeRewardChoice()
+	{
+		QuestGUIItem barrier = new QuestGUIItem(Material.BARRIER, 1, (short)0);
+		barrier.setName(I18n.locMsg("QuestReward.RemoveChoice"));
+		barrier.setLore(QuestUtil.createList(I18n.locMsg("QuestReward.RemoveChoiceLore")));
+		barrier.glowEffect();
+		return barrier.get();
+	}
+	
+	private static ItemStack backToMenu()
+	{
+		QuestGUIItem sign = new QuestGUIItem(Material.SIGN, 1, (short)0);
+		sign.setName(I18n.locMsg("QuestEditor.Return"));
+		return sign.get();
+	}
+	
 	public static void saveItemChoice(Player p, List<ItemStack> items, int index)
 	{
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 		q.getQuestReward().setChoice(index, new RewardChoice(items));
+		if (q.getQuestReward().getChoice(index).getItems().isEmpty())
+		{
+			QuestChatManager.info(p, I18n.locMsg("QuestReward.RemoveDueToEmpty"));
+			removeRewardChoice(p, index);
+		}
 	}
 	
 	public static String getItemName(ItemStack item)

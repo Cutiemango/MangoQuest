@@ -39,9 +39,11 @@ public class PluginHooker
 	{
 		try
 		{
-			citizens = (CitizensPlugin) plugin.getServer().getPluginManager().getPlugin("Citizens");
-			if (citizens != null)
+			if (plugin.getServer().getPluginManager().isPluginEnabled("Citizens"))
+			{
+				citizens = (CitizensPlugin) plugin.getServer().getPluginManager().getPlugin("Citizens");
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.CitizensHooked"));
+			}
 			else
 			{
 				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("PluginHooker.PluginNotHooked"));
@@ -50,36 +52,50 @@ public class PluginHooker
 				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("PluginHooker.PleaseInstall"));
 			}
 		
-			vault = (Vault) plugin.getServer().getPluginManager().getPlugin("Vault");
-			if (vault != null)
+			
+			if (plugin.getServer().getPluginManager().isPluginEnabled("Vault"))
+			{
+				vault = (Vault) plugin.getServer().getPluginManager().getPlugin("Vault");
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.VaultHooked"));
+			}
 			else
 			{
 				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("PluginHooker.PluginNotHooked"));
 				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("PluginHooker.VaultNotHooked"));
 				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("PluginHooker.PleaseInstall"));
 			}
-			
-			MTMplugin = (MythicMobs) plugin.getServer().getPluginManager().getPlugin("MythicMobs");
-			if (MTMplugin != null)
+
+			if (plugin.getServer().getPluginManager().isPluginEnabled("MythicMobs"))
+			{
+				MTMplugin = (MythicMobs) plugin.getServer().getPluginManager().getPlugin("MythicMobs");
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.MythicMobsHooked"));
+			}
 			else
 				Main.debug(I18n.locMsg("PluginHooker.MythicMobsNotHooked"));
 			
-			shopkeepers = (ShopkeepersPlugin) plugin.getServer().getPluginManager().getPlugin("Shopkeepers");
-			if (shopkeepers != null)
+			if (plugin.getServer().getPluginManager().isPluginEnabled("Shopkeepers"))
+			{
+				shopkeepers = (ShopkeepersPlugin) plugin.getServer().getPluginManager().getPlugin("Shopkeepers");
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.ShopkeepersHooked"));
+			}
 			else
 				Main.debug(I18n.locMsg("PluginHooker.ShopkeepersNotHooked"));
 			
-			skillapi = (SkillAPI) plugin.getServer().getPluginManager().getPlugin("SkillAPI");
-			if (skillapi != null)
+			
+			if (plugin.getServer().getPluginManager().isPluginEnabled("SkillAPI"))
+			{
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.SkillAPIHooked"));
+				skillapi = (SkillAPI) plugin.getServer().getPluginManager().getPlugin("SkillAPI");
+			}
 			else
 				Main.debug(I18n.locMsg("PluginHooker.SkillAPINotHooked"));
-			rpgshop = (RPGshop) plugin.getServer().getPluginManager().getPlugin("RPGshop");
-			if (rpgshop != null)
+			
+			
+			if (plugin.getServer().getPluginManager().isPluginEnabled("RPGshop"))
+			{
+				rpgshop = (RPGshop) plugin.getServer().getPluginManager().getPlugin("RPGshop");
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.RPGshopHooked"));
+			}
 		}
 		catch (Exception e){}
 

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -34,15 +33,16 @@ import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.RequirementType;
-import me.Cutiemango.MangoQuest.model.TriggerType;
+import me.Cutiemango.MangoQuest.objects.GUIOption;
 import me.Cutiemango.MangoQuest.objects.QuestNPC;
-import me.Cutiemango.MangoQuest.objects.QuestReward;
 import me.Cutiemango.MangoQuest.objects.QuestStage;
 import me.Cutiemango.MangoQuest.objects.QuestVersion;
-import me.Cutiemango.MangoQuest.objects.RewardChoice;
-import me.Cutiemango.MangoQuest.objects.TriggerObject;
-import me.Cutiemango.MangoQuest.objects.TriggerObject.TriggerObjectType;
+import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
+import me.Cutiemango.MangoQuest.objects.reward.QuestReward;
+import me.Cutiemango.MangoQuest.objects.reward.RewardChoice;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject.TriggerObjectType;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectBreakBlock;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectConsumeItem;
@@ -84,9 +84,10 @@ public class QuestConfigLoader
 	{
 		loadTranslation();
 		loadChoice();
-		loadConversation();
 		loadQuests();
+		loadConversation();
 		loadStartConversation();
+		loadGUIOptions();
 		loadNPC();
 		
 		SimpleQuestObject.initObjectNames();
@@ -103,7 +104,7 @@ public class QuestConfigLoader
 		{
 			for (String key : advancement.getSection("Advancements"))
 			{
-				QuestAdvancement ad = new QuestAdvancement(new NamespacedKey(Main.instance, "story:" + key));
+				QuestAdvancement ad = new QuestAdvancement(new NamespacedKey(Main.getInstance(), "story:" + key));
 				if (advancement.getString("Advancements." + key + ".Title") != null)
 					ad.title(QuestChatManager.translateColor(advancement.getString("Advancements." + key + ".Title")));
 				if (advancement.getString("Advancements." + key + ".Description") != null)
@@ -192,17 +193,33 @@ public class QuestConfigLoader
 				NPC npcReal = Main.getHooker().getNPC(id);
 				QuestNPC npcdata = QuestNPCManager.hasData(id) ? QuestNPCManager.getNPCData(id) : new QuestNPC(npcReal);
 				if (npc.getString("NPC." + id + ".Clone") != null)
-				{
 					cloneMap.put(id, npc.getInt("NPC." + id + ".Clone"));
-				}
-				else if (npc.isSection("NPC." + id + ".Messages"))
+				else
 				{
-					for (String i : npc.getSection("NPC." + id + ".Messages"))
+					if (npc.isSection("NPC." + id + ".Messages"))
 					{
-						List<String> list = npc.getStringList("NPC." + id + ".Messages." + i);
-						Set<String> set = new HashSet<>();
-						set.addAll(list);
-						npcdata.putMessage(Integer.parseInt(i), set);
+						for (String i : npc.getSection("NPC." + id + ".Messages"))
+						{
+							List<String> list = npc.getStringList("NPC." + id + ".Messages." + i);
+							HashSet<String> set = new HashSet<>();
+							set.addAll(list);
+							npcdata.putMessage(Integer.parseInt(i), set);
+						}
+					}
+					if (npc.getStringList("NPC." + id + ".GUIOptions") != null)
+					{
+						HashSet<GUIOption> set = new HashSet<>();
+						for (String s : npc.getStringList("NPC." + id + ".GUIOptions"))
+						{
+							GUIOption option = QuestNPCManager.getOption(s);
+							if (s == null)
+							{
+								QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.OptionNotFound", s, Integer.toString(id)));
+								continue;
+							}
+							set.add(option);
+						}
+						npcdata.setOptions(set);
 					}
 				}
 				QuestNPCManager.updateNPC(npcReal, npcdata);
@@ -339,6 +356,13 @@ public class QuestConfigLoader
 			{
 				String name = conv.getString("Choices." + id + ".Options." + i + ".OptionName");
 				Choice c = new Choice(name, loadConvAction(conv.getStringList("Choices." + id + ".Options." + i + ".OptionActions")));
+				if (conv.isSection("Choices." + id + ".Options." + i + ".FriendPointReq"))
+				{
+					for (int npc : conv.getIntegerSection("Choices." + id + ".Options." + i + ".FriendPointReq"))
+					{
+						c.setFriendPointReq(npc, conv.getInt("Choices." + id + ".Options." + i + ".FriendPointReq." + npc));
+					}
+				}
 				list.add(i - 1, c);
 			}
 			QuestChoice choice = new QuestChoice(q, list);
@@ -347,6 +371,34 @@ public class QuestConfigLoader
 		}
 
 		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.ChoiceLoaded", Integer.toString(count)));
+	}
+	
+	public void loadGUIOptions()
+	{
+		if (!npc.isSection("GUIOptions"))
+			return;
+		int count = 0;
+		for (String internal : npc.getSection("GUIOptions"))
+		{
+			String path = "GUIOptions." + internal + ".";
+			String displayText = npc.getString(path + "DisplayText");
+			List<TriggerObject> list = new ArrayList<>();
+			for (String s : npc.getStringList(path + "ClickEvent"))
+			{
+				String[] split = s.split(" ");
+				list.add(new TriggerObject(TriggerObjectType.valueOf(split[0]), QuestUtil.convertArgsString(split, 1), -1));
+			}
+			
+			GUIOption option = new GUIOption(internal, displayText, list);
+			
+			if (npc.getString(path + "HoverText") != null)
+				option.setHoverText(npc.getString(path + "HoverText"));
+			if (npc.isSection(path + "Requirements"))
+				option.setRequirementMap(loadRequirements(npc, path));
+			QuestNPCManager.registerOption(internal, option);
+			count++;
+		}
+		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.OptionLoaded", Integer.toString(count)));
 	}
 
 	public void loadQuests()
@@ -364,7 +416,7 @@ public class QuestConfigLoader
 			List<QuestStage> stages = loadStages(internal);
 			QuestReward reward = loadReward(internal);
 			
-			if (Main.instance.pluginHooker.hasCitizensEnabled() && quest.contains(qpath + "QuestNPC"))
+			if (Main.getHooker().hasCitizensEnabled() && quest.contains(qpath + "QuestNPC"))
 			{
 				NPC npc = null;
 				if (quest.getInt(qpath + "QuestNPC") != -1
@@ -381,7 +433,8 @@ public class QuestConfigLoader
 					q.setFailMessage(quest.getString(qpath + "MessageRequirementNotMeet"));
 				
 				// Requirements
-				loadRequirements(q);
+				q.setRequirements(loadRequirements(quest, qpath));;
+				q.initRequirements();
 
 				// Triggers
 				loadTriggers(q);
@@ -499,38 +552,50 @@ public class QuestConfigLoader
 		return list;
 	}
 	
-	private void loadRequirements(Quest q)
+	private EnumMap<RequirementType, Object> loadRequirements(QuestIO config, String path)
 	{
-		String qpath = "Quests." + q.getInternalID() + ".";
-		if (quest.isSection(qpath + "Requirements"))
+		EnumMap<RequirementType, Object> map = new EnumMap<>(RequirementType.class);
+		if (config.isSection(path + "Requirements"))
 		{
-			if (quest.getInt(qpath + "Requirements.Level") != 0)
-				q.getRequirements().put(RequirementType.LEVEL, quest.getInt(qpath + "Requirements.Level"));
-			if (quest.getStringList(qpath + "Requirements.Quest") != null)
-				q.getRequirements().put(RequirementType.QUEST, quest.getStringList(qpath + "Requirements.Quest"));
-			if (quest.isSection(qpath + "Requirements.Item"))
+			map.put(RequirementType.LEVEL, config.getInt(path + "Requirements.Level"));
+			map.put(RequirementType.MONEY, config.getDouble(path + "Requirements.Money"));
+			
+			List<String> list = new ArrayList<>();
+			if (config.getStringList(path + "Requirements.Quest") != null)
+				list = config.getStringList(path + "Requirements.Quest");
+			map.put(RequirementType.QUEST, list);
+			
+			List<ItemStack> l = new ArrayList<>();
+			if (config.isSection(path + "Requirements.Item"))
 			{
-				List<ItemStack> l = new ArrayList<>();
-				for (String i : quest.getSection(qpath + "Requirements.Item"))
+				for (String i : config.getSection(path + "Requirements.Item"))
 				{
-					l.add(quest.getItemStack(qpath + "Requirements.Item." + i));
-				}
-				q.getRequirements().put(RequirementType.ITEM, l);
+					l.add(config.getItemStack(path + "Requirements.Item." + i));
+				} 
 			}
-			if (quest.getStringList(qpath + "Requirements.Scoreboard") != null)
-				q.getRequirements().put(RequirementType.SCOREBOARD,
-						quest.getStringList(qpath + "Requirements.Scoreboard"));
-			if (quest.getStringList(qpath + "Requirements.NBTTag") != null)
-				q.getRequirements().put(RequirementType.NBTTAG, quest.getStringList(qpath + "Requirements.NBTTag"));
-			if (Main.instance.pluginHooker.hasSkillAPIEnabled())
+			map.put(RequirementType.ITEM, l);
+			
+			HashMap<Integer, Integer> fMap = new HashMap<>();
+			if (config.isSection(path + "Requirements.FriendPoint"))
 			{
-				if (quest.getString(qpath + "Requirements.SkillAPIClass") != null)
-					q.getRequirements().put(RequirementType.SKILLAPI_CLASS, quest.getString(qpath + "Requirements.SkillAPIClass"));
-				if (quest.getInt(qpath + "Requirements.SkillAPILevel") != 0)
-					q.getRequirements().put(RequirementType.SKILLAPI_LEVEL, quest.getInt(qpath + "Requirements.SkillAPILevel"));
+				for (Integer id : config.getIntegerSection(path + "Requirements.FriendPoint"))
+				{
+					fMap.put(id, config.getInt(path + "Requirements.FriendPoint." + id));
+				}
+			}
+			map.put(RequirementType.FRIEND_POINT, fMap);
+
+			if (Main.getHooker().hasSkillAPIEnabled())
+			{
+				map.put(RequirementType.SKILLAPI_CLASS, "none");
+				map.put(RequirementType.SKILLAPI_LEVEL, 0);
+				if (config.getString(path + "Requirements.SkillAPIClass") != null)
+					map.put(RequirementType.SKILLAPI_CLASS, config.getString(path + "Requirements.SkillAPIClass"));
+				if (config.getInt(path + "Requirements.SkillAPILevel") != 0)
+					map.put(RequirementType.SKILLAPI_LEVEL, config.getInt(path + "Requirements.SkillAPILevel"));
 			}
 		}
-		return;
+		return map;
 	}
 	
 	private void loadTriggers(Quest q)
@@ -614,13 +679,15 @@ public class QuestConfigLoader
 				reward.addCommand(s);
 			}
 		}
-		if (Main.instance.pluginHooker.hasSkillAPIEnabled())
+		if (Main.getHooker().hasSkillAPIEnabled())
 		{
 			if (quest.getInt(qpath + "Rewards.SkillAPIExp") != 0)
 				reward.setSkillAPIExp(quest.getInt(qpath + "Rewards.SkillAPIExp"));
 		}
 		return reward;
 	}
+	
+	
 
 	private List<QuestBaseAction> loadConvAction(List<String> fromlist)
 	{

@@ -9,6 +9,15 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class FlexiableBook
 {
+	/*
+	 * When using this, please remember to add:
+	 * 
+	 * 	QuestUtil.checkOutOfBounds(page, book);
+	 *	page = book.getLastEditingPage();
+	 *	
+	 *	to make sure that it changes page smoothly. 
+	 */
+	
 	public FlexiableBook()
 	{
 		pages = new LinkedList<>();

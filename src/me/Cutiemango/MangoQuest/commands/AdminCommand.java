@@ -31,7 +31,7 @@ public class AdminCommand implements CommandExecutor
 		{
 			if (args[0].equalsIgnoreCase("reload"))
 			{
-				Main.instance.reload();
+				Main.getInstance().reload();
 				QuestChatManager.info(sender, "&a" + I18n.locMsg("CommandInfo.ReloadSuccessful"));
 				return true;
 			}
@@ -125,9 +125,9 @@ public class AdminCommand implements CommandExecutor
 							return false;
 					}
 					break;
-					// /mqa opennpc [ID] [NPCID]
+					// /mqa opennpc [ID] [NPCID] [trade]
 				case "opennpc":
-					if (args.length < 3)
+					if (args.length < 4)
 						return false;
 					if (!QuestValidater.validateNPC(args[2]))
 					{
@@ -135,12 +135,7 @@ public class AdminCommand implements CommandExecutor
 						return false;
 					}
 					npc = Main.getHooker().getNPC(args[2]);
-					boolean trade;
-					if (Main.getHooker().hasMythicMobEnabled() && Main.getHooker().getShopkeepers().isShopkeeper(npc.getEntity()))
-						trade = true;
-					else if (Main.getHooker().hasRPGshopEnabled())
-						trade = true;
-					else trade = false;
+					boolean trade = Boolean.parseBoolean(args[3]);
 					QuestBookGUIManager.openNPCInfo(target, npc, trade);
 					break;
 			}

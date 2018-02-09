@@ -19,7 +19,8 @@ import me.Cutiemango.MangoQuest.data.QuestObjectProgress;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.objects.RewardChoice;
+import me.Cutiemango.MangoQuest.objects.GUIOption;
+import me.Cutiemango.MangoQuest.objects.reward.RewardChoice;
 import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
@@ -151,6 +152,8 @@ public class QuestBookGUIManager
 		{
 			QuestUtil.checkOutOfBounds(page, book);
 			page = book.getLastEditingPage();
+			if (!QuestUtil.getData(p).meetFriendPointReq(c.get(i)))
+				continue;
 			page.add(new InteractiveText("- " + c.get(i).getContent()).clickCommand("/mq conv choose " + i)).changeLine();
 		}
 		openBook(p, book.toSendableBook());
@@ -256,7 +259,7 @@ public class QuestBookGUIManager
 
 	public static void openBook(Player p, TextComponent... texts)
 	{
-		Main.instance.handler.openBook(p, texts);
+		Main.getInstance().handler.openBook(p, texts);
 	}
 	
 	public static void openQuitGUI(Player p, Quest q)
@@ -286,6 +289,14 @@ public class QuestBookGUIManager
 
 		// Interaction List
 		page.add(I18n.locMsg("QuestGUI.InteractionList")).changeLine();
+		for (GUIOption option : QuestNPCManager.getNPCData(npc.getId()).getOptions())
+		{
+			if (!option.meetRequirementWith(p))
+				continue;
+			QuestUtil.checkOutOfBounds(page, book);
+			page = book.getLastEditingPage();
+			page.add(option.toInteractiveText(npc)).changeLine();
+		}
 		if (trade)
 			page.add(new InteractiveText(I18n.locMsg("QuestGUI.Trade")).clickCommand("/mq quest trade " + npc.getId())).changeLine();
 		for (QuestProgress q : qd.getNPCtoTalkWith(npc))
@@ -334,12 +345,11 @@ public class QuestBookGUIManager
 					{
 						if (holder.contains(q))
 							continue;
-						page.add(I18n.locMsg("QuestGUI.QuestDoingSymbol"));
+						page.add(I18n.locMsg("QuestGUI.QuestDoingSymbol")).endNormally();
 						page.add(new InteractiveText("").showQuest(q)).endNormally();
 						if (q.isQuitable())
 							page.add(new InteractiveText(I18n.locMsg("QuestJourney.QuitButton")).clickCommand("/mq quest quit " + q.getInternalID())
-								.showText(I18n.locMsg("QuestGUI.Hover.QuitWarning", q.getQuestName()))).endNormally();
-						page.changeLine();
+								.showText(I18n.locMsg("QuestGUI.Hover.QuitWarning", q.getQuestName()))).changeLine();
 					}
 					else
 					{

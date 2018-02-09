@@ -3,7 +3,6 @@ package me.Cutiemango.MangoQuest.objects;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.citizensnpcs.api.npc.NPC;
@@ -19,8 +18,9 @@ public class QuestNPC
 	}
 	
 	private NPC npcReal;
-	private HashMap<Integer, Set<String>> friendMessageMap = new HashMap<>();
-	private Set<Quest> givenQuests = new HashSet<>();
+	private HashMap<Integer, HashSet<String>> friendMessageMap = new HashMap<>();
+	private HashSet<Quest> givenQuests = new HashSet<>();
+	private HashSet<GUIOption> options = new HashSet<>();
 	
 	/**
 	 * This method is used to get npc's message according to given player's friend point.
@@ -30,7 +30,7 @@ public class QuestNPC
 	{
 		Random random = new Random();
 		int r = 0;
-		Set<String> set = new HashSet<>();
+		HashSet<String> set = new HashSet<>();
 		if (fpoint == 0)
 			set = friendMessageMap.get(0);
 		else
@@ -55,12 +55,12 @@ public class QuestNPC
 		givenQuests.add(q);
 	}
 	
-	public void putMessage(int fpoint, Set<String> msg)
+	public void putMessage(int fpoint, HashSet<String> msg)
 	{
 		friendMessageMap.put(fpoint, msg);
 	}
 	
-	public Set<Quest> getGivenQuests()
+	public HashSet<Quest> getGivenQuests()
 	{
 		return givenQuests;
 	}
@@ -68,5 +68,15 @@ public class QuestNPC
 	public NPC getNPC()
 	{
 		return npcReal;
+	}
+
+	public HashSet<GUIOption> getOptions()
+	{
+		return options;
+	}
+
+	public void setOptions(HashSet<GUIOption> options)
+	{
+		this.options = options;
 	}
 }

@@ -24,12 +24,12 @@ public class QuestIO
 
 	public QuestIO(String name, boolean warn, boolean createFile)
 	{
-		file = new File(Main.instance.getDataFolder(), name);
+		file = new File(Main.getInstance().getDataFolder(), name);
 
 		if (!file.exists())
 		{
 			if (createFile)
-				Main.instance.saveResource(name, true);
+				Main.getInstance().saveResource(name, true);
 			else
 			{
 				try
@@ -51,7 +51,7 @@ public class QuestIO
 	
 	public QuestIO(Player p)
 	{
-		File f = new File(Main.instance.getDataFolder() + "/data/" , p.getUniqueId() + ".yml");
+		File f = new File(Main.getInstance().getDataFolder() + "/data/" , p.getUniqueId() + ".yml");
 		if (!f.exists())
 		{
 			f.getParentFile().mkdirs();

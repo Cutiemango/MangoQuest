@@ -29,9 +29,9 @@ public abstract class ItemObject extends NumerableObject
 		switch (type)
 		{
 			case "item":
-				if (Main.instance.handler.getItemInMainHand(sender) == null)
+				if (Main.getInstance().handler.getItemInMainHand(sender) == null)
 					return false;
-				setItem(Main.instance.handler.getItemInMainHand(sender));
+				setItem(Main.getInstance().handler.getItemInMainHand(sender));
 				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ItemRegistered"));
 				break;
 			default:

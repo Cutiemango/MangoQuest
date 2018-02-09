@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.objects;
+package me.Cutiemango.MangoQuest.objects.reward;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,7 +50,7 @@ public class RewardCache
 				openGUI();
 			}
 			
-		}.runTaskLater(Main.instance, 5L);
+		}.runTaskLater(Main.getInstance(), 5L);
 	}
 	
 	public void removeChoice(Integer i)
@@ -64,7 +64,7 @@ public class RewardCache
 				openGUI();
 			}
 			
-		}.runTaskLater(Main.instance, 5L);
+		}.runTaskLater(Main.getInstance(), 5L);
 	}
 	
 	public Player getOwner()

@@ -14,11 +14,11 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.RequirementType;
-import me.Cutiemango.MangoQuest.model.TriggerType;
 import me.Cutiemango.MangoQuest.objects.QuestStage;
-import me.Cutiemango.MangoQuest.objects.TriggerObject;
-import me.Cutiemango.MangoQuest.objects.TriggerObject.TriggerObjectType;
+import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject.TriggerObjectType;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectBreakBlock;
 
@@ -101,7 +101,8 @@ public class CommandNewObject
 			return;
 		}
 	}
-
+	
+	// /mq e addnew req [type]
 	@SuppressWarnings("unchecked")
 	private static void addRequirements(Quest q, Player sender, String[] args)
 	{
@@ -115,15 +116,15 @@ public class CommandNewObject
 					QuestEditorManager.selectQuest(sender, "/mq e edit req " + t.toString() + " " + index);
 					((List<String>) q.getRequirements().get(t)).add("");
 					break;
-				case SCOREBOARD:
-				case NBTTAG:
-					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req " + t.toString() + " " + index, null));
-					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-					((List<String>) q.getRequirements().get(t)).add("");
-					break;
 				default:
 					break;
 			}
+		}
+		else if (t == RequirementType.FRIEND_POINT)
+		{
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req FRIEND_POINT", null));
+			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.TargetNPC"));
+			return;
 		}
 	}
 

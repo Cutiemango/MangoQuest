@@ -37,6 +37,7 @@ public class QuestBaseAction
 		WAIT(I18n.locMsg("EnumAction.Wait")),
 		FINISH(I18n.locMsg("EnumAction.Finish")),
 		TAKE_QUEST(I18n.locMsg("EnumAction.TakeQuest")),
+		EXIT(I18n.locMsg("EnumAction.Exit")),
 		GIVE_ADVANCEMENT(I18n.locMsg("EnumAction.GiveAdvancement"));
 		
 		EnumAction(String s)
@@ -44,7 +45,7 @@ public class QuestBaseAction
 			name = s;
 		}
 
-		public static final List<EnumAction> NO_OBJ_ACTIONS = Arrays.asList(EnumAction.CHANGE_LINE, EnumAction.CHANGE_PAGE, EnumAction.BUTTON, EnumAction.TAKE_QUEST);
+		public static final List<EnumAction> NO_OBJ_ACTIONS = Arrays.asList(EnumAction.CHANGE_LINE, EnumAction.CHANGE_PAGE, EnumAction.BUTTON, EnumAction.TAKE_QUEST, EnumAction.EXIT);
 		private String name;
 		
 		public String toCustomString()
@@ -95,7 +96,7 @@ public class QuestBaseAction
 						cp.nextAction();
 						return;
 					}
-				}.runTaskLater(Main.instance, Long.parseLong(obj.toString()));
+				}.runTaskLater(Main.getInstance(), Long.parseLong(obj.toString()));
 				break;
 			case FINISH:
 				cp.finish(Boolean.valueOf(obj));
@@ -119,9 +120,17 @@ public class QuestBaseAction
 				}
 				cp.newPage();
 				cp.getCurrentPage().add(I18n.locMsg("Conversation.ChooseAnOption")).changeLine();
-				
-				cp.getCurrentPage().add(new InteractiveText(I18n.locMsg("Conversation.DefaultQuestAcceptMessage") + conv.getAcceptMessage()).clickCommand("/mq conv takequest")).changeLine();
-				cp.getCurrentPage().add(new InteractiveText(I18n.locMsg("Conversation.DefaultQuestDenyMessage") + conv.getDenyMessage()).clickCommand("/mq conv denyquest")).changeLine();
+				cp.getCurrentPage().changeLine();
+				cp.getCurrentPage().changeLine();
+				cp.getCurrentPage().add(new InteractiveText(I18n.locMsg("Conversation.DefaultQuestAcceptMessage"))).changeLine();
+				cp.getCurrentPage().add(new InteractiveText(conv.getAcceptMessage()).clickCommand("/mq conv takequest")).changeLine();
+				cp.getCurrentPage().changeLine();
+				cp.getCurrentPage().changeLine();
+				cp.getCurrentPage().add(new InteractiveText(I18n.locMsg("Conversation.DefaultQuestDenyMessage"))).changeLine();
+				cp.getCurrentPage().add(new InteractiveText(conv.getDenyMessage()).clickCommand("/mq conv denyquest")).changeLine();
+				break;
+			case EXIT:
+				ConversationManager.finishConversation(cp.getOwner());
 				break;
 			default:
 				break;
@@ -141,6 +150,8 @@ public class QuestBaseAction
 	
 	public String toConfigFormat()
 	{
+		if (obj == null)
+			obj = "";
 		return action.toString() + "#" + obj;
 	}
 

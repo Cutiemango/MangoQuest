@@ -34,7 +34,10 @@ public class InteractiveText
 	private Quest quest;
 	private QuestPlayerData data;
 	
-
+	
+	/*
+	 * "/" needed.
+	 */
 	public InteractiveText clickCommand(String cmd)
 	{
 		command = cmd;

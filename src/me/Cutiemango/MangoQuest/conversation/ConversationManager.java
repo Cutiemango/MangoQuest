@@ -115,6 +115,12 @@ public class ConversationManager
 		cp.getCurrentPage().add(I18n.locMsg("CommandInfo.ForceQuitConv")).changeLine();
 		cp.getActionQueue().push(new QuestBaseAction(EnumAction.FINISH, "false"));
 	}
+	
+	public static void finishConversation(Player p)
+	{
+		if (QuestStorage.ConvProgresses.containsKey(p.getName()))
+			QuestStorage.ConvProgresses.remove(p.getName());
+	}
 
 	public static QuestBookPage generateNewPage(QuestConversation conv)
 	{

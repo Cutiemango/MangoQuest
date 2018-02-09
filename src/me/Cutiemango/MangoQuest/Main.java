@@ -31,7 +31,7 @@ import me.Cutiemango.MangoQuest.versions.Version_v1_9_R2;
 
 public class Main extends JavaPlugin
 {
-	public static Main instance;
+	private static Main instance;
 
 	public PluginHooker pluginHooker;
 	public VersionHandler handler;
@@ -136,10 +136,12 @@ public class Main extends JavaPlugin
 		QuestNPCManager.clear();
 
 		configManager = new QuestConfigManager();
+		pluginHooker = new PluginHooker(this);
+		pluginHooker.hookPlugins();
 		configManager.loadFile();
 		
+		CustomObjectManager.loadCustomObjects();
 		QuestConfigManager.getLoader().loadAll();
-
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
 			QuestPlayerData qd = new QuestPlayerData(p);
@@ -150,6 +152,11 @@ public class Main extends JavaPlugin
 	public static boolean isUsingUpdatedVersion()
 	{
 		return VERSION_HIGHER_THAN_1_12;
+	}
+	
+	public static Main getInstance()
+	{
+		return instance;
 	}
 	
 	public static PluginHooker getHooker()

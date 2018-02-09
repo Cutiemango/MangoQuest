@@ -1,5 +1,6 @@
 package me.Cutiemango.MangoQuest.commands.edtior;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import org.bukkit.Bukkit;
@@ -13,9 +14,9 @@ import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.RequirementType;
-import me.Cutiemango.MangoQuest.model.TriggerType;
-import me.Cutiemango.MangoQuest.objects.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
 
 public class CommandRemoveQuest
 {
@@ -106,9 +107,10 @@ public class CommandRemoveQuest
 				case SKILLAPI_LEVEL:
 					break;
 				case QUEST:
-				case SCOREBOARD:
-				case NBTTAG:
 					((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
+					break;
+				case FRIEND_POINT:
+					((HashMap<Integer, Integer>)q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
 					break;
 			}
 			QuestEditorManager.editQuestRequirement(sender);

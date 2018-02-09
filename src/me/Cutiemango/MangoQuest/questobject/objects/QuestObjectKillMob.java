@@ -118,7 +118,7 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 	@Override
 	public void formatEditorPage(QuestBookPage page, int stage, int obj)
 	{
-		if (Main.instance.pluginHooker.hasMythicMobEnabled())
+		if (Main.getInstance().pluginHooker.hasMythicMobEnabled())
 		{
 			page.add(I18n.locMsg("QuestEditor.MythicMobs"));
 			if (isMythicObject())
@@ -148,7 +148,7 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 	{
 		if (config.getString(path + "MythicMob") != null)
 		{
-			if (!Main.instance.pluginHooker.hasMythicMobEnabled())
+			if (!Main.getInstance().pluginHooker.hasMythicMobEnabled())
 			{
 				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.MTMNotInstalled"));
 				return false;
@@ -211,7 +211,7 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 				}
 				setMythicMob(Main.getHooker().getMythicMob(obj));
 				setCustomName(mtmMob.getDisplayName());
-				setType(EntityType.valueOf(mtmMob.getEntityType()));
+				setType(EntityType.valueOf(mtmMob.getEntityType().toUpperCase()));
 				break;
 			default:
 				return super.receiveCommandInput(sender, type, obj);

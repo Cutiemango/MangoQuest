@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.objects;
+package me.Cutiemango.MangoQuest.objects.reward;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -215,7 +215,7 @@ public class QuestReward
 	{
 		if (this.hasMoney())
 		{
-			Main.instance.pluginHooker.getEconomy().depositPlayer(p, money);
+			Main.getHooker().getEconomy().depositPlayer(p, money);
 			QuestChatManager.info(p, I18n.locMsg("QuestReward.GiveMoneyReward", Double.toString(money)));
 		}
 

@@ -9,11 +9,14 @@ import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.manager.reward.QuestRewardManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.manager.PluginHooker;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.objects.RewardCache;
+import me.Cutiemango.MangoQuest.objects.GUIOption;
+import me.Cutiemango.MangoQuest.objects.reward.RewardCache;
 import me.old.RPGshop.GUIManager;
 import me.old.RPGshop.InventoryGUI.TradeGUI;
 import net.citizensnpcs.api.CitizensAPI;
@@ -41,12 +44,21 @@ public class QuestCommand
 					case "help":
 						sendHelp(sender);
 						return;
+					case "option":
+						if (!QuestValidater.validateNPC(args[2]))
+							return;
+						if (QuestNPCManager.getOption(args[3]) != null)
+						{
+							GUIOption option = QuestNPCManager.getOption(args[3]);
+							option.execute(sender);
+						}
+						return;
 					case "trade":
-						PluginHooker hooker = Main.instance.pluginHooker;
+						PluginHooker hooker = Main.getHooker();
 						if (hooker.hasCitizensEnabled())
 						{
 							NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[2]));
-							if (npc == null || npc.getEntity().getLocation().distance(sender.getLocation()) > 20)
+							if (npc == null || !QuestUtil.getData(sender).isNearNPC(npc))
 								return;
 							if (hooker.hasRPGshopEnabled())
 							{

@@ -19,7 +19,7 @@ import me.Cutiemango.MangoQuest.ConfigSettings;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.RequirementType;
+import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
 import net.citizensnpcs.api.npc.NPC;
 
 public class EditorListenerHandler

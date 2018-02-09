@@ -1,6 +1,7 @@
 package me.Cutiemango.MangoQuest.commands.edtior;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,13 +19,14 @@ import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.manager.reward.QuestRewardManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.RequirementType;
-import me.Cutiemango.MangoQuest.model.TriggerType;
-import me.Cutiemango.MangoQuest.objects.TriggerObject;
-import me.Cutiemango.MangoQuest.objects.TriggerObject.TriggerObjectType;
+import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject.TriggerObjectType;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectBreakBlock;
@@ -73,7 +75,7 @@ public class CommandEditQuest
 				editRequirements(q, sender, args);
 				break;
 			case "evt":
-				editEvent(q, sender, args);
+				editTrigger(q, sender, args);
 				break;
 			case "stage":
 				editStage(q, sender, args);
@@ -142,7 +144,8 @@ public class CommandEditQuest
 				return;
 			}
 	}
-
+	
+	// /mq e edit req [type] ([index]) [obj]
 	@SuppressWarnings("unchecked")
 	private static void editRequirements(Quest q, Player sender, String[] args)
 	{
@@ -165,16 +168,6 @@ public class CommandEditQuest
 				case LEVEL:
 				case MONEY:
 					break;
-				case NBTTAG:
-					if (((List<String>) q.getRequirements().get(t)).contains(args[5]))
-					{
-						QuestChatManager.error(sender, I18n.locMsg("EditorMessage.ObjectExist"));
-						((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
-						break;
-					}
-					((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
-					((List<String>) q.getRequirements().get(t)).add(args[5]);
-					break;
 				case QUEST:
 					if (QuestUtil.getQuest(args[5]) != null)
 					{
@@ -193,15 +186,16 @@ public class CommandEditQuest
 						QuestChatManager.error(sender, I18n.locMsg("CommandInfo.QuestNotFound"));
 						break;
 					}
-				case SCOREBOARD:
-					if (((List<String>) q.getRequirements().get(t)).contains(args[5]))
+				case FRIEND_POINT:
+					int id = Integer.parseInt(args[4]);
+					int fp = Integer.parseInt(args[5]);
+					if (!QuestValidater.validateNPC(Integer.toString(id)))
 					{
-						QuestChatManager.error(sender, I18n.locMsg("EditorMessage.ObjectExist"));
-						((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
-						break;
+						QuestChatManager.error(sender, I18n.locMsg("EditorMessage.NPCNotFound", Integer.toString(id)));
+						return;
 					}
-					((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
-					((List<String>) q.getRequirements().get(t)).add(args[5]);
+					((HashMap<Integer, Integer>) q.getRequirements().get(t)).put(id, fp);
+					QuestChatManager.info(sender, I18n.locMsg("EditorMessage.FriendPointRegistered", Integer.toString(id), Integer.toString(fp)));
 					break;
 				default:
 					break;
@@ -226,11 +220,15 @@ public class CommandEditQuest
 					case QUEST:
 						QuestEditorManager.selectQuest(sender, "mq e edit req " + t.toString() + " " + Integer.parseInt(args[4]));
 						break;
-					case SCOREBOARD:
-					case NBTTAG:
-						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.STRING, "mq e edit req " + t.toString() + " " + Integer.parseInt(args[4]), null));
-						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+					case FRIEND_POINT:
+						int id = Integer.parseInt(args[4]);
+						if (!QuestValidater.validateNPC(Integer.toString(id)))
+						{
+							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.NPCNotFound", Integer.toString(id)));
+							return;
+						}
+						EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req FRIEND_POINT " + args[4], null));
+						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPointReq"));
 						break;
 					case ITEM:
 						break;
@@ -257,6 +255,7 @@ public class CommandEditQuest
 						case MONEY:
 						case SKILLAPI_CLASS:
 						case SKILLAPI_LEVEL:
+						case FRIEND_POINT:
 							EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req " + t.toString(), null));
 							QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 							break;
@@ -295,7 +294,7 @@ public class CommandEditQuest
 	}
 
 	// Command: /mq e edit evt [triggertype] [stage] [index] [objtype] [obj]
-	private static void editEvent(Quest q, Player sender, String[] args)
+	private static void editTrigger(Quest q, Player sender, String[] args)
 	{
 		if (args.length == 3)
 		{
@@ -459,7 +458,6 @@ public class CommandEditQuest
 						q.getStage(stage - 1).getObjects().set(obj - 1, ob);
 						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ChangeObject"));
 					}
-					break;
 				}
 				if (!(o instanceof EditorObject))
 					return;

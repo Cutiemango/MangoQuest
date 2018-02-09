@@ -9,17 +9,15 @@ import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
-import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.RequirementType;
-import me.Cutiemango.MangoQuest.objects.RequirementFailResult;
+import me.Cutiemango.MangoQuest.objects.requirement.RequirementFailResult;
+import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
 
 public class RequirementManager
 {
 	@SuppressWarnings("unchecked")
-	public static RequirementFailResult meetRequirementWith(Player p, Quest q)
+	public static RequirementFailResult meetRequirementWith(Player p, EnumMap<RequirementType, Object> requirements)
 	{
 		QuestPlayerData pd = QuestUtil.getData(p);
-		EnumMap<RequirementType, Object> requirements = q.getRequirements();
 		for (RequirementType t : requirements.keySet())
 		{
 			Object value = requirements.get(t);
@@ -37,9 +35,9 @@ public class RequirementManager
 						return new RequirementFailResult(RequirementType.LEVEL, (Integer) value);
 					break;
 				case MONEY:
-					if (Main.instance.pluginHooker.hasEconomyEnabled())
+					if (Main.getHooker().hasEconomyEnabled())
 					{
-						if (!(Main.instance.pluginHooker.getEconomy().getBalance(p) >= (Double) value))
+						if (!(Main.getHooker().getEconomy().getBalance(p) >= (Double) value))
 							return new RequirementFailResult(RequirementType.MONEY, (Double) value);
 					}
 					break;
@@ -52,17 +50,8 @@ public class RequirementManager
 							return new RequirementFailResult(RequirementType.ITEM, i);
 					}
 					break;
-				case SCOREBOARD:
-					break;
-				case NBTTAG:
-					for (String n : (List<String>) value)
-					{
-						if (!Main.instance.handler.hasTag(p, n))
-							return new RequirementFailResult(RequirementType.NBTTAG, "");
-					}
-					break;
 				case SKILLAPI_CLASS:
-					if (!Main.instance.pluginHooker.hasSkillAPIEnabled())
+					if (!Main.getHooker().hasSkillAPIEnabled())
 						break;
 					if (SkillAPI.hasPlayerData(p))
 					{
@@ -75,13 +64,15 @@ public class RequirementManager
 					}
 					break;
 				case SKILLAPI_LEVEL:
-					if (!Main.instance.pluginHooker.hasSkillAPIEnabled())
+					if (!Main.getHooker().hasSkillAPIEnabled())
 						break;
 					if (SkillAPI.hasPlayerData(p) && SkillAPI.getPlayerData(p).getMainClass() != null)
 					{
 						if (!(SkillAPI.getPlayerData(p).getMainClass().getLevel() >= (Integer)value))
 							return new RequirementFailResult(RequirementType.SKILLAPI_LEVEL, value);
 					}
+					break;
+				case FRIEND_POINT:
 					break;
 			}
 		}

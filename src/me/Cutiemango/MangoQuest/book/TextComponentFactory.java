@@ -10,7 +10,7 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.RequirementManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.objects.RequirementFailResult;
+import me.Cutiemango.MangoQuest.objects.requirement.RequirementFailResult;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -59,12 +59,12 @@ public class TextComponentFactory
 
 	public static TextComponent convertItemHoverEvent(ItemStack it, boolean isFinished)
 	{
-		return Main.instance.handler.textFactoryConvertItem(it, isFinished);
+		return Main.getInstance().handler.textFactoryConvertItem(it, isFinished);
 	}
 
 	public static TextComponent convertLocHoverEvent(String name, Location loc, boolean isFinished)
 	{
-		return Main.instance.handler.textFactoryConvertLocation(name, loc, isFinished);
+		return Main.getInstance().handler.textFactoryConvertLocation(name, loc, isFinished);
 	}
 
 	public static TextComponent convertViewQuest(Quest q)
@@ -92,7 +92,7 @@ public class TextComponentFactory
 			}
 			if (q.hasRequirement())
 			{
-				RequirementFailResult f = RequirementManager.meetRequirementWith(qd.getPlayer(), q);
+				RequirementFailResult f = RequirementManager.meetRequirementWith(qd.getPlayer(), q.getRequirements());
 				if (!f.succeed())
 					return regHoverEvent(text, f.getMessage());
 				else

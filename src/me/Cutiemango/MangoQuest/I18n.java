@@ -21,14 +21,14 @@ public class I18n
 	{
 		try
 		{
-			Main.instance.saveResource("messages_" + ConfigSettings.LOCALE_USING.toString() + ".properties", true);
-			Main.instance.saveResource("lang/original_" + ConfigSettings.LOCALE_USING.toString() + ".yml", 
+			Main.getInstance().saveResource("messages_" + ConfigSettings.LOCALE_USING.toString() + ".properties", true);
+			Main.getInstance().saveResource("lang/original_" + ConfigSettings.LOCALE_USING.toString() + ".yml", 
 					!new File("lang/original_" + ConfigSettings.LOCALE_USING.toString() + ".yml").exists());
 			bundle = ResourceBundle.getBundle("messages", local);
 		}
 		catch (MissingResourceException e)
 		{
-			bundle = ResourceBundle.getBundle("messages", local, new FileResClassLoader(I18n.class.getClassLoader(), Main.instance));
+			bundle = ResourceBundle.getBundle("messages", local, new FileResClassLoader(I18n.class.getClassLoader(), Main.getInstance()));
 		}
 	}
 

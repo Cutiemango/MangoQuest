@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.objects;
+package me.Cutiemango.MangoQuest.objects.reward;
 
 import java.util.ArrayList;
 import java.util.List;
