@@ -84,7 +84,7 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 		if (!hasConversation())
 			page.add(new InteractiveText(I18n.locMsg("QuestEditor.NotSet"))).endNormally();
 		else
-			page.add(getConversation().getName() + "(" + activateConversation + ")").endNormally();
+			page.add(new InteractiveText(getConversation().getName() + "(" + activateConversation + ")")).endNormally();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " conv")).changeLine();
 		page.changeLine();
 	}

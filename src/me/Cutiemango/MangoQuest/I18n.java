@@ -17,11 +17,11 @@ public class I18n
 
 	private static ResourceBundle bundle;
 
-	public static void init(Locale local)
+	public static void init(Locale local, boolean replace)
 	{
 		try
 		{
-			Main.getInstance().saveResource("messages_" + ConfigSettings.LOCALE_USING.toString() + ".properties", true);
+			Main.getInstance().saveResource("messages_" + ConfigSettings.LOCALE_USING.toString() + ".properties", replace);
 			Main.getInstance().saveResource("lang/original_" + ConfigSettings.LOCALE_USING.toString() + ".yml", 
 					!new File("lang/original_" + ConfigSettings.LOCALE_USING.toString() + ".yml").exists());
 			bundle = ResourceBundle.getBundle("messages", local);

@@ -64,7 +64,12 @@ public class QuestObjectProgress
 			return;
 		}
 		else
-			finish();
+		{
+			if (cp.isFinished())
+				finish();
+			else
+				ConversationManager.openConversation(p, cp);
+		}
 		return;
 	}
 
@@ -86,6 +91,11 @@ public class QuestObjectProgress
 	public void finish()
 	{
 		isFinished = true;
+	}
+	
+	public void addProgress(int p)
+	{
+		i+=p;
 	}
 
 	public void setProgress(int p)

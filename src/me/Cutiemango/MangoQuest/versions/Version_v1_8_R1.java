@@ -47,6 +47,7 @@ public class Version_v1_8_R1 implements VersionHandler
 	@Override
 	public void openBook(Player p, TextComponent... texts)
 	{
+		// CraftMetaBook of v1_8_R1 is not visiable
 		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
 		net.minecraft.server.v1_8_R1.ItemStack nmsbook = CraftItemStack.asNMSCopy(book);
 		NBTTagCompound tag = new NBTTagCompound();

@@ -9,6 +9,7 @@ import me.Cutiemango.MangoQuest.ConfigSettings;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.book.TextAlignment;
 import me.Cutiemango.MangoQuest.data.QuestObjectProgress;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
@@ -77,6 +78,21 @@ public class ScoreboardManager
 		return s;
 	}
 	
+	private static String getLastAppliedColor(String s)
+	{
+		String color = "§f";
+		if (s.lastIndexOf("§") == -1)
+			return "§f";
+		if (TextAlignment.ESCAPE_COLOR_CODES.contains(s.charAt(s.lastIndexOf("§") + 1)))
+			if (s.lastIndexOf("§") - 1 > 0)
+				color = "§" + s.charAt(s.lastIndexOf("§") - 1) + "§" + s.charAt(s.lastIndexOf("§") + 1);
+			else
+				color = "§" + s.charAt(s.lastIndexOf("§") + 1);
+		else
+			color = "§" + s.charAt(s.lastIndexOf("§") + 1);
+		return color;
+	}
+	
 	private static void formatScoreboard(Objective o, List<String> list)
 	{
 		int scoreIndex = 0;
@@ -86,7 +102,7 @@ public class ScoreboardManager
 			if (text.length() > 40)
 			{
 				o.getScore(text.substring(0, 40)).setScore(scoreIndex+1);
-				o.getScore(QuestChatManager.trimColor("    " + text.substring(40, text.length()))).setScore(scoreIndex);
+				o.getScore(QuestChatManager.trimColor("    " + getLastAppliedColor(text.substring(0, 40)) + text.substring(40, text.length()))).setScore(scoreIndex);
 				scoreIndex+=2;
 				continue;
 			}

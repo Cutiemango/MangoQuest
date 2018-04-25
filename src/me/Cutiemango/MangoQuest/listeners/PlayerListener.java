@@ -1,5 +1,7 @@
 package me.Cutiemango.MangoQuest.listeners;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -17,7 +19,10 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
+import me.old.RPGshop.GUIManager;
 import net.citizensnpcs.api.npc.NPC;
+import ru.nightexpress.unrealshop.shop.ShopManager;
+import ru.nightexpress.unrealshop.shop.objects.UShop;
 
 public class PlayerListener
 {
@@ -33,28 +38,53 @@ public class PlayerListener
 	public static void onPlayerQuit(Player p)
 	{
 		QuestPlayerData qd = QuestUtil.getData(p);
-		qd.save();
+		if (qd != null)
+			qd.save();
 		QuestStorage.Players.remove(p.getName());
 	}
-	
+
 	public static void onNPCRightClick(Player p, NPC npc, Cancellable event)
 	{
 		if (!ConfigSettings.USE_RIGHT_CLICK_MENU)
 			return;
 		if (p.isSneaking())
 			return;
+		if (!QuestNPCManager.hasData(npc.getId()))
+			return;
 		event.setCancelled(true);
 		if (QuestEditorManager.checkEditorMode(p, false) || EditorListenerHandler.isListening(p))
 			return;
 		QuestPlayerData pd = QuestUtil.getData(p);
-		if (!QuestNPCManager.hasData(npc.getId()))
-			return;
 		if (pd.deliverItem(npc))
+		{
+			Main.debug("Blocked shopkeepers event, event cancelled = " + event.isCancelled());
 			return;
+		}
 		else
 			if (Main.getHooker().hasShopkeepersEnabled())
 			{
 				if (Main.getHooker().getShopkeepers().isShopkeeper(npc.getEntity()))
+				{
+					QuestBookGUIManager.openNPCInfo(p, npc, true);
+					return;
+				}
+			}
+		if (Bukkit.getServer().getPluginManager().isPluginEnabled("UnrealShop"))
+		{
+			for (UShop localUShop : ShopManager.getShops())
+			{
+				if (ArrayUtils.contains(localUShop.getNpcId(), npc.getId()))
+				{
+					QuestBookGUIManager.openNPCInfo(p, npc, true);
+					return;
+				}
+			}
+		}
+		else
+			if (Main.getHooker().hasRPGshopEnabled())
+			{
+				Main.debug(GUIManager.hasShop(npc) + "");
+				if (GUIManager.hasShop(npc))
 				{
 					QuestBookGUIManager.openNPCInfo(p, npc, true);
 					return;
@@ -71,8 +101,6 @@ public class PlayerListener
 			Entity damager = ((EntityDamageByEntityEvent) e.getLastDamageCause()).getDamager();
 			if (!(damager instanceof Player || damager instanceof Projectile))
 				return;
-			if (Main.getHooker().hasMythicMobEnabled() && Main.getHooker().getMythicMobsAPI().isMythicMob(e))
-				return;
 			Player attacker;
 			if (damager instanceof Projectile)
 			{
@@ -83,7 +111,16 @@ public class PlayerListener
 			else
 				attacker = (Player) damager;
 			QuestPlayerData qd = QuestUtil.getData(attacker);
+			if (Main.getHooker().hasMythicMobEnabled())
+			{
+				if (Main.getHooker().getMythicMobsAPI().isMythicMob(e))
+				{
+					qd.killMythicMob(Main.getHooker().getMythicMobsAPI().getMythicMobInstance(e).getType().getInternalName());
+					return;
+				}
+			}
 			qd.killEntity(e);
+
 		}
 	}
 

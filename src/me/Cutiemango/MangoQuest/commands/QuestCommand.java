@@ -1,5 +1,7 @@
 package me.Cutiemango.MangoQuest.commands;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import com.nisovin.shopkeepers.Shopkeeper;
 import me.Cutiemango.MangoQuest.Main;
@@ -21,6 +23,9 @@ import me.old.RPGshop.GUIManager;
 import me.old.RPGshop.InventoryGUI.TradeGUI;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import ru.nightexpress.unrealshop.shop.ShopManager;
+import ru.nightexpress.unrealshop.shop.objects.UShop;
+import ru.nightexpress.unrealshop.shop.types.OpenSource;
 
 public class QuestCommand
 {
@@ -39,6 +44,7 @@ public class QuestCommand
 				switch (args[1])
 				{
 					case "list":
+						sender.closeInventory();
 						QuestBookGUIManager.openJourney(sender);
 						return;
 					case "help":
@@ -54,22 +60,40 @@ public class QuestCommand
 						}
 						return;
 					case "trade":
+						Player target = sender;
+						if (args.length == 4)
+							target = Bukkit.getPlayer(args[3]);
 						PluginHooker hooker = Main.getHooker();
 						if (hooker.hasCitizensEnabled())
 						{
 							NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[2]));
-							if (npc == null || !QuestUtil.getData(sender).isNearNPC(npc))
+							if (npc == null || !QuestUtil.getData(target).isNearNPC(npc))
 								return;
-							if (hooker.hasRPGshopEnabled())
-							{
-								GUIManager.openGUI(new TradeGUI(Integer.toString(npc.getId()), sender));
-								return;
-							}
-							else if (hooker.hasShopkeepersEnabled())
+							if (hooker.hasShopkeepersEnabled())
 							{
 								Shopkeeper s = hooker.getShopkeepers().getShopkeeperByEntity(npc.getEntity());
-								sender.closeInventory();
-								s.openTradingWindow(sender);
+								if (s != null)
+								{
+									target.closeInventory();
+									s.openTradingWindow(target);
+									return;
+								}
+							}
+							if (hooker.hasRPGshopEnabled())
+							{
+								GUIManager.openGUI(new TradeGUI(Integer.toString(npc.getId()), target));
+								return;
+							}
+							if (Bukkit.getPluginManager().isPluginEnabled("UnrealShop"))
+							{
+								for (UShop localUShop : ShopManager.getShops())
+								{
+									if (ArrayUtils.contains(localUShop.getNpcId(), npc.getId()))
+									{
+										ShopManager.openShop(target, localUShop, OpenSource.NPC);
+										break;
+									}
+								}
 								return;
 							}
 						}
@@ -87,13 +111,13 @@ public class QuestCommand
 									}
 									if (args.length == 4)
 									{
-										Quest target = QuestUtil.getQuest(args[3]);
-										if (target == null)
+										Quest q = QuestUtil.getQuest(args[3]);
+										if (q == null)
 										{
 											QuestChatManager.error(sender, I18n.locMsg("CommandInfo.QuestNotFound"));
 											return;
 										}
-										QuestRewardManager.registerCache(sender, target);
+										QuestRewardManager.registerCache(sender, q);
 									}
 									return;
 								case "add":

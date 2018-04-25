@@ -45,18 +45,27 @@ public class RewardGUIListener
 			}
 			else if (inv.getTitle().contains(I18n.locMsg("QuestReward.RewardEditTitle")))
 			{
-				if (e.getCurrentItem().getType().equals(Material.ANVIL))
+				if (QuestGUIItem.isGUIItem(e.getCurrentItem()))
 				{
-					EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq e edit reward choiceamount", Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
-					QuestChatManager.info(p, I18n.locMsg("QuestReward.EnterRewardAmount"));
-					p.closeInventory();
-					return;
-				}
-				else if (e.getCurrentItem().getType().equals(Material.SIGN))
-				{
-					p.closeInventory();
-					QuestEditorManager.editQuest(p);
-					return;
+					if (e.getCurrentItem().getType().equals(Material.ANVIL))
+					{
+						EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq e edit reward choiceamount", Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
+						QuestChatManager.info(p, I18n.locMsg("QuestReward.EnterRewardAmount"));
+						p.closeInventory();
+						return;
+					}
+					else if (e.getCurrentItem().getType().equals(Material.SIGN))
+					{
+						p.closeInventory();
+						QuestEditorManager.editQuest(p);
+						return;
+					}
+					else if (e.getCurrentItem().getType().equals(Material.SKULL_ITEM))
+					{
+						p.closeInventory();
+						QuestUtil.executeCommandAsync(p, "mq e edit reward npc");
+						return;
+					}
 				}
 				e.setCancelled(true);
 				if (i == -1)

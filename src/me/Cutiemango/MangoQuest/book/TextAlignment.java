@@ -9,8 +9,9 @@ import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 public class TextAlignment
 {
 
-	public static final int MAXIUM_CHAR_PER_LINE = 27;
-	public static final int MAXIUM_LINE_PER_PAGE = 14;
+	public static final double MAXIUM_CHAR_PER_LINE = 28D;
+	public static final double MAXIUM_BOLD_CHAR_PER_LINE = 26D;
+	public static final double MAXIUM_LINE_PER_PAGE = 14D;
 	
 	public static HashMap<UnicodeBlock, Double> CHARACTER_SIZEMAP = new HashMap<>();
 
@@ -28,8 +29,8 @@ public class TextAlignment
 	{
 		CHARACTER_SIZEMAP.put(UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS, 1.0D);
 		CHARACTER_SIZEMAP.put(UnicodeBlock.BASIC_LATIN, 1.0D);
-		CHARACTER_SIZEMAP.put(UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION, 2.41D);
-		CHARACTER_SIZEMAP.put(UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS, 2.41D);
+		CHARACTER_SIZEMAP.put(UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION, 2.25D);
+		CHARACTER_SIZEMAP.put(UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS, 2.25D);
 	}
 
 	private String textToAlign = "";
@@ -40,6 +41,7 @@ public class TextAlignment
 	public void align()
 	{
 		boolean usedup = false;
+
 		if (textToAlign.split("\n").length > 1)
 		{
 			String[] split = textToAlign.split("\n");
@@ -68,7 +70,8 @@ public class TextAlignment
 				left = textToAlign;
 				return;
 			}
-			if (calculateCharSize(textToAlign) > MAXIUM_CHAR_PER_LINE)
+
+			if (calculateCharSize(textToAlign) > getStandard(textToAlign))
 			{
 				aligned += textToAlign.substring(0, getSingleLineIndex(textToAlign));
 				if (getSingleLineIndex(textToAlign) + 1 <= textToAlign.length())
@@ -97,6 +100,7 @@ public class TextAlignment
 		int stringIndex = -1;
 		double size = 0D;
 		boolean skipnext = false;
+		
 		for (int i = 0; i < s.length();)
 		{
 			stringIndex += 1;
@@ -124,6 +128,7 @@ public class TextAlignment
 		double size = 0D;
 		int index = -1;
 		boolean skipnext = false;
+
 		for (int i = 0; i < s.length();)
 		{
 			index += 1;
@@ -140,7 +145,7 @@ public class TextAlignment
 				continue;
 			}
 			size += getSize(UnicodeBlock.of(codepoint));
-			if (size >= MAXIUM_CHAR_PER_LINE)
+			if (size >= getStandard(s))
 				return index;
 			continue;
 		}
@@ -156,16 +161,16 @@ public class TextAlignment
 
 	private String getLastAppliedColor(String s)
 	{
-		String color = "§";
+		String color = "§0";
 		if (s.lastIndexOf("§") == -1)
 			return "§0";
 		if (ESCAPE_COLOR_CODES.contains(s.charAt(s.lastIndexOf("§") + 1)))
 			if (s.lastIndexOf("§") - 1 > 0)
 				color = "§" + s.charAt(s.lastIndexOf("§") - 1) + "§" + s.charAt(s.lastIndexOf("§") + 1);
 			else
-				color += s.charAt(s.lastIndexOf("§") + 1);
+				color = "§" + s.charAt(s.lastIndexOf("§") + 1);
 		else
-			color += s.charAt(s.lastIndexOf("§") + 1);
+			color = "§" + s.charAt(s.lastIndexOf("§") + 1);
 		return color;
 	}
 	
@@ -182,5 +187,13 @@ public class TextAlignment
 	public String getLeft()
 	{
 		return left;
+	}
+	
+	public static double getStandard(String s)
+	{
+		if (s.contains("§l"))
+			return MAXIUM_BOLD_CHAR_PER_LINE;
+		else
+			return MAXIUM_CHAR_PER_LINE;
 	}
 }

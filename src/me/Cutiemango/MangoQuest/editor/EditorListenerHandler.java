@@ -25,13 +25,13 @@ import net.citizensnpcs.api.npc.NPC;
 public class EditorListenerHandler
 {
 
-	public static HashMap<String, EditorListenerObject> CurrentListening = new HashMap<>();
+	public static HashMap<String, EditorListenerObject> currentListening = new HashMap<>();
 
 	public static void onChat(final Player p, final String msg, AsyncPlayerChatEvent event)
 	{
-		if (CurrentListening.containsKey(p.getName()))
+		if (currentListening.containsKey(p.getName()))
 		{
-			EditorListenerObject obj = CurrentListening.get(p.getName());
+			EditorListenerObject obj = currentListening.get(p.getName());
 			if (msg.contains("cancel"))
 				QuestChatManager.info(p, I18n.locMsg("EditorMessage.CancelEntry"));
 			else
@@ -48,7 +48,7 @@ public class EditorListenerHandler
 	{
 		if (!preCondition(p))
 			return;
-		EditorListenerObject obj = CurrentListening.get(p.getName());
+		EditorListenerObject obj = currentListening.get(p.getName());
 		if (act.equals(Action.RIGHT_CLICK_AIR) || act.equals(Action.RIGHT_CLICK_BLOCK))
 		{
 			if (is != null && !is.getType().equals(Material.AIR))
@@ -70,7 +70,7 @@ public class EditorListenerHandler
 	{
 		if (!preCondition(p))
 			return;
-		EditorListenerObject obj = CurrentListening.get(p.getName());
+		EditorListenerObject obj = currentListening.get(p.getName());
 		if (obj.getType().equals(ListeningType.BLOCK))
 		{
 			obj.execute(p, b.getType().toString() + ":" + b.getData());
@@ -84,7 +84,7 @@ public class EditorListenerHandler
 	{
 		if (!preCondition(p))
 			return;
-		EditorListenerObject obj = CurrentListening.get(p.getName());
+		EditorListenerObject obj = currentListening.get(p.getName());
 		event.setCancelled(true);
 		if (obj.getType().equals(ListeningType.MTMMOB_LEFT_CLICK))
 		{
@@ -111,7 +111,7 @@ public class EditorListenerHandler
 				Main.debug("Player " + p.getName() + " does not have the precondition to edit.");
 			return;
 		}
-		EditorListenerObject obj = CurrentListening.get(p.getName());
+		EditorListenerObject obj = currentListening.get(p.getName());
 		if (obj.getType().equals(ListeningType.NPC_LEFT_CLICK))
 		{
 			obj.execute(p, Integer.toString(npc.getId()));
@@ -130,7 +130,7 @@ public class EditorListenerHandler
 	{
 		if (!preCondition(p))
 			return;
-		EditorListenerObject obj = CurrentListening.get(p.getName());
+		EditorListenerObject obj = currentListening.get(p.getName());
 		if (!obj.getType().equals(ListeningType.OPEN_INVENTORY))
 			return;
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
@@ -160,7 +160,7 @@ public class EditorListenerHandler
 
 	public static void register(Player p, EditorListenerObject obj)
 	{
-		CurrentListening.put(p.getName(), obj);
+		currentListening.put(p.getName(), obj);
 	}
 	
 	public static void unreigster(Player p)
@@ -168,13 +168,13 @@ public class EditorListenerHandler
 		if (preCondition(p))
 		{
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.ClearedListening"));
-			CurrentListening.remove(p.getName());
+			currentListening.remove(p.getName());
 		}
 	}
 	
 	public static boolean isListening(Player p)
 	{
-		return CurrentListening.containsKey(p.getName());
+		return currentListening.containsKey(p.getName());
 	}
 
 	public static boolean preCondition(Player p)
@@ -195,7 +195,7 @@ public class EditorListenerHandler
 							(List<ItemStack>) QuestEditorManager.getCurrentEditingQuest(p).getRequirements().get(RequirementType.ITEM));
 				else
 					return;
-			CurrentListening.put(p.getName(), new EditorListenerObject(ListeningType.OPEN_INVENTORY, obj, null));
+			currentListening.put(p.getName(), new EditorListenerObject(ListeningType.OPEN_INVENTORY, obj, null));
 		}
 	}
 

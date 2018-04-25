@@ -106,8 +106,8 @@ public class QuestProgress
 
 	public void nextStage()
 	{
-		quest.trigger(owner, TriggerType.TRIGGER_STAGE_FINISH, currentStage);
-		if (currentStage + 1 < quest.getStages().size())
+		quest.trigger(owner, TriggerType.TRIGGER_STAGE_FINISH, currentStage+1);
+		if (currentStage+1 < quest.getStages().size())
 		{
 			currentStage++;
 			QuestChatManager.info(owner, I18n.locMsg("CommandInfo.ProgressMessage", quest.getQuestName(), Integer.toString(currentStage),
@@ -117,7 +117,7 @@ public class QuestProgress
 			{
 				objlist.add(new QuestObjectProgress(o, 0));
 			}
-			quest.trigger(owner, TriggerType.TRIGGER_STAGE_START, currentStage + 1);
+			quest.trigger(owner, TriggerType.TRIGGER_STAGE_START, currentStage+1);
 		}
 		else finish();
 	}

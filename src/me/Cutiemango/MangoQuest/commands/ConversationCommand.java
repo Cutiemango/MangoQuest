@@ -6,7 +6,6 @@ import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
-import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import net.citizensnpcs.api.CitizensAPI;
@@ -70,8 +69,6 @@ public class ConversationCommand
 						if (cp.getConversation() instanceof StartTriggerConversation)
 						{
 							StartTriggerConversation trigger = (StartTriggerConversation) cp.getConversation();
-							QuestPlayerData pd = QuestUtil.getData(sender);
-							pd.takeQuest(trigger.getQuest(), false);
 							cp.retrieve();
 							cp.getCurrentPage().add(trigger.getAcceptMessage()).changeLine();
 							cp.getActionQueue().addAll(trigger.getAcceptActions());

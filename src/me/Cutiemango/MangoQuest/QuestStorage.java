@@ -37,7 +37,7 @@ public class QuestStorage
 	public static Map<Material, Map<Short, String>> TranslateMap = new EnumMap<>(Material.class);
 	public static Map<EntityType, String> EntityTypeMap = new EnumMap<>(EntityType.class);
 
-	public static final String prefix = ChatColor.GOLD + "MangoQuest>";
+	public static String prefix = ChatColor.GOLD + "MangoQuest>";
 
 	public static void clear()
 	{

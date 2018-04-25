@@ -30,7 +30,6 @@ public class PluginHooker
 	private Economy economy;
 	private CitizensPlugin citizens;
 	private Vault vault;
-	private MythicMobs MTMplugin;
 	private ShopkeepersPlugin shopkeepers;
 	private SkillAPI skillapi;
 	private RPGshop rpgshop;
@@ -67,7 +66,6 @@ public class PluginHooker
 
 			if (plugin.getServer().getPluginManager().isPluginEnabled("MythicMobs"))
 			{
-				MTMplugin = (MythicMobs) plugin.getServer().getPluginManager().getPlugin("MythicMobs");
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.MythicMobsHooked"));
 			}
 			else
@@ -120,11 +118,6 @@ public class PluginHooker
 		return economy != null;
 	}
 
-	public MythicMobs getMTMPlugin()
-	{
-		return MTMplugin;
-	}
-
 	public Vault getVault()
 	{
 		return vault;
@@ -138,7 +131,7 @@ public class PluginHooker
 
 	public boolean hasMythicMobEnabled()
 	{
-		return MTMplugin != null;
+		return plugin.getServer().getPluginManager().isPluginEnabled("MythicMobs");
 	}
 
 	public boolean hasCitizensEnabled()
@@ -163,7 +156,7 @@ public class PluginHooker
 
 	public BukkitAPIHelper getMythicMobsAPI()
 	{
-		return MTMplugin.getAPIHelper();
+		return MythicMobs.inst().getAPIHelper();
 	}
 	
 	public MythicMob getMythicMob(String id)

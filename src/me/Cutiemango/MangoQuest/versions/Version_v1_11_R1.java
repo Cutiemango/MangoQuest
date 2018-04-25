@@ -1,10 +1,12 @@
 package me.Cutiemango.MangoQuest.versions;
 
+import java.util.ArrayList;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftMetaBook;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -15,18 +17,17 @@ import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.chat.ComponentSerializer;
+import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.minecraft.server.v1_11_R1.EnumHand;
 import net.minecraft.server.v1_11_R1.NBTTagCompound;
-import net.minecraft.server.v1_11_R1.NBTTagList;
-import net.minecraft.server.v1_11_R1.NBTTagString;
 import net.minecraft.server.v1_11_R1.PacketDataSerializer;
 import net.minecraft.server.v1_11_R1.PacketPlayOutCustomPayload;
 import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
 import net.minecraft.server.v1_11_R1.IChatBaseComponent.ChatSerializer;
 import net.minecraft.server.v1_11_R1.PacketPlayOutTitle.EnumTitleAction;
 import net.minecraft.server.v1_11_R1.EnumParticle;
+import net.minecraft.server.v1_11_R1.IChatBaseComponent;
 import net.minecraft.server.v1_11_R1.PacketPlayOutWorldParticles;
 
 public class Version_v1_11_R1 implements VersionHandler
@@ -45,24 +46,35 @@ public class Version_v1_11_R1 implements VersionHandler
 		((CraftPlayer) p).getHandle().playerConnection.sendPacket(subppot);
 	}
 
+	private CraftMetaBook addComponentPages(CraftMetaBook meta, BaseComponent[]... texts)
+	{
+		CraftMetaBook target = meta.clone();
+		BaseComponent[][] arrayOfBaseComponent;
+		int j = (arrayOfBaseComponent = texts).length;
+		for (int i = 0; i < j; i++)
+		{
+			BaseComponent[] page = arrayOfBaseComponent[i];
+			if (target.pages.size() >= 50)
+				return target;
+			if (page == null)
+				page = new BaseComponent[0];
+			target.pages.add(IChatBaseComponent.ChatSerializer.a(ComponentSerializer.toString(page)));
+		}
+		
+		return target;
+	}
 
 	@Override
 	public void openBook(Player p, TextComponent... texts)
 	{
-		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
-		net.minecraft.server.v1_11_R1.ItemStack nmsbook = CraftItemStack.asNMSCopy(book);
-		NBTTagCompound tag = new NBTTagCompound();
-		NBTTagList taglist = new NBTTagList();
-
+		ArrayList<BaseComponent[]> list = new ArrayList<>();
 		for (TextComponent t : texts)
 		{
-			taglist.add(new NBTTagString(ComponentSerializer.toString(t)));
+			list.add(new BaseComponent[] {t});
 		}
-
-		tag.set("pages", taglist);
-		nmsbook.setTag(tag);
-
-		book = CraftItemStack.asBukkitCopy(nmsbook);
+		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
+		CraftMetaBook meta = addComponentPages((CraftMetaBook)book.getItemMeta(), list.toArray(new BaseComponent[][] {}));
+		book.setItemMeta(meta);
 
 		int slot = p.getInventory().getHeldItemSlot();
 		ItemStack old = p.getInventory().getItem(slot);

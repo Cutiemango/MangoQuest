@@ -90,7 +90,9 @@ public class ConversationProgress
 			QuestUtil.getData(owner).addFinishConversation(conv);
 			isFinished = true;
 			if (!(conv instanceof FriendConversation))
-				owner.performCommand("mq conv npc " + conv.getNPC().getId());
+				QuestUtil.executeCommandAsync(owner, "mq conv npc " + conv.getNPC().getId());
+			if (conv instanceof StartTriggerConversation)
+				QuestUtil.executeCommandAsync(owner, "mq quest take " + ((StartTriggerConversation)conv).getQuest().getInternalID());
 		}
 		ConversationManager.finishConversation(owner);
 	}

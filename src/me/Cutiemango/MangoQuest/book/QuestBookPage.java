@@ -5,21 +5,22 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class QuestBookPage
 {
-
 	public QuestBookPage()
 	{
 		page = new TextComponent("");
 		textleft = new TextComponent("");
+		lineUsed = 1;
 	}
 	
 	public QuestBookPage(TextComponent text)
 	{
 		page = text;
 		textleft = new TextComponent("");
+		lineUsed = 1;
 	}
 
-	private TextComponent page;
-	private TextComponent textleft;
+	private TextComponent page = new TextComponent("");
+	private TextComponent textleft = new TextComponent("");
 	private int lineUsed = 1;
 	
 	public void endNormally()
@@ -29,6 +30,12 @@ public class QuestBookPage
 			page.addExtra(textleft);
 			textleft = new TextComponent("");
 		}
+	}
+	
+	public String getCurrentLine()
+	{
+		String[] split = page.toPlainText().split("\n");
+		return split[split.length-1];
 	}
 
 	public void changeLine()
@@ -40,26 +47,16 @@ public class QuestBookPage
 
 	public QuestBookPage add(String s)
 	{
-		if (s == "\n")
-		{
-			changeLine();
-			return this;
-		}
-		s = textleft.toPlainText() + s;
-		TextAlignment align = new TextAlignment(s, lineUsed);
-		if (align.calculateCharSize(s) >= TextAlignment.MAXIUM_CHAR_PER_LINE)
-			page.addExtra(align.getResult());
-		textleft = new TextComponent(QuestChatManager.translateColor(align.getLeft()));
-		lineUsed = align.lineUsed();
+		add(new TextComponent(s));
 		return this;
 	}
 
 	public QuestBookPage add(TextComponent t)
-	{		
+	{
 		t.addExtra(textleft);
 		String s = t.toPlainText();
 		TextAlignment align = new TextAlignment(s, lineUsed);
-		if (align.calculateCharSize(s) >= TextAlignment.MAXIUM_CHAR_PER_LINE)
+		if (align.calculateCharSize(s) >= TextAlignment.MAXIUM_BOLD_CHAR_PER_LINE)
 			page.addExtra(align.getResult());
 		textleft = new TextComponent(QuestChatManager.translateColor(align.getLeft()));
 		lineUsed = align.lineUsed();
@@ -69,20 +66,30 @@ public class QuestBookPage
 	public QuestBookPage add(InteractiveText it)
 	{
 		String s = it.get().toPlainText();
+		String left = textleft.toPlainText();
+		if (!page.toPlainText().endsWith("\n"))
+			left = getCurrentLine();
 		// 做一點標記
 		// @： 這本書原本剩下來還沒加進去的字串 與 新加進來的字串之間
 		// #： 加進字串後的終點標記
-		s = textleft.toPlainText() + "@" + s + "#";
+		s = left + "@" + s + "#";
 		// 丟進書本整理器
 		TextAlignment align = new TextAlignment(s, lineUsed);
+//		Main.debug("String: " + s);
+//		Main.debug("Result: " + align.getResult());
+//		Main.debug("Left: " + align.getLeft());
+//		Main.debug("Char size: " + align.calculateCharSize(s));
 		// 如果整行字超過了一行最大字數
-		if (align.calculateCharSize(s) >= TextAlignment.MAXIUM_CHAR_PER_LINE)
+		if (align.calculateCharSize(s) >= TextAlignment.MAXIUM_BOLD_CHAR_PER_LINE)
 		{
+			// 處理 left
+			String result = align.getResult().replace(getCurrentLine(), "");
+
 			// 如果整理後的字串(結果)裡面有@標記的話
-			if (align.getResult().contains("@"))
+			if (result.contains("@"))
 			{
 				// 將其分開，先把沒有互動的字串加進書裡
-				String[] firstsplit = align.getResult().split("@");
+				String[] firstsplit = result.split("@");
 				page.addExtra(firstsplit[0]);
 				// 檢查剩下來的字串
 				for (int i = 1; i < firstsplit.length; i++)
@@ -102,7 +109,11 @@ public class QuestBookPage
 			}
 			// 沒有的話就直接加入
 			else
-				page.addExtra(align.getResult());
+				page.addExtra(result);
+		}
+		else
+		{
+			
 		}
 		// 如果是剩下的字串含有@標記
 		if (align.getLeft().contains("@"))

@@ -1,9 +1,11 @@
 package me.Cutiemango.MangoQuest.versions;
 
+import java.util.ArrayList;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftMetaBook;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -16,11 +18,8 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
-import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_12_R1.EnumHand;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
-import net.minecraft.server.v1_12_R1.NBTTagList;
-import net.minecraft.server.v1_12_R1.NBTTagString;
 import net.minecraft.server.v1_12_R1.PacketDataSerializer;
 import net.minecraft.server.v1_12_R1.PacketPlayOutCustomPayload;
 import net.minecraft.server.v1_12_R1.PacketPlayOutTitle;
@@ -49,20 +48,40 @@ public class Version_v1_12_R1 implements VersionHandler
 	@Override
 	public void openBook(Player p, TextComponent... texts)
 	{
-		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
-		net.minecraft.server.v1_12_R1.ItemStack nmsbook = CraftItemStack.asNMSCopy(book);
-		NBTTagCompound tag = new NBTTagCompound();
-		NBTTagList taglist = new NBTTagList();
-
+		ArrayList<BaseComponent[]> list = new ArrayList<>();
 		for (TextComponent t : texts)
 		{
-			taglist.add(new NBTTagString(ComponentSerializer.toString(t)));
+			list.add(new BaseComponent[] {t});
 		}
 
-		tag.set("pages", taglist);
-		nmsbook.setTag(tag);
+		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
+		CraftMetaBook meta = (CraftMetaBook)book.getItemMeta();
 
-		book = CraftItemStack.asBukkitCopy(nmsbook);
+		// 1.12 above uses API.
+		meta.spigot().setPages(list.toArray(new BaseComponent[][] {}));
+		book.setItemMeta(meta);
+		
+		// Who cares to use this bullshit?
+		
+//		net.minecraft.server.v1_12_R1.ItemStack nmsbook = CraftItemStack.asNMSCopy(book);
+//		NBTTagCompound tag = new NBTTagCompound();
+//		NBTTagList taglist = new NBTTagList();
+
+		
+//		for (TextComponent t : texts)
+//		{
+//			Main.debug("ComponentSerializer.toString:");
+//			Main.debug(ComponentSerializer.toString(t));
+//			Main.debug("CraftChatMessage:");
+//			Main.debug(CraftChatMessage.fromComponent(ChatSerializer.a(ComponentSerializer.toString(t))));
+//			taglist.add(new NBTTagString(CraftChatMessage.fromComponent(ChatSerializer.a(ComponentSerializer.toString(t)))));
+//		}
+		
+//
+//		tag.set("pages", taglist);
+//		nmsbook.setTag(tag);
+//
+//		book = CraftItemStack.asBukkitCopy(nmsbook);
 
 		int slot = p.getInventory().getHeldItemSlot();
 		ItemStack old = p.getInventory().getItem(slot);

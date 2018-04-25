@@ -1,6 +1,5 @@
 package me.Cutiemango.MangoQuest.book;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.I18n;
@@ -71,7 +70,7 @@ public class TextComponentFactory
 	{
 		if (q == null)
 			return new TextComponent(I18n.locMsg("QuestEditor.NotSet"));
-		TextComponent t = new TextComponent(ChatColor.BOLD + q.getQuestName());
+		TextComponent t = new TextComponent(QuestChatManager.translateColor("&0&l" + q.getQuestName()));
 		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]
 		{ new TextComponent(I18n.locMsg("QuestJourney.ClickToView", q.getQuestName())) }));
 		t.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mq quest view " + q.getInternalID()));

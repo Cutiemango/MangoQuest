@@ -51,6 +51,7 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 		return I18n.locMsg("QuestObjectName.KillMob");
 	}
 
+	private boolean isBaby = false;
 	private EntityType type;
 	private String customName;
 	private MythicMob mtmMob;
@@ -79,9 +80,16 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 	{
 		customName = s;
 	}
-
+	
+	public boolean isBaby()
+	{
+		return isBaby;
+	}
+	
 	public void setMythicMob(MythicMob m)
 	{
+		if (m == null)
+			return;
 		mtmMob = m;
 		customName = m.getDisplayName();
 		type = EntityType.valueOf(m.getEntityType().toUpperCase());
@@ -118,28 +126,25 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 	@Override
 	public void formatEditorPage(QuestBookPage page, int stage, int obj)
 	{
-		if (Main.getInstance().pluginHooker.hasMythicMobEnabled())
+		if (Main.getHooker().hasMythicMobEnabled())
 		{
-			page.add(I18n.locMsg("QuestEditor.MythicMobs"));
+			page.add(I18n.locMsg("QuestEditor.MythicMobs")).endNormally();
 			if (isMythicObject())
-				page.add(mtmMob.getDisplayName() + "(" + mtmMob.getInternalName() + ")").endNormally();
+				page.add(new InteractiveText(mtmMob.getDisplayName() + "(" + mtmMob.getInternalName() + ")")).endNormally();
 			else
 				page.add(I18n.locMsg("QuestEditor.NotSet")).endNormally();
 			page.changeLine();
 			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " mtmmob")).changeLine();
 		}
-		page.add(I18n.locMsg("QuestEditor.MobName"));
+		page.add(I18n.locMsg("QuestEditor.MobName")).endNormally();
 		if (hasCustomName())
-			page.add(customName).endNormally();
+			page.add(new InteractiveText(customName)).endNormally();
 		else
-			page.add(I18n.locMsg("QuestEditor.NotSet"));
+			page.add(I18n.locMsg("QuestEditor.NotSet")).endNormally();
 		page.changeLine();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " mobname")).changeLine();
-		page.changeLine();
-
 		page.add(I18n.locMsg("QuestEditor.MobType") + QuestUtil.translate(type)).endNormally();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " mobtype")).changeLine();
-		page.changeLine();
 		super.formatEditorPage(page, stage, obj);
 	}
 	
@@ -148,7 +153,7 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 	{
 		if (config.getString(path + "MythicMob") != null)
 		{
-			if (!Main.getInstance().pluginHooker.hasMythicMobEnabled())
+			if (!Main.getHooker().hasMythicMobEnabled())
 			{
 				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.MTMNotInstalled"));
 				return false;
@@ -161,7 +166,14 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 			}
 			mtmMob = Main.getHooker().getMythicMob(id);
 			customName = mtmMob.getDisplayName();
-			type = EntityType.valueOf(mtmMob.getEntityType().toUpperCase());
+			if (mtmMob.getEntityType().contains("BABY"))
+			{
+				isBaby = true;
+				String s = mtmMob.getEntityType().replace("BABY_", "").toUpperCase();
+				type = EntityType.valueOf(s);
+			}
+			else
+				type = EntityType.valueOf(mtmMob.getEntityType().toUpperCase());
 		}
 		else
 			if (config.getString(path + "MobName") != null)
@@ -211,7 +223,13 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 				}
 				setMythicMob(Main.getHooker().getMythicMob(obj));
 				setCustomName(mtmMob.getDisplayName());
-				setType(EntityType.valueOf(mtmMob.getEntityType().toUpperCase()));
+				if (mtmMob.getEntityType().contains("baby"))
+				{
+					isBaby = true;
+					setType(EntityType.valueOf(mtmMob.getEntityType().replace("baby_", "").toUpperCase()));
+				}
+				else
+					setType(EntityType.valueOf(mtmMob.getEntityType().toUpperCase()));
 				break;
 			default:
 				return super.receiveCommandInput(sender, type, obj);

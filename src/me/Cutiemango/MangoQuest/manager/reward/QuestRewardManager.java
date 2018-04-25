@@ -18,6 +18,7 @@ import me.Cutiemango.MangoQuest.objects.reward.QuestGUIItem;
 import me.Cutiemango.MangoQuest.objects.reward.QuestReward;
 import me.Cutiemango.MangoQuest.objects.reward.RewardCache;
 import me.Cutiemango.MangoQuest.objects.reward.RewardChoice;
+import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatColor;
 
 public class QuestRewardManager implements Listener
@@ -41,6 +42,7 @@ public class QuestRewardManager implements Listener
 				inv.setItem(getRewardSlot(a+1, i), itemButton(reward.getChoice(i), i));
 		}
 		
+		inv.setItem(0, setNPC(reward.getRewardNPC()));
 		inv.setItem(18, backToMenu());
 		inv.setItem(26, editRewardAmount(reward.getRewardAmount()));
 
@@ -133,6 +135,16 @@ public class QuestRewardManager implements Listener
 		return button.get();
 	}
 	
+	private static ItemStack setNPC(NPC n)
+	{
+		QuestGUIItem npc = new QuestGUIItem(Material.SKULL_ITEM, 1, (short)3);
+		if (n != null)
+			npc.setName(I18n.locMsg("QuestReward.RewardNPC", n.getName()));
+		else
+			npc.setName(I18n.locMsg("QuestReward.RewardNPC", I18n.locMsg("Translation.UnknownNPC")));
+		return npc.get();
+	}
+	
 	private static ItemStack removeRewardChoice()
 	{
 		QuestGUIItem barrier = new QuestGUIItem(Material.BARRIER, 1, (short)0);
@@ -201,7 +213,7 @@ public class QuestRewardManager implements Listener
 		if (p.getInventory().firstEmpty() == -1)
 		{
 			QuestChatManager.info(p, I18n.locMsg("QuestReward.RewardDropped"));
-			p.getWorld().dropItem(p.getLocation(), is);
+			p.getWorld().dropItemNaturally(p.getLocation(), is);
 		}
 		else
 		{

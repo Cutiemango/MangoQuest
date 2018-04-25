@@ -20,6 +20,7 @@ public class QuestNPC
 	private NPC npcReal;
 	private HashMap<Integer, HashSet<String>> friendMessageMap = new HashMap<>();
 	private HashSet<Quest> givenQuests = new HashSet<>();
+	private HashSet<Quest> rewardQuests = new HashSet<>();
 	private HashSet<GUIOption> options = new HashSet<>();
 	
 	/**
@@ -55,6 +56,11 @@ public class QuestNPC
 		givenQuests.add(q);
 	}
 	
+	public void registerReward(Quest q)
+	{
+		rewardQuests.add(q);
+	}
+	
 	public void putMessage(int fpoint, HashSet<String> msg)
 	{
 		friendMessageMap.put(fpoint, msg);
@@ -68,6 +74,11 @@ public class QuestNPC
 	public NPC getNPC()
 	{
 		return npcReal;
+	}
+
+	public HashSet<Quest> getRewardQuests()
+	{
+		return rewardQuests;
 	}
 
 	public HashSet<GUIOption> getOptions()

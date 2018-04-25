@@ -8,6 +8,7 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.GUIOption;
 import me.Cutiemango.MangoQuest.objects.QuestNPC;
+import me.old.RPGshop.GUIManager;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -33,7 +34,7 @@ public class QuestNPCManager
 			if (CitizensAPI.getNPCRegistry().isNPC(e))
 			{
 				NPC npc = CitizensAPI.getNPCRegistry().getNPC(e);
-				if (!hasData(npc.getId()))
+				if (!hasStorageData(npc.getId()))
 					continue;
 				for (Quest q : getNPCData(npc.getId()).getGivenQuests())
 				{
@@ -48,12 +49,14 @@ public class QuestNPCManager
 	
 	public static void registerNPC(NPC npc)
 	{
+		if (npcStorage.containsKey(npc.getId()))
+			return;
 		npcStorage.put(npc.getId(), new QuestNPC(npc));
 	}
 
 	public static void registerNPC(int id)
 	{
-		if (!QuestValidater.validateNPC(Integer.toString(id)))
+		if (!QuestValidater.validateNPC(Integer.toString(id)) || npcStorage.containsKey(id))
 			return;
 		npcStorage.put(id, new QuestNPC(Main.getHooker().getNPC(id)));
 	}
@@ -63,9 +66,22 @@ public class QuestNPCManager
 		npcStorage.put(npc.getId(), npcdata);
 	}
 	
-	public static boolean hasData(int id)
+	public static boolean hasStorageData(int id)
 	{
 		return npcStorage.containsKey(id);
+	}
+	
+	public static boolean hasData(int id)
+	{
+		boolean b = npcStorage.containsKey(id);
+		if (!b)
+		{
+			if (Main.getHooker().hasShopkeepersEnabled())
+				b = Main.getHooker().getShopkeepers().isShopkeeper(Main.getHooker().getNPC(id).getEntity());
+			else if (Main.getHooker().hasRPGshopEnabled())
+				b = GUIManager.hasShop(Integer.toString(id));
+		}
+		return b;
 	}
 	
 	public static QuestNPC getNPCData(int id)
@@ -80,7 +96,7 @@ public class QuestNPCManager
 	
 	public static String getNPCMessage(int id, int fpoint)
 	{
-		if (!hasData(id))
+		if (!hasStorageData(id) || npcStorage.get(id) == null)
 			return I18n.locMsg("QuestJourney.DefaultNPCTalk");
 		return npcStorage.get(id).getMessage(fpoint);
 		

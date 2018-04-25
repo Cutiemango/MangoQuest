@@ -10,7 +10,6 @@ import me.Cutiemango.MangoQuest.advancements.QuestAdvancementManager;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
 public class QuestBaseAction
@@ -56,8 +55,9 @@ public class QuestBaseAction
 
 	public void execute(final ConversationProgress cp)
 	{
-		if (obj != null && obj instanceof String)
-			obj = obj.replace("<player>", cp.getOwner().getName());
+		String target = obj;
+		if (obj != null)
+			target = obj.replace("<player>", cp.getOwner().getName());
 		switch (action)
 		{
 			case BUTTON:
@@ -70,22 +70,30 @@ public class QuestBaseAction
 				cp.newPage();
 				break;
 			case CHOICE:
-				QuestChoice c = ConversationManager.getChoiceByName(obj);
+				QuestChoice c = ConversationManager.getChoiceByName(target);
 				if (c == null)
 					break;
 				c.apply(cp);
 				break;
 			case COMMAND:
-				QuestUtil.executeConsoleAsync(obj);
+				QuestUtil.executeConsoleAsync(target);
 				break;
 			case SENTENCE:
-				cp.getCurrentPage().add(QuestChatManager.translateColor(obj)).changeLine();
+				cp.getCurrentPage().add(QuestChatManager.translateColor(target)).changeLine();
 				break;
 			case NPC_TALK:
-				String[] split = obj.split("@");
-				NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
-				if (npc != null)
-					cp.getCurrentPage().add(I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), split[0])).changeLine();
+				String[] split = target.split("@");
+				if (split.length == 1)
+				{
+					cp.getCurrentPage().add(I18n.locMsg("QuestJourney.NPCMessage", split[0])).changeLine();
+					break;
+				}
+				else
+				{
+					NPC npc = Main.getHooker().getNPC(split[1]);
+					if (npc != null)
+						cp.getCurrentPage().add(I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), split[0])).changeLine();
+				}
 				break;
 			case WAIT:
 				new BukkitRunnable()
@@ -96,15 +104,15 @@ public class QuestBaseAction
 						cp.nextAction();
 						return;
 					}
-				}.runTaskLater(Main.getInstance(), Long.parseLong(obj.toString()));
+				}.runTaskLater(Main.getInstance(), Long.parseLong(target.toString()));
 				break;
 			case FINISH:
-				cp.finish(Boolean.valueOf(obj));
+				cp.finish(Boolean.valueOf(target));
 				break;
 			case GIVE_ADVANCEMENT:
 				if (Main.isUsingUpdatedVersion())
 				{
-					QuestAdvancementManager.getAdvancement(obj).grant(cp.getOwner());
+					QuestAdvancementManager.getAdvancement(target).grant(cp.getOwner());
 					break;
 				}
 			case TAKE_QUEST:

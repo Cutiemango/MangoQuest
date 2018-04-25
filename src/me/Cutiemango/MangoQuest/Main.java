@@ -1,6 +1,5 @@
 package me.Cutiemango.MangoQuest;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -11,12 +10,12 @@ import org.bukkit.scoreboard.Scoreboard;
 import me.Cutiemango.MangoQuest.commands.AdminCommand;
 import me.Cutiemango.MangoQuest.commands.CommandReceiver;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
-import me.Cutiemango.MangoQuest.listeners.MythicListener;
 import me.Cutiemango.MangoQuest.listeners.MainListener;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
 import me.Cutiemango.MangoQuest.manager.ScoreboardManager;
 import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
+import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.manager.CustomObjectManager;
 import me.Cutiemango.MangoQuest.manager.PluginHooker;
 import me.Cutiemango.MangoQuest.versions.VersionHandler;
@@ -52,11 +51,9 @@ public class Main extends JavaPlugin
 		pluginHooker = new PluginHooker(this);
 		pluginHooker.hookPlugins();
 		configManager.loadFile();
+		SimpleQuestObject.initObjectNames();
 
 		getServer().getPluginManager().registerEvents(new MainListener(), this);
-
-		if (pluginHooker.hasMythicMobEnabled())
-			getServer().getPluginManager().registerEvents(new MythicListener(), this);
 
 		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
 		switch (version)
@@ -111,14 +108,10 @@ public class Main extends JavaPlugin
 		}.runTaskLater(this, 5L);
 		
 		startCounter();
-		
-		try
-		{
-			Metrics metrics = new Metrics(this);
-			metrics.start();
-		}
-		catch (IOException e)
-		{}
+
+		// Use new metrics!! Yay!!
+		new Metrics(this);
+
 	}
 
 	@Override
@@ -140,6 +133,7 @@ public class Main extends JavaPlugin
 		pluginHooker.hookPlugins();
 		configManager.loadFile();
 		
+		SimpleQuestObject.initObjectNames();
 		CustomObjectManager.loadCustomObjects();
 		QuestConfigManager.getLoader().loadAll();
 		for (Player p : Bukkit.getOnlinePlayers())
@@ -168,8 +162,11 @@ public class Main extends JavaPlugin
 	{
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
-			QuestUtil.getData(p).save();
-			QuestChatManager.info(p, I18n.locMsg("CommandInfo.PlayerDataSaving"));
+			if (QuestUtil.getData(p) != null)
+			{
+				QuestUtil.getData(p).save();
+				QuestChatManager.info(p, I18n.locMsg("CommandInfo.PlayerDataSaving"));
+			}
 		}
 	}
 	
@@ -196,14 +193,10 @@ public class Main extends JavaPlugin
 						QuestNPCManager.effectTask(pd);
 					if (ConfigSettings.ENABLE_SCOREBOARD)
 					{
-						Bukkit.getScheduler().runTask(Main.instance, new Runnable()
+						Bukkit.getScheduler().runTask(Main.instance, () ->
 						{
-							@Override
-							public void run()
-							{
-								Scoreboard score = ScoreboardManager.update(pd);
-								pd.getPlayer().setScoreboard(score);
-							}
+							Scoreboard score = ScoreboardManager.update(pd);
+							pd.getPlayer().setScoreboard(score);
 						});
 					}
 				}

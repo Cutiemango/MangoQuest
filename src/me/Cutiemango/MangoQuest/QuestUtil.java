@@ -49,25 +49,17 @@ public class QuestUtil
 
 	public static void executeCommandAsync(Player p, String command)
 	{
-		Bukkit.getScheduler().runTask(Main.getInstance(), new Runnable()
+		Bukkit.getScheduler().runTask(Main.getInstance(), () ->
 		{
-			@Override
-			public void run()
-			{
-				p.performCommand(command);
-			}
+			p.performCommand(command);
 		});
 	}
 	
 	public static void executeConsoleAsync(String command)
 	{
-		Bukkit.getScheduler().runTask(Main.getInstance(), new Runnable()
+		Bukkit.getScheduler().runTask(Main.getInstance(), () ->
 		{
-			@Override
-			public void run()
-			{
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-			}
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
 		});
 	}
 

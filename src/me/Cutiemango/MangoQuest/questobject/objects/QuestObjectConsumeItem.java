@@ -62,7 +62,7 @@ public class QuestObjectConsumeItem extends ItemObject implements EditorObject
 	@Override
 	public void formatEditorPage(QuestBookPage page, int stage, int obj)
 	{
-		page.add(I18n.locMsg("QuestEditor.ConsumeItem"));
+		page.add(I18n.locMsg("QuestEditor.ConsumeItem")).endNormally();
 		page.add(new InteractiveText("").showItem(item)).endNormally();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " item")).changeLine();
 		super.formatEditorPage(page, stage, obj);

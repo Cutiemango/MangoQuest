@@ -108,7 +108,7 @@ public class QuestObjectBreakBlock extends NumerableObject implements EditorObje
 		{
 			case "block":
 				String[] split = obj.split(":");
-				if (!QuestValidater.validateInteger(split[1]) || Material.getMaterial(split[0]) == null)
+				if ((split.length == 2 && !QuestValidater.validateInteger(split[1])) || Material.getMaterial(split[0]) == null)
 					return false;
 				setType(Material.getMaterial(split[0]));
 				setSubID(Short.parseShort(split[1]));

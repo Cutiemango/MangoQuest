@@ -11,19 +11,21 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
+import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCDamageByEntityEvent;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
-import net.citizensnpcs.api.event.NPCRightClickEvent;
 
 public class MainListener implements Listener
 {
@@ -82,12 +84,16 @@ public class MainListener implements Listener
 		EditorListenerHandler.onPlayerInteract(e.getPlayer(), e.getAction(), e.getItem(), e);
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
-	public void onNPCRightClick(NPCRightClickEvent e)
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onInteractEntity(PlayerInteractEntityEvent e)
 	{
-		PlayerListener.onNPCRightClick(e.getClicker(), e.getNPC(), e);
+		if (Main.isUsingUpdatedVersion())
+			if (e.getHand().equals(EquipmentSlot.OFF_HAND))
+				return;
+		if (CitizensAPI.getNPCRegistry().isNPC(e.getRightClicked()))
+			PlayerListener.onNPCRightClick(e.getPlayer(), CitizensAPI.getNPCRegistry().getNPC(e.getRightClicked()), e);
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOWEST , ignoreCancelled = true)
 	public void onNPCDamage(NPCDamageByEntityEvent e)
 	{

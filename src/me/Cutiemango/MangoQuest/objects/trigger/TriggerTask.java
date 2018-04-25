@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest.objects.trigger;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.Main;
 
 public class TriggerTask
 {
@@ -25,19 +26,22 @@ public class TriggerTask
 	public void start()
 	{
 		index = 0;
-		list.get(index).trigger(target, this);
+		next();
 	}
 	
 	public void next()
 	{
-		if (list.size() <= index+1)
+		if (list.size() < index+1)
 			return;
-		index++;
 		if (list.get(index).getStage() != stage)
 		{
+			Main.debug("Task skipped with stage " + stage + ", and target stage was " + list.get(index).getStage());
+			index++;
 			next();
 			return;
 		}
-		list.get(index).trigger(target, this);
+		index++;
+		list.get(index-1).trigger(target, this);
+		Main.debug("Task started with stage " + stage + ".");
 	}
 }

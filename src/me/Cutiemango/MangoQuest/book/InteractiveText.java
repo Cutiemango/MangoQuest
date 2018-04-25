@@ -17,6 +17,11 @@ public class InteractiveText
 		target = new TextComponent(QuestChatManager.translateColor(text));
 	}
 	
+	public InteractiveText(TextComponent t)
+	{
+		target = t;
+	}
+	
 
 	private TextComponent target;
 	

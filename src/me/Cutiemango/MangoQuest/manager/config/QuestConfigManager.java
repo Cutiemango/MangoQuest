@@ -17,7 +17,7 @@ public class QuestConfigManager
 
 	public QuestConfigManager()
 	{
-		ConfigIO = new QuestIO("config.yml", false, true);
+		ConfigIO = new QuestIO("config.yml", false, true, false);
 		loader = new QuestConfigLoader(this);
 		loader.loadConfig();
 		saver = new QuestConfigSaver(this);
@@ -25,11 +25,11 @@ public class QuestConfigManager
 	
 	public void loadFile()
 	{
-		QuestsIO = new QuestIO("quests.yml", true, true);
-		TranslateIO = new QuestIO("translations.yml", true, true);
-		NPCIO = new QuestIO("npc.yml", true, false);
-		ConversationIO = new QuestIO("conversations.yml", false, false);
-		AdvancementIO = new QuestIO("advancements.yml", false, true);
+		QuestsIO = new QuestIO("quests.yml", true, true, false);
+		TranslateIO = new QuestIO("translations.yml", true, true, true);
+		NPCIO = new QuestIO("npc.yml", true, false, false);
+		ConversationIO = new QuestIO("conversations.yml", false, false, false);
+		AdvancementIO = new QuestIO("advancements.yml", false, true, false);
 		
 		loader.init();
 		saver.init();

@@ -83,14 +83,17 @@ public class QuestChoice
 		}
 		int count = 0;
 		ConversationProgress cp = QuestStorage.ConvProgresses.get(p.getName());
-		cp.retrieve();
-		cp.getCurrentPage().add(question).changeLine();
-		for (QuestBaseAction act : choices.get(i).getActions())
+		if (cp != null)
 		{
-			ConversationManager.getConvProgress(p).getActionQueue().add(count, act);
-			count++;
+			cp.retrieve();
+			cp.getCurrentPage().add(question).changeLine();
+			for (QuestBaseAction act : choices.get(i).getActions())
+			{
+				ConversationManager.getConvProgress(p).getActionQueue().add(count, act);
+				count++;
+			}
+			ConversationManager.getConvProgress(p).nextAction();
 		}
-		ConversationManager.getConvProgress(p).nextAction();
 	}
 
 }

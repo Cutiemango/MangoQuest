@@ -1,5 +1,6 @@
 package me.Cutiemango.MangoQuest.questobject;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.I18n;
@@ -29,10 +30,17 @@ public abstract class ItemObject extends NumerableObject
 		switch (type)
 		{
 			case "item":
-				if (Main.getInstance().handler.getItemInMainHand(sender) == null)
+				ItemStack item = Main.getInstance().handler.getItemInMainHand(sender);
+				if (item == null || item.getType() == Material.AIR)
+				{
+					QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ItemInHand"));
 					return false;
-				setItem(Main.getInstance().handler.getItemInMainHand(sender));
-				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ItemRegistered"));
+				}
+				else
+				{
+					setItem(item);
+					QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ItemRegistered"));
+				}
 				break;
 			default:
 				return super.receiveCommandInput(sender, type, obj);

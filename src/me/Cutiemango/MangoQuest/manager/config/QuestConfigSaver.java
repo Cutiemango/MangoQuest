@@ -158,7 +158,7 @@ public class QuestConfigSaver
 				case TRIGGER_STAGE_START:
 					for (TriggerObject obj : q.getTriggerMap().get(type))
 					{
-						list.add((obj.getStage()+1) + " " + obj.getObjType().toString() + " " + obj.getObject().toString());
+						list.add(obj.getStage() + " " + obj.getObjType().toString() + " " + obj.getObject().toString());
 					}
 					break;
 				default:
@@ -225,6 +225,13 @@ public class QuestConfigSaver
 			quest.set(qpath + "Rewards.Commands", r.getCommands());
 		if (r.hasSkillAPIExp() && Main.getInstance().pluginHooker.hasSkillAPIEnabled())
 			quest.set(qpath + "Rewards.SkillAPIExp", r.getSkillAPIExp());
+		if (!q.isCommandQuest())
+		{
+			if (!r.hasRewardNPC())
+				quest.set(qpath + "Rewards.RewardNPC", q.getQuestNPC().getId());
+			else
+				quest.set(qpath + "Rewards.RewardNPC", r.getRewardNPC().getId());
+		}
 	}
 	
 	public void removeConversation(QuestConversation qc)

@@ -2,7 +2,8 @@ package me.Cutiemango.MangoQuest.objects.requirement;
 
 import me.Cutiemango.MangoQuest.I18n;
 
-public enum RequirementType{
+public enum RequirementType
+{
 	LEVEL(I18n.locMsg("Requirements.Level"), false),
 	MONEY(I18n.locMsg("Requirements.Money"), false),
 	QUEST(I18n.locMsg("Requirements.Quest"), true),
@@ -10,20 +11,23 @@ public enum RequirementType{
 	FRIEND_POINT(I18n.locMsg("Requirements.FriendPoint"), true),
 	SKILLAPI_CLASS(I18n.locMsg("Requirements.SkillAPIClass"), true),
 	SKILLAPI_LEVEL(I18n.locMsg("Requirements.SkillAPILevel"), true);
-	
+
 	private String name;
 	private boolean index;
-	
-	RequirementType(String s, boolean b){
+
+	RequirementType(String s, boolean b)
+	{
 		name = s;
 		index = b;
 	}
-	
-	public String toCustomString(){
+
+	public String toCustomString()
+	{
 		return name;
 	}
-	
-	public boolean hasIndex(){
+
+	public boolean hasIndex()
+	{
 		return index;
 	}
 

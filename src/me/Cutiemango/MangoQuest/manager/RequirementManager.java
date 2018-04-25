@@ -1,6 +1,7 @@
 package me.Cutiemango.MangoQuest.manager;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -37,6 +38,8 @@ public class RequirementManager
 				case MONEY:
 					if (Main.getHooker().hasEconomyEnabled())
 					{
+						if (!Main.getHooker().getEconomy().hasAccount(p))
+							return new RequirementFailResult(RequirementType.MONEY, (Double) value);
 						if (!(Main.getHooker().getEconomy().getBalance(p) >= (Double) value))
 							return new RequirementFailResult(RequirementType.MONEY, (Double) value);
 					}
@@ -55,12 +58,13 @@ public class RequirementManager
 						break;
 					if (SkillAPI.hasPlayerData(p))
 					{
-						if (((String)value).equalsIgnoreCase("none"))
+						if (((String) value).equalsIgnoreCase("none"))
 							break;
-						if (SkillAPI.getClass((String)value) == null)
-							return new RequirementFailResult(RequirementType.SKILLAPI_CLASS, I18n.locMsg("Requirements.NotMeet.NoClass", (String)value));
-						if (!SkillAPI.getPlayerData(p).isClass(SkillAPI.getClass((String)value)))
-								return new RequirementFailResult(RequirementType.SKILLAPI_CLASS, SkillAPI.getClass((String)value).getName());
+						if (!SkillAPI.isClassRegistered((String) value))
+							return new RequirementFailResult(RequirementType.SKILLAPI_CLASS,
+									I18n.locMsg("Requirements.NotMeet.NoClass", (String) value));
+						if (!SkillAPI.getPlayerData(p).isExactClass(SkillAPI.getClass((String) value)))
+							return new RequirementFailResult(RequirementType.SKILLAPI_CLASS, SkillAPI.getClass((String) value).getPrefix());
 					}
 					break;
 				case SKILLAPI_LEVEL:
@@ -73,6 +77,12 @@ public class RequirementManager
 					}
 					break;
 				case FRIEND_POINT:
+					HashMap<Integer, Integer> map = (HashMap<Integer, Integer>) value;
+					for (Integer id : ((HashMap<Integer, Integer>) value).keySet())
+					{
+						if (pd.getNPCfp(id) < map.get(id))
+							return new RequirementFailResult(RequirementType.FRIEND_POINT, value);
+					}
 					break;
 			}
 		}

@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
@@ -46,6 +47,8 @@ public class Quest
 
 		initRequirements();
 		version = QuestVersion.instantVersion();
+		if (!reward.hasRewardNPC())
+			reward.setRewardNPC(npc);
 	}
 	
 	public void initRequirements()
@@ -66,7 +69,7 @@ public class Quest
 						requirements.put(RequirementType.LEVEL, 0);
 						break;
 					case MONEY:
-						requirements.put(RequirementType.MONEY, 0);
+						requirements.put(RequirementType.MONEY, 0d);
 						break;
 					case QUEST:
 						requirements.put(RequirementType.QUEST, new ArrayList<String>());
@@ -345,16 +348,17 @@ public class Quest
 		TriggerTask task = new TriggerTask(p, triggerMap.get(type));
 		if (type.hasStage())
 			task.withStage(stage);
+		Main.debug("Task started with stage " + stage + ", and type " + type.toString());
 		task.start();
 	}
 
 	@Override
 	public Quest clone()
 	{
-		Quest q = new Quest(InternalID, QuestName, outline, reward, stages, QuestNPC);
-		q.setRequirements(requirements);
+		Quest q = new Quest(InternalID, QuestName, new ArrayList<String>(outline), reward, new ArrayList<QuestStage>(stages), QuestNPC);
+		q.setRequirements(new EnumMap<RequirementType, Object>(requirements));
 		q.registerVersion(version);
-		q.setTriggers(triggerMap);
+		q.setTriggers(new EnumMap<TriggerType, List<TriggerObject>>(triggerMap));
 		q.registerSettings(setting);
 		return q;
 	}

@@ -13,7 +13,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Scoreboard;
-import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestUtil;
@@ -248,6 +247,8 @@ public class QuestPlayerData
 	{
 		for (Integer npc : choice.getFriendPointReq().keySet())
 		{
+			if (!friendPointStorage.containsKey(npc))
+				return false;
 			if (!(friendPointStorage.get(npc) >= choice.getFriendPointReq().get(npc)))
 				return false;
 		}
@@ -395,12 +396,14 @@ public class QuestPlayerData
 
 	public void breakBlock(Material m, short subID)
 	{
-		for (QuestProgress qp : currentQuests)
+		for (Iterator<QuestProgress> it = currentQuests.iterator(); it.hasNext();)
 		{
+			QuestProgress qp = it.next();
 			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
 				continue;
-			for (QuestObjectProgress qop : qp.getCurrentObjects())
+			for (Iterator<QuestObjectProgress> iterator = qp.getCurrentObjects().iterator(); iterator.hasNext();)
 			{
+				QuestObjectProgress qop = iterator.next();
 				if (qop.isFinished())
 					continue;
 				if (qop.getObject() instanceof QuestObjectBreakBlock)
@@ -419,12 +422,14 @@ public class QuestPlayerData
 
 	public void talkToNPC(NPC npc)
 	{
-		for (QuestProgress qp : currentQuests)
+		for (Iterator<QuestProgress> it = currentQuests.iterator(); it.hasNext();)
 		{
+			QuestProgress qp = it.next();
 			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
 				continue;
-			for (QuestObjectProgress qop : qp.getCurrentObjects())
+			for (Iterator<QuestObjectProgress> iterator = qp.getCurrentObjects().iterator(); iterator.hasNext();)
 			{
+				QuestObjectProgress qop = iterator.next();
 				if (qop.isFinished())
 					continue;
 				if (qop.getObject() instanceof QuestObjectTalkToNPC)
@@ -432,7 +437,7 @@ public class QuestPlayerData
 					if (((QuestObjectTalkToNPC) qop.getObject()).getTargetNPC().equals(npc))
 					{
 						this.checkFinished(qp, qop);
-						continue;
+						return;
 					}
 				}
 			}
@@ -441,13 +446,14 @@ public class QuestPlayerData
 
 	public boolean deliverItem(NPC npc)
 	{
-		boolean b = false;
-		for (QuestProgress qp : currentQuests)
+		for (Iterator<QuestProgress> it = currentQuests.iterator(); it.hasNext();)
 		{
+			QuestProgress qp = it.next();
 			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
 				continue;
-			for (QuestObjectProgress qop : qp.getCurrentObjects())
+			for (Iterator<QuestObjectProgress> iterator = qp.getCurrentObjects().iterator(); iterator.hasNext();)
 			{
+				QuestObjectProgress qop = iterator.next();
 				if (qop.isFinished())
 					continue;
 				if (qop.getObject() instanceof QuestObjectDeliverItem)
@@ -464,30 +470,32 @@ public class QuestPlayerData
 						}
 						else
 						{
-							 Main.getInstance().handler.setItemInMainHand(p, null);
+							Main.getInstance().handler.setItemInMainHand(p, null);
 							if (itemtoDeliver.getAmount() == amountNeeded)
 								qop.setProgress(o.getAmount());
 							else
 								qop.setProgress(qop.getProgress() + itemtoDeliver.getAmount());
 						}
 						this.checkFinished(qp, qop);
-						b = true;
-						continue;
+						Main.debug("Delivered successful.");
+						return true;
 					}
 				}
 			}
 		}
-		return b;
+		return false;
 	}
 
 	public void killEntity(Entity e)
 	{
-		for (QuestProgress qp : currentQuests)
+		for (Iterator<QuestProgress> it = currentQuests.iterator(); it.hasNext();)
 		{
+			QuestProgress qp = it.next();
 			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
 				continue;
-			for (QuestObjectProgress qop : qp.getCurrentObjects())
+			for (Iterator<QuestObjectProgress> iterator = qp.getCurrentObjects().iterator(); iterator.hasNext();)
 			{
+				QuestObjectProgress qop = iterator.next();
 				if (qop.isFinished())
 					continue;
 				if (qop.getObject() instanceof QuestObjectKillMob)
@@ -518,14 +526,16 @@ public class QuestPlayerData
 		}
 	}
 
-	public void killMythicMob(MythicMob m)
+	public void killMythicMob(String mtmMob)
 	{
-		for (QuestProgress qp : currentQuests)
+		for (Iterator<QuestProgress> it = currentQuests.iterator(); it.hasNext();)
 		{
+			QuestProgress qp = it.next();
 			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
 				continue;
-			for (QuestObjectProgress qop : qp.getCurrentObjects())
+			for (Iterator<QuestObjectProgress> iterator = qp.getCurrentObjects().iterator(); iterator.hasNext();)
 			{
+				QuestObjectProgress qop = iterator.next();
 				if (qop.isFinished())
 					continue;
 				if (qop.getObject() instanceof QuestObjectKillMob)
@@ -533,9 +543,9 @@ public class QuestPlayerData
 					QuestObjectKillMob o = (QuestObjectKillMob) qop.getObject();
 					if (o.isMythicObject())
 					{
-						if (o.getMythicMob().equals(m))
+						if (o.getMythicMob().getInternalName().equals(mtmMob))
 						{
-							qop.setProgress(qop.getProgress() + 1);
+							qop.addProgress(1);
 							this.checkFinished(qp, qop);
 							continue;
 						}
@@ -547,12 +557,14 @@ public class QuestPlayerData
 
 	public void consumeItem(ItemStack is)
 	{
-		for (QuestProgress qp : currentQuests)
+		for (Iterator<QuestProgress> it = currentQuests.iterator(); it.hasNext();)
 		{
+			QuestProgress qp = it.next();
 			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
 				continue;
-			for (QuestObjectProgress qop : qp.getCurrentObjects())
+			for (Iterator<QuestObjectProgress> iterator = qp.getCurrentObjects().iterator(); iterator.hasNext();)
 			{
+				QuestObjectProgress qop = iterator.next();
 				if (qop.isFinished())
 					continue;
 				if (qop.getObject() instanceof QuestObjectConsumeItem)
@@ -560,8 +572,8 @@ public class QuestPlayerData
 					QuestObjectConsumeItem o = (QuestObjectConsumeItem) qop.getObject();
 					if (is.isSimilar(o.getItem()))
 					{
-						qop.setProgress(qop.getProgress() + 1);
-						this.checkFinished(qp, qop);
+						qop.addProgress(1);
+						checkFinished(qp, qop);
 						continue;
 					}
 				}
@@ -571,12 +583,14 @@ public class QuestPlayerData
 
 	public void reachLocation(Location l)
 	{
-		for (QuestProgress qp : currentQuests)
+		for (Iterator<QuestProgress> it = currentQuests.iterator(); it.hasNext();)
 		{
+			QuestProgress qp = it.next();
 			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
 				continue;
-			for (QuestObjectProgress qop : qp.getCurrentObjects())
+			for (Iterator<QuestObjectProgress> iterator = qp.getCurrentObjects().iterator(); iterator.hasNext();)
 			{
+				QuestObjectProgress qop = iterator.next();
 				if (qop.isFinished())
 					continue;
 				if (qop.getObject() instanceof QuestObjectReachLocation)

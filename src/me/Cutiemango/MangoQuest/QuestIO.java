@@ -22,14 +22,14 @@ public class QuestIO
 	private File file;
 	private FileConfiguration config = new YamlConfiguration();
 
-	public QuestIO(String name, boolean warn, boolean createFile)
+	public QuestIO(String name, boolean warn, boolean createFile, boolean replace)
 	{
 		file = new File(Main.getInstance().getDataFolder(), name);
 
 		if (!file.exists())
 		{
 			if (createFile)
-				Main.getInstance().saveResource(name, true);
+				Main.getInstance().saveResource(name, replace);
 			else
 			{
 				try
@@ -167,7 +167,7 @@ public class QuestIO
 	}
 	
 	public void removeSection(String path){
-		config.set(path, "");
+		config.set(path, null);
 		return;
 	}
 

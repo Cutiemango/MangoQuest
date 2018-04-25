@@ -186,17 +186,6 @@ public class CommandEditQuest
 						QuestChatManager.error(sender, I18n.locMsg("CommandInfo.QuestNotFound"));
 						break;
 					}
-				case FRIEND_POINT:
-					int id = Integer.parseInt(args[4]);
-					int fp = Integer.parseInt(args[5]);
-					if (!QuestValidater.validateNPC(Integer.toString(id)))
-					{
-						QuestChatManager.error(sender, I18n.locMsg("EditorMessage.NPCNotFound", Integer.toString(id)));
-						return;
-					}
-					((HashMap<Integer, Integer>) q.getRequirements().get(t)).put(id, fp);
-					QuestChatManager.info(sender, I18n.locMsg("EditorMessage.FriendPointRegistered", Integer.toString(id), Integer.toString(fp)));
-					break;
 				default:
 					break;
 
@@ -211,24 +200,26 @@ public class CommandEditQuest
 				{
 					case LEVEL:
 						q.getRequirements().put(t, Integer.parseInt(args[4]));
-						QuestEditorManager.editQuestRequirement(sender);
 						break;
 					case MONEY:
 						q.getRequirements().put(t, Double.parseDouble(args[4]));
-						QuestEditorManager.editQuestRequirement(sender);
 						break;
 					case QUEST:
 						QuestEditorManager.selectQuest(sender, "mq e edit req " + t.toString() + " " + Integer.parseInt(args[4]));
-						break;
+						return;
 					case FRIEND_POINT:
-						int id = Integer.parseInt(args[4]);
-						if (!QuestValidater.validateNPC(Integer.toString(id)))
+						String[] sp = args[4].split(":");
+						try
 						{
-							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.NPCNotFound", Integer.toString(id)));
+							((HashMap<Integer, Integer>) q.getRequirements().get(t)).put(Integer.parseInt(sp[0]), Integer.parseInt(sp[1]));
+						}
+						catch (NumberFormatException e)
+						{
+							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
+							QuestEditorManager.editQuest(sender);
 							return;
 						}
-						EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req FRIEND_POINT " + args[4], null));
-						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPointReq"));
+						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.FriendPointRegistered", sp[0], sp[1]));
 						break;
 					case ITEM:
 						break;
@@ -237,13 +228,12 @@ public class CommandEditQuest
 							q.getRequirements().put(t, args[4]);
 						else
 							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.NotSkillAPIClass", args[4]));
-						QuestEditorManager.editQuestRequirement(sender);
 						break;
 					case SKILLAPI_LEVEL:
 						q.getRequirements().put(t, Integer.parseInt(args[4]));
-						QuestEditorManager.editQuestRequirement(sender);
 						break;
 				}
+				QuestEditorManager.editQuestRequirement(sender);
 				return;
 			}
 			else
@@ -255,9 +245,13 @@ public class CommandEditQuest
 						case MONEY:
 						case SKILLAPI_CLASS:
 						case SKILLAPI_LEVEL:
-						case FRIEND_POINT:
 							EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req " + t.toString(), null));
 							QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+							break;
+						case FRIEND_POINT:
+							QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPoint"));
+							EditorListenerHandler.register(sender,
+									new EditorListenerObject(ListeningType.STRING, "mq e edit req FRIEND_POINT", Syntax.of("N:D", I18n.locMsg("Syntax.FriendPoint"), ":")));
 							break;
 						case ITEM:
 							EditorListenerHandler.registerGUI(sender, "requirement");
@@ -471,7 +465,6 @@ public class CommandEditQuest
 	}
 
 	// /mq e edit reward [type] [value]
-	// /mq e edit command [counter] [value]...
 	private static void editReward(Quest q, Player sender, String[] args)
 	{
 		if (args.length == 4)
@@ -488,8 +481,17 @@ public class CommandEditQuest
 					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit reward " + args[3], Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
 					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ExpAmount"));
 					break;
+				case "npc":
+					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, "mq e edit reward " + args[3], Syntax.of("N", I18n.locMsg("Syntax.NPCID"), "")));
+					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ClickNPC"));
+					return;
 				case "item":
 					QuestRewardManager.openEditMainGUI(sender);
+					return;
+				case "fp":
+					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPoint"));
+					EditorListenerHandler.register(sender,
+							new EditorListenerObject(ListeningType.STRING, "mq e edit reward fp", Syntax.of("N:D", I18n.locMsg("Syntax.FriendPoint"), ":")));
 					return;
 				default:
 					QuestEditorManager.editQuest(sender);
@@ -521,6 +523,12 @@ public class CommandEditQuest
 					case "saexp":
 						q.getQuestReward().setSkillAPIExp(Integer.parseInt(args[4]));
 						break;
+					case "npc":
+						if (!QuestValidater.validateNPC(args[4]))
+							return;
+						q.getQuestReward().setRewardNPC(Main.getHooker().getNPC(args[4]));
+						QuestRewardManager.openEditMainGUI(sender);
+						return;
 					case "choiceamount":
 						int i = Integer.parseInt(args[4]);
 						if (i > q.getQuestReward().getChoiceAmount())
@@ -529,10 +537,18 @@ public class CommandEditQuest
 						QuestRewardManager.openEditMainGUI(sender);
 						return;
 					case "fp":
-						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPoint"));
-						EditorListenerHandler.register(sender,
-								new EditorListenerObject(ListeningType.STRING, "mq e edit reward fp " + Integer.parseInt(args[4]), Syntax.of("N:D", I18n.locMsg("Syntax.FriendPoint"), ":")));
-						return;
+						String[] sp = args[4].split(":");
+						try
+						{
+							q.getQuestReward().getFp().put(Integer.parseInt(sp[0]), Integer.parseInt(sp[1]));
+						}
+						catch (NumberFormatException e)
+						{
+							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
+							QuestEditorManager.editQuest(sender);
+							return;
+						}
+						break;
 					case "command":
 						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterCommand"));
 						EditorListenerHandler.register(sender,
@@ -546,22 +562,6 @@ public class CommandEditQuest
 				{
 					switch (args[3].toLowerCase())
 					{
-						case "fp":
-							int npc = 0;
-							int fp = 0;
-							try
-							{
-								npc = Integer.parseInt(args[4]);
-								fp = Integer.parseInt(args[5]);
-							}
-							catch (NumberFormatException e)
-							{
-								QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
-								QuestEditorManager.editQuest(sender);
-								return;
-							}
-							q.getQuestReward().getFp().put(npc, fp);
-							break;
 						case "command":
 							String cmd = QuestUtil.convertArgsString(args, 5);
 							int index = Integer.parseInt(args[4]);

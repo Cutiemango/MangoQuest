@@ -28,7 +28,7 @@ public class EditorListenerObject
 			return;
 		}
 		QuestUtil.executeCommandAsync(p, command + " " + obj);
-		EditorListenerHandler.CurrentListening.remove(p.getName());
+		EditorListenerHandler.currentListening.remove(p.getName());
 		return;
 	}
 

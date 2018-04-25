@@ -24,7 +24,7 @@ public class FlexiableBook
 		pages.add(new QuestBookPage());
 	}
 	
-	LinkedList<QuestBookPage> pages;
+	private LinkedList<QuestBookPage> pages;
 
 	public QuestBookPage getPage(int index)
 	{

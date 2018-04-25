@@ -122,8 +122,9 @@ public class CommandNewObject
 		}
 		else if (t == RequirementType.FRIEND_POINT)
 		{
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req FRIEND_POINT", null));
-			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.TargetNPC"));
+			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPoint"));
+			EditorListenerHandler.register(sender,
+					new EditorListenerObject(ListeningType.STRING, "mq e edit req FRIEND_POINT", Syntax.of("N:D", I18n.locMsg("Syntax.FriendPoint"), ":")));
 			return;
 		}
 	}
@@ -171,7 +172,7 @@ public class CommandNewObject
 			switch (args[3].toLowerCase())
 			{
 				case "fp":
-					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e addnew reward fp", Syntax.of("I:I", I18n.locMsg("Syntax.FriendPoint"), ":")));
+					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e addnew reward fp", Syntax.of("N:D", I18n.locMsg("Syntax.FriendPoint"), ":")));
 					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPoint"));
 					return;
 				case "command":

@@ -11,6 +11,7 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import net.citizensnpcs.api.npc.NPC;
 
 public class QuestReward
 {
@@ -20,6 +21,8 @@ public class QuestReward
 	private List<String> command = new ArrayList<>();
 	private HashMap<Integer, Integer> friendPoints = new HashMap<>();
 	
+	private NPC rewardNPC;
+
 	protected int rewardAmount = 1;
 	protected boolean instantGiveReward = false;
 	
@@ -150,6 +153,21 @@ public class QuestReward
 	{
 		return itemChoices.get(index);
 	}
+	
+	public NPC getRewardNPC()
+	{
+		return rewardNPC;
+	}
+	
+	public boolean hasRewardNPC()
+	{
+		return rewardNPC != null;
+	}
+
+	public void setRewardNPC(NPC rewardNPC)
+	{
+		this.rewardNPC = rewardNPC;
+	}
 
 	public void setMoney(double m)
 	{
@@ -215,8 +233,11 @@ public class QuestReward
 	{
 		if (this.hasMoney())
 		{
-			Main.getHooker().getEconomy().depositPlayer(p, money);
-			QuestChatManager.info(p, I18n.locMsg("QuestReward.GiveMoneyReward", Double.toString(money)));
+			if (Main.getHooker().hasEconomyEnabled())
+			{
+				Main.getHooker().getEconomy().depositPlayer(p, money);
+				QuestChatManager.info(p, I18n.locMsg("QuestReward.GiveMoneyReward", Double.toString(money)));
+			}
 		}
 
 		if (this.hasExp())
@@ -245,8 +266,11 @@ public class QuestReward
 		
 		if (this.hasSkillAPIExp())
 		{
-			SkillAPI.getPlayerData(p).giveExp(skillAPIexp, ExpSource.COMMAND);
-			QuestChatManager.info(p, I18n.locMsg("QuestReward.GiveSkillAPIExpReward", Integer.toString(skillAPIexp)));
+			if (Main.getHooker().hasSkillAPIEnabled())
+			{
+				SkillAPI.getPlayerData(p).giveExp(skillAPIexp, ExpSource.COMMAND);
+				QuestChatManager.info(p, I18n.locMsg("QuestReward.GiveSkillAPIExpReward", Integer.toString(skillAPIexp)));
+			}
 		}
 	}
 }

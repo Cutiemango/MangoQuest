@@ -127,7 +127,7 @@ public class QuestConfigLoader
 					ad.background(advancement.getString("Advancements." + key + ".Background"));
 				if (advancement.getString("Advancements." + key + ".Parent") != null)
 					ad.parent("mangoquest:story:" + advancement.getString("Advancements." + key + ".Parent"));
-				ad.addTrigger(new Trigger(me.Cutiemango.MangoQuest.advancements.QuestAdvancement.TriggerType.IMPOSSIBLE, "mangoquest"));
+				ad.addTrigger(new Trigger(QuestAdvancement.TriggerType.IMPOSSIBLE, "mangoquest"));
 				ad.build().add();
 				count++;
 			}
@@ -236,28 +236,37 @@ public class QuestConfigLoader
 	public void loadConfig()
 	{
 		// Load i18n
+		
+		boolean useModifiedLanguage = false;
+		
+		if (config.getBoolean("useModifiedLanguage"))
+			useModifiedLanguage = true;
+		
 		if (config.getString("language") != null)
 		{
 			String[] lang = config.getString("language").split("_");
 			if (lang.length > 1)
 			{
 				ConfigSettings.LOCALE_USING = new Locale(lang[0], lang[1]);
-				I18n.init(ConfigSettings.LOCALE_USING);
+				I18n.init(ConfigSettings.LOCALE_USING, !useModifiedLanguage);
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.UsingLocale", config.getString("language")));
 			}
 		}
 		else
 		{
 			ConfigSettings.LOCALE_USING = ConfigSettings.DEFAULT_LOCALE;
-			I18n.init(ConfigSettings.LOCALE_USING);
+			I18n.init(ConfigSettings.LOCALE_USING, !useModifiedLanguage);
 			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.LocaleNotFound"));
 			QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.UsingDefaultLocale", ConfigSettings.DEFAULT_LOCALE.toString()));
+			config.set("language", ConfigSettings.DEFAULT_LOCALE.toString());
 		}
 		
 		// Debug mode
 		ConfigSettings.DEBUG_MODE = config.getBoolean("debug");
 		if (config.getBoolean("debug"))
 			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.DebugMode"));
+		else
+			config.set("debug", false);
 		
 		// Rightclick Settings
 		ConfigSettings.USE_RIGHT_CLICK_MENU = config.getBoolean("useRightClickMenu");
@@ -265,14 +274,26 @@ public class QuestConfigLoader
 		// Login Message
 		ConfigSettings.POP_LOGIN_MESSAGE = config.getBoolean("popLoginMessage");
 		
+		// Plugin Prefix
+		if (config.getString("pluginPrefix") != null)
+			QuestStorage.prefix = QuestChatManager.translateColor(config.getString("pluginPrefix"));
+		else
+			config.set("pluginPrefix", "&6MangoQuest>");
+		
 		// Maxium Quests
 		if (config.getInt("maxQuestAmount") != 0)
 			ConfigSettings.MAXIUM_QUEST_AMOUNT = config.getInt("maxQuestAmount");
+		else
+		{
+			ConfigSettings.MAXIUM_QUEST_AMOUNT = 4;
+			config.set("maxQuestAmount", 4);
+		}
 		
 		// Scoreboard settings
 		if (!config.contains("enableScoreboard"))
 			config.set("enableScoreboard", true);
 		ConfigSettings.ENABLE_SCOREBOARD = config.getBoolean("enableScoreboard");
+		
 		if (!config.contains("scoreboardMaxCanTakeQuestAmount"))
 			config.set("scoreboardMaxCanTakeQuestAmount", 3);
 		ConfigSettings.MAXMIUM_DISPLAY_TAKEQUEST_AMOUNT = config.getInt("scoreboardMaxCanTakeQuestAmount");
@@ -422,11 +443,8 @@ public class QuestConfigLoader
 				if (quest.getInt(qpath + "QuestNPC") != -1
 						&& QuestValidater.validateNPC(Integer.toString(quest.getInt(qpath + "QuestNPC"))))
 					npc = Main.getHooker().getNPC(quest.getInt(qpath + "QuestNPC"));
-				if (npc != null && !QuestNPCManager.hasData(npc.getId()))
-				{
-					Main.debug("NPC registered in quest loading: " + npc.getId());
-					QuestNPCManager.registerNPC(npc);
-				}
+	
+				registerNPC(npc);
 				
 				Quest q = new Quest(internal, questname, questoutline, reward, stages, npc);
 				if (quest.getString(qpath + "MessageRequirementNotMeet") != null)
@@ -475,7 +493,14 @@ public class QuestConfigLoader
 				if (npc != null)
 				{
 					QuestNPCManager.getNPCData(npc.getId()).registerQuest(q);
+					if (!reward.hasRewardNPC())
+						reward.setRewardNPC(npc);
 					Main.debug("NPC: " + npc.getId() + ", Quest: " + q.getInternalID());
+				}
+				if (reward.hasRewardNPC())
+				{
+					registerNPC(reward.getRewardNPC());
+					QuestNPCManager.getNPCData(reward.getRewardNPC().getId()).registerReward(q);
 				}
 				totalcount++;
 			}
@@ -493,61 +518,63 @@ public class QuestConfigLoader
 	{
 		String qpath = "Quests." + id + ".";
 		List<QuestStage> list = new ArrayList<>();
-		for (String stagecount : quest.getSection(qpath + "Stages"))
+		if (quest.isSection(qpath + "Stages"))
 		{
-			List<SimpleQuestObject> objs = new ArrayList<>();
-			int scount = Integer.parseInt(stagecount);
-			for (String objcount : quest.getSection(qpath + "Stages." + scount))
+			for (String stagecount : quest.getSection(qpath + "Stages"))
 			{
-				int ocount = Integer.parseInt(objcount);
-				String loadPath = qpath + "Stages." + scount + "." + ocount + ".";
-				String objType = quest.getString(loadPath + "ObjectType");
-				SimpleQuestObject obj = null;
-				switch (objType)
+				List<SimpleQuestObject> objs = new ArrayList<>();
+				int scount = Integer.parseInt(stagecount);
+				for (String objcount : quest.getSection(qpath + "Stages." + scount))
 				{
-					case "DELIVER_ITEM":
-						obj = new QuestObjectDeliverItem();
-						break;
-					case "TALK_TO_NPC":
-						obj = new QuestObjectTalkToNPC();
-						break;
-					case "KILL_MOB":
-						obj = new QuestObjectKillMob();
-						break;
-					case "BREAK_BLOCK":
-						obj = new QuestObjectBreakBlock();
-						break;
-					case "CONSUME_ITEM":
-						obj = new QuestObjectConsumeItem();
-						break;
-					case "REACH_LOCATION":
-						obj = new QuestObjectReachLocation();
-						break;
-					case "CUSTOM_OBJECT":
-						if (CustomObjectManager.exist(quest.getString(loadPath + "ObjectClass")))
-							obj = CustomObjectManager.getSpecificObject(quest.getString(loadPath + "ObjectClass"));
-						else
-						{
-							QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("CustomObject.ObjectNotFound", quest.getString(loadPath + "ObjectClass")));
+					int ocount = Integer.parseInt(objcount);
+					String loadPath = qpath + "Stages." + scount + "." + ocount + ".";
+					String objType = quest.getString(loadPath + "ObjectType");
+					SimpleQuestObject obj = null;
+					switch (objType)
+					{
+						case "DELIVER_ITEM":
+							obj = new QuestObjectDeliverItem();
+							break;
+						case "TALK_TO_NPC":
+							obj = new QuestObjectTalkToNPC();
+							break;
+						case "KILL_MOB":
+							obj = new QuestObjectKillMob();
+							break;
+						case "BREAK_BLOCK":
+							obj = new QuestObjectBreakBlock();
+							break;
+						case "CONSUME_ITEM":
+							obj = new QuestObjectConsumeItem();
+							break;
+						case "REACH_LOCATION":
+							obj = new QuestObjectReachLocation();
+							break;
+						case "CUSTOM_OBJECT":
+							if (CustomObjectManager.exist(quest.getString(loadPath + "ObjectClass")))
+								obj = CustomObjectManager.getSpecificObject(quest.getString(loadPath + "ObjectClass"));
+							else
+							{
+								QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("CustomObject.ObjectNotFound", quest.getString(loadPath + "ObjectClass")));
+								continue;
+							}
+							break;
+						default:
+							QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NoValidObject", id));
 							continue;
-						}
-						break;
-					default:
-						QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NoValidObject", id));
+					}
+					if (!obj.load(quest, loadPath))
+					{
+						QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.ObjectLoadingError", id, Integer.toString(scount), Integer.toString(ocount)));
 						continue;
+					}
+					if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".ActivateConversation") != null)
+						obj.setConversation(quest.getString(qpath + "Stages." + scount + "." + ocount + ".ActivateConversation"));
+					objs.add(obj);
 				}
-				if (!obj.load(quest, loadPath))
-				{
-					QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.ObjectLoadingError", id, Integer.toString(scount), Integer.toString(ocount)));
-					continue;
-				}
-				if (quest.getString(qpath + "Stages." + scount + "." + ocount + ".ActivateConversation") != null)
-					obj.setConversation(quest.getString(qpath + "Stages." + scount + "." + ocount + ".ActivateConversation"));
-				objs.add(obj);
+				QuestStage qs = new QuestStage(objs);
+				list.add(qs);
 			}
-
-			QuestStage qs = new QuestStage(objs);
-			list.add(qs);
 		}
 		return list;
 	}
@@ -626,7 +653,7 @@ public class QuestConfigLoader
 						{
 							String[] split = obj.split(" ");
 							String object = QuestUtil.convertArgsString(split, 2);
-							list.add(new TriggerObject(TriggerObjectType.valueOf(split[1]), object, Integer.parseInt(split[0]) - 1));
+							list.add(new TriggerObject(TriggerObjectType.valueOf(split[1]), object, Integer.parseInt(split[0])));
 						}
 						break;
 				}
@@ -643,6 +670,7 @@ public class QuestConfigLoader
 		QuestReward reward = new QuestReward();
 		reward.setRewardAmount(quest.getInt(qpath + "Rewards.RewardAmount"));
 		reward.setInstantGiveReward(quest.getBoolean(qpath + "Rewards.InstantGiveReward"));
+		
 		if (quest.isSection(qpath + "Rewards.Choice"))
 		{
 			List<RewardChoice> list = new ArrayList<>();
@@ -659,6 +687,13 @@ public class QuestConfigLoader
 			}
 			reward.setChoice(list);
 		}
+		
+		if (quest.getString(qpath + "Rewards.RewardNPC") != null)
+		{
+			if (QuestValidater.validateNPC(quest.getString(qpath + "Rewards.RewardNPC")))
+				reward.setRewardNPC(Main.getHooker().getNPC(quest.getString(qpath + "Rewards.RewardNPC")));
+		}
+		
 		if (quest.getDouble(qpath + "Rewards.Money") != 0)
 			reward.addMoney(quest.getDouble(qpath + "Rewards.Money"));
 		if (quest.getInt(qpath + "Rewards.Experience") != 0)
@@ -733,5 +768,14 @@ public class QuestConfigLoader
 			}
 		}
 		return list;
+	}
+	
+	private void registerNPC(NPC npc)
+	{
+		if (npc != null)
+		{
+			Main.debug("NPC registered: " + npc.getId());
+			QuestNPCManager.registerNPC(npc);
+		}
 	}
 }
