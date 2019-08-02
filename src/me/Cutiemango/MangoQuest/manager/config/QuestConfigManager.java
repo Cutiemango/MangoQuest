@@ -1,23 +1,22 @@
 package me.Cutiemango.MangoQuest.manager.config;
 
+import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.QuestIO;
 
 public class QuestConfigManager
 {
-	protected QuestIO QuestsIO;
-	protected QuestIO TranslateIO;
-	protected QuestIO NPCIO;
-	protected QuestIO ConfigIO;
-
-	protected QuestIO ConversationIO;
-	protected QuestIO AdvancementIO;
+	protected QuestIO translateIO;
+	protected QuestIO npcIO;
+	protected QuestIO configIO;
+	protected QuestIO globalQuest;
+	protected QuestIO globalConv;
 	
 	private static QuestConfigLoader loader;
 	private static QuestConfigSaver saver;
 
 	public QuestConfigManager()
 	{
-		ConfigIO = new QuestIO("config.yml", false, true, false);
+		configIO = new QuestIO("config.yml", false, true, false);
 		loader = new QuestConfigLoader(this);
 		loader.loadConfig();
 		saver = new QuestConfigSaver(this);
@@ -25,11 +24,13 @@ public class QuestConfigManager
 	
 	public void loadFile()
 	{
-		QuestsIO = new QuestIO("quests.yml", true, true, false);
-		TranslateIO = new QuestIO("translations.yml", true, true, true);
-		NPCIO = new QuestIO("npc.yml", true, false, false);
-		ConversationIO = new QuestIO("conversations.yml", false, false, false);
-		AdvancementIO = new QuestIO("advancements.yml", false, true, false);
+		globalQuest = new QuestIO("quest", "globalquest.yml");
+		globalConv = new QuestIO("conversation", "globalconv.yml");
+		
+		translateIO = new QuestIO("translations.yml", true, true, true);
+		npcIO = new QuestIO("npc.yml", true, false, false);
+		
+		DebugHandler.log(1, "[Config] File Loaded.");
 		
 		loader.init();
 		saver.init();

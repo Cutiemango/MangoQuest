@@ -11,11 +11,12 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
-import me.Cutiemango.MangoQuest.ConfigSettings;
+import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
@@ -27,7 +28,7 @@ public class EditorListenerHandler
 
 	public static HashMap<String, EditorListenerObject> currentListening = new HashMap<>();
 
-	public static void onChat(final Player p, final String msg, AsyncPlayerChatEvent event)
+	public static void onChat(Player p, String msg, AsyncPlayerChatEvent event)
 	{
 		if (currentListening.containsKey(p.getName()))
 		{
@@ -65,7 +66,6 @@ public class EditorListenerHandler
 		return;
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void onBlockBreak(Player p, Block b, Cancellable event)
 	{
 		if (!preCondition(p))
@@ -73,7 +73,8 @@ public class EditorListenerHandler
 		EditorListenerObject obj = currentListening.get(p.getName());
 		if (obj.getType().equals(ListeningType.BLOCK))
 		{
-			obj.execute(p, b.getType().toString() + ":" + b.getData());
+			obj.execute(p, b.getType().toString());
+			DebugHandler.log(5, "[Listener] Object of listening type " + obj.getType().toString() + " triggered. Block=" + b.toString());
 			event.setCancelled(true);
 		}
 		else
@@ -88,18 +89,25 @@ public class EditorListenerHandler
 		event.setCancelled(true);
 		if (obj.getType().equals(ListeningType.MTMMOB_LEFT_CLICK))
 		{
+			DebugHandler.log(5, "[Listener] Object of listening type " + obj.getType().toString() + " triggered.");
 			if (Main.getHooker().hasMythicMobEnabled() && Main.getHooker().getMythicMobsAPI().isMythicMob(e))
 				obj.execute(p, Main.getHooker().getMythicMobsAPI().getMythicMobInstance(e).getType().getInternalName());
 		}
-		else if (obj.getType().equals(ListeningType.MOB_LEFT_CLICK))
-			obj.execute(p, e.getType().toString());
-		else if (obj.getType().equals(ListeningType.STRING))
-		{
-			if (e.getCustomName() != null)
-				obj.execute(p, e.getCustomName());
+		else
+			if (obj.getType().equals(ListeningType.MOB_LEFT_CLICK))
+			{
+				DebugHandler.log(5, "[Listener] Object of listening type " + obj.getType().toString() + " triggered.");
+				obj.execute(p, e.getType().toString());
+			}
 			else
-				obj.execute(p, QuestUtil.translate(e.getType()));
-		}
+				if (obj.getType().equals(ListeningType.STRING))
+				{
+					DebugHandler.log(5, "[Listener] Object of listening type " + obj.getType().toString() + " triggered.");
+					if (e.getCustomName() != null)
+						obj.execute(p, e.getCustomName());
+					else
+						obj.execute(p, QuestUtil.translate(e.getType()));
+				}
 		return;
 	}
 
@@ -107,8 +115,7 @@ public class EditorListenerHandler
 	{
 		if (!preCondition(p))
 		{
-			if (ConfigSettings.DEBUG_MODE)
-				Main.debug("Player " + p.getName() + " does not have the precondition to edit.");
+			DebugHandler.log(5, "[Listener] Player " + p.getName() + " does not have the precondition to edit.");
 			return;
 		}
 		EditorListenerObject obj = currentListening.get(p.getName());
@@ -119,20 +126,20 @@ public class EditorListenerHandler
 		}
 		else
 		{
-			if (ConfigSettings.DEBUG_MODE)
-				Main.debug("Object was not NPC_LEFT_CLICK.");
+			DebugHandler.log(5, "[Listener] Object triggered, but the type was " + obj.getType().toString());
 		}
 		event.setCancelled(true);
 		return;
 	}
 
-	public static void onInventoryClose(Player p, Inventory inv)
+	public static void onInventoryClose(Player p, Inventory inv, InventoryView view)
 	{
 		if (!preCondition(p))
 			return;
 		EditorListenerObject obj = currentListening.get(p.getName());
 		if (!obj.getType().equals(ListeningType.OPEN_INVENTORY))
 			return;
+		DebugHandler.log(5, "[Listener] Object of listening type " + obj.getType().toString() + " triggered.");
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 		List<ItemStack> list = new ArrayList<>();
 		for (ItemStack is : inv.getContents())
@@ -142,17 +149,12 @@ public class EditorListenerHandler
 			else
 				list.add(is);
 		}
-//		if (inv.getName().contains("Reward"))
-//		{
-//			q.getQuestReward().setItemReward(list);
-//			QuestEditorManager.editQuest(p);
-//		}
-//		else
-			if (inv.getName().contains("Requirement"))
-			{
-				q.getRequirements().put(RequirementType.ITEM, list);
-				QuestEditorManager.editQuestRequirement(p);
-			}
+
+		if (view.getTitle().contains("Requirement"))
+		{
+			q.getRequirements().put(RequirementType.ITEM, list);
+			QuestEditorManager.editQuestRequirement(p);
+		}
 		unreigster(p);
 		QuestChatManager.info(p, I18n.locMsg("EditorMessage.ItemSaved"));
 		return;
@@ -162,7 +164,7 @@ public class EditorListenerHandler
 	{
 		currentListening.put(p.getName(), obj);
 	}
-	
+
 	public static void unreigster(Player p)
 	{
 		if (preCondition(p))
@@ -171,7 +173,7 @@ public class EditorListenerHandler
 			currentListening.remove(p.getName());
 		}
 	}
-	
+
 	public static boolean isListening(Player p)
 	{
 		return currentListening.containsKey(p.getName());
@@ -187,14 +189,11 @@ public class EditorListenerHandler
 	{
 		if (QuestEditorManager.checkEditorMode(p, false))
 		{
-//			if (obj.equalsIgnoreCase("reward"))
-//				QuestEditorManager.generateEditItemGUI(p, "Reward", QuestEditorManager.getCurrentEditingQuest(p).getQuestReward().getItems());
-//			else
-				if (obj.equalsIgnoreCase("requirement"))
-					QuestEditorManager.generateEditItemGUI(p, "Requirement",
-							(List<ItemStack>) QuestEditorManager.getCurrentEditingQuest(p).getRequirements().get(RequirementType.ITEM));
-				else
-					return;
+			if (obj.equalsIgnoreCase("requirement"))
+				QuestEditorManager.generateEditItemGUI(p, "Requirement",
+						(List<ItemStack>) QuestEditorManager.getCurrentEditingQuest(p).getRequirements().get(RequirementType.ITEM));
+			else
+				return;
 			currentListening.put(p.getName(), new EditorListenerObject(ListeningType.OPEN_INVENTORY, obj, null));
 		}
 	}

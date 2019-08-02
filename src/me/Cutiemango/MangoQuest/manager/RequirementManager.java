@@ -40,7 +40,7 @@ public class RequirementManager
 					{
 						if (!Main.getHooker().getEconomy().hasAccount(p))
 							return new RequirementFailResult(RequirementType.MONEY, (Double) value);
-						if (!(Main.getHooker().getEconomy().getBalance(p) >= (Double) value))
+						if (Main.getHooker().getEconomy().getBalance(p) < (Double) value)
 							return new RequirementFailResult(RequirementType.MONEY, (Double) value);
 					}
 					break;

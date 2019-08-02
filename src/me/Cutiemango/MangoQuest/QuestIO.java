@@ -21,6 +21,26 @@ public class QuestIO
 
 	private File file;
 	private FileConfiguration config = new YamlConfiguration();
+	
+	public QuestIO(File f)
+	{
+		if (!f.exists())
+		{
+			f.getParentFile().mkdirs();
+			try
+			{
+				f.createNewFile();
+				new YamlConfiguration().save(f);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		loadFrom(f);
+
+		file = f;
+	}
 
 	public QuestIO(String name, boolean warn, boolean createFile, boolean replace)
 	{
@@ -34,6 +54,7 @@ public class QuestIO
 			{
 				try
 				{
+					file.getParentFile().mkdirs();
 					file.createNewFile();
 					new YamlConfiguration().save(file);
 				}
@@ -44,6 +65,27 @@ public class QuestIO
 			}
 			if (warn)
 				QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.FileNotFound", name));
+		}
+
+		loadFrom(file);
+	}
+	
+	public QuestIO(String folder, String name)
+	{
+		file = new File(Main.getInstance().getDataFolder() + File.separator + folder + File.separator, name);
+
+		if (!file.exists())
+		{
+			try
+			{
+				file.getParentFile().mkdirs();
+				file.createNewFile();
+				new YamlConfiguration().save(file);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 		}
 
 		loadFrom(file);

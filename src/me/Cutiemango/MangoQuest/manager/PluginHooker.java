@@ -3,19 +3,20 @@ package me.Cutiemango.MangoQuest.manager;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import com.nisovin.shopkeepers.ShopkeepersPlugin;
+import com.nisovin.shopkeepers.api.ShopkeepersPlugin;
 import com.sucy.skill.SkillAPI;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.api.bukkit.BukkitAPIHelper;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.Main;
-import me.old.RPGshop.RPGshop;
+import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.CitizensPlugin;
 import net.citizensnpcs.api.npc.NPC;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
+import su.nightexpress.unrealshop.UnrealShop;
 
 public class PluginHooker
 {
@@ -32,7 +33,7 @@ public class PluginHooker
 	private Vault vault;
 	private ShopkeepersPlugin shopkeepers;
 	private SkillAPI skillapi;
-	private RPGshop rpgshop;
+	private UnrealShop Ushop;
 
 	public void hookPlugins()
 	{
@@ -69,7 +70,9 @@ public class PluginHooker
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.MythicMobsHooked"));
 			}
 			else
-				Main.debug(I18n.locMsg("PluginHooker.MythicMobsNotHooked"));
+			{
+				DebugHandler.log(1, I18n.locMsg("PluginHooker.MythicMobsNotHooked"));
+			}
 			
 			if (plugin.getServer().getPluginManager().isPluginEnabled("Shopkeepers"))
 			{
@@ -77,7 +80,9 @@ public class PluginHooker
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.ShopkeepersHooked"));
 			}
 			else
-				Main.debug(I18n.locMsg("PluginHooker.ShopkeepersNotHooked"));
+			{
+				DebugHandler.log(1, I18n.locMsg("PluginHooker.ShopkeepersNotHooked"));
+			}
 			
 			
 			if (plugin.getServer().getPluginManager().isPluginEnabled("SkillAPI"))
@@ -86,13 +91,14 @@ public class PluginHooker
 				skillapi = (SkillAPI) plugin.getServer().getPluginManager().getPlugin("SkillAPI");
 			}
 			else
-				Main.debug(I18n.locMsg("PluginHooker.SkillAPINotHooked"));
-			
-			
-			if (plugin.getServer().getPluginManager().isPluginEnabled("RPGshop"))
 			{
-				rpgshop = (RPGshop) plugin.getServer().getPluginManager().getPlugin("RPGshop");
-				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.RPGshopHooked"));
+				DebugHandler.log(1, I18n.locMsg("PluginHooker.SkillAPINotHooked"));
+			}
+			
+			if (plugin.getServer().getPluginManager().isPluginEnabled("UnrealShop"))
+			{
+				Ushop = (UnrealShop) plugin.getServer().getPluginManager().getPlugin("UnrealShop");
+				// msg
 			}
 		}
 		catch (Exception e){}
@@ -127,6 +133,11 @@ public class PluginHooker
 	{
 		return shopkeepers;
 	}
+	
+	public UnrealShop getUnrealShop()
+	{
+		return Ushop;
+	}
 
 
 	public boolean hasMythicMobEnabled()
@@ -147,11 +158,6 @@ public class PluginHooker
 	public boolean hasSkillAPIEnabled()
 	{
 		return skillapi != null;
-	}
-	
-	public boolean hasRPGshopEnabled()
-	{
-		return rpgshop != null;
 	}
 
 	public BukkitAPIHelper getMythicMobsAPI()

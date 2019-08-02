@@ -7,7 +7,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.advancements.QuestAdvancementManager;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
@@ -27,14 +26,15 @@ public class TriggerObject
 	public enum TriggerObjectType
 	{
 		COMMAND(I18n.locMsg("TriggerObject.Command")),
+		COMMAND_PLAYER(I18n.locMsg("EnumAction.CommandPlayer")),
+		COMMAND_PLAYER_OP(I18n.locMsg("EnumAction.CommandPlayerOP")),
 		SEND_TITLE(I18n.locMsg("TriggerObject.SendTitle")),
 		SEND_SUBTITLE(I18n.locMsg("TriggerObject.SendSubtitle")),
 		SEND_TITLE_AND_SUBTITLE(I18n.locMsg("TriggerObject.SendTitleAndSubtitle")),
 		SEND_MESSAGE(I18n.locMsg("TriggerObject.SendMessage")),
 		OPEN_CONVERSATION(I18n.locMsg("TriggerObject.OpenConversation")),
 		TELEPORT(I18n.locMsg("TriggerObject.Teleport")),
-		WAIT(I18n.locMsg("TriggerObject.Wait")),
-		GIVE_ADVANCEMENT(I18n.locMsg("TriggerObject.GiveAdvancement"));
+		WAIT(I18n.locMsg("TriggerObject.Wait"));
 	
 		private String name;
 	
@@ -82,9 +82,11 @@ public class TriggerObject
 			case COMMAND:
 				QuestUtil.executeConsoleAsync(object);
 				break;
-			case GIVE_ADVANCEMENT:
-				if (Main.isUsingUpdatedVersion())
-					QuestAdvancementManager.getAdvancement(object).grant(p);
+			case COMMAND_PLAYER:
+				QuestUtil.executeCommandAsync(p, object);
+				break;
+			case COMMAND_PLAYER_OP:
+				QuestUtil.executeOPCommandAsync(p, object);
 				break;
 			case SEND_MESSAGE:
 				p.sendMessage(QuestChatManager.translateColor(object));

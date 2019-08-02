@@ -60,7 +60,6 @@ Choices:
       '1':
         "OptionName": "我當然知道啊，答案不就是2！"
         "OptionActions":
-        - "GIVE_ADVANCEMENT#Choice1"
         - "CHANGE_PAGE#"
         - "SENTENCE#&7&o「我當然知道啊，答案不就是2！」"
         - "SENTENCE#&c&lNPC&0：「哈哈！上當了吧！在電腦這個只有0和1的世界，10進位都不算數！」"
@@ -68,7 +67,6 @@ Choices:
       '2':
         "OptionName": "哼哼，看我是87，我還不答3！"
         "OptionActions":
-        - "GIVE_ADVANCEMENT#Choice2"
         - "CHANGE_PAGE#"
         - "SENTENCE#&7&o「答案是3！」"
         - "SENTENCE#&c&lNPC&0：「笨蛋！連1+1=2都不知道，你小學老師怎麼教的啊？」"
@@ -76,7 +74,6 @@ Choices:
       '3':
         "OptionName": "呃...我不知道耶，怎麼辦...？"
         "OptionActions":
-        - "GIVE_ADVANCEMENT#Choice3"
         - "CHANGE_PAGE#"
         - "SENTENCE#&7&o「呃，我不知道，你可以教教我嗎？」"
         - "SENTENCE#...&8(NPC默默地嘆氣看著你)"
@@ -84,7 +81,6 @@ Choices:
       '4':
         "OptionName": "二進位還是十進位？"
         "OptionActions":
-        - "GIVE_ADVANCEMENT#Choice4"
         - "CHANGE_PAGE#"
         - "SENTENCE#&7&o「這也要看你問的是二進位還是十進位決定吧。」"
         - "SENTENCE#&c&lNPC&0：「...不錯！小子有前途，剛剛前面好幾個笨蛋被我耍了，就你沒被騙！」"

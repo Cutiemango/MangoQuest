@@ -129,7 +129,12 @@ public class ConversationEditorManager
 		page.add(new InteractiveText(I18n.locMsg("ConversationEditor.ConvName", conv.getName()))
 				.showText(I18n.locMsg("ConversationEditor.ConvName.ShowText")).clickCommand("/mq ce edit name")).changeLine();
 		page.add(new InteractiveText(I18n.locMsg("ConversationEditor.ConvNPC"))
-				.showText(I18n.locMsg("ConversationEditor.ConvNPC.ShowText")).clickCommand("/mq ce edit npc")).add(new InteractiveText("").showNPCInfo(conv.getNPC())).changeLine();
+				.showText(I18n.locMsg("ConversationEditor.ConvNPC.ShowText")).clickCommand("/mq ce edit npc")).endNormally();
+		
+		if (conv.getNPC() != null)
+			page.add(new InteractiveText("").showNPCInfo(conv.getNPC())).changeLine();
+		else
+			page.add(I18n.locMsg("QuestEditor.NotSet")).changeLine();
 		
 		page.changeLine();
 		page.changeLine();
@@ -194,7 +199,7 @@ public class ConversationEditorManager
 						String[] split = act.getObject().split("@");
 						NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
 						page.add(new InteractiveText(act.getActionType().toCustomString())
-								.showText(I18n.locMsg("ConversationEditor.ActionObject") + I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), split[0]))).endNormally();
+								.showText(I18n.locMsg("ConversationEditor.ActionObject") + QuestChatManager.toNormalDisplay(I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), split[0])))).endNormally();
 					}
 					else
 						page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject())).endNormally();
@@ -228,7 +233,7 @@ public class ConversationEditorManager
 					{
 						String[] split = act.getObject().split("@");
 						NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
-						page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), split[0]))).endNormally();
+						page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + QuestChatManager.toNormalDisplay(I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), split[0])))).endNormally();
 					}
 					else
 						page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject())).endNormally();
@@ -269,7 +274,7 @@ public class ConversationEditorManager
 				{
 					String[] split = act.getObject().split("@");
 					NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(split[1]));
-					page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), split[0]))).endNormally();
+					page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + QuestChatManager.toNormalDisplay(I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), split[0])))).endNormally();
 				}
 				else
 					page.add(new InteractiveText(act.getActionType().toCustomString()).showText(I18n.locMsg("ConversationEditor.ActionObject") + act.getObject())).endNormally();

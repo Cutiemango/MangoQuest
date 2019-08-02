@@ -19,8 +19,8 @@ import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
-import me.Cutiemango.MangoQuest.manager.reward.QuestRewardManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
@@ -205,7 +205,7 @@ public class CommandEditQuest
 						q.getRequirements().put(t, Double.parseDouble(args[4]));
 						break;
 					case QUEST:
-						QuestEditorManager.selectQuest(sender, "mq e edit req " + t.toString() + " " + Integer.parseInt(args[4]));
+						QuestEditorManager.selectQuest(sender, "/mq e edit req " + t.toString() + " " + Integer.parseInt(args[4]));
 						return;
 					case FRIEND_POINT:
 						String[] sp = args[4].split(":");
@@ -426,7 +426,7 @@ public class CommandEditQuest
 					switch (args[6].toUpperCase())
 					{
 						case "BREAK_BLOCK":
-							ob = new QuestObjectBreakBlock(Material.GRASS, (short) 0, 1);
+							ob = new QuestObjectBreakBlock(Material.GRASS, 1);
 							break;
 						case "CONSUME_ITEM":
 							ob = new QuestObjectConsumeItem(new ItemStack(Material.BREAD), 1);

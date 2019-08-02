@@ -5,7 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import me.Cutiemango.MangoQuest.commands.AdminCommand;
 import me.Cutiemango.MangoQuest.commands.CommandReceiver;
@@ -19,14 +18,9 @@ import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.manager.CustomObjectManager;
 import me.Cutiemango.MangoQuest.manager.PluginHooker;
 import me.Cutiemango.MangoQuest.versions.VersionHandler;
-import me.Cutiemango.MangoQuest.versions.Version_v1_10_R1;
-import me.Cutiemango.MangoQuest.versions.Version_v1_11_R1;
-import me.Cutiemango.MangoQuest.versions.Version_v1_12_R1;
-import me.Cutiemango.MangoQuest.versions.Version_v1_8_R1;
-import me.Cutiemango.MangoQuest.versions.Version_v1_8_R2;
-import me.Cutiemango.MangoQuest.versions.Version_v1_8_R3;
-import me.Cutiemango.MangoQuest.versions.Version_v1_9_R1;
-import me.Cutiemango.MangoQuest.versions.Version_v1_9_R2;
+import me.Cutiemango.MangoQuest.versions.Version_v1_13_R1;
+import me.Cutiemango.MangoQuest.versions.Version_v1_13_R2;
+import me.Cutiemango.MangoQuest.versions.Version_v1_14_R1;
 
 public class Main extends JavaPlugin
 {
@@ -35,10 +29,8 @@ public class Main extends JavaPlugin
 	public PluginHooker pluginHooker;
 	public VersionHandler handler;
 	public QuestConfigManager configManager;
-	
-	private BukkitTask counterTask;
-	
-	private static boolean VERSION_HIGHER_THAN_1_12 = false;
+
+	private int counterTaskID = -1;
 
 	@Override
 	public void onEnable()
@@ -46,7 +38,7 @@ public class Main extends JavaPlugin
 		instance = this;
 		getCommand("mq").setExecutor(new CommandReceiver());
 		getCommand("mqa").setExecutor(new AdminCommand());
-		
+
 		configManager = new QuestConfigManager();
 		pluginHooker = new PluginHooker(this);
 		pluginHooker.hookPlugins();
@@ -58,30 +50,15 @@ public class Main extends JavaPlugin
 		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
 		switch (version)
 		{
-			case "v1_8_R1":
-				handler = new Version_v1_8_R1();
+			case "v1_13_R1":
+				handler = new Version_v1_13_R1();
 				break;
-			case "v1_8_R2":
-				handler = new Version_v1_8_R2();
+			case "v1_13_R2":
+				handler = new Version_v1_13_R2();
 				break;
-			case "v1_8_R3":
-				handler = new Version_v1_8_R3();
-				break;
-			case "v1_9_R1":
-				handler = new Version_v1_9_R1();
-				break;
-			case "v1_9_R2":
-				handler = new Version_v1_9_R2();
-				break;
-			case "v1_10_R1":
-				handler = new Version_v1_10_R1();
-				break;
-			case "v1_11_R1":
-				handler = new Version_v1_11_R1();
-				break;
-			case "v1_12_R1":
-				handler = new Version_v1_12_R1();
-				VERSION_HIGHER_THAN_1_12 = true;
+			case "v1_14_R1":
+				handler = new Version_v1_14_R1();
+				QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.TestingVersion"));
 				break;
 			default:
 				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.VersionNotSupported1"));
@@ -103,23 +80,23 @@ public class Main extends JavaPlugin
 					QuestPlayerData qd = new QuestPlayerData(p);
 					QuestStorage.Players.put(p.getName(), qd);
 				}
-				this.cancel();
 			}
 		}.runTaskLater(this, 5L);
-		
+
 		startCounter();
 
 		// Use new metrics!! Yay!!
 		new Metrics(this);
 
+		DebugHandler.log(1, "Plugin Loaded!");
 	}
 
 	@Override
 	public void onDisable()
 	{
 		stopCounter();
-		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.Disabled"));
 		savePlayers();
+		DebugHandler.log(1, I18n.locMsg("Cmdlog.Disabled"));
 	}
 
 	public void reload()
@@ -132,7 +109,7 @@ public class Main extends JavaPlugin
 		pluginHooker = new PluginHooker(this);
 		pluginHooker.hookPlugins();
 		configManager.loadFile();
-		
+
 		SimpleQuestObject.initObjectNames();
 		CustomObjectManager.loadCustomObjects();
 		QuestConfigManager.getLoader().loadAll();
@@ -142,22 +119,18 @@ public class Main extends JavaPlugin
 			QuestStorage.Players.put(p.getName(), qd);
 		}
 	}
-	
-	public static boolean isUsingUpdatedVersion()
-	{
-		return VERSION_HIGHER_THAN_1_12;
-	}
-	
+
+
 	public static Main getInstance()
 	{
 		return instance;
 	}
-	
+
 	public static PluginHooker getHooker()
 	{
 		return instance.pluginHooker;
 	}
-	
+
 	public void savePlayers()
 	{
 		for (Player p : Bukkit.getOnlinePlayers())
@@ -169,45 +142,69 @@ public class Main extends JavaPlugin
 			}
 		}
 	}
-	
-	public static void debug(String msg)
-	{
-		if (ConfigSettings.DEBUG_MODE)
-			QuestChatManager.logCmd(Level.INFO, "[DEBUG] " + msg);
-	}
-	
+
 	public void startCounter()
 	{
-		counterTask = new BukkitRunnable()
+		counterTaskID = new BukkitRunnable()
 		{
+			int counter = 0;
 			@Override
 			public void run()
 			{
 				for (Player p : Bukkit.getOnlinePlayers())
 				{
 					QuestPlayerData pd = QuestUtil.getData(p);
+					
 					if (pd == null)
 						continue;
+					if (counter > ConfigSettings.PLAYER_DATA_SAVE_INTERVAL)
+					{
+						pd.save();
+						counter = 0;
+					}
+					else
+						counter++;
+					
 					pd.checkQuestFail();
+					
 					if (ConfigSettings.USE_PARTICLE_EFFECT)
-						QuestNPCManager.effectTask(pd);
+					{
+						try
+						{
+							QuestNPCManager.effectTask(pd);
+						}
+						catch (Exception e)
+						{
+							System.out.println(e);
+							this.cancel();
+						}
+					}
 					if (ConfigSettings.ENABLE_SCOREBOARD)
 					{
 						Bukkit.getScheduler().runTask(Main.instance, () ->
 						{
-							Scoreboard score = ScoreboardManager.update(pd);
-							pd.getPlayer().setScoreboard(score);
+							try
+							{
+								Scoreboard score = ScoreboardManager.update(pd);
+								pd.getPlayer().setScoreboard(score);
+							}
+							catch (Exception e)
+							{
+								QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.ScoreboardException"));
+								System.out.println(e);
+								this.cancel();
+							}
 						});
 					}
 				}
 			}
-		}.runTaskTimer(this, 0L, 20L);
+		}.runTaskTimer(this, 0L, 20L).getTaskId();
 	}
-	
+
 	public void stopCounter()
 	{
-		if (counterTask != null)
-			counterTask.cancel();
+		if (counterTaskID != -1)
+			Bukkit.getScheduler().cancelTask(counterTaskID);
 	}
 
 }

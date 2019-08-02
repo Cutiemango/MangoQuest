@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.manager.reward;
+package me.Cutiemango.MangoQuest.manager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.reward.QuestGUIItem;
 import me.Cutiemango.MangoQuest.objects.reward.QuestReward;
@@ -60,7 +59,10 @@ public class QuestRewardManager implements Listener
 			return;
 		String title = I18n.locMsg("QuestReward.ChoiceEditTitle");
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
-		title += q.getQuestName() + ":" + Integer.toString(index);
+		title += q.getQuestName();
+		if (title.length() >= 32)
+			title = title.substring(0, 27) + "...";
+		title += "@" + Integer.toString(index);
 		Inventory inv = Bukkit.createInventory(null, 27, title);
 		
 		if (q.getQuestReward().getChoices().size() <= index)
@@ -88,7 +90,7 @@ public class QuestRewardManager implements Listener
 	
 	private static ItemStack editRewardAmount(int amount)
 	{
-		QuestGUIItem anvil = new QuestGUIItem(Material.ANVIL, 1, (short)0);
+		QuestGUIItem anvil = new QuestGUIItem(Material.ANVIL, 1);
 		anvil.setName(I18n.locMsg("QuestReward.EditRewardAmount"));
 		anvil.setLore(QuestUtil.createList(I18n.locMsg("QuestReward.CurrentRewardAmount", Integer.toString(amount), I18n.locMsg("QuestReward.ClickToEdit"))));
 		return anvil.get();
@@ -96,7 +98,7 @@ public class QuestRewardManager implements Listener
 	
 	private static ItemStack newRewardChoice(int index)
 	{
-		QuestGUIItem chest = new QuestGUIItem(Material.ENDER_CHEST, 1, (short)0);
+		QuestGUIItem chest = new QuestGUIItem(Material.ENDER_CHEST, 1);
 		chest.setName(I18n.locMsg("QuestReward.NewRewardChoice"));
 		chest.setLore(QuestUtil.createList(I18n.locMsg("QuestReward.NewRewardChoiceLore"), QuestChatManager.translateColor("&0" + index)));
 		chest.glowEffect();
@@ -105,7 +107,7 @@ public class QuestRewardManager implements Listener
 	
 	private static ItemStack glassPane(int amount)
 	{
-		QuestGUIItem glassPane = new QuestGUIItem(Material.STAINED_GLASS_PANE, 1, (short)QuestUtil.randomInteger(0, 15));
+		QuestGUIItem glassPane = new QuestGUIItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE, 1);
 		glassPane.setName(I18n.locMsg("QuestReward.EditGlassPane", Integer.toString(amount)));
 		return glassPane.get();
 	}
@@ -115,12 +117,16 @@ public class QuestRewardManager implements Listener
 		ItemStack firstItem = new ItemStack(Material.BARRIER);
 		QuestGUIItem button;
 		if (rc.getItems().size() == 0)
-			button = new QuestGUIItem(Material.BARRIER, 1, (short)0);
+			button = new QuestGUIItem(Material.BARRIER, 1);
 		else
 		{
 			firstItem = rc.getItems().get(0);
-			button = new QuestGUIItem(firstItem.getType(), firstItem.getAmount(), (short)firstItem.getDurability());
+			button = new QuestGUIItem(firstItem.getType(), firstItem.getAmount());
 		}
+		
+		if (firstItem.hasItemMeta() && firstItem.getItemMeta().isUnbreakable())
+			button.setUnbreakable();
+		
 		List<String> lore = new ArrayList<>();
 		for (ItemStack item : rc.getItems())
 		{
@@ -129,7 +135,7 @@ public class QuestRewardManager implements Listener
 			lore.add(QuestChatManager.translateColor("&f- " + getItemName(item)));
 		}
 		lore.add(I18n.locMsg("QuestReward.ClickToEdit"));
-		lore.add(ChatColor.BLACK + "" + index);
+		lore.add(QuestChatManager.translateColor("&0" + index));
 		button.setName("&f" + getItemName(firstItem));
 		button.setLore(lore);
 		return button.get();
@@ -137,8 +143,8 @@ public class QuestRewardManager implements Listener
 	
 	private static ItemStack setNPC(NPC n)
 	{
-		QuestGUIItem npc = new QuestGUIItem(Material.SKULL_ITEM, 1, (short)3);
-		if (n != null)
+		QuestGUIItem npc = new QuestGUIItem(Material.PLAYER_HEAD, 1);
+		if (n != null && n.getName() != null)
 			npc.setName(I18n.locMsg("QuestReward.RewardNPC", n.getName()));
 		else
 			npc.setName(I18n.locMsg("QuestReward.RewardNPC", I18n.locMsg("Translation.UnknownNPC")));
@@ -147,7 +153,7 @@ public class QuestRewardManager implements Listener
 	
 	private static ItemStack removeRewardChoice()
 	{
-		QuestGUIItem barrier = new QuestGUIItem(Material.BARRIER, 1, (short)0);
+		QuestGUIItem barrier = new QuestGUIItem(Material.BARRIER, 1);
 		barrier.setName(I18n.locMsg("QuestReward.RemoveChoice"));
 		barrier.setLore(QuestUtil.createList(I18n.locMsg("QuestReward.RemoveChoiceLore")));
 		barrier.glowEffect();
@@ -156,7 +162,7 @@ public class QuestRewardManager implements Listener
 	
 	private static ItemStack backToMenu()
 	{
-		QuestGUIItem sign = new QuestGUIItem(Material.SIGN, 1, (short)0);
+		QuestGUIItem sign = new QuestGUIItem(Material.WRITABLE_BOOK, 1);
 		sign.setName(I18n.locMsg("QuestEditor.Return"));
 		return sign.get();
 	}
@@ -223,7 +229,7 @@ public class QuestRewardManager implements Listener
 						Integer.toString(is.getAmount())));
 			else
 				QuestChatManager.info(p, I18n.locMsg("QuestReward.GiveItemReward",
-						QuestUtil.translate(is.getType(), is.getDurability()), Integer.toString(is.getAmount())));
+						QuestUtil.translate(is.getType()), Integer.toString(is.getAmount())));
 		}
 		return;
 	}

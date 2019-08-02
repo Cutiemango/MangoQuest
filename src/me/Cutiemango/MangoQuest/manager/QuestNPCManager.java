@@ -2,13 +2,13 @@ package me.Cutiemango.MangoQuest.manager;
 
 import java.util.HashMap;
 import org.bukkit.entity.Entity;
+import com.nisovin.shopkeepers.api.ShopkeepersAPI;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.GUIOption;
 import me.Cutiemango.MangoQuest.objects.QuestNPC;
-import me.old.RPGshop.GUIManager;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -29,6 +29,7 @@ public class QuestNPCManager
 	
 	public static void effectTask(QuestPlayerData pd)
 	{
+		
 		for (Entity e : pd.getPlayer().getNearbyEntities(16d, 4d, 16d))
 		{
 			if (CitizensAPI.getNPCRegistry().isNPC(e))
@@ -77,9 +78,7 @@ public class QuestNPCManager
 		if (!b)
 		{
 			if (Main.getHooker().hasShopkeepersEnabled())
-				b = Main.getHooker().getShopkeepers().isShopkeeper(Main.getHooker().getNPC(id).getEntity());
-			else if (Main.getHooker().hasRPGshopEnabled())
-				b = GUIManager.hasShop(Integer.toString(id));
+				b = ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(Main.getHooker().getNPC(id).getEntity());
 		}
 		return b;
 	}

@@ -15,8 +15,17 @@ useModifiedLanguage: false
 pluginPrefix: "&6MangoQuest>"
 
 #【除錯模式】
-# 沒事不要亂開，小黑窗會悲劇。 
-debug: false
+# 等級 0 - 不顯示任何除錯訊息
+# 等級 1 - 顯示資訊性除錯訊息(ex. 未連接至某些選擇性安裝插件)
+# 等級 2 - 顯示玩家小部分行動訊息(ex. 讀取玩家配置、新玩家註冊等)
+# 等級 3 - 顯示玩家某些部分行動訊息(ex. 玩家接取任務、放棄任務時顯示訊息)
+# 等級 4 - 顯示玩家所有部分行動訊息(ex. 顯示所有玩家任務進度)
+# 等級 5 - 災難。(作者專用)
+debugLevel: 0
+
+#【每隔X秒儲存玩家資料】
+#系統會每隔X秒就儲存一次玩家資料，以免玩家資料流失。
+saveIntervalInSeconds: 600
 
 
 #【是否右鍵NPC開啟對話選單】
@@ -37,3 +46,10 @@ scoreboardMaxCanTakeQuestAmount: 3
 
 #【使用NPC效果】
 useParticleEffect: true
+
+#【使用較寬鬆的物品判定】
+# 開啟後，系統將只檢查物品的「名稱」以及「lore」作為判斷依據(色碼仍須完全一致)
+useWeakItemCheck: false
+
+#【開放玩家跳過劇情】
+enableSkip: false

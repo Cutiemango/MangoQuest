@@ -36,7 +36,7 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 		mtmMob = mmMob;
 		amount = i;
 		type = EntityType.valueOf(mmMob.getEntityType().toUpperCase());
-		customName = mmMob.getDisplayName();
+		customName = mmMob.getDisplayName().get();
 	}
 	
 	@Override
@@ -91,7 +91,7 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 		if (m == null)
 			return;
 		mtmMob = m;
-		customName = m.getDisplayName();
+		customName = m.getDisplayName().get();
 		type = EntityType.valueOf(m.getEntityType().toUpperCase());
 	}
 
@@ -165,7 +165,7 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 				return false;
 			}
 			mtmMob = Main.getHooker().getMythicMob(id);
-			customName = mtmMob.getDisplayName();
+			customName = mtmMob.getDisplayName().get();
 			if (mtmMob.getEntityType().contains("BABY"))
 			{
 				isBaby = true;
@@ -222,7 +222,7 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 					return false;
 				}
 				setMythicMob(Main.getHooker().getMythicMob(obj));
-				setCustomName(mtmMob.getDisplayName());
+				setCustomName(mtmMob.getDisplayName().get());
 				if (mtmMob.getEntityType().contains("baby"))
 				{
 					isBaby = true;

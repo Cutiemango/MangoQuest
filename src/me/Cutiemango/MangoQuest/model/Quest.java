@@ -11,8 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
@@ -38,12 +38,12 @@ public class Quest
 
 	public Quest(String InternalID, String name, List<String> QuestOutline, QuestReward reward, List<QuestStage> stages, NPC npc)
 	{
-		this.InternalID = InternalID;
-		this.QuestName = QuestChatManager.translateColor(name);
+		this.internalID = InternalID;
+		this.questName = QuestChatManager.translateColor(name);
 		this.outline = QuestOutline;
 		this.reward = reward;
 		this.stages = stages;
-		this.QuestNPC = npc;
+		this.questNPC = npc;
 
 		initRequirements();
 		version = QuestVersion.instantVersion();
@@ -85,9 +85,9 @@ public class Quest
 		}
 	}
 	
-	private NPC QuestNPC;
-	private String InternalID;
-	private String QuestName;
+	private NPC questNPC;
+	private String internalID;
+	private String questName;
 
 	private List<String> outline = new ArrayList<>();
 
@@ -103,22 +103,22 @@ public class Quest
 
 	public String getInternalID()
 	{
-		return InternalID;
+		return internalID;
 	}
 
-	public void setInternalID(String internalID)
+	public void setInternalID(String id)
 	{
-		InternalID = internalID;
+		internalID = id;
 	}
 
 	public String getQuestName()
 	{
-		return QuestName;
+		return questName;
 	}
 
 	public void setQuestName(String s)
 	{
-		QuestName = s;
+		questName = s;
 	}
 
 	public List<String> getQuestOutline()
@@ -138,7 +138,7 @@ public class Quest
 
 	public NPC getQuestNPC()
 	{
-		return QuestNPC;
+		return questNPC;
 	}
 
 	public QuestVersion getVersion()
@@ -153,12 +153,12 @@ public class Quest
 
 	public void setQuestNPC(NPC npc)
 	{
-		QuestNPC = npc;
+		questNPC = npc;
 	}
 
 	public boolean isCommandQuest()
 	{
-		return QuestNPC == null;
+		return questNPC == null;
 	}
 	
 	public boolean usePermission()
@@ -348,14 +348,14 @@ public class Quest
 		TriggerTask task = new TriggerTask(p, triggerMap.get(type));
 		if (type.hasStage())
 			task.withStage(stage);
-		Main.debug("Task started with stage " + stage + ", and type " + type.toString());
+		DebugHandler.log(5, "[Triggers] Triggertask of " + type.toString() + " started with stage " + stage + ".");
 		task.start();
 	}
 
 	@Override
 	public Quest clone()
 	{
-		Quest q = new Quest(InternalID, QuestName, new ArrayList<String>(outline), reward, new ArrayList<QuestStage>(stages), QuestNPC);
+		Quest q = new Quest(internalID, questName, new ArrayList<String>(outline), reward, new ArrayList<QuestStage>(stages), questNPC);
 		q.setRequirements(new EnumMap<RequirementType, Object>(requirements));
 		q.registerVersion(version);
 		q.setTriggers(new EnumMap<TriggerType, List<TriggerObject>>(triggerMap));

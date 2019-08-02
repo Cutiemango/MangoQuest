@@ -75,10 +75,10 @@ public class QuestBookPage
 		s = left + "@" + s + "#";
 		// 丟進書本整理器
 		TextAlignment align = new TextAlignment(s, lineUsed);
-//		Main.debug("String: " + s);
-//		Main.debug("Result: " + align.getResult());
-//		Main.debug("Left: " + align.getLeft());
-//		Main.debug("Char size: " + align.calculateCharSize(s));
+//		DebugHandler.log(5, "String: " + s);
+//		DebugHandler.log(5, "Result: " + align.getResult());
+//		DebugHandler.log(5, "Left: " + align.getLeft());
+//		DebugHandler.log(5, "Char size: " + align.calculateCharSize(s));
 		// 如果整行字超過了一行最大字數
 		if (align.calculateCharSize(s) >= TextAlignment.MAXIUM_BOLD_CHAR_PER_LINE)
 		{

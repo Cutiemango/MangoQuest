@@ -2,6 +2,7 @@ package me.Cutiemango.MangoQuest.objects;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Random;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.model.Quest;
@@ -19,7 +20,7 @@ public class QuestNPC
 	
 	private NPC npcReal;
 	private HashMap<Integer, HashSet<String>> friendMessageMap = new HashMap<>();
-	private HashSet<Quest> givenQuests = new HashSet<>();
+	private HashSet<Quest> givenQuests = new LinkedHashSet<>();
 	private HashSet<Quest> rewardQuests = new HashSet<>();
 	private HashSet<GUIOption> options = new HashSet<>();
 	

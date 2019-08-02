@@ -1,6 +1,7 @@
 package me.Cutiemango.MangoQuest.commands;
 
 import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.ConfigSettings;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice;
@@ -39,18 +40,26 @@ public class ConversationCommand
 								ConversationManager.startConversation(sender, conv);
 							else
 								break;
+						return;
 					case "open":
 						if (args.length == 3)
 							if (cp != null)
 								ConversationManager.openConversation(sender, cp);
 							else
 								break;
+						return;
 					case "next":
 						if (cp != null)
 						{
 							cp.retrieve();
 							cp.nextAction();
 						}
+						return;
+					case "skip":
+						if (!ConfigSettings.ENABLE_SKIP)
+							return;
+						if (cp != null)
+							cp.rush();
 						return;
 					case "openchoice":
 						if (choice != null)

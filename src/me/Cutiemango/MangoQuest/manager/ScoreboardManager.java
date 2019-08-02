@@ -2,6 +2,7 @@ package me.Cutiemango.MangoQuest.manager;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -17,10 +18,11 @@ import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
 import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectDeliverItem;
-import net.md_5.bungee.api.ChatColor;
+
 
 public class ScoreboardManager
 {
+	@SuppressWarnings("deprecation")
 	public static Scoreboard update(QuestPlayerData pd)
 	{
 		Scoreboard s = pd.getScoreboard();
@@ -81,15 +83,16 @@ public class ScoreboardManager
 	private static String getLastAppliedColor(String s)
 	{
 		String color = "§f";
-		if (s.lastIndexOf("§") == -1)
+		String text = QuestUtil.trimColor(s);
+		if (text.lastIndexOf("§") == -1)
 			return "§f";
-		if (TextAlignment.ESCAPE_COLOR_CODES.contains(s.charAt(s.lastIndexOf("§") + 1)))
+		if (TextAlignment.ESCAPE_COLOR_CODES.contains(s.charAt(text.lastIndexOf("§") + 1)))
 			if (s.lastIndexOf("§") - 1 > 0)
-				color = "§" + s.charAt(s.lastIndexOf("§") - 1) + "§" + s.charAt(s.lastIndexOf("§") + 1);
+				color = "§" + text.charAt(text.lastIndexOf("§") - 1) + "§" + text.charAt(text.lastIndexOf("§") + 1);
 			else
-				color = "§" + s.charAt(s.lastIndexOf("§") + 1);
+				color = "§" + text.charAt(text.lastIndexOf("§") + 1);
 		else
-			color = "§" + s.charAt(s.lastIndexOf("§") + 1);
+			color = "§" + text.charAt(text.lastIndexOf("§") + 1);
 		return color;
 	}
 	
@@ -101,8 +104,18 @@ public class ScoreboardManager
 			String text = list.get(list.size() - (i+1));
 			if (text.length() > 40)
 			{
-				o.getScore(text.substring(0, 40)).setScore(scoreIndex+1);
-				o.getScore(QuestChatManager.trimColor("    " + getLastAppliedColor(text.substring(0, 40)) + text.substring(40, text.length()))).setScore(scoreIndex);
+				text = QuestUtil.trimColor(text);
+				String t1 = text.substring(0, 40);
+				String t2 = text.substring(40, text.length()-1);
+				
+				if (t1.charAt(t1.length()-1) == '§')
+				{
+					t1 = text.substring(0, 39);
+					t2 = text.substring(39, text.length()-1);
+				}
+				
+				o.getScore(t1).setScore(scoreIndex+1);
+				o.getScore(QuestUtil.trimColor("    " + getLastAppliedColor(t1) + t2)).setScore(scoreIndex);
 				scoreIndex+=2;
 				continue;
 			}

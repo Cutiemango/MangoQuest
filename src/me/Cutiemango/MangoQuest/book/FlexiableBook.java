@@ -56,6 +56,14 @@ public class FlexiableBook
 		pages.add(index, page);
 	}
 	
+	public void removePage(int index)
+	{
+		if (pages.size() <= index)
+			return;
+		else
+			pages.remove(index);
+	}
+	
 	public void pushNewPage(QuestConversation conv)
 	{
 		pages.push(ConversationManager.generateNewPage(conv));

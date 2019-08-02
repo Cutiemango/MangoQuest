@@ -53,7 +53,6 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject, Edi
 	@Override
 	public void setAmount(int i)
 	{
-		item.setAmount(i);
 		amount = i;
 	}
 
@@ -78,12 +77,7 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject, Edi
 	@Override
 	public String toDisplayText()
 	{
-		if (item.getItemMeta().hasDisplayName())
-			return I18n.locMsg("QuestObject.DeliverItem", Integer.toString(amount),
-					item.getItemMeta().getDisplayName(), npc.getName());
-		else
-			return I18n.locMsg("QuestObject.DeliverItem", Integer.toString(amount),
-					QuestUtil.translate(item.getType(), item.getDurability()), npc.getName());
+		return I18n.locMsg("QuestObject.DeliverItem", Integer.toString(amount), QuestUtil.getItemName(item), npc.getName());
 	}
 
 	@Override

@@ -6,7 +6,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.advancements.QuestAdvancementManager;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
@@ -33,11 +32,12 @@ public class QuestBaseAction
 		CHOICE(I18n.locMsg("EnumAction.Choice")),
 		BUTTON(I18n.locMsg("EnumAction.Button")),
 		COMMAND(I18n.locMsg("EnumAction.Command")),
+		COMMAND_PLAYER(I18n.locMsg("EnumAction.CommandPlayer")),
+		COMMAND_PLAYER_OP(I18n.locMsg("EnumAction.CommandPlayerOP")),
 		WAIT(I18n.locMsg("EnumAction.Wait")),
 		FINISH(I18n.locMsg("EnumAction.Finish")),
 		TAKE_QUEST(I18n.locMsg("EnumAction.TakeQuest")),
-		EXIT(I18n.locMsg("EnumAction.Exit")),
-		GIVE_ADVANCEMENT(I18n.locMsg("EnumAction.GiveAdvancement"));
+		EXIT(I18n.locMsg("EnumAction.Exit"));
 		
 		EnumAction(String s)
 		{
@@ -78,6 +78,12 @@ public class QuestBaseAction
 			case COMMAND:
 				QuestUtil.executeConsoleAsync(target);
 				break;
+			case COMMAND_PLAYER:
+				QuestUtil.executeCommandAsync(cp.getOwner(), target);
+				break;
+			case COMMAND_PLAYER_OP:
+				QuestUtil.executeOPCommandAsync(cp.getOwner(), target);
+				break;
 			case SENTENCE:
 				cp.getCurrentPage().add(QuestChatManager.translateColor(target)).changeLine();
 				break;
@@ -109,12 +115,6 @@ public class QuestBaseAction
 			case FINISH:
 				cp.finish(Boolean.valueOf(target));
 				break;
-			case GIVE_ADVANCEMENT:
-				if (Main.isUsingUpdatedVersion())
-				{
-					QuestAdvancementManager.getAdvancement(target).grant(cp.getOwner());
-					break;
-				}
 			case TAKE_QUEST:
 				if (!(cp.getConversation() instanceof StartTriggerConversation))
 					break;

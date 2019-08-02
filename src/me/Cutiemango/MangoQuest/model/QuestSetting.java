@@ -9,6 +9,7 @@ public class QuestSetting
 	private boolean displayOnTake = true;
 	private boolean displayOnProgress = true;
 	private boolean displayOnFinish = true;
+	private boolean displayOnInteraction = true;
 	
 	// FailMessage
 	protected boolean useCustomFailMessage = false;
@@ -44,10 +45,16 @@ public class QuestSetting
 		return displayOnFinish;
 	}
 	
-	public void toggle(boolean b1, boolean b2, boolean b3)
+	public boolean displayOnInteraction()
+	{
+		return displayOnInteraction;
+	}
+	
+	public void toggle(boolean b1, boolean b2, boolean b3, boolean b4)
 	{
 		displayOnTake = b1;
 		displayOnProgress = b2;
 		displayOnFinish = b3;
+		displayOnInteraction = b4;
 	}
 }

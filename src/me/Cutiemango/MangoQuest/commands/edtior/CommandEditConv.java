@@ -139,7 +139,7 @@ public class CommandEditConv
 	{
 		if (args.length == 3)
 		{
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce edit fconvp", Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce edit fconvp", Syntax.of("D", I18n.locMsg("Syntax.Number"), "")));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 			return;
 		}
@@ -161,13 +161,14 @@ public class CommandEditConv
 		{
 			String type = args[2];
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce edit " + type, null));
+			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 			return;
 		}
 		else
 			if (args.length >= 4)
 			{
 				String type = args[2];
-				String msg = QuestUtil.convertArgsString(args, 4);
+				String msg = QuestUtil.convertArgsString(args, 3);
 				switch (type)
 				{
 					case "acceptmsg":
@@ -198,6 +199,8 @@ public class CommandEditConv
 				Quest q = QuestUtil.getQuest(args[3]);
 				conv.setQuest(q);
 				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRegistered", q.getQuestName()));
+				ConversationEditorManager.editConversation(sender);
+				return;
 			}
 	}
 
@@ -256,12 +259,12 @@ public class CommandEditConv
 				if (act == EnumAction.NPC_TALK)
 				{
 					EditorListenerHandler.register(sender,
-							new EditorListenerObject(ListeningType.STRING, "/mq ce edit " + type + " " + index + " " + act.toString(), Syntax.of("S@I", I18n.locMsg("Syntax.NPCTalk"), "@")));
+							new EditorListenerObject(ListeningType.STRING, "mq ce edit " + type + " " + index + " " + act.toString(), Syntax.of("S@D", I18n.locMsg("Syntax.NPCTalk"), "@")));
 					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.NPCTalk"));
 					return;
 				}
 				EditorListenerHandler.register(sender,
-						new EditorListenerObject(ListeningType.STRING, "/mq ce edit " + type + " " + index + " " + act.toString(), null));
+						new EditorListenerObject(ListeningType.STRING, "mq ce edit " + type + " " + index + " " + act.toString(), null));
 				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 			}
 			else

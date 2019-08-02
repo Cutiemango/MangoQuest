@@ -3,7 +3,8 @@ package me.Cutiemango.MangoQuest.commands;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import com.nisovin.shopkeepers.Shopkeeper;
+import com.nisovin.shopkeepers.api.ShopkeepersAPI;
+import com.nisovin.shopkeepers.api.shopkeeper.Shopkeeper;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
@@ -12,20 +13,17 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
+import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
-import me.Cutiemango.MangoQuest.manager.reward.QuestRewardManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.manager.PluginHooker;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.GUIOption;
 import me.Cutiemango.MangoQuest.objects.reward.RewardCache;
-import me.old.RPGshop.GUIManager;
-import me.old.RPGshop.InventoryGUI.TradeGUI;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
-import ru.nightexpress.unrealshop.shop.ShopManager;
-import ru.nightexpress.unrealshop.shop.objects.UShop;
-import ru.nightexpress.unrealshop.shop.types.OpenSource;
+import su.nightexpress.unrealshop.shop.objects.UShop;
+import su.nightexpress.unrealshop.shop.types.OpenSource;
 
 public class QuestCommand
 {
@@ -44,8 +42,30 @@ public class QuestCommand
 				switch (args[1])
 				{
 					case "list":
-						sender.closeInventory();
-						QuestBookGUIManager.openJourney(sender);
+						if (args.length == 2)
+						{
+							sender.closeInventory();
+							QuestBookGUIManager.openJourneyMenu(sender);
+							return;
+						}
+						else if (args.length >= 3)
+						{
+							switch (args[2])
+							{
+								case "progress":
+									sender.closeInventory();
+									QuestBookGUIManager.openProgressJourney(sender);
+									return;
+								case "doable":
+									sender.closeInventory();
+									QuestBookGUIManager.openDoableJourney(sender);
+									return;
+								case "finished":
+									sender.closeInventory();
+									QuestBookGUIManager.openFinishedJourney(sender);
+									return;
+							}
+						}
 						return;
 					case "help":
 						sendHelp(sender);
@@ -71,7 +91,7 @@ public class QuestCommand
 								return;
 							if (hooker.hasShopkeepersEnabled())
 							{
-								Shopkeeper s = hooker.getShopkeepers().getShopkeeperByEntity(npc.getEntity());
+								Shopkeeper s = ShopkeepersAPI.getShopkeeperRegistry().getShopkeeperByEntity(npc.getEntity());
 								if (s != null)
 								{
 									target.closeInventory();
@@ -79,19 +99,14 @@ public class QuestCommand
 									return;
 								}
 							}
-							if (hooker.hasRPGshopEnabled())
-							{
-								GUIManager.openGUI(new TradeGUI(Integer.toString(npc.getId()), target));
-								return;
-							}
 							if (Bukkit.getPluginManager().isPluginEnabled("UnrealShop"))
 							{
-								for (UShop localUShop : ShopManager.getShops())
+								for (UShop localUShop : Main.getHooker().getUnrealShop().getSM().getShops())
 								{
 									if (ArrayUtils.contains(localUShop.getNpcId(), npc.getId()))
 									{
-										ShopManager.openShop(target, localUShop, OpenSource.NPC);
-										break;
+										Main.getHooker().getUnrealShop().getSM().openShop(target, localUShop, OpenSource.NPC);
+										return;
 									}
 								}
 								return;
@@ -168,7 +183,7 @@ public class QuestCommand
 							return;
 						}
 						qd.quitQuest(quest);
-						QuestBookGUIManager.openJourney(sender);
+						QuestBookGUIManager.openJourneyMenu(sender);
 						return;
 					case "quit":
 						if (!quest.isQuitable())

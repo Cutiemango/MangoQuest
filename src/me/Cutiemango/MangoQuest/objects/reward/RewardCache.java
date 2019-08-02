@@ -10,11 +10,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.reward.QuestRewardManager;
+import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.md_5.bungee.api.ChatColor;
 
@@ -51,6 +52,7 @@ public class RewardCache
 			}
 			
 		}.runTaskLater(Main.getInstance(), 5L);
+		DebugHandler.log(4, "[Listener] Player " + owner.getName() + " added reward choice of " + i + " in quest " + quest.getQuestName());
 	}
 	
 	public void removeChoice(Integer i)
@@ -65,6 +67,7 @@ public class RewardCache
 			}
 			
 		}.runTaskLater(Main.getInstance(), 5L);
+		DebugHandler.log(4, "[Listener] Player " + owner.getName() + " removed reward choice of " + i + " in quest " + quest.getQuestName());
 	}
 	
 	public Player getOwner()
@@ -81,6 +84,7 @@ public class RewardCache
 		QuestChatManager.info(owner, I18n.locMsg("QuestReward.RewardReceived"));
 		QuestUtil.getData(owner).rewardClaimed(quest);
 		QuestRewardManager.removeCache(owner);
+		DebugHandler.log(3, "[Listener] Player " + owner.getName() + " has claimed reward of quest " + quest.getQuestName());
 	}
 	
 	public void openGUI()
@@ -102,11 +106,12 @@ public class RewardCache
 				inv.setItem(i, glassPane(reward.getRewardAmount()));
 		}
 		owner.openInventory(inv);
+		DebugHandler.log(3, "[Listener] Opened reward inventory of quest " + quest.getQuestName() + " for " + owner.getName());
 	}
-	
+
 	private ItemStack glassPane(int amount)
 	{
-		QuestGUIItem glassPane = new QuestGUIItem(Material.STAINED_GLASS_PANE, 1, (short)QuestUtil.randomInteger(0, 15));
+		QuestGUIItem glassPane = new QuestGUIItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE, 1);
 		glassPane.setName(I18n.locMsg("QuestReward.RewardGlassPane", Integer.toString(amount)));
 		return glassPane.get();
 	}
@@ -114,7 +119,7 @@ public class RewardCache
 	private ItemStack itemButton(RewardChoice rc, int index)
 	{
 		ItemStack firstItem = rc.getItems().get(0);
-		QuestGUIItem button = new QuestGUIItem(firstItem.getType(), firstItem.getAmount(), (short)firstItem.getDurability());
+		QuestGUIItem button = new QuestGUIItem(firstItem.getType(), firstItem.getAmount());
 		List<String> lore = new ArrayList<>();
 		for (ItemStack item : rc.getItems())
 		{

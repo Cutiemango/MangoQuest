@@ -1,6 +1,6 @@
 package me.Cutiemango.MangoQuest.book;
 
-import static java.lang.Character.*;
+import java.lang.Character.UnicodeBlock;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +29,7 @@ public class TextAlignment
 	{
 		CHARACTER_SIZEMAP.put(UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS, 1.0D);
 		CHARACTER_SIZEMAP.put(UnicodeBlock.BASIC_LATIN, 1.0D);
+		CHARACTER_SIZEMAP.put(UnicodeBlock.DINGBATS, 2.25D);
 		CHARACTER_SIZEMAP.put(UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION, 2.25D);
 		CHARACTER_SIZEMAP.put(UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS, 2.25D);
 	}

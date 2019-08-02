@@ -18,9 +18,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public abstract class SimpleQuestObject
 {
-
-	public abstract TextComponent toTextComponent(boolean isFinished);
-
 	public static HashMap<String, String> ALL_OBJECTS = new HashMap<>();
 
 	public static void initObjectNames()
@@ -32,7 +29,6 @@ public abstract class SimpleQuestObject
 		ALL_OBJECTS.put("REACH_LOCATION", I18n.locMsg("QuestObjectName.ReachLocation"));
 		ALL_OBJECTS.put("TALK_TO_NPC", I18n.locMsg("QuestObjectName.TalkToNPC"));
 	}
-
 	
 	/**
 	 * This is used for a TextComponent version of toDisplayText.
@@ -45,7 +41,6 @@ public abstract class SimpleQuestObject
 		String color = QuestChatManager.translateColor("&0");
 
 		Material block = null;
-		Short subID = 0;
 		if (isFinished)
 			color = QuestChatManager.translateColor("&8&m&o");
 		for (int i = 0; i < args.length; i++)
@@ -85,34 +80,30 @@ public abstract class SimpleQuestObject
 						if (args[i] instanceof Material)
 							block = (Material) args[i];
 						else
-							if (args[i] instanceof Short)
-								subID = (short) args[i];
 							// QuestObjectReachLocation
-							else
-								if (args[i] instanceof String)
+							if (args[i] instanceof String)
+							{
+								if (args.length - 1 > i && args[i + 1] instanceof Location)
 								{
-									if (args.length - 1 > i && args[i + 1] instanceof Location)
-									{
-										text.addExtra(
-												TextComponentFactory.convertLocHoverEvent((String) args[i], (Location) args[i + 1], isFinished));
-										left.replace("%" + Integer.toString(i + 1), "");
-									}
-									else
-									{
-										if (isFinished)
-											text.addExtra(color + (String) args[i]);
-										else
-											text.addExtra(color + QuestChatManager.translateColor((String) args[i]));
-									}
+									text.addExtra(
+											TextComponentFactory.convertLocHoverEvent((String) args[i], (Location) args[i + 1], isFinished));
+									left.replace("%" + Integer.toString(i + 1), "");
 								}
-
-								// QuestObjectKillMob
 								else
-									if (args[i] instanceof EntityType)
-										text.addExtra(QuestUtil.translate((EntityType) args[i]));
+								{
+									if (isFinished)
+										text.addExtra(color + (String) args[i]);
+									else
+										text.addExtra(color + QuestChatManager.translateColor((String) args[i]));
+								}
+							}
+							// QuestObjectKillMob
+							else
+								if (args[i] instanceof EntityType)
+									text.addExtra(QuestUtil.translate((EntityType) args[i]));
 		}
 		if (block != null)
-			text.addExtra(color + QuestUtil.translate(block, subID));
+			text.addExtra(color + QuestUtil.translate(block));
 		text.addExtra(color + left);
 		return text;
 	}
@@ -128,6 +119,7 @@ public abstract class SimpleQuestObject
 	
 	public abstract String getConfigString();
 	public abstract String getObjectName();
+	public abstract TextComponent toTextComponent(boolean isFinished);
 	
 	protected String activateConversation = null;
 	

@@ -1,8 +1,11 @@
 package me.Cutiemango.MangoQuest.conversation;
 
 import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.ConfigSettings;
+import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestStorage;
+import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
@@ -23,6 +26,7 @@ public class ConversationManager
 	{
 		ConversationProgress cp = new ConversationProgress(p, conv);
 		QuestStorage.ConvProgresses.put(p.getName(), cp);
+		DebugHandler.log(5, "Player " + p.getName() + " started conversation " + conv.getName() + "(" + conv.getInternalID() + ").");
 		cp.nextAction();
 		openConversation(p, cp);
 		return cp;
@@ -99,6 +103,11 @@ public class ConversationManager
 	{
 		return QuestStorage.StartConvs.get(q);
 	}
+	
+	public static boolean hasConvProgress(Player p)
+	{
+		return QuestStorage.ConvProgresses.containsKey(p.getName());
+	}
 
 	public static boolean isInConvProgress(Player p, QuestConversation conv)
 	{
@@ -125,6 +134,8 @@ public class ConversationManager
 	public static QuestBookPage generateNewPage(QuestConversation conv)
 	{
 		QuestBookPage page = new QuestBookPage().add(I18n.locMsg("Conversation.Title", conv.getName()));
+		if (ConfigSettings.ENABLE_SKIP)
+			page.add(new InteractiveText("➔").clickCommand("/mq conv skip").showText(I18n.locMsg("Conversation.SkipConv")));
 		page.changeLine();
 		return page;
 	}

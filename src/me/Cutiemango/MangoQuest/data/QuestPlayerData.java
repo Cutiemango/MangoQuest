@@ -17,6 +17,7 @@ import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.ConfigSettings;
+import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
@@ -49,11 +50,11 @@ public class QuestPlayerData
 	private Set<QuestProgress> currentQuests = new HashSet<>();
 	private Set<QuestFinishData> finishedQuests = new HashSet<>();
 	private Set<QuestConversation> finishedConversations = new HashSet<>();
-	
+
 	private QuestIO save;
 
 	private HashMap<Integer, Integer> friendPointStorage = new HashMap<>();
-	
+
 	private Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
 	public QuestPlayerData(Player p)
@@ -63,7 +64,7 @@ public class QuestPlayerData
 		load();
 		save();
 	}
-	
+
 	public void load()
 	{
 		save.set("LastKnownID", p.getName());
@@ -72,13 +73,13 @@ public class QuestPlayerData
 		{
 			for (String index : save.getSection("QuestProgress"))
 			{
-				if (QuestUtil.getQuest(index) == null)
+				Quest q = QuestUtil.getQuest(index);
+				if (q == null)
 				{
 					QuestChatManager.error(p, I18n.locMsg("CommandInfo.TargetProgressNotFound", index));
 					save.removeSection("QuestProgress." + index);
 					continue;
 				}
-				Quest q = QuestUtil.getQuest(index);
 				if (!(q.getVersion().getVersion() == save.getLong("QuestProgress." + q.getInternalID() + ".Version")))
 				{
 					QuestChatManager.error(p, I18n.locMsg("CommandInfo.OutdatedQuestVersion", index));
@@ -91,8 +92,7 @@ public class QuestPlayerData
 				List<QuestObjectProgress> qplist = new ArrayList<>();
 				for (SimpleQuestObject ob : q.getStage(s).getObjects())
 				{
-					QuestObjectProgress qp = new QuestObjectProgress(ob,
-							save.getInt("QuestProgress." + index + ".QuestObjectProgress." + t));
+					QuestObjectProgress qp = new QuestObjectProgress(ob, save.getInt("QuestProgress." + index + ".QuestObjectProgress." + t));
 					qp.checkIfFinished();
 					qplist.add(qp);
 					t++;
@@ -110,17 +110,15 @@ public class QuestPlayerData
 			{
 				if (QuestUtil.getQuest(s) == null)
 				{
-					QuestChatManager.error(p, I18n.locMsg("CommandInfo.TargetProgressNotFound", s));
-					save.removeSection("FinishedQuest." + s);
+					DebugHandler.log(3, "[Player] Quest id=" + s + " is not correctly loaded, causing some player's data leak.");
+					// QuestChatManager.error(p,
+					// I18n.locMsg("CommandInfo.TargetProgressNotFound", s));
+					// save.removeSection("FinishedQuest." + s);
 					continue;
 				}
 
-				boolean rewardTaken = save.getBoolean("FinishedQuest." + s + ".RewardTaken");
-				
-				QuestFinishData qd = new QuestFinishData(QuestUtil.getQuest(s),
-						save.getInt("FinishedQuest." + s + ".FinishedTimes"),
-						save.getLong("FinishedQuest." + s + ".LastFinishTime"),
-						rewardTaken);
+				QuestFinishData qd = new QuestFinishData(QuestUtil.getQuest(s), save.getInt("FinishedQuest." + s + ".FinishedTimes"),
+						save.getLong("FinishedQuest." + s + ".LastFinishTime"), save.getBoolean("FinishedQuest." + s + ".RewardTaken"));
 				finishedQuests.add(qd);
 			}
 		}
@@ -144,7 +142,7 @@ public class QuestPlayerData
 		}
 
 		save.save();
-		
+
 		if (ConfigSettings.POP_LOGIN_MESSAGE)
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.PlayerLoadComplete"));
 	}
@@ -193,7 +191,7 @@ public class QuestPlayerData
 	public boolean hasFinished(Quest q)
 	{
 		if (q == null)
-			 return false;
+			return false;
 		for (QuestFinishData qd : finishedQuests)
 		{
 			if (qd.getQuest() == null)
@@ -236,13 +234,14 @@ public class QuestPlayerData
 		if (!friendPointStorage.containsKey(id))
 			friendPointStorage.put(id, 0);
 		friendPointStorage.put(id, friendPointStorage.get(id) + value);
+		DebugHandler.log(3, "[Listener] Player " + p.getName() + "'s friend point of NPC id=" + id + " raised by " + value);
 	}
-	
+
 	public void setNPCfp(int id, int value)
 	{
 		friendPointStorage.put(id, value);
 	}
-	
+
 	public boolean meetFriendPointReq(Choice choice)
 	{
 		for (Integer npc : choice.getFriendPointReq().keySet())
@@ -259,7 +258,7 @@ public class QuestPlayerData
 	{
 		finishedConversations.add(qc);
 	}
-	
+
 	public boolean checkStartConv(Quest q)
 	{
 		if (ConversationManager.getStartConversation(q) != null)
@@ -306,18 +305,20 @@ public class QuestPlayerData
 			return;
 		forceTake(q, false);
 	}
-	
-	public void forceTake(Quest q, boolean msg){
+
+	public void forceTake(Quest q, boolean msg)
+	{
 		if (!checkQuestSize(true) || !checkStartConv(q))
 			return;
 		q.trigger(p, TriggerType.TRIGGER_ON_TAKE, -1);
 		currentQuests.add(new QuestProgress(q, p));
 		if (msg)
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.ForceTakeQuest", q.getQuestName()));
+		DebugHandler.log(3, "[Listener] Player " + p.getName() + " accepted a new quest " + q.getQuestName());
 		Bukkit.getPluginManager().callEvent(new QuestTakeEvent(p, q));
 		return;
 	}
-	
+
 	public void forceNextStage(Quest q, boolean msg)
 	{
 		if (!isCurrentlyDoing(q))
@@ -326,35 +327,40 @@ public class QuestPlayerData
 		qp.nextStage();
 		if (msg)
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.ForceNextStage", q.getQuestName()));
+		DebugHandler.log(3, "[Listener] Player " + p.getName() + "'s quest stage of quest " + q.getQuestName() + " shifted.");
 		return;
 	}
-	
-	public void forceFinishObj(Quest q, int id, boolean msg){
+
+	public void forceFinishObj(Quest q, int id, boolean msg)
+	{
 		if (!isCurrentlyDoing(q))
 			return;
 		QuestProgress qp = getProgress(q);
-		QuestObjectProgress qop = qp.getCurrentObjects().get(id-1);
+		QuestObjectProgress qop = qp.getCurrentObjects().get(id - 1);
 		if (qop != null)
 		{
 			qop.finish();
 			this.checkFinished(qp, qop);
 			if (msg)
 				QuestChatManager.info(p, I18n.locMsg("CommandInfo.ForceFinishObject", qop.getObject().toPlainText()));
+			DebugHandler.log(3, "[Listener] Player " + p.getName() + "'s quest object of quest " + q.getQuestName() + " finished");
 			return;
 		}
 	}
-	
-	public void forceFinish(Quest q, boolean msg){
+
+	public void forceFinish(Quest q, boolean msg)
+	{
 		if (!isCurrentlyDoing(q))
 			return;
 		QuestProgress qp = getProgress(q);
 		qp.finish();
 		if (msg)
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.ForceFinishQuest", q.getQuestName()));
+		DebugHandler.log(3, "[Listener] Player " + p.getName() + "'s quest " + q.getQuestName() + " finished");
 		Bukkit.getPluginManager().callEvent(new QuestFinishEvent(p, q));
 		return;
 	}
-	
+
 	public void forceQuit(Quest q, boolean msg)
 	{
 		if (!isCurrentlyDoing(q))
@@ -363,6 +369,7 @@ public class QuestPlayerData
 		removeProgress(q);
 		if (msg)
 			QuestChatManager.error(p, I18n.locMsg("CommandInfo.ForceQuitQuest", q.getQuestName()));
+		DebugHandler.log(3, "[Listener] Player " + p.getName() + " quitted quest " + q.getQuestName());
 		return;
 	}
 
@@ -378,8 +385,7 @@ public class QuestPlayerData
 		{
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
-				if (qop.getObject() instanceof QuestObjectTalkToNPC && ((NPCObject)qop.getObject()).getTargetNPC().equals(npc)
-						&& !qop.isFinished())
+				if (qop.getObject() instanceof QuestObjectTalkToNPC && ((NPCObject) qop.getObject()).getTargetNPC().equals(npc) && !qop.isFinished())
 					l.add(qp);
 			}
 		}
@@ -388,13 +394,15 @@ public class QuestPlayerData
 
 	public boolean isNearNPC(NPC npc)
 	{
-		if (npc.getEntity().getLocation().distance(p.getLocation()) > 20)
+		if (npc == null || npc.getStoredLocation() == null)
+			return true;
+		if (npc.getStoredLocation().distance(p.getLocation()) > 20)
 			return false;
 		else
 			return true;
 	}
 
-	public void breakBlock(Material m, short subID)
+	public void breakBlock(Material m)
 	{
 		for (Iterator<QuestProgress> it = currentQuests.iterator(); it.hasNext();)
 		{
@@ -409,7 +417,7 @@ public class QuestPlayerData
 				if (qop.getObject() instanceof QuestObjectBreakBlock)
 				{
 					QuestObjectBreakBlock o = (QuestObjectBreakBlock) qop.getObject();
-					if (o.getType().equals(m) && o.getSubID() == subID)
+					if (o.getType().equals(m))
 					{
 						qop.setProgress(qop.getProgress() + 1);
 						this.checkFinished(qp, qop);
@@ -461,24 +469,26 @@ public class QuestPlayerData
 					QuestObjectDeliverItem o = (QuestObjectDeliverItem) qop.getObject();
 					ItemStack itemtoDeliver = Main.getInstance().handler.getItemInMainHand(p);
 					int amountNeeded = o.getAmount() - qop.getProgress();
-					if (o.getTargetNPC().equals(npc) && QuestValidater.compareItem(o.getItem(), itemtoDeliver, true))
+					if (o.getTargetNPC().equals(npc))
 					{
-						if (itemtoDeliver.getAmount() > amountNeeded)
+						if (o.getItem().isSimilar(itemtoDeliver) || (ConfigSettings.USE_WEAK_ITEM_CHECK && QuestValidater.weakItemCheck(itemtoDeliver, o.getItem())))
 						{
-							itemtoDeliver.setAmount(itemtoDeliver.getAmount() - amountNeeded);
-							qop.setProgress(o.getAmount());
-						}
-						else
-						{
-							Main.getInstance().handler.setItemInMainHand(p, null);
-							if (itemtoDeliver.getAmount() == amountNeeded)
+							if (itemtoDeliver.getAmount() > amountNeeded)
+							{
+								itemtoDeliver.setAmount(itemtoDeliver.getAmount() - amountNeeded);
 								qop.setProgress(o.getAmount());
+							}
 							else
-								qop.setProgress(qop.getProgress() + itemtoDeliver.getAmount());
+							{
+								Main.getInstance().handler.setItemInMainHand(p, null);
+								if (itemtoDeliver.getAmount() == amountNeeded)
+									qop.setProgress(o.getAmount());
+								else
+									qop.setProgress(qop.getProgress() + itemtoDeliver.getAmount());
+							}
+							this.checkFinished(qp, qop);
+							return true;
 						}
-						this.checkFinished(qp, qop);
-						Main.debug("Delivered successful.");
-						return true;
 					}
 				}
 			}
@@ -627,12 +637,12 @@ public class QuestPlayerData
 	{
 		return finishedQuests;
 	}
-	
+
 	public QuestIO getSaveFile()
 	{
 		return save;
 	}
-	
+
 	public String getQuestDisplayFormat(Quest q)
 	{
 		if (canTake(q, false))
@@ -675,7 +685,7 @@ public class QuestPlayerData
 		finishedQuests.add(new QuestFinishData(q, 1, System.currentTimeMillis(), reward));
 		return;
 	}
-	
+
 	public boolean hasTakenReward(Quest q)
 	{
 		if (!hasFinished(q))
@@ -683,13 +693,13 @@ public class QuestPlayerData
 		QuestFinishData data = getFinishData(q);
 		return data.isRewardTaken();
 	}
-	
+
 	public void rewardClaimed(Quest q)
 	{
 		getFinishData(q).setRewardTaken(true);
 		save();
 	}
-	
+
 	public void checkRewardUnclaimed()
 	{
 		Set<NPC> set = new HashSet<>();
@@ -706,7 +716,7 @@ public class QuestPlayerData
 			}
 		}
 	}
-	
+
 	public Set<Quest> getUnclaimedReward()
 	{
 		Set<Quest> set = new HashSet<>();
@@ -769,11 +779,11 @@ public class QuestPlayerData
 		}
 		return true;
 	}
-	
+
 	public void checkQuestFail()
 	{
 		Iterator<QuestProgress> it = currentQuests.iterator();
-		while(it.hasNext())
+		while (it.hasNext())
 		{
 			QuestProgress qp = it.next();
 			if (!qp.getQuest().isTimeLimited())
@@ -782,8 +792,10 @@ public class QuestPlayerData
 			{
 				forceQuit(qp.getQuest(), false);
 				QuestChatManager.info(p, I18n.locMsg("QuestJourney.QuestFailed", qp.getQuest().getQuestName()));
+				DebugHandler.log(3, "[Listener] Player " + p.getName() + " failed quest " + qp.getQuest().getQuestName() + " because time is due.");
 			}
-			else continue;
+			else
+				continue;
 		}
 		return;
 	}
@@ -792,7 +804,7 @@ public class QuestPlayerData
 	{
 		return quest - (System.currentTimeMillis() - last);
 	}
-	
+
 	public Scoreboard getScoreboard()
 	{
 		return scoreboard;
@@ -804,7 +816,10 @@ public class QuestPlayerData
 		qop.checkIfFinished();
 		if (qop.isFinished())
 		{
-			QuestChatManager.info(p, I18n.locMsg("QuestJourney.ProgressText", qp.getQuest().getQuestName()) + o.toDisplayText() + " " + I18n.locMsg("CommandInfo.Finished"));
+			QuestChatManager.info(p, I18n.locMsg("QuestJourney.ProgressText", qp.getQuest().getQuestName()) + o.toDisplayText() + " "
+					+ I18n.locMsg("CommandInfo.Finished"));
+			DebugHandler.log(2, "[Listener] Player " + p.getName() + "'s quest " + qp.getQuest().getQuestName() + " finished an object of "
+					+ qop.getObject().getConfigString());
 			qp.checkIfnextStage();
 			Bukkit.getPluginManager().callEvent(new QuestObjectProgressEvent(this, qp.getQuest(), qop.getObject()));
 			return true;
@@ -812,25 +827,29 @@ public class QuestPlayerData
 		else
 		{
 			if (o instanceof NumerableObject)
-				QuestChatManager.info(p, I18n.locMsg("QuestJourney.ProgressText", qp.getQuest().getQuestName()) + o.toDisplayText() + " " + I18n.locMsg("CommandInfo.Progress", Integer.toString(qop.getProgress()),
-						Integer.toString(((NumerableObject) o).getAmount())));
-			else if (o instanceof CustomQuestObject)
-				QuestChatManager.info(p, I18n.locMsg("QuestJourney.ProgressText", qp.getQuest().getQuestName()) + ((CustomQuestObject)o).getProgressText(qop));
+				QuestChatManager.info(p, I18n.locMsg("QuestJourney.ProgressText", qp.getQuest().getQuestName()) + o.toDisplayText() + " " + I18n
+						.locMsg("CommandInfo.Progress", Integer.toString(qop.getProgress()), Integer.toString(((NumerableObject) o).getAmount())));
 			else
-				if (o instanceof QuestObjectTalkToNPC)
-				{
-					if (qop.getObject().hasConversation())
+				if (o instanceof CustomQuestObject)
+					QuestChatManager.info(p,
+							I18n.locMsg("QuestJourney.ProgressText", qp.getQuest().getQuestName()) + ((CustomQuestObject) o).getProgressText(qop));
+				else
+					if (o instanceof QuestObjectTalkToNPC)
 					{
-						qop.openConversation(p);
-						return false;
+						if (qop.getObject().hasConversation())
+						{
+							qop.openConversation(p);
+							DebugHandler.log(2, "[Listener] Player " + p.getName() + "'s quest " + qp.getQuest().getQuestName()
+									+ " has unfinished conversation.");
+							return false;
+						}
+						else
+						{
+							qop.finish();
+							checkFinished(qp, qop);
+							return true;
+						}
 					}
-					else
-					{
-						qop.finish();
-						checkFinished(qp, qop);
-						return true;
-					}
-				}
 			return false;
 		}
 	}

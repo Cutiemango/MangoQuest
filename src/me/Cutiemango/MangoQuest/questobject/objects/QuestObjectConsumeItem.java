@@ -56,7 +56,7 @@ public class QuestObjectConsumeItem extends ItemObject implements EditorObject
 			return I18n.locMsg("QuestObject.ConsumeItem", Integer.toString(amount), item.getItemMeta().getDisplayName());
 		else
 			return I18n.locMsg("QuestObject.ConsumeItem", Integer.toString(amount),
-					QuestUtil.translate(item.getType(), item.getDurability()));
+					QuestUtil.translate(item.getType()));
 	}
 
 	@Override

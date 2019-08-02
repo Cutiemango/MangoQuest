@@ -2,8 +2,10 @@ package me.Cutiemango.MangoQuest.manager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
@@ -16,6 +18,30 @@ public class QuestValidater
 	public static boolean isWorld(String s)
 	{
 		return s != null && Bukkit.getWorld(s) != null;
+	}
+	
+	public static boolean weakItemCheck(ItemStack item, ItemStack model)
+	{
+		if (item.getType().equals(model.getType()))
+		{
+			if (item.hasItemMeta() && model.hasItemMeta())
+			{
+				ItemMeta im = item.getItemMeta(), mm = model.getItemMeta();
+				if (QuestUtil.trimColor(im.getDisplayName()).equals(QuestUtil.trimColor(mm.getDisplayName())))
+				{
+					if (im.getLore().size() != mm.getLore().size())
+						return false;
+					for (int i = 0; i < im.getLore().size(); i++)
+					{
+						if (!QuestUtil.trimColor(im.getLore().get(i)).equals(QuestUtil.trimColor(mm.getLore().get(i))))
+							return false;
+					}
+					
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	public static boolean validateMythicMob(String id)
@@ -118,48 +144,5 @@ public class QuestValidater
 		if (!before.getQuestName().equals(after.getQuestName()))
 			return false;
 		return true;
-	}
-	
-	public static boolean compareItem(ItemStack one, ItemStack two, boolean ignoreAmount)
-	{
-		if (one == null && two != null || one != null && two == null)
-			return false;
-		if (one == null && two == null)
-			return true;
-		if (one.getType().name() != two.getType().name())
-			return false;
-		else
-			if ((one.getAmount() != two.getAmount()) && ignoreAmount == false)
-				return false;
-			else
-				if (one.getData().equals(two.getData()) == false)
-					return false;
-		if (one.hasItemMeta() || two.hasItemMeta())
-			if (one.hasItemMeta() != two.hasItemMeta())
-				return false;
-			else
-				if (one.getItemMeta().hasDisplayName() != two.getItemMeta().hasDisplayName())
-					return false;
-				else
-					if (one.getItemMeta().hasLore() != two.getItemMeta().hasLore())
-						return false;
-					else
-					{
-						if (one.getItemMeta().hasDisplayName() && two.getItemMeta().hasDisplayName())
-						{
-							if (!one.getItemMeta().getDisplayName().equals(two.getItemMeta().getDisplayName()))
-								return false;
-						}
-						else
-							if (one.getItemMeta().hasLore() && two.getItemMeta().hasLore())
-							{
-								if (!one.getItemMeta().getLore().equals(two.getItemMeta().getLore()))
-									return false;
-							}
-					}
-		if (one.getEnchantments().equals(two.getEnchantments()) == false)
-			return false;
-		else
-			return true;
 	}
 }

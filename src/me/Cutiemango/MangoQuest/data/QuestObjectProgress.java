@@ -6,6 +6,7 @@ import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
 import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectTalkToNPC;
+import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 
 public class QuestObjectProgress
@@ -28,7 +29,7 @@ public class QuestObjectProgress
 			return;
 		if (obj instanceof QuestObjectTalkToNPC)
 		{
-			if (i == 1 || (cp != null && cp.isFinished()))
+			if (i == 1 || (cp != null && QuestUtil.getData(cp.getOwner()).hasFinished(cp.getConversation())))
 				isFinished = true;
 			return;
 		}

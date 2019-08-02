@@ -129,13 +129,16 @@ public class CommandEditSetting
 		switch (args[3])
 		{
 			case "take":
-				s.toggle(Boolean.parseBoolean(args[4]), s.displayOnProgress(), s.displayOnFinish());
+				s.toggle(Boolean.parseBoolean(args[4]), s.displayOnProgress(), s.displayOnFinish(), s.displayOnInteraction());
 				break;
 			case "prog":
-				s.toggle(s.displayOnTake(), Boolean.parseBoolean(args[4]), s.displayOnFinish());
+				s.toggle(s.displayOnTake(), Boolean.parseBoolean(args[4]), s.displayOnFinish(), s.displayOnInteraction());
 				break;
 			case "finish":
-				s.toggle(s.displayOnTake(), s.displayOnProgress(), Boolean.parseBoolean(args[4]));
+				s.toggle(s.displayOnTake(), s.displayOnProgress(), Boolean.parseBoolean(args[4]), s.displayOnInteraction());
+				break;
+			case "interact":
+				s.toggle(s.displayOnTake(), s.displayOnProgress(), s.displayOnFinish(), Boolean.parseBoolean(args[4]));
 				break;
 		}
 		QuestEditorManager.editQuest(sender);
@@ -177,8 +180,8 @@ public class CommandEditSetting
 		else
 			if (args.length == 4)
 			{
-				String mili = Integer.toString(Integer.parseInt(args[3]) * 1000);
-				q.setRedoDelay(Long.parseLong(mili));
+				String mili = Integer.toString(Integer.parseInt(args[3]));
+				q.setRedoDelay(Long.parseLong(mili) * 1000);
 				QuestEditorManager.editQuest(sender);
 				return;
 			}

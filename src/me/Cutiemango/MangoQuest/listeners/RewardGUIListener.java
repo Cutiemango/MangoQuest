@@ -6,7 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import me.Cutiemango.MangoQuest.I18n;
@@ -18,7 +18,7 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.reward.QuestRewardManager;
+import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
 import me.Cutiemango.MangoQuest.objects.reward.QuestGUIItem;
 import net.md_5.bungee.api.ChatColor;
 
@@ -26,12 +26,13 @@ public class RewardGUIListener
 {
 	public static void onInventoryClick(InventoryClickEvent e)
 	{
-		Inventory inv = e.getClickedInventory();
 		Player p = (Player)e.getWhoClicked();
+		InventoryView inv = e.getView();
 		int i = getIndex(e.getCurrentItem());
-		if (e.getCurrentItem() != null && e.getClickedInventory() != null)
+		
+		if (e.getCurrentItem() != null)
 		{
-			if (inv.getTitle().contains(I18n.locMsg("QuestReward.RewardTitle")))
+			if (I18n.locMsg("QuestReward.RewardTitle").contains(inv.getTitle()))
 			{
 				e.setCancelled(true);
 				if (i == -1)
@@ -43,8 +44,9 @@ public class RewardGUIListener
 				p.closeInventory();
 				return;
 			}
-			else if (inv.getTitle().contains(I18n.locMsg("QuestReward.RewardEditTitle")))
+			else if (I18n.locMsg("QuestReward.RewardEditTitle").contains(inv.getTitle()))
 			{
+				
 				if (QuestGUIItem.isGUIItem(e.getCurrentItem()))
 				{
 					if (e.getCurrentItem().getType().equals(Material.ANVIL))
@@ -54,13 +56,13 @@ public class RewardGUIListener
 						p.closeInventory();
 						return;
 					}
-					else if (e.getCurrentItem().getType().equals(Material.SIGN))
+					else if (e.getCurrentItem().getType().equals(Material.WRITABLE_BOOK))
 					{
 						p.closeInventory();
 						QuestEditorManager.editQuest(p);
 						return;
 					}
-					else if (e.getCurrentItem().getType().equals(Material.SKULL_ITEM))
+					else if (e.getCurrentItem().getType().equals(Material.PLAYER_HEAD))
 					{
 						p.closeInventory();
 						QuestUtil.executeCommandAsync(p, "mq e edit reward npc");
@@ -88,8 +90,8 @@ public class RewardGUIListener
 				{
 					e.setCancelled(true);
 					p.closeInventory();
-					String index = inv.getTitle().replace(I18n.locMsg("QuestReward.ChoiceEditTitle"), "").replaceAll(QuestEditorManager.getCurrentEditingQuest(p).getQuestName() + ":", "");
-					QuestRewardManager.removeRewardChoice(p, Integer.parseInt(ChatColor.stripColor(index)));
+					String index = inv.getTitle().substring(inv.getTitle().length()-1, inv.getTitle().length());
+					QuestRewardManager.removeRewardChoice(p, Integer.parseInt(index));
 					QuestRewardManager.openEditMainGUI(p);
 					return;
 				}
@@ -114,14 +116,14 @@ public class RewardGUIListener
 			}
 		}
 		
-		Inventory inv = e.getInventory();
+		InventoryView inv = e.getView();
 		if (inv != null)
 		{
 			if (inv.getTitle().contains(I18n.locMsg("QuestReward.ChoiceEditTitle")))
 			{
-				int index = Integer.parseInt(inv.getTitle().split(":")[1]);
+				int index = Integer.parseInt(inv.getTitle().split("@")[1]);
 				List<ItemStack> l = new ArrayList<>();
-				for (ItemStack item : inv.getContents())
+				for (ItemStack item : e.getInventory().getContents())
 				{
 					if (item == null || item.getType().equals(Material.AIR) || QuestGUIItem.isGUIItem(item))
 						continue;

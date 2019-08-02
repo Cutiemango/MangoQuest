@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest.commands;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.commands.edtior.CommandEditConv;
 import me.Cutiemango.MangoQuest.commands.edtior.CommandNewAction;
@@ -10,6 +11,8 @@ import me.Cutiemango.MangoQuest.commands.edtior.CommandNewConv;
 import me.Cutiemango.MangoQuest.commands.edtior.CommandRemoveConv;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
+import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
+import me.Cutiemango.MangoQuest.conversation.QuestBaseAction;
 import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
@@ -36,6 +39,18 @@ public class ConversationEditorCommand
 			{
 				switch (args[1])
 				{
+					case "cp":
+						if (ConversationManager.hasConvProgress(sender))
+						{
+							ConversationProgress cp = ConversationManager.getConvProgress(sender);
+							DebugHandler.log(5, "There are " + cp.getActionQueue().size() + " actions left.");
+							for (QuestBaseAction act : cp.getActionQueue())
+							{
+								DebugHandler.log(5, "Type: " + act.getActionType() + ", Object: " + act.getObject());
+							}
+							return;
+						}
+						return;
 					case "modconv":
 						if (!ConversationEditorManager.checkEditorMode(sender, false))
 							return;

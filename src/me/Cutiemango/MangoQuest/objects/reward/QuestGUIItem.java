@@ -11,9 +11,9 @@ import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
 public class QuestGUIItem
 {
-	public QuestGUIItem(Material type, int amount, short damage)
+	public QuestGUIItem(Material type, int amount)
 	{
-		item = new ItemStack(type, amount, damage);
+		item = new ItemStack(type, amount);
 		meta = item.getItemMeta();
 	}
 	
@@ -25,10 +25,12 @@ public class QuestGUIItem
 	
 	ItemStack item;
 	ItemMeta meta;
-	boolean glow;
+	boolean glow, unbreakable;
 	
 	public ItemStack get()
 	{
+		if (unbreakable)
+			meta.setUnbreakable(true);
 		item.setItemMeta(meta);
 		if (glow)
 			item.addUnsafeEnchantment(Enchantment.LURE, 87);
@@ -37,6 +39,8 @@ public class QuestGUIItem
 	
 	public void setName(String s)
 	{
+		if (s == null)
+			s = "";
 		meta.setDisplayName(QuestChatManager.translateColor(s));
 	}
 	
@@ -49,6 +53,11 @@ public class QuestGUIItem
 	{
 		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
 		glow = true;
+	}
+	
+	public void setUnbreakable()
+	{
+		unbreakable = true;
 	}
 	
 	public static ItemStack setGUIItem(ItemStack item)

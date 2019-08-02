@@ -50,6 +50,8 @@ public class Syntax
 
 	public boolean matches(Player p, String originalInput)
 	{
+		if (originalInput.contains("cancel"))
+			return false;
 		if (!originalInput.matches(regex))
 		{
 			QuestChatManager.syntaxError(p, desc, originalInput);
@@ -85,6 +87,8 @@ public class Syntax
 		{
 			if (order.toCharArray()[i] == 'N')
 			{
+				if (Integer.parseInt(inputArray.get(i)) == -1)
+					return true;
 				if (Main.getHooker().getNPC(inputArray.get(i)) == null)
 				{
 					QuestChatManager.error(p, I18n.locMsg("SyntaxError.NPCNotValid"));

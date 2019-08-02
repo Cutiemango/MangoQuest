@@ -17,18 +17,36 @@ public class I18n
 
 	private static ResourceBundle bundle;
 
-	public static void init(Locale local, boolean replace)
+	public static void init(Locale local, boolean useCustom)
 	{
 		try
 		{
-			Main.getInstance().saveResource("messages_" + ConfigSettings.LOCALE_USING.toString() + ".properties", replace);
-			Main.getInstance().saveResource("lang/original_" + ConfigSettings.LOCALE_USING.toString() + ".yml", 
-					!new File("lang/original_" + ConfigSettings.LOCALE_USING.toString() + ".yml").exists());
-			bundle = ResourceBundle.getBundle("messages", local);
+			if (bundle != null)
+				ResourceBundle.clearCache();
+			
+			String properties = "messages_" + ConfigSettings.LOCALE_USING.toString() + ".properties";
+			String langPath = "lang" + File.separator + "original_" + ConfigSettings.LOCALE_USING.toString() + ".yml";
+			
+			if (useCustom)
+			{
+				QuestChatManager.logCmd(Level.INFO, "Using custom locale.");
+				if (!new File(Main.getInstance().getDataFolder() + File.separator + langPath).exists())
+					Main.getInstance().saveResource(langPath, true);
+				if (!new File(Main.getInstance().getDataFolder() + File.separator + properties).exists())
+					Main.getInstance().saveResource(properties, true);
+			}
+			else
+			{
+				QuestChatManager.logCmd(Level.INFO, "Using default locale.");
+				Main.getInstance().saveResource(properties, true);
+				Main.getInstance().saveResource(langPath, true);
+			}
+			bundle = ResourceBundle.getBundle("messages", local, new FileResClassLoader(I18n.class.getClassLoader(), Main.getInstance()));
 		}
 		catch (MissingResourceException e)
 		{
-			bundle = ResourceBundle.getBundle("messages", local, new FileResClassLoader(I18n.class.getClassLoader(), Main.getInstance()));
+			QuestChatManager.logCmd(Level.WARNING, "The plugin encountered an error during initializing the i18n file.");
+			e.printStackTrace();
 		}
 	}
 

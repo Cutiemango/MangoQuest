@@ -18,7 +18,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
@@ -29,6 +28,7 @@ import net.citizensnpcs.api.event.NPCLeftClickEvent;
 
 public class MainListener implements Listener
 {
+	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
@@ -47,13 +47,12 @@ public class MainListener implements Listener
 		PlayerListener.onEntityDeath(e.getEntity());
 	}
 
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e)
 	{
 		if (e.getBlock() != null && e.getBlock().getType() != null)
 		{
-			PlayerListener.onBreakBlock(e.getPlayer(), e.getBlock().getType(), e.getBlock().getData());
+			PlayerListener.onBreakBlock(e.getPlayer(), e.getBlock().getType());
 			EditorListenerHandler.onBlockBreak(e.getPlayer(), e.getBlock(), e);
 		}
 	}
@@ -87,9 +86,8 @@ public class MainListener implements Listener
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onInteractEntity(PlayerInteractEntityEvent e)
 	{
-		if (Main.isUsingUpdatedVersion())
-			if (e.getHand().equals(EquipmentSlot.OFF_HAND))
-				return;
+		if (e.getHand().equals(EquipmentSlot.OFF_HAND))
+			return;
 		if (CitizensAPI.getNPCRegistry().isNPC(e.getRightClicked()))
 			PlayerListener.onNPCRightClick(e.getPlayer(), CitizensAPI.getNPCRegistry().getNPC(e.getRightClicked()), e);
 	}
@@ -99,7 +97,6 @@ public class MainListener implements Listener
 	{
 		if (!(e.getDamager() instanceof Player))
 			return;
-		Main.debug(e.getEventName() + " has triggered.");
 		Player p = (Player) e.getDamager();
 		if (QuestEditorManager.checkEditorMode(p, false) || ConversationEditorManager.checkEditorMode(p, false))
 			e.setCancelled(true);
@@ -117,14 +114,14 @@ public class MainListener implements Listener
 	{
 		if (!(e.getPlayer() instanceof Player))
 			return;
-		EditorListenerHandler.onInventoryClose((Player) e.getPlayer(), e.getInventory());
+		EditorListenerHandler.onInventoryClose((Player) e.getPlayer(), e.getInventory(), e.getView());
 		RewardGUIListener.onInventoryClose(e);
 	}
 
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e)
 	{
-		if (e.getClickedInventory() == null || e.getClickedInventory().getTitle() == null || !(e.getWhoClicked() instanceof Player))
+		if (e.getClickedInventory() == null || e.getView().getTitle() == null || !(e.getWhoClicked() instanceof Player))
 			return;
 		RewardGUIListener.onInventoryClick(e);
 	}

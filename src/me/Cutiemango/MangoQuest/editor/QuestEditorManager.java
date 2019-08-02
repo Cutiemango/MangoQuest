@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest.editor;
 import java.util.HashMap;
 import java.util.List;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -169,7 +170,7 @@ public class QuestEditorManager
 		p1.add(I18n.locMsg("QuestEditor." + q.isRedoable())).changeLine();
 		if (q.isRedoable())
 		{
-			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.RedoDelay")).clickCommand("/mq e edit redodelay")
+			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.RedoDelay") + ChatColor.RESET).clickCommand("/mq e edit redodelay")
 					.showText(I18n.locMsg("QuestEditor.RedoDelay.ShowText"))).endNormally();
 			p1.add(QuestUtil.convertTime(q.getRedoDelay())).changeLine();
 		}
@@ -199,6 +200,8 @@ public class QuestEditorManager
 		settings.add(I18n.locMsg("QuestEditor." + vs.displayOnProgress())).changeLine();
 		settings.add(new InteractiveText(I18n.locMsg("QuestVisibility.OnFinish")).clickCommand("/mq e edit vis finish " + !vs.displayOnFinish()).showText(I18n.locMsg("QuestVisibility." + !vs.displayOnFinish()))).endNormally();
 		settings.add(I18n.locMsg("QuestEditor." + vs.displayOnFinish())).changeLine();
+		settings.add(new InteractiveText(I18n.locMsg("QuestVisibility.OnInteraction")).clickCommand("/mq e edit vis interact " + !vs.displayOnInteraction()).showText(I18n.locMsg("QuestVisibility." + !vs.displayOnInteraction()))).endNormally();
+		settings.add(I18n.locMsg("QuestEditor." + vs.displayOnInteraction())).changeLine();
 		
 		settings.add(new InteractiveText(I18n.locMsg("QuestEditor.IsTimeLimited")).clickCommand("/mq e edit limit " + !q.isTimeLimited()).showText(I18n.locMsg("QuestEditor.IsTimeLimited.ShowText." + !q.isTimeLimited()))).endNormally();
 		settings.add(I18n.locMsg("QuestEditor." + q.isTimeLimited())).changeLine();
@@ -315,13 +318,17 @@ public class QuestEditorManager
 					continue;
 				QuestUtil.checkOutOfBounds(page, book);
 				page = book.getLastEditingPage();
-				page.add("- " + index + ".");
+				page.add("- " + index + ".").endNormally();
+				
 				
 				page.add(new InteractiveText(obj.getObjType().toCustomString())
-						.showText(I18n.locMsg("QuestEditor.EditTriggerObjectType") + obj.getObject().toString())).endNormally();
+						.showText(QuestChatManager.toNormalDisplay(I18n.locMsg("QuestEditor.EditTriggerObjectType") + obj.getObject().toString()))).endNormally();
+
 				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew evt " + type.toString() + " " + stage + " " + (realIndex+1) + " ")).endNormally();
 				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit evt " + type.toString() + " " + stage + " " + realIndex + " " + obj.getObjType().toString())).endNormally();
 				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove evt " + type.toString() + " " + stage + " " + realIndex)).endNormally();
+
+				
 				page.changeLine();
 				index++;
 			}
@@ -339,13 +346,16 @@ public class QuestEditorManager
 	{
 		if (!checkEditorMode(p, true))
 			return;
+		FlexiableBook book = new FlexiableBook();
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
-		QuestBookPage p1 = new QuestBookPage();
+		QuestBookPage p1 = book.getLastEditingPage();
 		p1.add(I18n.locMsg("QuestEditor.EditQuestStage")).changeLine();
 		p1.add(I18n.locMsg("QuestEditor.ChooseStage")).changeLine();
 		for (int i = 1; i <= q.getStages().size(); i++)
 		{
-			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Stage", Integer.toString(i))).clickCommand("/mq e edit stage " + i));
+			QuestUtil.checkOutOfBounds(p1, book);
+			p1 = book.getLastEditingPage();
+			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Stage", Integer.toString(i))).clickCommand("/mq e edit stage " + i)).endNormally();
 			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove stage " + i)).changeLine();
 		}
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew stage")).changeLine();
@@ -445,7 +455,8 @@ public class QuestEditorManager
 					i = 0;
 					for (String s : (List<String>) q.getRequirements().get(t))
 					{
-						p2.add("- ").add(s).endNormally();
+						p2.add("- ").endNormally();
+						p2.add(s).endNormally();
 						p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req QUEST " + i)).endNormally();
 						p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove req QUEST " + i)).endNormally();
 						p2.changeLine();

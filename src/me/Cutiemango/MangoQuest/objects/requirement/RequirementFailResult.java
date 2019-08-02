@@ -35,11 +35,7 @@ public class RequirementFailResult
 		{
 			case ITEM:
 				ItemStack item = (ItemStack) obj;
-				if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
-					s = I18n.locMsg("Requirements.NotMeet.Item") + item.getItemMeta().getDisplayName();
-				else
-					s = I18n.locMsg("Requirements.NotMeet.Item")
-							+ QuestUtil.translate(item.getType(), item.getDurability());
+				s = I18n.locMsg("Requirements.NotMeet.Item") + QuestUtil.getItemName(item);
 				break;
 			case LEVEL:
 				s = I18n.locMsg("Requirements.NotMeet.Level") + (Integer) obj;
@@ -48,7 +44,7 @@ public class RequirementFailResult
 				s = I18n.locMsg("Requirements.NotMeet.Money") + (Double) obj;
 				break;
 			case FRIEND_POINT:
-				s = I18n.locMsg("Requirements.NotMeet.Friend");
+				s = I18n.locMsg("Requirements.NotMeet.FriendPoint");
 				break;
 			case QUEST:
 				if (obj == null)

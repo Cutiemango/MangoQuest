@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestIO;
@@ -42,8 +43,8 @@ public class QuestConfigSaver
 	
 	public void init()
 	{
-		quest = manager.QuestsIO;
-		conv = manager.ConversationIO;
+		quest = manager.globalQuest;
+		conv = manager.globalConv;
 	}
 	
 	public void saveConversation(QuestConversation qc)
@@ -71,6 +72,7 @@ public class QuestConfigSaver
 		}
 		
 		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.ConversationSaved", qc.getName(), qc.getInternalID()));
+		DebugHandler.log(3, "[Config] Conversation of id=" + qc.getInternalID() + " is saved.");
 		conv.save();
 	}
 
@@ -83,15 +85,21 @@ public class QuestConfigSaver
 			quest.set(qpath + "QuestNPC", -1);
 		else
 			quest.set(qpath + "QuestNPC", q.getQuestNPC().getId());
+		
 		if (q.getFailMessage() != null)
 			quest.set(qpath + "MessageRequirementNotMeet", q.getFailMessage());
+		
 		quest.set(qpath + "Redoable", q.isRedoable());
 		if (q.isRedoable())
 			quest.set(qpath + "RedoDelayMilliseconds", q.getRedoDelay());
+		else
+			quest.set(qpath + "RedoDelayMilliseconds", null);
 		
 		quest.set(qpath + "TimeLimited", q.isTimeLimited());
 		if (q.isTimeLimited())
 			quest.set(qpath + "TimeLimitMilliseconds", q.getTimeLimit());
+		else
+			quest.set(qpath + "TimeLimitMilliseconds", null);
 		
 		saveRequirements(q);
 		saveTrigger(q);
@@ -100,15 +108,25 @@ public class QuestConfigSaver
 
 		if (q.hasWorldLimit())
 			quest.set(qpath + "WorldLimit", q.getWorldLimit().getName());
+		
 		quest.set(qpath + "UsePermission", q.usePermission());
+		
 		quest.set(qpath + "Visibility.onTake", q.getSettings().displayOnTake());
 		quest.set(qpath + "Visibility.onProgress", q.getSettings().displayOnProgress());
 		quest.set(qpath + "Visibility.onFinish", q.getSettings().displayOnFinish());
+		quest.set(qpath + "Visibility.onInteraction", q.getSettings().displayOnInteraction());
+		
 		quest.set(qpath + "QuitSettings.Quitable", q.isQuitable());
 		quest.set(qpath + "QuitSettings.QuitAcceptMsg", q.getQuitAcceptMsg());
 		quest.set(qpath + "QuitSettings.QuitCancelMsg", q.getQuitCancelMsg());
+		
 		if (!QuestValidater.detailedValidate(q, QuestUtil.getQuest(q.getInternalID())))
+		{
+			DebugHandler.log(3, "[Config] Quest of id=" + q.getInternalID() + " does not fully equals to the former version, replacing...");
 			quest.set(qpath + "Version", q.getVersion().getVersion());
+		}
+		
+		DebugHandler.log(3, "[Config] Quest of id=" + q.getInternalID() + " is saved.");
 		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.QuestSaved", q.getQuestName(), q.getInternalID()));
 		quest.save();
 	}
@@ -117,16 +135,21 @@ public class QuestConfigSaver
 	public void saveRequirements(Quest q)
 	{
 		String qpath = "Quests." + q.getInternalID() + ".";
+		// clear all data
+		quest.set(qpath + "Requirements", null);
+		
 		quest.set(qpath + "Requirements.Level", q.getRequirements().get(RequirementType.LEVEL));
 		quest.set(qpath + "Requirements.Quest", q.getRequirements().get(RequirementType.QUEST));
 		quest.set(qpath + "Requirements.Money", q.getRequirements().get(RequirementType.MONEY));
 		int i = 0;
+		quest.getConfig().set(qpath + "Requirements.Item", null);
 		for (ItemStack is : (List<ItemStack>) q.getRequirements().get(RequirementType.ITEM))
 		{
 			i++;
 			quest.getConfig().set(qpath + "Requirements.Item." + i, is);
 		}
 		HashMap<Integer, Integer> fpMap = (HashMap<Integer, Integer>) q.getRequirements().get(RequirementType.FRIEND_POINT);
+		quest.getConfig().set(qpath + "Requirements.FriendPoint", null);
 		for (Integer id : fpMap.keySet())
 		{
 			quest.set(qpath + "Requirements.FriendPoint." + id, fpMap.get(id));
@@ -141,6 +164,8 @@ public class QuestConfigSaver
 	public void saveTrigger(Quest q)
 	{
 		String qpath = "Quests." + q.getInternalID() + ".";
+		// clear all data 
+		quest.set(qpath + "TriggerEvents", null);
 		for (TriggerType type : q.getTriggerMap().keySet())
 		{
 			List<String> list = new ArrayList<>();
@@ -193,9 +218,11 @@ public class QuestConfigSaver
 	public void saveReward(Quest q)
 	{
 		String qpath = "Quests." + q.getInternalID() + ".";
+		quest.set(qpath + "Rewards", null);
 		QuestReward r = q.getQuestReward();
 		quest.set(qpath + "Rewards.RewardAmount", r.getRewardAmount());
 		quest.set(qpath + "Rewards.InstantGiveReward", r.instantGiveReward());
+		quest.set(qpath + "Rewards.Choice", null);
 		if (r.hasItem())
 		{
 			int index = 0;
@@ -240,6 +267,7 @@ public class QuestConfigSaver
 			return;
 		conv.set("Conversations." + qc.getInternalID(), null);
 		QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.ConversationDeleted", qc.getName(), qc.getInternalID()));
+		DebugHandler.log(3, "[Config] Conversation of id=" + qc.getInternalID() + " is removed.");
 		conv.save();
 	}
 	
@@ -249,6 +277,7 @@ public class QuestConfigSaver
 			return;
 		quest.set("Quests." + q.getInternalID(), null);
 		QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.QuestDeleted", q.getQuestName(), q.getInternalID()));
+		DebugHandler.log(3, "[Config] Quest of id=" + q.getInternalID() + " is removed.");
 		quest.save();
 	}
 	
@@ -264,6 +293,7 @@ public class QuestConfigSaver
 			e.printStackTrace();
 		}
 		QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.PlayerDataDeleted", p.getName()));
+		DebugHandler.log(3, "[Config] Player data of " + p.getName() + " is removed.");
 	}
 	
 	private List<String> saveConvAction(List<QuestBaseAction> clist)

@@ -6,7 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.logging.Level;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -49,18 +51,44 @@ public class QuestUtil
 
 	public static void executeCommandAsync(Player p, String command)
 	{
+		if (p == null || command == null)
+			return;
+		Bukkit.getScheduler().callSyncMethod(Main.getInstance(), () -> p.performCommand(command));
+
+	}
+	
+	public static void executeOPCommandAsync(Player p, String command)
+	{
+		if (p == null || command == null)
+			return;
+		boolean op = p.isOp();
 		Bukkit.getScheduler().runTask(Main.getInstance(), () ->
 		{
-			p.performCommand(command);
+			try
+			{
+				if (!op)
+					p.setOp(true);
+				Bukkit.dispatchCommand(p, command);
+			}
+			catch(Exception e)
+			{
+				QuestChatManager.logCmd(Level.SEVERE, "The server encountered an unchecked exception when making player execute OP commands.");
+				QuestChatManager.logCmd(Level.SEVERE, "Please report this to the plugin author.");
+				e.printStackTrace();
+			}
+			finally
+			{
+				if (!op)
+					p.setOp(false);
+			}
 		});
 	}
 	
 	public static void executeConsoleAsync(String command)
 	{
-		Bukkit.getScheduler().runTask(Main.getInstance(), () ->
-		{
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-		});
+		if (command == null)
+			return;
+		Bukkit.getScheduler().callSyncMethod(Main.getInstance(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
 	}
 
 	public static String convertArgsString(String[] array, int startIndex)
@@ -146,7 +174,40 @@ public class QuestUtil
 		if (is.hasItemMeta() && is.getItemMeta().hasDisplayName())
 			return is.getItemMeta().getDisplayName();
 		else
-			return translate(is.getType(), is.getDurability());
+			return translate(is.getType());
+	}
+	
+	public static String trimColor(String s)
+	{	
+		String targetText = ChatColor.translateAlternateColorCodes('&', s);
+		boolean escape = false;
+		boolean nextTextSplit = false;
+		int index = 0;
+		String savedText = "";
+		for (int i = 0; i < targetText.toCharArray().length; i++)
+		{
+			if (escape)
+			{
+				escape = false;
+				continue;
+			}
+			if (targetText.charAt(i) == '§')
+			{
+				if (nextTextSplit)
+				{
+					String split = targetText.substring(index, i);
+					savedText += ChatColor.getLastColors(split) + ChatColor.stripColor(split);
+					index = i;
+					nextTextSplit = false;
+				}
+				escape = true;
+				continue;
+			}
+			nextTextSplit = true;
+		}
+		String split = targetText.substring(index, targetText.toCharArray().length);
+		savedText += ChatColor.getLastColors(split) + ChatColor.stripColor(split);
+		return savedText;
 	}
 
 	@SafeVarargs
@@ -160,24 +221,18 @@ public class QuestUtil
 		return list;
 	}
 
-	public static String translate(Material mat, short data)
+	public static String translate(Material mat)
 	{
-		if (!QuestStorage.TranslateMap.containsKey(mat))
-			return I18n.locMsg("Translation.UnknownItem");
-		if (QuestStorage.TranslateMap.get(mat).get(data) == null)
-			return QuestStorage.TranslateMap.get(mat).get((short)0);
-		else
-			return QuestStorage.TranslateMap.get(mat).get(data);
+		if (QuestStorage.TranslationMap.containsKey(mat))
+			return QuestStorage.TranslationMap.get(mat);
+		else return I18n.locMsg("Translation.UnknownItem");
 	}
 	
 	public static String translate(ItemStack item)
 	{
 		if (item == null)
 			return I18n.locMsg("Translation.UnknownItem");
-		if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
-			return QuestChatManager.trimColor(item.getItemMeta().getDisplayName());
-		else
-			return translate(item.getType(), item.getDurability());	
+		return getItemName(item);
 	}
 
 	public static String translate(EntityType e)

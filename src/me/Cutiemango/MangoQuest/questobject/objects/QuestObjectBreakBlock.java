@@ -7,10 +7,10 @@ import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
+import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
-import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
 import net.md_5.bungee.api.ChatColor;
@@ -21,11 +21,10 @@ public class QuestObjectBreakBlock extends NumerableObject implements EditorObje
 	// Reserved for initializing with load()
 	public QuestObjectBreakBlock(){}
 	
-	public QuestObjectBreakBlock(Material m, short s, int i)
+	public QuestObjectBreakBlock(Material m, int i)
 	{
 		if (!m.isBlock())
 			return;
-		subID = s;
 		block = m;
 		amount = i;
 	}
@@ -43,18 +42,17 @@ public class QuestObjectBreakBlock extends NumerableObject implements EditorObje
 	}
 
 	private Material block;
-	private short subID = 0;
 
 	@Override
 	public TextComponent toTextComponent(boolean isFinished)
 	{
-		return super.toTextComponent(ChatColor.stripColor(I18n.locMsg("QuestObject.BreakBlock")), isFinished, amount, block, subID);
+		return super.toTextComponent(ChatColor.stripColor(I18n.locMsg("QuestObject.BreakBlock")), isFinished, amount, block);
 	}
 	
 	@Override
 	public String toDisplayText()
 	{
-		return I18n.locMsg("QuestObject.BreakBlock", Integer.toString(amount), QuestUtil.translate(block, subID), "");
+		return I18n.locMsg("QuestObject.BreakBlock", Integer.toString(amount), QuestUtil.translate(block), "");
 	}
 
 	public Material getType()
@@ -62,25 +60,16 @@ public class QuestObjectBreakBlock extends NumerableObject implements EditorObje
 		return block;
 	}
 
-	public short getSubID()
-	{
-		return subID;
-	}
 
 	public void setType(Material m)
 	{
 		block = m;
 	}
 
-	public void setSubID(short s)
-	{
-		subID = s;
-	}
-
 	@Override
 	public void formatEditorPage(QuestBookPage page, int stage, int obj)
 	{
-		page.add(I18n.locMsg("QuestEditor.BreakBlock") + QuestUtil.translate(block, subID)).endNormally();
+		page.add(I18n.locMsg("QuestEditor.BreakBlock") + QuestUtil.translate(block)).endNormally();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " block")).changeLine();
 		super.formatEditorPage(page, stage, obj);
 	}
@@ -89,7 +78,6 @@ public class QuestObjectBreakBlock extends NumerableObject implements EditorObje
 	public boolean load(QuestIO config, String path)
 	{
 		block = Material.getMaterial(config.getString(path + "BlockType"));
-		subID = Short.parseShort(Integer.toString(config.getInt(path + "SubID")));
 		return super.load(config, path);
 	}
 
@@ -97,7 +85,6 @@ public class QuestObjectBreakBlock extends NumerableObject implements EditorObje
 	public void save(QuestIO config, String objpath)
 	{
 		config.set(objpath + "BlockType", block.toString());
-		config.set(objpath + "SubID", subID);
 		super.save(config, objpath);
 	}
 
@@ -107,11 +94,9 @@ public class QuestObjectBreakBlock extends NumerableObject implements EditorObje
 		switch (type)
 		{
 			case "block":
-				String[] split = obj.split(":");
-				if ((split.length == 2 && !QuestValidater.validateInteger(split[1])) || Material.getMaterial(split[0]) == null)
-					return false;
-				setType(Material.getMaterial(split[0]));
-				setSubID(Short.parseShort(split[1]));
+				Material mat = Material.getMaterial(obj);
+				setType(mat);
+				DebugHandler.log(5, "Material registered: " + block.toString());
 				break;
 			default:
 				return super.receiveCommandInput(sender, type, obj);

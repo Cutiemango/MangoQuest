@@ -9,10 +9,13 @@ public class ConfigSettings
 	public static boolean USE_RIGHT_CLICK_MENU = true;
 	public static int MAXIUM_QUEST_AMOUNT = 4;
 	public static int MAXMIUM_DISPLAY_TAKEQUEST_AMOUNT = 3;
+	public static int PLAYER_DATA_SAVE_INTERVAL = 600;
 	
-	public static boolean DEBUG_MODE = false;
 	public static boolean POP_LOGIN_MESSAGE = true;
 	public static boolean ENABLE_SCOREBOARD = true;
 	public static boolean USE_PARTICLE_EFFECT = true;
+	public static boolean ENABLE_SKIP = false;
+	
+	public static boolean USE_WEAK_ITEM_CHECK = false;
 	
 }

@@ -15,6 +15,16 @@ public class QuestChatManager
 		return ChatColor.translateAlternateColorCodes('&', s);
 	}
 	
+	public static String toNormalDisplay(String s)
+	{
+		return QuestChatManager.translateColor(s.replaceAll("&0", "&f").replaceAll("§0", "§f"));
+	}
+	
+	public static String toBookDisplay(String s)
+	{
+		return QuestChatManager.translateColor(s.replaceAll("&f", "&0").replaceAll("§f", "§0"));
+	}
+	
 	public static String finishedObjectFormat(String s)
 	{
 		return translateColor("&8&m&o") + ChatColor.stripColor(s);

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftMetaBook;
+import org.bukkit.craftbukkit.v1_13_R1.inventory.CraftMetaBook;
+import org.bukkit.craftbukkit.v1_13_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_13_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -18,19 +18,18 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
-import net.md_5.bungee.chat.ComponentSerializer;
-import net.minecraft.server.v1_10_R1.EnumHand;
-import net.minecraft.server.v1_10_R1.NBTTagCompound;
-import net.minecraft.server.v1_10_R1.PacketDataSerializer;
-import net.minecraft.server.v1_10_R1.PacketPlayOutCustomPayload;
-import net.minecraft.server.v1_10_R1.PacketPlayOutTitle;
-import net.minecraft.server.v1_10_R1.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_10_R1.PacketPlayOutTitle.EnumTitleAction;
-import net.minecraft.server.v1_10_R1.IChatBaseComponent;
-import net.minecraft.server.v1_10_R1.EnumParticle;
-import net.minecraft.server.v1_10_R1.PacketPlayOutWorldParticles;
+import net.minecraft.server.v1_13_R1.NBTTagCompound;
+import net.minecraft.server.v1_13_R1.PacketPlayOutWorldParticles;
+import net.minecraft.server.v1_13_R1.Particles;
+import net.minecraft.server.v1_13_R1.EnumHand;
+import net.minecraft.server.v1_13_R1.PacketDataSerializer;
+import net.minecraft.server.v1_13_R1.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_13_R1.PacketPlayOutTitle;
+import net.minecraft.server.v1_13_R1.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_13_R1.MinecraftKey;
+import net.minecraft.server.v1_13_R1.PacketPlayOutTitle.EnumTitleAction;
 
-public class Version_v1_10_R1 implements VersionHandler
+public class Version_v1_13_R1 implements VersionHandler
 {
 
 	@Override
@@ -45,25 +44,6 @@ public class Version_v1_10_R1 implements VersionHandler
 		PacketPlayOutTitle subppot = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, ChatSerializer.a("{\"text\":\"" + QuestChatManager.translateColor(subtitle) + "\"}"), fadeIn, stay, fadeOut);
 		((CraftPlayer) p).getHandle().playerConnection.sendPacket(subppot);
 	}
-	
-	private CraftMetaBook addComponentPages(CraftMetaBook meta, BaseComponent[]... texts)
-	{
-		CraftMetaBook target = meta.clone();
-		BaseComponent[][] arrayOfBaseComponent;
-		int j = (arrayOfBaseComponent = texts).length;
-		for (int i = 0; i < j; i++)
-		{
-			BaseComponent[] page = arrayOfBaseComponent[i];
-			if (target.pages.size() >= 50)
-				return target;
-			if (page == null)
-				page = new BaseComponent[0];
-			target.pages.add(IChatBaseComponent.ChatSerializer.a(ComponentSerializer.toString(page)));
-		}
-		
-		return target;
-	}
-
 
 	@Override
 	public void openBook(Player p, TextComponent... texts)
@@ -73,35 +53,39 @@ public class Version_v1_10_R1 implements VersionHandler
 		{
 			list.add(new BaseComponent[] {t});
 		}
-		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
-		CraftMetaBook meta = addComponentPages((CraftMetaBook)book.getItemMeta(), list.toArray(new BaseComponent[][] {}));
-		book.setItemMeta(meta);
 
+		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
+		CraftMetaBook meta = (CraftMetaBook)book.getItemMeta();
+
+		// Finally to use written API.
+		meta.spigot().setPages(list.toArray(new BaseComponent[][] {}));
+		book.setItemMeta(meta);
+		
 		int slot = p.getInventory().getHeldItemSlot();
 		ItemStack old = p.getInventory().getItem(slot);
 		p.getInventory().setItem(slot, book);
 		PacketDataSerializer packetdataserializer = new PacketDataSerializer(Unpooled.buffer());
 		packetdataserializer.a(EnumHand.MAIN_HAND);
-		((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|BOpen", packetdataserializer));
+		((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutCustomPayload(new MinecraftKey("minecraft", "book_open"), packetdataserializer));
 		p.getInventory().setItem(slot, old);
 	}
 
 	@Override
 	public TextComponent textFactoryConvertLocation(String name, Location loc, boolean isFinished)
 	{
-		TextComponent t = new TextComponent();
-		ItemStack is = new ItemStack(Material.SIGN);
+		TextComponent t = new TextComponent("");
+		ItemStack is = new ItemStack(Material.PAINTING);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(name);
 		if (loc != null)
 			im.setLore(QuestUtil.createList(I18n.locMsg("QuestJourney.NPCLocDisplay", loc.getWorld().getName(), Double.toString(Math.floor(loc.getX())), Double.toString(Math.floor(loc.getY())), Double.toString(Math.floor(loc.getZ())))));
 		is.setItemMeta(im);
 		if (isFinished)
-			t = new TextComponent(QuestChatManager.translateColor("&8&m&o") + ChatColor.stripColor(name));
+			t = new TextComponent(QuestChatManager.finishedObjectFormat(name));
 		else
 			t = new TextComponent(name);
 
-		net.minecraft.server.v1_10_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
+		net.minecraft.server.v1_13_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
 		NBTTagCompound tag = i.save(new NBTTagCompound());
 		String itemJson = tag.toString();
 
@@ -112,44 +96,46 @@ public class Version_v1_10_R1 implements VersionHandler
 		return t;
 	}
 
+
 	@Override
-	public TextComponent textFactoryConvertItem(ItemStack it, boolean f)
+	public TextComponent textFactoryConvertItem(ItemStack it, boolean finished)
 	{
-		TextComponent itemname = new TextComponent();
+		String base = "";
 		ItemStack is = it.clone();
-		if (!is.getItemMeta().hasDisplayName())
+		
+		if (is.hasItemMeta() && is.getItemMeta().hasDisplayName())
 		{
-			ItemMeta im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + QuestUtil.translate(is.getType(), it.getDurability()));
-			is.setItemMeta(im);
-			if (f)
-				itemname = new TextComponent(QuestChatManager.translateColor("&8&m&o") + QuestUtil.translate(is.getType(), is.getDurability()));
+			if (finished)
+				base = QuestChatManager.finishedObjectFormat(QuestUtil.translate(is.getType()));
 			else
-				itemname = new TextComponent(ChatColor.BLACK + QuestUtil.translate(is.getType(), is.getDurability()));
+				base = is.getItemMeta().getDisplayName();
 		}
 		else
 		{
-			if (f)
-				itemname = new TextComponent(QuestChatManager.translateColor("&8&m&o") + QuestUtil.translate(is.getType(), is.getDurability()));
+			ItemMeta im = is.getItemMeta();
+			im.setDisplayName(ChatColor.WHITE + QuestUtil.translate(is.getType()));
+			is.setItemMeta(im);
+			if (finished)
+				base = QuestChatManager.finishedObjectFormat(QuestUtil.translate(is.getType()));
 			else
-				itemname = new TextComponent(is.getItemMeta().getDisplayName());
+				base = ChatColor.BLACK + QuestUtil.translate(is.getType());
 		}
-
-		net.minecraft.server.v1_10_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
+		
+		TextComponent text = new TextComponent(base);
+		net.minecraft.server.v1_13_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
 		NBTTagCompound tag = i.save(new NBTTagCompound());
 		String itemJson = tag.toString();
 
-		BaseComponent[] hoverEventComponents = new BaseComponent[]
-		{ new TextComponent(itemJson) };
-		itemname.setHoverEvent(new HoverEvent(Action.SHOW_ITEM, hoverEventComponents));
+		BaseComponent[] hoverEventComponents = new BaseComponent[]{ new TextComponent(itemJson) };
+		text.setHoverEvent(new HoverEvent(Action.SHOW_ITEM, hoverEventComponents));
 
-		return itemname;
+		return text;
 	}
 
 	@Override
 	public boolean hasTag(Player p, String s)
 	{
-		return ((CraftPlayer) p).getHandle().P().contains(s);
+		return ((CraftPlayer) p).getHandle().getScoreboardTags().contains(s);
 	}
 
 	@Override
@@ -167,7 +153,7 @@ public class Version_v1_10_R1 implements VersionHandler
 	@Override
 	public ItemStack addGUITag(ItemStack item)
 	{
-		net.minecraft.server.v1_10_R1.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_13_R1.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound stag = (nmscopy.hasTag()) ? nmscopy.getTag() : new NBTTagCompound();
 		stag.setBoolean("GUIitem", true);
 		nmscopy.setTag(stag);
@@ -177,7 +163,7 @@ public class Version_v1_10_R1 implements VersionHandler
 	@Override
 	public boolean hasGUITag(ItemStack item)
 	{
-		net.minecraft.server.v1_10_R1.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_13_R1.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound tag = (nmscopy.hasTag()) ? nmscopy.getTag() : new NBTTagCompound();
 		return tag.hasKey("GUIitem");
 	}
@@ -186,7 +172,7 @@ public class Version_v1_10_R1 implements VersionHandler
 	public void playNPCEffect(Player p, Location location)
 	{
 		location.setY(location.getY() + 2);
-		PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.NOTE, false, (float) location.getX(), (float) location.getY(), (float) location.getZ(), 0, 0, 0, 1, 1, null);
+		PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(Particles.I, false, (float) location.getX(), (float) location.getY(), (float) location.getZ(), 0, 0, 0, 1, 1);
 		((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
 	}
 

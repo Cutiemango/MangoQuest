@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftMetaBook;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftMetaBook;
+import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -18,17 +18,18 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
-import net.minecraft.server.v1_12_R1.EnumHand;
-import net.minecraft.server.v1_12_R1.NBTTagCompound;
-import net.minecraft.server.v1_12_R1.PacketDataSerializer;
-import net.minecraft.server.v1_12_R1.PacketPlayOutCustomPayload;
-import net.minecraft.server.v1_12_R1.PacketPlayOutTitle;
-import net.minecraft.server.v1_12_R1.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_12_R1.PacketPlayOutTitle.EnumTitleAction;
-import net.minecraft.server.v1_12_R1.EnumParticle;
-import net.minecraft.server.v1_12_R1.PacketPlayOutWorldParticles;
+import net.minecraft.server.v1_13_R2.NBTTagCompound;
+import net.minecraft.server.v1_13_R2.PacketPlayOutWorldParticles;
+import net.minecraft.server.v1_13_R2.Particles;
+import net.minecraft.server.v1_13_R2.EnumHand;
+import net.minecraft.server.v1_13_R2.PacketDataSerializer;
+import net.minecraft.server.v1_13_R2.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_13_R2.PacketPlayOutTitle;
+import net.minecraft.server.v1_13_R2.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_13_R2.MinecraftKey;
+import net.minecraft.server.v1_13_R2.PacketPlayOutTitle.EnumTitleAction;
 
-public class Version_v1_12_R1 implements VersionHandler
+public class Version_v1_13_R2 implements VersionHandler
 {
 
 	@Override
@@ -44,7 +45,6 @@ public class Version_v1_12_R1 implements VersionHandler
 		((CraftPlayer) p).getHandle().playerConnection.sendPacket(subppot);
 	}
 
-
 	@Override
 	public void openBook(Player p, TextComponent... texts)
 	{
@@ -57,38 +57,16 @@ public class Version_v1_12_R1 implements VersionHandler
 		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
 		CraftMetaBook meta = (CraftMetaBook)book.getItemMeta();
 
-		// 1.12 above uses API.
+		// Finally to use written API.
 		meta.spigot().setPages(list.toArray(new BaseComponent[][] {}));
 		book.setItemMeta(meta);
 		
-		// Who cares to use this bullshit?
-		
-//		net.minecraft.server.v1_12_R1.ItemStack nmsbook = CraftItemStack.asNMSCopy(book);
-//		NBTTagCompound tag = new NBTTagCompound();
-//		NBTTagList taglist = new NBTTagList();
-
-		
-//		for (TextComponent t : texts)
-//		{
-//			Main.debug("ComponentSerializer.toString:");
-//			Main.debug(ComponentSerializer.toString(t));
-//			Main.debug("CraftChatMessage:");
-//			Main.debug(CraftChatMessage.fromComponent(ChatSerializer.a(ComponentSerializer.toString(t))));
-//			taglist.add(new NBTTagString(CraftChatMessage.fromComponent(ChatSerializer.a(ComponentSerializer.toString(t)))));
-//		}
-		
-//
-//		tag.set("pages", taglist);
-//		nmsbook.setTag(tag);
-//
-//		book = CraftItemStack.asBukkitCopy(nmsbook);
-
 		int slot = p.getInventory().getHeldItemSlot();
 		ItemStack old = p.getInventory().getItem(slot);
 		p.getInventory().setItem(slot, book);
 		PacketDataSerializer packetdataserializer = new PacketDataSerializer(Unpooled.buffer());
 		packetdataserializer.a(EnumHand.MAIN_HAND);
-		((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|BOpen", packetdataserializer));
+		((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutCustomPayload(new MinecraftKey("minecraft", "book_open"), packetdataserializer));
 		p.getInventory().setItem(slot, old);
 	}
 
@@ -96,7 +74,7 @@ public class Version_v1_12_R1 implements VersionHandler
 	public TextComponent textFactoryConvertLocation(String name, Location loc, boolean isFinished)
 	{
 		TextComponent t = new TextComponent("");
-		ItemStack is = new ItemStack(Material.SIGN);
+		ItemStack is = new ItemStack(Material.PAINTING);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(name);
 		if (loc != null)
@@ -107,7 +85,7 @@ public class Version_v1_12_R1 implements VersionHandler
 		else
 			t = new TextComponent(name);
 
-		net.minecraft.server.v1_12_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
+		net.minecraft.server.v1_13_R2.ItemStack i = CraftItemStack.asNMSCopy(is);
 		NBTTagCompound tag = i.save(new NBTTagCompound());
 		String itemJson = tag.toString();
 
@@ -127,23 +105,23 @@ public class Version_v1_12_R1 implements VersionHandler
 		if (is.hasItemMeta() && is.getItemMeta().hasDisplayName())
 		{
 			if (f)
-				base = QuestChatManager.finishedObjectFormat(QuestUtil.translate(is.getType(), is.getDurability()));
+				base = QuestChatManager.finishedObjectFormat(QuestUtil.translate(is.getType()));
 			else
 				base = is.getItemMeta().getDisplayName();
 		}
 		else
 		{
 			ItemMeta im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + QuestUtil.translate(is.getType(), it.getDurability()));
+			im.setDisplayName(ChatColor.WHITE + QuestUtil.translate(is.getType()));
 			is.setItemMeta(im);
 			if (f)
-				base = QuestChatManager.finishedObjectFormat(QuestUtil.translate(is.getType(), is.getDurability()));
+				base = QuestChatManager.finishedObjectFormat(QuestUtil.translate(is.getType()));
 			else
-				base = ChatColor.BLACK + QuestUtil.translate(is.getType(), is.getDurability());
+				base = ChatColor.BLACK + QuestUtil.translate(is.getType());
 		}
 		
 		TextComponent text = new TextComponent(base);
-		net.minecraft.server.v1_12_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
+		net.minecraft.server.v1_13_R2.ItemStack i = CraftItemStack.asNMSCopy(is);
 		NBTTagCompound tag = i.save(new NBTTagCompound());
 		String itemJson = tag.toString();
 
@@ -174,7 +152,7 @@ public class Version_v1_12_R1 implements VersionHandler
 	@Override
 	public ItemStack addGUITag(ItemStack item)
 	{
-		net.minecraft.server.v1_12_R1.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_13_R2.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound stag = (nmscopy.hasTag()) ? nmscopy.getTag() : new NBTTagCompound();
 		stag.setBoolean("GUIitem", true);
 		nmscopy.setTag(stag);
@@ -184,7 +162,7 @@ public class Version_v1_12_R1 implements VersionHandler
 	@Override
 	public boolean hasGUITag(ItemStack item)
 	{
-		net.minecraft.server.v1_12_R1.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_13_R2.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound tag = (nmscopy.hasTag()) ? nmscopy.getTag() : new NBTTagCompound();
 		return tag.hasKey("GUIitem");
 	}
@@ -193,7 +171,7 @@ public class Version_v1_12_R1 implements VersionHandler
 	public void playNPCEffect(Player p, Location location)
 	{
 		location.setY(location.getY() + 2);
-		PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.NOTE, false, (float) location.getX(), (float) location.getY(), (float) location.getZ(), 0, 0, 0, 1, 1, null);
+		PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(Particles.I, false, (float) location.getX(), (float) location.getY(), (float) location.getZ(), 0, 0, 0, 1, 1);
 		((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
 	}
 

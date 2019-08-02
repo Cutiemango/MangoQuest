@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import me.Cutiemango.MangoQuest.manager.reward.QuestRewardManager;
+import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
 
 public class RewardChoice
 {

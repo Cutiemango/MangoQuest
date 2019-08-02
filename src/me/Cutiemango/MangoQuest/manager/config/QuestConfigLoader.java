@@ -1,6 +1,8 @@
 package me.Cutiemango.MangoQuest.manager.config;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,18 +11,15 @@ import java.util.Locale;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.ConfigSettings;
+import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.advancements.QuestAdvancement;
-import me.Cutiemango.MangoQuest.advancements.QuestAdvancement.FrameType;
-import me.Cutiemango.MangoQuest.advancements.QuestAdvancement.Trigger;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice;
@@ -50,7 +49,6 @@ import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectDeliverItem;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectKillMob;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectReachLocation;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectTalkToNPC;
-import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -59,25 +57,19 @@ public class QuestConfigLoader
 	public QuestConfigLoader(QuestConfigManager cm)
 	{
 		manager = cm;
-		config = manager.ConfigIO;
+		config = manager.configIO;
 	}
 	
 	private QuestConfigManager manager;
-	
-	private QuestIO quest;
-	private QuestIO conv;
-	private QuestIO advancement;
+
 	private QuestIO translation;
 	private QuestIO npc;
 	private QuestIO config;
 	
 	public void init()
 	{
-		quest = manager.QuestsIO;
-		conv = manager.ConversationIO;
-		advancement = manager.AdvancementIO;
-		translation = manager.TranslateIO;
-		npc = manager.NPCIO;
+		translation = manager.translateIO;
+		npc = manager.npcIO;
 	}
 	
 	public void loadAll()
@@ -86,53 +78,10 @@ public class QuestConfigLoader
 		loadChoice();
 		loadQuests();
 		loadConversation();
-		loadStartConversation();
 		loadGUIOptions();
 		loadNPC();
 		
 		SimpleQuestObject.initObjectNames();
-		
-		if (Main.isUsingUpdatedVersion())
-			loadAdvancement();
-	}
-	
-	@SuppressWarnings("deprecation")
-	public void loadAdvancement()
-	{
-		int count = 0;
-		if (advancement.isSection("Advancements"))
-		{
-			for (String key : advancement.getSection("Advancements"))
-			{
-				QuestAdvancement ad = new QuestAdvancement(new NamespacedKey(Main.getInstance(), "story:" + key));
-				if (advancement.getString("Advancements." + key + ".Title") != null)
-					ad.title(QuestChatManager.translateColor(advancement.getString("Advancements." + key + ".Title")));
-				if (advancement.getString("Advancements." + key + ".Description") != null)
-					ad.description(QuestChatManager.translateColor(advancement.getString("Advancements." + key + ".Description")));
-				if (advancement.getString("Advancements." + key + ".Frame") != null)
-					ad.frame(FrameType.valueOf(advancement.getString("Advancements." + key + ".Frame")));
-				if (advancement.getString("Advancements." + key + ".Icon") != null)
-				{
-					if (advancement.getString("Advancements." + key + ".Icon").contains(":"))
-					{
-						String[] split = advancement.getString("Advancements." + key + ".Icon").split(":");
-						ad.icon(Material.getMaterial(Integer.parseInt(split[0])));
-						ad.iconSubID(Short.parseShort(split[1]));
-					}
-					else
-						ad.icon(Material.getMaterial(advancement.getInt("Advancements." + key + ".Icon")));
-				}
-				ad.announcement(advancement.getBoolean("Advancements." + key + ".Announcement"));
-				if (advancement.getString("Advancements." + key + ".Background") != null)
-					ad.background(advancement.getString("Advancements." + key + ".Background"));
-				if (advancement.getString("Advancements." + key + ".Parent") != null)
-					ad.parent("mangoquest:story:" + advancement.getString("Advancements." + key + ".Parent"));
-				ad.addTrigger(new Trigger(QuestAdvancement.TriggerType.IMPOSSIBLE, "mangoquest"));
-				ad.build().add();
-				count++;
-			}
-		}
-		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.AdvancementLoaded", Integer.toString(count)));
 	}
 
 	public void loadTranslation()
@@ -141,25 +90,14 @@ public class QuestConfigLoader
 		{
 			for (String s : translation.getSection("Material"))
 			{
-				if (Material.getMaterial(s) == null)
-					continue;
-				HashMap<Short, String> map = new HashMap<>();
-				if (translation.isSection("Material." + s))
-				{
-					for (String index : translation.getSection("Material." + s))
-					{
-						Short data = Short.parseShort(index);
-						map.put(data, translation.getString("Material." + s + "." + index));
-					}
-				}
+				Material mat = Material.getMaterial(s);
+				if (mat != null)
+					QuestStorage.TranslationMap.put(mat, translation.getString("Material." + s));
 				else
-				{
-					map.put((short) 0, translation.getString("Material." + s));
-				}
-				QuestStorage.TranslateMap.put(Material.getMaterial(s), map);
-				map = new HashMap<>();
+					DebugHandler.log(5, "Material " + s + " is null during the compatible search. Skipping...");
 			}
 		}
+		
 		if (translation.isSection("EntityType"))
 		{
 			for (String e : translation.getSection("EntityType"))
@@ -176,6 +114,24 @@ public class QuestConfigLoader
 		}
 		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.TranslationLoaded"));
 	}
+	
+	private List<File> getAllFiles(String directoryName)
+	{
+		File directory = new File(directoryName);
+		if (!directory.exists())
+			directory.mkdirs();
+
+		List<File> resultList = new ArrayList<>();
+
+		File[] fList = directory.listFiles();
+		resultList.addAll(Arrays.asList(fList));
+		for (File file : fList)
+		{
+			if (file.isDirectory())
+				resultList.addAll(getAllFiles(file.getAbsolutePath()));
+		}
+		return resultList;
+	}
 
 	public void loadNPC()
 	{
@@ -185,6 +141,7 @@ public class QuestConfigLoader
 		{
 			for (Integer id : npc.getIntegerSection("NPC"))
 			{
+				DebugHandler.log(5, "[Config] Loading NPC data id=" + id);
 				if (!QuestValidater.validateNPC(Integer.toString(id)))
 				{
 					QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NPCNotValid", Integer.toString(id)));
@@ -223,6 +180,7 @@ public class QuestConfigLoader
 					}
 				}
 				QuestNPCManager.updateNPC(npcReal, npcdata);
+				DebugHandler.log(5, "[Config] Successfully loaded NPC data id=" + id);
 				count++;
 			}
 		}
@@ -236,7 +194,6 @@ public class QuestConfigLoader
 	public void loadConfig()
 	{
 		// Load i18n
-		
 		boolean useModifiedLanguage = false;
 		
 		if (config.getBoolean("useModifiedLanguage"))
@@ -248,31 +205,51 @@ public class QuestConfigLoader
 			if (lang.length > 1)
 			{
 				ConfigSettings.LOCALE_USING = new Locale(lang[0], lang[1]);
-				I18n.init(ConfigSettings.LOCALE_USING, !useModifiedLanguage);
+				I18n.init(ConfigSettings.LOCALE_USING, useModifiedLanguage);
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.UsingLocale", config.getString("language")));
 			}
 		}
 		else
 		{
 			ConfigSettings.LOCALE_USING = ConfigSettings.DEFAULT_LOCALE;
-			I18n.init(ConfigSettings.LOCALE_USING, !useModifiedLanguage);
+			I18n.init(ConfigSettings.LOCALE_USING, useModifiedLanguage);
 			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.LocaleNotFound"));
 			QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.UsingDefaultLocale", ConfigSettings.DEFAULT_LOCALE.toString()));
 			config.set("language", ConfigSettings.DEFAULT_LOCALE.toString());
 		}
 		
-		// Debug mode
-		ConfigSettings.DEBUG_MODE = config.getBoolean("debug");
-		if (config.getBoolean("debug"))
-			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.DebugMode"));
+		// Use weak item check
+		ConfigSettings.USE_WEAK_ITEM_CHECK = config.getBoolean("useWeakItemCheck");
+		DebugHandler.log(5, "[Config] useWeakItemCheck=" + ConfigSettings.USE_WEAK_ITEM_CHECK);
+		
+		// Enable Skip
+		ConfigSettings.ENABLE_SKIP = config.getBoolean("enableSkip");
+		DebugHandler.log(5, "[Config] enableSkip=" + ConfigSettings.ENABLE_SKIP);
+		
+		
+		// Save Interval
+		if (config.getInt("saveIntervalInSeconds") != 0)
+			ConfigSettings.PLAYER_DATA_SAVE_INTERVAL = config.getInt("saveIntervalInSeconds");
 		else
-			config.set("debug", false);
+		{
+			ConfigSettings.PLAYER_DATA_SAVE_INTERVAL = 600;
+			config.set("saveIntervalInSeconds", 600);
+		}
+		
+		// Debug mode
+		DebugHandler.DEBUG_LEVEL = config.getInt("debugLevel");
+		if (config.getInt("debugLevel") > 0)
+			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.DebugMode", Integer.toString(DebugHandler.DEBUG_LEVEL)));
+		else
+			config.set("debugLevel", 0);
 		
 		// Rightclick Settings
 		ConfigSettings.USE_RIGHT_CLICK_MENU = config.getBoolean("useRightClickMenu");
+		DebugHandler.log(5, "[Config] useRightClickMenu=" + ConfigSettings.USE_RIGHT_CLICK_MENU);
 		
 		// Login Message
 		ConfigSettings.POP_LOGIN_MESSAGE = config.getBoolean("popLoginMessage");
+		DebugHandler.log(5, "[Config] popLoginMessage=" + ConfigSettings.POP_LOGIN_MESSAGE);
 		
 		// Plugin Prefix
 		if (config.getString("pluginPrefix") != null)
@@ -294,6 +271,8 @@ public class QuestConfigLoader
 			config.set("enableScoreboard", true);
 		ConfigSettings.ENABLE_SCOREBOARD = config.getBoolean("enableScoreboard");
 		
+		DebugHandler.log(5, "[Config] enableScoreboard=" + ConfigSettings.ENABLE_SCOREBOARD);
+		
 		if (!config.contains("scoreboardMaxCanTakeQuestAmount"))
 			config.set("scoreboardMaxCanTakeQuestAmount", 3);
 		ConfigSettings.MAXMIUM_DISPLAY_TAKEQUEST_AMOUNT = config.getInt("scoreboardMaxCanTakeQuestAmount");
@@ -302,95 +281,96 @@ public class QuestConfigLoader
 		if (!config.contains("useParticleEffect"))
 			config.set("useParticleEffect", true);
 		ConfigSettings.USE_PARTICLE_EFFECT = config.getBoolean("useParticleEffect");
+		
+		DebugHandler.log(5, "[Config] useParticleEffect=" + ConfigSettings.USE_PARTICLE_EFFECT);
 	}
 
 	public void loadConversation()
 	{
-		if (conv.isSection("Conversations"))
+		List<File> files = getAllFiles(Main.getInstance().getDataFolder() + File.separator + "conversation");
+		
+		int count = 0;
+		for (File f : files)
 		{
-			int count = 0;
-			for (String id : conv.getSection("Conversations"))
+			QuestIO conv = new QuestIO(f);
+			
+			if (conv.isSection("Conversations"))
 			{
-				String name = conv.getString("Conversations." + id + ".ConversationName");
-				List<String> act = conv.getStringList("Conversations." + id + ".ConversationActions");
-				NPC npc = CitizensAPI.getNPCRegistry().getById(conv.getInt("Conversations." + id + ".NPC"));
-				QuestConversation qc;
-				if (conv.getBoolean("Conversations." + id + ".FriendConversation"))
+				for (String id : conv.getSection("Conversations"))
 				{
-					qc = new FriendConversation(name, id, npc, loadConvAction(act), conv.getInt("Conversations." + id + ".FriendPoint"));
-					QuestStorage.FriendConvs.add((FriendConversation)qc);
-				}
-				else if (conv.getBoolean("Conversations." + id + ".StartTriggerConversation"))
-					continue;
-				else
-					qc = new QuestConversation(name, id, npc, loadConvAction(act));
-				QuestStorage.Conversations.put(id, qc);
-				count++;
-			}
-
-			QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.ConversationLoaded", Integer.toString(count)));
-		}
-	}
-	
-	public void loadStartConversation()
-	{
-		if (conv.isSection("Conversations"))
-		{
-			int count = 0;
-			for (String id : conv.getSection("Conversations"))
-			{
-				if (conv.getBoolean("Conversations." + id + ".StartTriggerConversation"))
-				{
-					Quest q = QuestUtil.getQuest(conv.getString("Conversations." + id + ".StartQuest"));
-					if (q != null)
+					String name = conv.getString("Conversations." + id + ".ConversationName");
+					List<String> act = conv.getStringList("Conversations." + id + ".ConversationActions");
+					NPC npc = Main.getHooker().getNPC(conv.getInt("Conversations." + id + ".NPC"));
+					QuestConversation qc;
+					if (conv.getBoolean("Conversations." + id + ".FriendConversation"))
 					{
-						String name = conv.getString("Conversations." + id + ".ConversationName");
-						List<String> act = conv.getStringList("Conversations." + id + ".ConversationActions");
-						NPC npc = CitizensAPI.getNPCRegistry().getById(conv.getInt("Conversations." + id + ".NPC"));
-						StartTriggerConversation sconv = new StartTriggerConversation(name, id, npc, loadConvAction(act), q);
-						sconv.setAcceptActions(loadConvAction(conv.getStringList("Conversations." + id + ".AcceptActions")));
-						sconv.setDenyActions(loadConvAction(conv.getStringList("Conversations." + id + ".DenyActions")));
-						sconv.setAcceptMessage(conv.getString("Conversations." + id + ".AcceptMessage"));
-						sconv.setDenyMessage(conv.getString("Conversations." + id + ".DenyMessage"));
-						sconv.setQuestFullMessage(conv.getString("Conversations." + id + ".QuestFullMessage"));
-						QuestStorage.Conversations.put(id, sconv);
-						QuestStorage.StartConvs.put(q, sconv);
-						count++;
+						qc = new FriendConversation(name, id, npc, loadConvAction(act), conv.getInt("Conversations." + id + ".FriendPoint"));
+						QuestStorage.FriendConvs.add((FriendConversation)qc);
+						QuestStorage.Conversations.put(id, (FriendConversation)qc);
 					}
+					else if (conv.getBoolean("Conversations." + id + ".StartTriggerConversation"))
+					{
+						Quest q = QuestUtil.getQuest(conv.getString("Conversations." + id + ".StartQuest"));
+						if (q != null)
+						{
+							StartTriggerConversation sconv = new StartTriggerConversation(name, id, npc, loadConvAction(act), q);
+							sconv.setAcceptActions(loadConvAction(conv.getStringList("Conversations." + id + ".AcceptActions")));
+							sconv.setDenyActions(loadConvAction(conv.getStringList("Conversations." + id + ".DenyActions")));
+							sconv.setAcceptMessage(conv.getString("Conversations." + id + ".AcceptMessage"));
+							sconv.setDenyMessage(conv.getString("Conversations." + id + ".DenyMessage"));
+							sconv.setQuestFullMessage(conv.getString("Conversations." + id + ".QuestFullMessage"));
+							QuestStorage.Conversations.put(id, sconv);
+							QuestStorage.StartConvs.put(q, sconv);
+						}
+					}
+					else
+					{
+						qc = new QuestConversation(name, id, npc, loadConvAction(act));
+						QuestStorage.Conversations.put(id, qc);
+					}
+					DebugHandler.log(5, "[Config] Successfully loaded conversation id=" + id);
+					count++;
 				}
 			}
-			QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.TriggerConversationLoaded", Integer.toString(count)));
-			return;
 		}
+		
+		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.ConversationLoaded", Integer.toString(count)));
 	}
 
 	public void loadChoice()
 	{
-		if (!conv.isSection("Choices"))
-			return;
+		List<File> files = getAllFiles(Main.getInstance().getDataFolder() + File.separator + "choice");
+		
 		int count = 0;
-		for (String id : conv.getSection("Choices"))
+		for (File f : files)
 		{
-			List<Choice> list = new ArrayList<>();
-			TextComponent q = new TextComponent(QuestChatManager.translateColor(conv.getString("Choices." + id + ".Question")));
-			for (int i : conv.getIntegerSection("Choices." + id + ".Options"))
+			QuestIO choice = new QuestIO(f);
+			if (!choice.isSection("Choices"))
+				continue;
+			for (String id : choice.getSection("Choices"))
 			{
-				String name = conv.getString("Choices." + id + ".Options." + i + ".OptionName");
-				Choice c = new Choice(name, loadConvAction(conv.getStringList("Choices." + id + ".Options." + i + ".OptionActions")));
-				if (conv.isSection("Choices." + id + ".Options." + i + ".FriendPointReq"))
+				List<Choice> list = new ArrayList<>();
+				TextComponent q = new TextComponent(QuestChatManager.translateColor(choice.getString("Choices." + id + ".Question")));
+				for (int i : choice.getIntegerSection("Choices." + id + ".Options"))
 				{
-					for (int npc : conv.getIntegerSection("Choices." + id + ".Options." + i + ".FriendPointReq"))
+					String name = choice.getString("Choices." + id + ".Options." + i + ".OptionName");
+					Choice c = new Choice(name, loadConvAction(choice.getStringList("Choices." + id + ".Options." + i + ".OptionActions")));
+					if (choice.isSection("Choices." + id + ".Options." + i + ".FriendPointReq"))
 					{
-						c.setFriendPointReq(npc, conv.getInt("Choices." + id + ".Options." + i + ".FriendPointReq." + npc));
+						for (int npc : choice.getIntegerSection("Choices." + id + ".Options." + i + ".FriendPointReq"))
+						{
+							c.setFriendPointReq(npc, choice.getInt("Choices." + id + ".Options." + i + ".FriendPointReq." + npc));
+						}
 					}
+					list.add(i - 1, c);
 				}
-				list.add(i - 1, c);
+				QuestChoice c = new QuestChoice(q, list);
+				QuestStorage.Choices.put(id, c);
+				DebugHandler.log(5, "[Config] Successfully loaded choice id=" + id);
+				count++;
 			}
-			QuestChoice choice = new QuestChoice(q, list);
-			QuestStorage.Choices.put(id, choice);
-			count++;
 		}
-
+		
 		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.ChoiceLoaded", Integer.toString(count)));
 	}
 	
@@ -417,104 +397,112 @@ public class QuestConfigLoader
 			if (npc.isSection(path + "Requirements"))
 				option.setRequirementMap(loadRequirements(npc, path));
 			QuestNPCManager.registerOption(internal, option);
+			DebugHandler.log(5, "[Config] Successfully loaded GUIOption id=" + internal);
 			count++;
 		}
+		
 		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.OptionLoaded", Integer.toString(count)));
 	}
 
 	public void loadQuests()
 	{
-		if (!quest.isSection("Quests"))
-			return;
-		int totalcount = 0;
-		for (String internal : quest.getSection("Quests"))
+		List<File> files = getAllFiles(Main.getInstance().getDataFolder() + File.separator + "quest");
+		
+		int count = 0;
+		for (File f : files)
 		{
-			String qpath = "Quests." + internal + ".";
-			String questname = quest.getString(qpath + "QuestName");
-			List<String> questoutline = quest.getStringList(qpath + "QuestOutline");
-			
-			// Stages
-			List<QuestStage> stages = loadStages(internal);
-			QuestReward reward = loadReward(internal);
-			
-			if (Main.getHooker().hasCitizensEnabled() && quest.contains(qpath + "QuestNPC"))
+			QuestIO quest = new QuestIO(f);
+			if (!quest.isSection("Quests"))
+				continue;
+			for (String internal : quest.getSection("Quests"))
 			{
-				NPC npc = null;
-				if (quest.getInt(qpath + "QuestNPC") != -1
-						&& QuestValidater.validateNPC(Integer.toString(quest.getInt(qpath + "QuestNPC"))))
-					npc = Main.getHooker().getNPC(quest.getInt(qpath + "QuestNPC"));
-	
-				registerNPC(npc);
+				String qpath = "Quests." + internal + ".";
+				String questname = quest.getString(qpath + "QuestName");
+				List<String> questoutline = quest.getStringList(qpath + "QuestOutline");
 				
-				Quest q = new Quest(internal, questname, questoutline, reward, stages, npc);
-				if (quest.getString(qpath + "MessageRequirementNotMeet") != null)
-					q.setFailMessage(quest.getString(qpath + "MessageRequirementNotMeet"));
+				// Stages
+				List<QuestStage> stages = loadStages(quest, internal);
+				QuestReward reward = loadReward(quest, internal);
 				
-				// Requirements
-				q.setRequirements(loadRequirements(quest, qpath));;
-				q.initRequirements();
+				if (Main.getHooker().hasCitizensEnabled() && quest.contains(qpath + "QuestNPC"))
+				{
+					NPC npc = null;
+					if (quest.getInt(qpath + "QuestNPC") != -1
+							&& QuestValidater.validateNPC(Integer.toString(quest.getInt(qpath + "QuestNPC"))))
+						npc = Main.getHooker().getNPC(quest.getInt(qpath + "QuestNPC"));
+		
+					registerNPC(npc);
+					
+					Quest q = new Quest(internal, questname, questoutline, reward, stages, npc);
+					if (quest.getString(qpath + "MessageRequirementNotMeet") != null)
+						q.setFailMessage(quest.getString(qpath + "MessageRequirementNotMeet"));
+					
+					// Requirements
+					q.setRequirements(loadRequirements(quest, qpath));;
+					q.initRequirements();
 
-				// Triggers
-				loadTriggers(q);
-				
-				if (quest.getBoolean(qpath + "Redoable"))
-				{
-					q.setRedoable(true);
-					q.setRedoDelay(quest.getLong(qpath + "RedoDelayMilliseconds"));
-				}
-				if (quest.getLong(qpath + "Version") == 0L)
-				{
-					QuestVersion ver = QuestVersion.instantVersion();
-					quest.set(qpath + "Version", ver.getVersion());
-					q.registerVersion(ver);
+					// Triggers
+					loadTriggers(quest, q);
+					
+					if (quest.getBoolean(qpath + "Redoable"))
+					{
+						q.setRedoable(true);
+						q.setRedoDelay(quest.getLong(qpath + "RedoDelayMilliseconds"));
+					}
+					if (quest.getLong(qpath + "Version") == 0L)
+					{
+						QuestVersion ver = QuestVersion.instantVersion();
+						quest.set(qpath + "Version", ver.getVersion());
+						q.registerVersion(ver);
+					}
+					else
+					{
+						QuestVersion qc = new QuestVersion(quest.getLong(qpath + "Version"));
+						q.registerVersion(qc);
+					}
+					
+					q.getSettings().toggle(quest.getBoolean(qpath + "Visibility.onTake"),
+											quest.getBoolean(qpath + "Visibility.onProgress"),
+											quest.getBoolean(qpath + "Visibility.onFinish"),
+											quest.getBoolean(qpath + "Visibility.onInteraction"));
+					q.setQuitable(quest.getBoolean(qpath + "QuitSettings.Quitable"));
+					if (quest.getString(qpath + "WorldLimit") != null && Bukkit.getWorld(quest.getString(qpath + "WorldLimit")) != null)
+						q.setWorldLimit(Bukkit.getWorld(quest.getString(qpath + "WorldLimit")));
+					if (quest.getBoolean(qpath + "TimeLimited"))
+					{
+						q.setTimeLimited(quest.getBoolean(qpath + "TimeLimited"));
+						q.setTimeLimit(quest.getLong(qpath + "TimeLimitMilliseconds"));
+					}
+					q.setUsePermission(quest.getBoolean(qpath + "UsePermission"));
+					q.setQuitAcceptMsg(quest.getString(qpath + "QuitSettings.QuitAcceptMsg"));
+					q.setQuitCancelMsg(quest.getString(qpath + "QuitSettings.QuitCancelMsg"));
+					
+					QuestStorage.Quests.put(internal, q);
+					if (npc != null)
+					{
+						QuestNPCManager.getNPCData(npc.getId()).registerQuest(q);
+						if (!reward.hasRewardNPC())
+							reward.setRewardNPC(npc);
+						DebugHandler.log(5, "[Config] Successfully registered Quest of id=" + q.getInternalID() + " into NPC of id=" + npc.getId() + "'s data.");
+					}
+					if (reward.hasRewardNPC())
+					{
+						registerNPC(reward.getRewardNPC());
+						QuestNPCManager.getNPCData(reward.getRewardNPC().getId()).registerReward(q);
+					}
+					count++;
 				}
 				else
 				{
-					QuestVersion qc = new QuestVersion(quest.getLong(qpath + "Version"));
-					q.registerVersion(qc);
+					QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.NPCError", questname));
+					continue;
 				}
-				
-				q.getSettings().toggle(quest.getBoolean(qpath + "Visibility.onTake"),
-										quest.getBoolean(qpath + "Visibility.onProgress"),
-										quest.getBoolean(qpath + "Visibility.onFinish"));
-				q.setQuitable(quest.getBoolean(qpath + "QuitSettings.Quitable"));
-				if (quest.getString(qpath + "WorldLimit") != null && Bukkit.getWorld(quest.getString(qpath + "WorldLimit")) != null)
-					q.setWorldLimit(Bukkit.getWorld(quest.getString(qpath + "WorldLimit")));
-				if (quest.getBoolean(qpath + "TImeLimited"))
-				{
-					q.setTimeLimited(quest.getBoolean(qpath + "TimeLimited"));
-					q.setTimeLimit(quest.getLong(qpath + "TimeLimitMilliseconds"));
-				}
-				q.setUsePermission(quest.getBoolean(qpath + "UsePermission"));
-				q.setQuitAcceptMsg(quest.getString(qpath + "QuitSettings.QuitAcceptMsg"));
-				q.setQuitCancelMsg(quest.getString(qpath + "QuitSettings.QuitCancelMsg"));
-				
-				QuestStorage.Quests.put(internal, q);
-				if (npc != null)
-				{
-					QuestNPCManager.getNPCData(npc.getId()).registerQuest(q);
-					if (!reward.hasRewardNPC())
-						reward.setRewardNPC(npc);
-					Main.debug("NPC: " + npc.getId() + ", Quest: " + q.getInternalID());
-				}
-				if (reward.hasRewardNPC())
-				{
-					registerNPC(reward.getRewardNPC());
-					QuestNPCManager.getNPCData(reward.getRewardNPC().getId()).registerReward(q);
-				}
-				totalcount++;
-			}
-			else
-			{
-				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.NPCError", questname));
-				continue;
 			}
 		}
-		quest.save();
-		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.QuestLoaded", Integer.toString(totalcount)));
+		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.QuestLoaded", Integer.toString(count)));
 	}
 	
-	private List<QuestStage> loadStages(String id)
+	private List<QuestStage> loadStages(QuestIO quest, String id)
 	{
 		String qpath = "Quests." + id + ".";
 		List<QuestStage> list = new ArrayList<>();
@@ -625,7 +613,7 @@ public class QuestConfigLoader
 		return map;
 	}
 	
-	private void loadTriggers(Quest q)
+	private void loadTriggers(QuestIO quest, Quest q)
 	{
 		String triggerPath = "Quests." + q.getInternalID() + ".TriggerEvents";
 		EnumMap<TriggerType, List<TriggerObject>> map = new EnumMap<>(TriggerType.class);
@@ -664,7 +652,7 @@ public class QuestConfigLoader
 		return;
 	}
 	
-	private QuestReward loadReward(String id)
+	private QuestReward loadReward(QuestIO quest, String id)
 	{
 		String qpath = "Quests." + id + ".";
 		QuestReward reward = new QuestReward();
@@ -752,7 +740,6 @@ public class QuestConfigLoader
 						case WAIT:
 						case SENTENCE:
 						case FINISH:
-						case GIVE_ADVANCEMENT:
 							action = new QuestBaseAction(e, s.split("#")[1]);
 							break;
 						case BUTTON:
@@ -772,9 +759,9 @@ public class QuestConfigLoader
 	
 	private void registerNPC(NPC npc)
 	{
-		if (npc != null)
+		if (npc != null && !QuestNPCManager.hasStorageData(npc.getId()))
 		{
-			Main.debug("NPC registered: " + npc.getId());
+			DebugHandler.log(5, "[Config] NPC of id=" + npc.getId() + " registered.");
 			QuestNPCManager.registerNPC(npc);
 		}
 	}
