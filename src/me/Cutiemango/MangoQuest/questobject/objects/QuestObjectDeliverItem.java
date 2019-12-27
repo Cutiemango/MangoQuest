@@ -123,33 +123,27 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject, Edi
 	@Override
 	public boolean receiveCommandInput(Player sender, String type, String obj)
 	{
-		switch (type)
+		if (type.equals("itemnpc"))
 		{
-			case "itemnpc":
-				if (!QuestValidater.validateNPC(obj))
-					return false;
-				setTargetNPC(Main.getHooker().getNPC(obj));
-				break;
-			default:
-				return super.receiveCommandInput(sender, type, obj);
+			if (!QuestValidater.validateNPC(obj))
+				return false;
+			setTargetNPC(Main.getHooker().getNPC(obj));
+			return true;
 		}
-		return true;
+		return super.receiveCommandInput(sender, type, obj);
 	}
 
 	@Override
 	public EditorListenerObject createCommandOutput(Player sender, String command, String type)
 	{
-		EditorListenerObject obj = null;
-		switch (type)
+		EditorListenerObject obj;
+		if (type.equals("itemnpc"))
 		{
-			case "itemnpc":
-				obj = new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, command, Syntax.of("N", I18n.locMsg("Syntax.NPCID"), ""));
-				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ClickNPC"));
-				break;
-			default:
-				return super.createCommandOutput(sender, command, type);
+			obj = new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, command, Syntax.of("N", I18n.locMsg("Syntax.NPCID"), ""));
+			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ClickNPC"));
+			return obj;
 		}
-		return obj;
+		return super.createCommandOutput(sender, command, type);
 	}
 
 }

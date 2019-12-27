@@ -176,14 +176,14 @@ public class QuestConfigSaver
 				case TRIGGER_ON_TAKE:
 					for (TriggerObject obj : q.getTriggerMap().get(type))
 					{
-						list.add(obj.getObjType().toString() + " " + obj.getObject().toString());
+						list.add(obj.getObjType().toString() + " " + obj.getObject());
 					}
 					break;
 				case TRIGGER_STAGE_FINISH:
 				case TRIGGER_STAGE_START:
 					for (TriggerObject obj : q.getTriggerMap().get(type))
 					{
-						list.add(obj.getStage() + " " + obj.getObjType().toString() + " " + obj.getObject().toString());
+						list.add(obj.getStage() + " " + obj.getObjType().toString() + " " + obj.getObject());
 					}
 					break;
 				default:

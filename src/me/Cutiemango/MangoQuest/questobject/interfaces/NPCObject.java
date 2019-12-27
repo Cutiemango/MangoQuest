@@ -4,6 +4,6 @@ import net.citizensnpcs.api.npc.NPC;
 
 public interface NPCObject
 {
-	public NPC getTargetNPC();
-	public void setTargetNPC(NPC targetNPC);
+	NPC getTargetNPC();
+	void setTargetNPC(NPC targetNPC);
 }

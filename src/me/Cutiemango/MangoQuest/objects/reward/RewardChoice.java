@@ -13,7 +13,7 @@ public class RewardChoice
 		rewards = items;
 	}
 	
-	public List<ItemStack> rewards = new ArrayList<>(QuestRewardManager.MAXMIUM_CHOICES);
+	public List<ItemStack> rewards;
 	
 	public void executeReward(Player p)
 	{

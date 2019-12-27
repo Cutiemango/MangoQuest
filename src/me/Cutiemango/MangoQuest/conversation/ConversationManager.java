@@ -37,15 +37,13 @@ public class ConversationManager
 	 * 
 	 * @param p The player to start a new conversation
 	 * @param conv The conversation to start
-	 * @return The progress of conversation
 	 */
-	public static ConversationProgress simulateConversation(Player p, QuestConversation conv)
+	public static void simulateConversation(Player p, QuestConversation conv)
 	{
 		ConversationProgress cp = new ModelConvProgress(p, conv);
 		QuestStorage.ConvProgresses.put(p.getName(), cp);
 		cp.nextAction();
 		openConversation(p, cp);
-		return cp;
 	}
 
 	/**
@@ -127,8 +125,7 @@ public class ConversationManager
 	
 	public static void finishConversation(Player p)
 	{
-		if (QuestStorage.ConvProgresses.containsKey(p.getName()))
-			QuestStorage.ConvProgresses.remove(p.getName());
+		QuestStorage.ConvProgresses.remove(p.getName());
 	}
 
 	public static QuestBookPage generateNewPage(QuestConversation conv)

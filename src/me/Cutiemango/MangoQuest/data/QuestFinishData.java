@@ -8,7 +8,7 @@ public class QuestFinishData
 	private int times;
 	private long lastFinish;
 	
-	private boolean rewardTaken = false;
+	private boolean rewardTaken;
 
 	public QuestFinishData(Quest quest, int time, long lastFinishTime, boolean reward)
 	{

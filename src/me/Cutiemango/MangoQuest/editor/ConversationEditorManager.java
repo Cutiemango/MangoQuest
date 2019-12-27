@@ -398,7 +398,6 @@ public class ConversationEditorManager
 			page.changeLine();
 		}
 		QuestUtil.checkOutOfBounds(page, book);
-		page = book.getLastEditingPage();
 		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 

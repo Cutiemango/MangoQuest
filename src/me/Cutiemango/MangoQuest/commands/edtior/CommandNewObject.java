@@ -38,7 +38,7 @@ public class CommandNewObject
 				addEvent(q, sender, args);
 				break;
 			case "stage":
-				addStage(q, sender, args);
+				addStage(q, sender);
 				break;
 			case "object":
 				addObject(q, sender, args);
@@ -62,43 +62,40 @@ public class CommandNewObject
 			QuestEditorManager.selectTriggerObjType(sender, type, stage, index);
 			return;
 		}
-		if (args.length >= 7)
+		TriggerObjectType obj = TriggerObjectType.valueOf(args[6]);
+		if (args.length == 7)
 		{
-			TriggerObjectType obj = TriggerObjectType.valueOf(args[6]);
-			switch(args.length)
+			String cmd = "mq e addnew evt " + type.toString() + " " + stage + " " + index + " " + obj.toString();
+			if (obj == TriggerObjectType.SEND_TITLE_AND_SUBTITLE)
 			{
-				case 7:
-					if (obj == TriggerObjectType.SEND_TITLE_AND_SUBTITLE)
-					{
-						EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING,
-								"mq e addnew evt " + type.toString() + " " + stage + " " + index + " " + obj.toString(), Syntax.of("S%S", I18n.locMsg("Syntax.TitleAndSubtitle"), "%")));
-						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.TitleAndSubtitle"));
-						return;
-					}
-					else if (obj == TriggerObjectType.TELEPORT)
-					{
-						EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING,
-								"mq e addnew evt " + type.toString() + " " + stage + " " + index + " " + obj.toString(), Syntax.of("S:D:D:D", I18n.locMsg("Syntax.Teleport"), ":")));
-						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.Teleport"));
-						return;
-					}
-					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e addnew evt " + type.toString() + " " + stage + " " + index + " " + obj.toString(), null));
-					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-					break;
-				default:
-					String s = QuestUtil.convertArgsString(args, 7);
-					if (s.equalsIgnoreCase("cancel"))
-					{
-						QuestEditorManager.editQuestTrigger(sender, type, stage);
-						return;
-					}
-					List<TriggerObject> list = q.getTriggerMap().containsKey(type) ? q.getTriggerMap().get(type) : new ArrayList<>();
-					list.add(index, new TriggerObject(obj, s, stage));
-					q.getTriggerMap().put(type, list);
-					QuestEditorManager.editQuestTrigger(sender, type, stage);
-					break;
+				EditorListenerHandler.register(sender,
+						new EditorListenerObject(ListeningType.STRING, cmd, Syntax.of("S%S", I18n.locMsg("Syntax.TitleAndSubtitle"), "%")));
+				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.TitleAndSubtitle"));
+				return;
 			}
-			return;
+			else
+				if (obj == TriggerObjectType.TELEPORT)
+				{
+					EditorListenerHandler.register(sender,
+							new EditorListenerObject(ListeningType.STRING, cmd, Syntax.of("S:D:D:D", I18n.locMsg("Syntax.Teleport"), ":")));
+					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.Teleport"));
+					return;
+				}
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, cmd, null));
+			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+		}
+		else
+		{
+			String s = QuestUtil.convertArgsString(args, 7);
+			if (s.equalsIgnoreCase("cancel"))
+			{
+				QuestEditorManager.editQuestTrigger(sender, type, stage);
+				return;
+			}
+			List<TriggerObject> list = q.getTriggerMap().containsKey(type) ? q.getTriggerMap().get(type) : new ArrayList<>();
+			list.add(index, new TriggerObject(obj, s, stage));
+			q.getTriggerMap().put(type, list);
+			QuestEditorManager.editQuestTrigger(sender, type, stage);
 		}
 	}
 	
@@ -110,14 +107,10 @@ public class CommandNewObject
 		if (t.hasIndex() && args.length == 5)
 		{
 			int index = Integer.parseInt(args[4]);
-			switch (t)
+			if (t == RequirementType.QUEST)
 			{
-				case QUEST:
-					QuestEditorManager.selectQuest(sender, "/mq e edit req " + t.toString() + " " + index);
-					((List<String>) q.getRequirements().get(t)).add("");
-					break;
-				default:
-					break;
+				QuestEditorManager.selectQuest(sender, "/mq e edit req " + t.toString() + " " + index);
+				((List<String>) q.getRequirements().get(t)).add("");
 			}
 		}
 		else if (t == RequirementType.FRIEND_POINT)
@@ -125,12 +118,11 @@ public class CommandNewObject
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPoint"));
 			EditorListenerHandler.register(sender,
 					new EditorListenerObject(ListeningType.STRING, "mq e edit req FRIEND_POINT", Syntax.of("N:D", I18n.locMsg("Syntax.FriendPoint"), ":")));
-			return;
 		}
 	}
 
 	// /mq e addnew stage
-	private static void addStage(Quest q, Player sender, String[] args)
+	private static void addStage(Quest q, Player sender)
 	{
 		List<SimpleQuestObject> l = new ArrayList<>();
 		l.add(new QuestObjectBreakBlock(Material.GRASS, 1));
@@ -146,7 +138,7 @@ public class CommandNewObject
 	{
 		if (args.length == 4)
 		{
-			int stage = 1;
+			int stage;
 			try
 			{
 				stage = Integer.parseInt(args[3]);

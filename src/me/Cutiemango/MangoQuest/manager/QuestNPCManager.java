@@ -29,7 +29,6 @@ public class QuestNPCManager
 	
 	public static void effectTask(QuestPlayerData pd)
 	{
-		
 		for (Entity e : pd.getPlayer().getNearbyEntities(16d, 4d, 16d))
 		{
 			if (CitizensAPI.getNPCRegistry().isNPC(e))

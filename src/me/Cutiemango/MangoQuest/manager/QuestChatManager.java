@@ -66,13 +66,11 @@ public class QuestChatManager
 	public static void info(CommandSender p, String s)
 	{
 		p.sendMessage(QuestStorage.prefix + " " + translateColor(s));
-		return;
 	}
 
 	public static void error(CommandSender p, String s)
 	{
 		p.sendMessage(translateColor("&c&lError> " + s));
-		return;
 	}
 	
 	public static void logCmd(Level lv, String msg)
@@ -85,7 +83,6 @@ public class QuestChatManager
 		info(p, I18n.locMsg("SyntaxError.IllegalArgument"));
 		info(p, I18n.locMsg("SyntaxError.ReqEntry") + req);
 		info(p, I18n.locMsg("SyntaxError.YourEntry") + entry);
-		return;
 	}
 	
 }

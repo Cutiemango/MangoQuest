@@ -34,7 +34,7 @@ public class TextAlignment
 		CHARACTER_SIZEMAP.put(UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS, 2.25D);
 	}
 
-	private String textToAlign = "";
+	private String textToAlign;
 	private String aligned = "";
 	private String left = "";
 	private int lineUsed;
@@ -81,7 +81,7 @@ public class TextAlignment
 					continue;
 				aligned += "\n";
 				lineUsed+=1;
-				if (lineUsed > MAXIUM_LINE_PER_PAGE && !usedup)
+				if (lineUsed > MAXIUM_LINE_PER_PAGE)
 					usedup = true;
 			}
 			else
@@ -93,7 +93,6 @@ public class TextAlignment
 				return;
 			}
 		}
-		return;
 	}
 
 	public double calculateCharSize(String s)
@@ -119,7 +118,6 @@ public class TextAlignment
 			}
 			size += getSize(UnicodeBlock.of(codepoint));
 			skipnext = false;
-			continue;
 		}
 		return size;
 	}
@@ -148,21 +146,18 @@ public class TextAlignment
 			size += getSize(UnicodeBlock.of(codepoint));
 			if (size >= getStandard(s))
 				return index;
-			continue;
 		}
 		return index;
 	}
 	
 	private double getSize(UnicodeBlock block)
 	{
-		if (CHARACTER_SIZEMAP.containsKey(block))
-			return CHARACTER_SIZEMAP.get(block);
-		else return 1.0D;
+		return CHARACTER_SIZEMAP.getOrDefault(block, 1.0D);
 	}
 
 	private String getLastAppliedColor(String s)
 	{
-		String color = "§0";
+		String color;
 		if (s.lastIndexOf("§") == -1)
 			return "§0";
 		if (ESCAPE_COLOR_CODES.contains(s.charAt(s.lastIndexOf("§") + 1)))

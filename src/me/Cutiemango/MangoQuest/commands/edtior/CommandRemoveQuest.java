@@ -28,10 +28,10 @@ public class CommandRemoveQuest
 			switch (args[2])
 			{
 				case "quest":
-					removeQuest(q, sender, args);
+					removeQuest(sender, args);
 					return;
 				case "confirm":
-					removeConfirm(q, sender, args);
+					removeConfirm(sender, args);
 					return;
 			}
 		}
@@ -74,12 +74,11 @@ public class CommandRemoveQuest
 					break;
 			}
 			QuestEditorManager.editQuest(sender);
-			return;
 		}
 
 	}
 
-	private static void removeConfirm(Quest q, Player sender, String[] args)
+	private static void removeConfirm(Player sender, String[] args)
 	{
 		if (args.length == 4)
 		{
@@ -87,7 +86,6 @@ public class CommandRemoveQuest
 			{
 				Quest target = QuestUtil.getQuest(args[3]);
 				QuestEditorManager.removeConfirmGUI(sender, target);
-				return;
 			}
 		}
 	}
@@ -115,7 +113,6 @@ public class CommandRemoveQuest
 			}
 			QuestEditorManager.editQuestRequirement(sender);
 			QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRemoved"));
-			return;
 		}
 	}
 	
@@ -134,12 +131,11 @@ public class CommandRemoveQuest
 				q.getTriggerMap().put(type, list);
 				QuestEditorManager.editQuestTrigger(sender, type, stage);
 				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRemoved"));
-				return;
 			}
 		}
 	}
 
-	private static void removeQuest(Quest q, Player sender, String[] args)
+	private static void removeQuest(Player sender, String[] args)
 	{
 		if (args.length == 4)
 		{
@@ -157,15 +153,12 @@ public class CommandRemoveQuest
 							QuestUtil.getData(pl).forceQuit(target, true);
 							break;
 						}
-						else
-							continue;
 					}
 				}
 				QuestConfigManager.getSaver().removeQuest(target);
 				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.QuestRemoved", target.getQuestName()));
 				QuestStorage.Quests.remove(args[3]);
 				QuestEditorManager.removeGUI(sender);
-				return;
 			}
 		}
 	}
@@ -175,7 +168,7 @@ public class CommandRemoveQuest
 	{
 		if (args.length == 4)
 		{
-			int stage = 1;
+			int stage;
 			try
 			{
 				stage = Integer.parseInt(args[3]);
@@ -189,7 +182,6 @@ public class CommandRemoveQuest
 			q.getStages().remove(stage - 1);
 			QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRemoved"));
 			QuestEditorManager.editQuestStages(sender);
-			return;
 		}
 	}
 
@@ -198,8 +190,8 @@ public class CommandRemoveQuest
 	{
 		if (args.length == 5)
 		{
-			int stage = 1;
-			int obj = 1;
+			int stage;
+			int obj;
 			try
 			{
 				stage = Integer.parseInt(args[3]);
@@ -214,7 +206,6 @@ public class CommandRemoveQuest
 			q.getStage(stage - 1).getObjects().remove(obj - 1);
 			QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRemoved"));
 			QuestEditorManager.editQuestObjects(sender, stage);
-			return;
 		}
 	}
 }

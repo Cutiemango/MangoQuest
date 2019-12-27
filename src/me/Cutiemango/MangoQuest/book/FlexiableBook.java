@@ -58,9 +58,7 @@ public class FlexiableBook
 	
 	public void removePage(int index)
 	{
-		if (pages.size() <= index)
-			return;
-		else
+		if (pages.size() > index)
 			pages.remove(index);
 	}
 	

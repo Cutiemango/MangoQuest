@@ -14,9 +14,9 @@ public class EditorListenerObject
 	}
 
 	private Syntax syntax;
-	private ListeningType type = ListeningType.STRING;
+	private ListeningType type;
 	// No "/" needed
-	private String command = "";
+	private String command;
 
 	public void execute(Player p, String obj)
 	{
@@ -29,7 +29,6 @@ public class EditorListenerObject
 		}
 		QuestUtil.executeCommandAsync(p, command + " " + obj);
 		EditorListenerHandler.currentListening.remove(p.getName());
-		return;
 	}
 
 	public ListeningType getType()
@@ -45,7 +44,6 @@ public class EditorListenerObject
 	public enum ListeningType
 	{
 		STRING,
-		ENTITY_TYPE,
 
 		LOCATION,
 		NPC_LEFT_CLICK,

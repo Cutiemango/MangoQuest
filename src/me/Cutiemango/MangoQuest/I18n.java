@@ -54,17 +54,12 @@ public class I18n
 	{
 		String format = bundle.getString(path);
 		format = QuestChatManager.translateColor(format);
-		if (format == null)
-			return path;
-		else
-			return format;
+		return format;
 	}
 
 	public static String locMsg(String path, String... args)
 	{
 		String format = bundle.getString(path);
-		if (format == null)
-			return path;
 		format = QuestChatManager.translateColor(format);
 		if (format.contains("%"))
 		{

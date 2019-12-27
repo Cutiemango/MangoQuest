@@ -30,7 +30,6 @@ public class QuestEditorCommand
 		if (args.length == 1)
 		{
 			QuestEditorManager.mainGUI(sender);
-			return;
 		}
 		else
 			if (args.length == 2)
@@ -96,7 +95,6 @@ public class QuestEditorCommand
 						break;
 				}
 				QuestEditorManager.exit(sender);
-				return;
 			}
 			else
 			{

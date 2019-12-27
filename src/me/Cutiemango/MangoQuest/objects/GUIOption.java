@@ -26,7 +26,7 @@ public class GUIOption
 	private String displayText;
 	private String hoverText;
 	private EnumMap<RequirementType, Object> requirementMap = new EnumMap<>(RequirementType.class);
-	private List<TriggerObject> clickEvent = new ArrayList<>();
+	private List<TriggerObject> clickEvent;
 	
 	public InteractiveText toInteractiveText(NPC npc)
 	{

@@ -20,7 +20,6 @@ public class CommandNewQuest
 		{
 			QuestEditorManager.edit(sender, new Quest());
 			QuestEditorManager.createQuest(sender);
-			return;
 		}
 		else
 			if (args.length > 2)
@@ -88,7 +87,6 @@ public class CommandNewQuest
 		{
 			QuestChatManager.error(p, I18n.locMsg("EditorMessage.NewQuest.Failed"));
 			QuestEditorManager.createQuest(p);
-			return;
 		}
 	}
 

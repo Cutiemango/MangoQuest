@@ -38,10 +38,10 @@ public class RequirementFailResult
 				s = I18n.locMsg("Requirements.NotMeet.Item") + QuestUtil.getItemName(item);
 				break;
 			case LEVEL:
-				s = I18n.locMsg("Requirements.NotMeet.Level") + (Integer) obj;
+				s = I18n.locMsg("Requirements.NotMeet.Level") + obj;
 				break;
 			case MONEY:
-				s = I18n.locMsg("Requirements.NotMeet.Money") + (Double) obj;
+				s = I18n.locMsg("Requirements.NotMeet.Money") + obj;
 				break;
 			case FRIEND_POINT:
 				s = I18n.locMsg("Requirements.NotMeet.FriendPoint");
@@ -56,7 +56,7 @@ public class RequirementFailResult
 				s = I18n.locMsg("Requirements.NotMeet.SkillAPIClass") + obj.toString();
 				break;
 			case SKILLAPI_LEVEL:
-				s = I18n.locMsg("Requirements.NotMeet.SkillAPILevel") + (Integer) obj;
+				s = I18n.locMsg("Requirements.NotMeet.SkillAPILevel") + obj;
 				break;
 
 		}

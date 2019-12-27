@@ -39,10 +39,7 @@ public class EditorListenerHandler
 				QuestChatManager.info(p, I18n.locMsg("EditorMessage.YourEntry", msg));
 			obj.execute(p, msg);
 			event.setCancelled(true);
-			return;
 		}
-		else
-			return;
 	}
 
 	public static void onPlayerInteract(Player p, Action act, ItemStack is, Cancellable event)
@@ -59,11 +56,8 @@ public class EditorListenerHandler
 					event.setCancelled(true);
 					obj.execute(p, "item");
 				}
-				else
-					return;
 			}
 		}
-		return;
 	}
 
 	public static void onBlockBreak(Player p, Block b, Cancellable event)
@@ -77,8 +71,6 @@ public class EditorListenerHandler
 			DebugHandler.log(5, "[Listener] Object of listening type " + obj.getType().toString() + " triggered. Block=" + b.toString());
 			event.setCancelled(true);
 		}
-		else
-			return;
 	}
 
 	public static void onEntityDamage(Player p, Entity e, Cancellable event)
@@ -108,7 +100,6 @@ public class EditorListenerHandler
 					else
 						obj.execute(p, QuestUtil.translate(e.getType()));
 				}
-		return;
 	}
 
 	public static void onNPCLeftClick(Player p, NPC npc, Cancellable event)
@@ -129,7 +120,6 @@ public class EditorListenerHandler
 			DebugHandler.log(5, "[Listener] Object triggered, but the type was " + obj.getType().toString());
 		}
 		event.setCancelled(true);
-		return;
 	}
 
 	public static void onInventoryClose(Player p, Inventory inv, InventoryView view)
@@ -144,9 +134,7 @@ public class EditorListenerHandler
 		List<ItemStack> list = new ArrayList<>();
 		for (ItemStack is : inv.getContents())
 		{
-			if (is == null || is.getType().equals(Material.AIR))
-				continue;
-			else
+			if (is != null && !is.getType().equals(Material.AIR))
 				list.add(is);
 		}
 
@@ -157,7 +145,6 @@ public class EditorListenerHandler
 		}
 		unreigster(p);
 		QuestChatManager.info(p, I18n.locMsg("EditorMessage.ItemSaved"));
-		return;
 	}
 
 	public static void register(Player p, EditorListenerObject obj)

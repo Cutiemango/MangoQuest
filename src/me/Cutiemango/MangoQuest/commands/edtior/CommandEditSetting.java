@@ -59,14 +59,12 @@ public class CommandEditSetting
 		{
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit perm", null));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-			return;
 		}
 		else
 			if (args.length == 4)
 			{
 				q.setUsePermission(Boolean.parseBoolean(args[3]));
 				QuestEditorManager.editQuest(sender);
-				return;
 			}
 	}
 
@@ -76,14 +74,12 @@ public class CommandEditSetting
 		{
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit world", Syntax.of("W", I18n.locMsg("Syntax.World"), "")));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-			return;
 		}
 		else
 			if (args.length == 4)
 			{
 				q.setWorldLimit(Bukkit.getWorld(args[3]));
 				QuestEditorManager.editQuest(sender);
-				return;
 			}
 	}
 
@@ -93,14 +89,12 @@ public class CommandEditSetting
 		{
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit limit", null));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-			return;
 		}
 		else
 			if (args.length == 4)
 			{
 				q.setTimeLimited(Boolean.parseBoolean(args[3]));
 				QuestEditorManager.editQuest(sender);
-				return;
 			}
 	}
 	
@@ -110,7 +104,6 @@ public class CommandEditSetting
 		{
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit timelimit", Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-			return;
 		}
 		else
 			if (args.length == 4)
@@ -118,7 +111,6 @@ public class CommandEditSetting
 				String mili = Integer.toString(Integer.parseInt(args[3]) * 1000);
 				q.setTimeLimit(Long.parseLong(mili));
 				QuestEditorManager.editQuest(sender);
-				return;
 			}
 	}
 	
@@ -148,7 +140,6 @@ public class CommandEditSetting
 	{
 		q.setQuitable(Boolean.parseBoolean(args[3]));
 		QuestEditorManager.editQuest(sender);
-		return;
 	}
 	
 	private static void editRedo(Quest q, Player sender, String[] args)
@@ -157,14 +148,12 @@ public class CommandEditSetting
 		{
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit redo", null));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-			return;
 		}
 		else
 			if (args.length == 4)
 			{
 				q.setRedoable(Boolean.parseBoolean(args[3]));
 				QuestEditorManager.editQuest(sender);
-				return;
 			}
 	}
 	
@@ -175,7 +164,6 @@ public class CommandEditSetting
 		{
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit redodelay", Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-			return;
 		}
 		else
 			if (args.length == 4)
@@ -183,7 +171,6 @@ public class CommandEditSetting
 				String mili = Integer.toString(Integer.parseInt(args[3]));
 				q.setRedoDelay(Long.parseLong(mili) * 1000);
 				QuestEditorManager.editQuest(sender);
-				return;
 			}
 	}
 }

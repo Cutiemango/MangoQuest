@@ -4,7 +4,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
@@ -27,41 +26,35 @@ public abstract class ItemObject extends NumerableObject
 	@Override
 	public boolean receiveCommandInput(Player sender, String type, String obj)
 	{
-		switch (type)
+		if (type.equals("item"))
 		{
-			case "item":
-				ItemStack item = Main.getInstance().handler.getItemInMainHand(sender);
-				if (item == null || item.getType() == Material.AIR)
-				{
-					QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ItemInHand"));
-					return false;
-				}
-				else
-				{
-					setItem(item);
-					QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ItemRegistered"));
-				}
-				break;
-			default:
-				return super.receiveCommandInput(sender, type, obj);
+			ItemStack item = sender.getInventory().getItemInMainHand();
+			if (item == null || item.getType() == Material.AIR)
+			{
+				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ItemInHand"));
+				return false;
+			}
+			else
+			{
+				setItem(item);
+				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ItemRegistered"));
+				return true;
+			}
 		}
-		return true;
+		return super.receiveCommandInput(sender, type, obj);
 	}
 	
 	@Override
 	public EditorListenerObject createCommandOutput(Player sender, String command, String type)
 	{
-		EditorListenerObject obj = null;
-		switch (type)
+		EditorListenerObject obj;
+		if (type.equals("item"))
 		{
-			case "item":
-				obj = new EditorListenerObject(ListeningType.ITEM, command, null);
-				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.RightClick"));
-				break;
-			default:
-				return super.createCommandOutput(sender, command, type);
+			obj = new EditorListenerObject(ListeningType.ITEM, command, null);
+			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.RightClick"));
+			return obj;
 		}
-		return obj;
+		return super.createCommandOutput(sender, command, type);
 	}
 
 }

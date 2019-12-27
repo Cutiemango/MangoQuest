@@ -79,7 +79,7 @@ public class AdminCommand implements CommandExecutor
 					if (args.length < 4)
 						return false;
 					q = QuestUtil.getQuest(args[2]);
-					Integer obj = Integer.parseInt(args[3]);
+					int obj = Integer.parseInt(args[3]);
 					if (q == null)
 					{
 						QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));

@@ -28,10 +28,9 @@ public class TextComponentFactory
 		return t;
 	}
 
-	public static TextComponent regClickCmdEvent(TextComponent t, String command)
+	public static void regClickCmdEvent(TextComponent t, String command)
 	{
 		t.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
-		return t;
 	}
 
 	public static TextComponent regHoverEvent(String text, String s)

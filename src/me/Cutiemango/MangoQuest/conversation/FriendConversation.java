@@ -18,7 +18,7 @@ public class FriendConversation extends QuestConversation
 		requireFriendPoint = point;
 	}
 	
-	private int requireFriendPoint = 0;
+	private int requireFriendPoint;
 	
 	public int getReqPoint()
 	{

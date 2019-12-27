@@ -28,7 +28,7 @@ public class RewardCache
 		reward = q.getQuestReward();
 	}
 	
-	private Set<Integer> choice = new HashSet<Integer>();
+	private Set<Integer> choice = new HashSet<>();
 	private Quest quest;
 	private QuestReward reward;
 	private Player owner;

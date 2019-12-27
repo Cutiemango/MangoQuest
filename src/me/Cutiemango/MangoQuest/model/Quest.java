@@ -355,10 +355,10 @@ public class Quest
 	@Override
 	public Quest clone()
 	{
-		Quest q = new Quest(internalID, questName, new ArrayList<String>(outline), reward, new ArrayList<QuestStage>(stages), questNPC);
-		q.setRequirements(new EnumMap<RequirementType, Object>(requirements));
+		Quest q = new Quest(internalID, questName, new ArrayList<>(outline), reward, new ArrayList<>(stages), questNPC);
+		q.setRequirements(new EnumMap<>(requirements));
 		q.registerVersion(version);
-		q.setTriggers(new EnumMap<TriggerType, List<TriggerObject>>(triggerMap));
+		q.setTriggers(new EnumMap<>(triggerMap));
 		q.registerSettings(setting);
 		return q;
 	}
@@ -377,8 +377,6 @@ public class Quest
 					pd.forceQuit(q, true);
 					break;
 				}
-				else
-					continue;
 			}
 		}
 		QuestStorage.Quests.put(q.getInternalID(), q);

@@ -123,16 +123,6 @@ public class PluginHooker
 	{
 		return economy != null;
 	}
-
-	public Vault getVault()
-	{
-		return vault;
-	}
-
-	public ShopkeepersPlugin getShopkeepers()
-	{
-		return shopkeepers;
-	}
 	
 	public UnrealShop getUnrealShop()
 	{

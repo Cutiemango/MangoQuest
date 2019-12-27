@@ -41,8 +41,7 @@ public class ConversationProgress
 	protected boolean isFinished;
 	
 	private int taskID = 0;
-	private int page = 0;
-	
+
 	protected boolean rushed = false;
 	protected boolean disableRush = false;
 
@@ -125,7 +124,6 @@ public class ConversationProgress
 			{
 				update();
 				nextAction();
-				return;
 			}
 		}.runTaskLater(Main.getInstance(), 25L).getTaskId();
 	}
@@ -202,6 +200,7 @@ public class ConversationProgress
 
 	public void update()
 	{
+		int page = 0;
 		for (int i = 0; i <= page; i++)
 		{
 			if (page > history.size() - 1)

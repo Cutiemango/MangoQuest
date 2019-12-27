@@ -21,7 +21,6 @@ public class CommandNewConv
 		if (args.length == 2){
 			ConversationEditorManager.edit(sender, new QuestConversation());
 			ConversationEditorManager.createConversation(sender);
-			return;
 		}
 		else if (args.length > 2)
 		{
@@ -37,7 +36,7 @@ public class CommandNewConv
 					setConvNPC(sender, args);
 					break;
 				case "create":
-					create(sender, args);
+					create(sender);
 					break;
 			}
 		}
@@ -96,7 +95,7 @@ public class CommandNewConv
 		ConversationEditorManager.createConversation(p);
 	}
 	
-	private static void create(Player p, String[] args)
+	private static void create(Player p)
 	{
 		QuestConversation conv = ConversationEditorManager.getEditingConversation(p);
 		if (conv.getInternalID() != null && conv.getName() != null && conv.getNPC() != null)

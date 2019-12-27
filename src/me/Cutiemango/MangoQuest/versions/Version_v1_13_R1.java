@@ -59,6 +59,8 @@ public class Version_v1_13_R1 implements VersionHandler
 
 		// Finally to use written API.
 		meta.spigot().setPages(list.toArray(new BaseComponent[][] {}));
+		meta.setAuthor("MsngoQuest");
+		meta.setTitle("MsngoQuest");
 		book.setItemMeta(meta);
 		
 		int slot = p.getInventory().getHeldItemSlot();
@@ -138,17 +140,6 @@ public class Version_v1_13_R1 implements VersionHandler
 		return ((CraftPlayer) p).getHandle().getScoreboardTags().contains(s);
 	}
 
-	@Override
-	public ItemStack getItemInMainHand(Player p)
-	{
-		return p.getInventory().getItemInMainHand();
-	}
-	
-	@Override
-	public void setItemInMainHand(Player p, ItemStack is)
-	{
-		p.getInventory().setItemInMainHand(is);
-	}
 	
 	@Override
 	public ItemStack addGUITag(ItemStack item)

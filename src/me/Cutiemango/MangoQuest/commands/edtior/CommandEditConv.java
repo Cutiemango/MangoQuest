@@ -64,7 +64,6 @@ public class CommandEditConv
 				editQuest((StartTriggerConversation) conv, sender, args);
 				break;
 		}
-		return;
 
 	}
 
@@ -74,7 +73,6 @@ public class CommandEditConv
 		if (args.length == 3)
 		{
 			ConversationEditorManager.selectConvType(sender);
-			return;
 		}
 		else
 			if (args.length == 4)
@@ -97,7 +95,6 @@ public class CommandEditConv
 						break;
 				}
 				ConversationEditorManager.editConversation(sender);
-				return;
 			}
 	}
 
@@ -107,14 +104,12 @@ public class CommandEditConv
 		{
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce edit name", null));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-			return;
 		}
 		else
 			if (args.length == 4)
 			{
 				conv.setName(args[3]);
 				ConversationEditorManager.editConversation(sender);
-				return;
 			}
 	}
 
@@ -124,14 +119,12 @@ public class CommandEditConv
 		{
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, "mq ce edit npc", Syntax.of("I", "[NPCID]", "")));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ClickNPC"));
-			return;
 		}
 		else
 			if (args.length == 4)
 			{
 				conv.setNPC(CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[3])));
 				ConversationEditorManager.editConversation(sender);
-				return;
 			}
 	}
 
@@ -141,7 +134,6 @@ public class CommandEditConv
 		{
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce edit fconvp", Syntax.of("D", I18n.locMsg("Syntax.Number"), "")));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-			return;
 		}
 		else
 			if (args.length == 4)
@@ -150,7 +142,6 @@ public class CommandEditConv
 					((FriendConversation) conv).setReqPoint(Integer.parseInt(args[3]));
 
 				ConversationEditorManager.editConversation(sender);
-				return;
 			}
 	}
 
@@ -189,10 +180,7 @@ public class CommandEditConv
 	private static void editQuest(StartTriggerConversation conv, Player sender, String[] args)
 	{
 		if (args.length == 3)
-		{
 			QuestEditorManager.selectQuest(sender, "/mq ce edit quest");
-			return;
-		}
 		else
 			if (args.length == 4)
 			{
@@ -200,7 +188,6 @@ public class CommandEditConv
 				conv.setQuest(q);
 				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ObjectRegistered", q.getQuestName()));
 				ConversationEditorManager.editConversation(sender);
-				return;
 			}
 	}
 
@@ -211,7 +198,6 @@ public class CommandEditConv
 		{
 			int index = Integer.parseInt(args[3]);
 			ConversationEditorManager.selectActionType(sender, type, "edit", index);
-			return;
 		}
 		else
 			if (args.length == 5)
@@ -312,7 +298,6 @@ public class CommandEditConv
 							break;
 					}
 					ConversationEditorManager.editConversation(sender);
-					return;
 				}
 	}
 }

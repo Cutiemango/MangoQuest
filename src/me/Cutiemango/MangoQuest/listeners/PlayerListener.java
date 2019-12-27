@@ -103,7 +103,6 @@ public class PlayerListener
 		}
 		QuestBookGUIManager.openNPCInfo(p, npc, false);
 		DebugHandler.log(4, "[Listener] Opening NPC info(id=" + npc.getId() + ") for " + p.getName() + "...");
-		return;
 	}
 
 	public static void onEntityDeath(Entity e)

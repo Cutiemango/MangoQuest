@@ -1,14 +1,14 @@
 package me.Cutiemango.MangoQuest.conversation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import org.bukkit.entity.Player;
-import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.entity.Player;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class QuestChoice
 {
@@ -16,7 +16,7 @@ public class QuestChoice
 	public static class Choice
 	{
 		private String s;
-		private List<QuestBaseAction> act = new ArrayList<>();
+		private List<QuestBaseAction> act;
 		private HashMap<Integer, Integer> fpReq = new HashMap<>();
 
 		public Choice(String c, List<QuestBaseAction> action)

@@ -210,7 +210,6 @@ public class QuestIO
 	
 	public void removeSection(String path){
 		config.set(path, null);
-		return;
 	}
 
 }

@@ -16,13 +16,10 @@ public class ConversationCommand
 {
 
 	// Command: /mq conv args[1] args[2]
-	public static void execute(Player sender, String args[])
+	public static void execute(Player sender, String[] args)
 	{
 		if (args.length == 1)
-		{
 			sendHelp(sender);
-			return;
-		}
 		else
 			if (args.length >= 2)
 			{
@@ -92,13 +89,11 @@ public class ConversationCommand
 							cp.getCurrentPage().add(trigger.getDenyMessage()).changeLine();
 							cp.getActionQueue().addAll(trigger.getDenyActions());
 							cp.nextAction();
-							return;
 						}
 					default:
 						break;
 				}
 				sendHelp(sender);
-				return;
 			}
 	}
 

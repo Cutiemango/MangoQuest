@@ -108,12 +108,11 @@ public class QuestBaseAction
 					public void run()
 					{
 						cp.nextAction();
-						return;
 					}
-				}.runTaskLater(Main.getInstance(), Long.parseLong(target.toString()));
+				}.runTaskLater(Main.getInstance(), Long.parseLong(target));
 				break;
 			case FINISH:
-				cp.finish(Boolean.valueOf(target));
+				cp.finish(Boolean.parseBoolean(target));
 				break;
 			case TAKE_QUEST:
 				if (!(cp.getConversation() instanceof StartTriggerConversation))

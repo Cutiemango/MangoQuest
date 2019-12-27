@@ -150,7 +150,7 @@ public class QuestEditorManager
 	{
 		if (!checkEditorMode(p, true))
 			return;
-		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
+		Quest q = getCurrentEditingQuest(p);
 		EditorListenerHandler.unreigster(p);
 		QuestBookPage p1 = new QuestBookPage();
 		p1.add(I18n.locMsg("QuestEditor.BasicInfo")).changeLine();
@@ -234,7 +234,7 @@ public class QuestEditorManager
 			p3.add(out).changeLine();
 		}
 		p3.changeLine();
-		p3.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit outline")).changeLine();;
+		p3.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit outline")).changeLine();
 
 		QuestBookPage p4 = new QuestBookPage();
 		p4.add(I18n.locMsg("QuestEditor.Reward")).changeLine();
@@ -322,7 +322,7 @@ public class QuestEditorManager
 				
 				
 				page.add(new InteractiveText(obj.getObjType().toCustomString())
-						.showText(QuestChatManager.toNormalDisplay(I18n.locMsg("QuestEditor.EditTriggerObjectType") + obj.getObject().toString()))).endNormally();
+						.showText(QuestChatManager.toNormalDisplay(I18n.locMsg("QuestEditor.EditTriggerObjectType") + obj.getObject()))).endNormally();
 
 				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew evt " + type.toString() + " " + stage + " " + (realIndex+1) + " ")).endNormally();
 				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit evt " + type.toString() + " " + stage + " " + realIndex + " " + obj.getObjType().toString())).endNormally();
@@ -401,7 +401,6 @@ public class QuestEditorManager
 		p1.changeLine();
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e edit stage " + stage)).changeLine();
 		QuestBookGUIManager.openBook(p, p1);
-		return;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -415,7 +414,7 @@ public class QuestEditorManager
 		p1.add(I18n.locMsg("QuestEditor.EditRequirement")).changeLine();
 		for (RequirementType t : RequirementType.values())
 		{
-			int i = 0;
+			int i;
 			switch (t)
 			{
 				case ITEM:
@@ -555,7 +554,6 @@ public class QuestEditorManager
 			page.changeLine();
 		}
 		QuestUtil.checkOutOfBounds(page, book);
-		page = book.getLastEditingPage();
 		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 
@@ -589,7 +587,5 @@ public class QuestEditorManager
 			inv.addItem(list.toArray(new ItemStack[list.size()]));
 			p.openInventory(inv);
 		}
-		else
-			return;
 	}
 }

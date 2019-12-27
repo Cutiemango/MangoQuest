@@ -29,12 +29,11 @@ public class QuestCommand
 {
 
 	// Command: /mq quest args[1] args[2] args[3]
-	public static void execute(Player sender, String args[])
+	public static void execute(Player sender, String[] args)
 	{
 		if (args.length == 1)
 		{
 			sendHelp(sender);
-			return;
 		}
 		else
 			if (args.length >= 2)
@@ -48,7 +47,7 @@ public class QuestCommand
 							QuestBookGUIManager.openJourneyMenu(sender);
 							return;
 						}
-						else if (args.length >= 3)
+						else
 						{
 							switch (args[2])
 							{
@@ -195,7 +194,6 @@ public class QuestCommand
 						return;
 					default:
 						sendHelp(sender);
-						return;
 				}
 			}
 	}

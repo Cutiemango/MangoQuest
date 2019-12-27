@@ -32,20 +32,18 @@ public class QuestNPC
 	{
 		Random random = new Random();
 		int r = 0;
-		HashSet<String> set = new HashSet<>();
+		HashSet<String> set;
 		if (fpoint == 0)
 			set = friendMessageMap.get(0);
 		else
 		{
 			for (int j : friendMessageMap.keySet())
 			{
-				if (fpoint < 0 && j < 0 && j > fpoint && r > j)
+				if (j < 0 && j > fpoint && r > j)
 					r = j;
 				else
 					if (fpoint > 0 && fpoint >= j && j > r)
 						r = j;
-					else
-						continue;
 			}
 			set = friendMessageMap.get(r);
 		}

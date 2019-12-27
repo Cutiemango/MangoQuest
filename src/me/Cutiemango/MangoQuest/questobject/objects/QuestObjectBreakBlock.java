@@ -91,32 +91,26 @@ public class QuestObjectBreakBlock extends NumerableObject implements EditorObje
 	@Override
 	public boolean receiveCommandInput(Player sender, String type, String obj)
 	{
-		switch (type)
+		if (type.equals("block"))
 		{
-			case "block":
-				Material mat = Material.getMaterial(obj);
-				setType(mat);
-				DebugHandler.log(5, "Material registered: " + block.toString());
-				break;
-			default:
-				return super.receiveCommandInput(sender, type, obj);
+			Material mat = Material.getMaterial(obj);
+			setType(mat);
+			DebugHandler.log(5, "Material registered: " + block.toString());
+			return true;
 		}
-		return true;
+		return super.receiveCommandInput(sender, type, obj);
 	}
 
 	@Override
 	public EditorListenerObject createCommandOutput(Player sender, String command, String type)
 	{
-		EditorListenerObject obj = null;
-		switch (type)
+		EditorListenerObject obj;
+		if (type.equals("block"))
 		{
-			case "block":
-				obj = new EditorListenerObject(ListeningType.BLOCK, command, null);
-				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.BreakBlock"));
-				break;
-			default:
-				return super.createCommandOutput(sender, command, type);
+			obj = new EditorListenerObject(ListeningType.BLOCK, command, null);
+			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.BreakBlock"));
+			return obj;
 		}
-		return obj;
+		return super.createCommandOutput(sender, command, type);
 	}
 }

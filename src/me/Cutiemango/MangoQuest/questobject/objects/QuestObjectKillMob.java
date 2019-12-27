@@ -92,7 +92,9 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 			return;
 		mtmMob = m;
 		customName = m.getDisplayName().get();
-		type = EntityType.valueOf(m.getEntityType().toUpperCase());
+		if (mtmMob.getEntityType().contains("BABY"))
+			isBaby = true;
+		type = EntityType.valueOf(mtmMob.getEntityType().replace("BABY_", "").toUpperCase());
 	}
 
 	public void setType(EntityType t)
@@ -167,13 +169,8 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 			mtmMob = Main.getHooker().getMythicMob(id);
 			customName = mtmMob.getDisplayName().get();
 			if (mtmMob.getEntityType().contains("BABY"))
-			{
 				isBaby = true;
-				String s = mtmMob.getEntityType().replace("BABY_", "").toUpperCase();
-				type = EntityType.valueOf(s);
-			}
-			else
-				type = EntityType.valueOf(mtmMob.getEntityType().toUpperCase());
+			type = EntityType.valueOf(mtmMob.getEntityType().replace("BABY_", "").toUpperCase());
 		}
 		else
 			if (config.getString(path + "MobName") != null)
@@ -211,8 +208,6 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 				setCustomName(obj);
 				break;
 			case "mobtype":
-				if (EntityType.valueOf(obj) == null)
-					return false;
 				setType(EntityType.valueOf(obj));
 				break;
 			case "mtmmob":
@@ -240,7 +235,7 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 	@Override
 	public EditorListenerObject createCommandOutput(Player sender, String command, String type)
 	{
-		EditorListenerObject obj = null;
+		EditorListenerObject obj;
 		switch (type)
 		{
 			case "mobtype":

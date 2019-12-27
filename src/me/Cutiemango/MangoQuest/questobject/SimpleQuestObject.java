@@ -66,7 +66,7 @@ public abstract class SimpleQuestObject
 				text.addExtra(TextComponentFactory.convertItemHoverEvent((ItemStack) args[i], isFinished));
 			else
 				if (args[i] instanceof Integer)
-					text.addExtra(color + Integer.toString((Integer) args[i]));
+					text.addExtra(color + args[i]);
 				else
 					if (args[i] instanceof NPC)
 					{
@@ -87,12 +87,12 @@ public abstract class SimpleQuestObject
 								{
 									text.addExtra(
 											TextComponentFactory.convertLocHoverEvent((String) args[i], (Location) args[i + 1], isFinished));
-									left.replace("%" + Integer.toString(i + 1), "");
+									left = left.replace("%" + (i + 1), "");
 								}
 								else
 								{
 									if (isFinished)
-										text.addExtra(color + (String) args[i]);
+										text.addExtra(color + args[i]);
 									else
 										text.addExtra(color + QuestChatManager.translateColor((String) args[i]));
 								}

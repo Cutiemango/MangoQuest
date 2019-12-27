@@ -71,7 +71,6 @@ public class QuestObjectProgress
 			else
 				ConversationManager.openConversation(p, cp);
 		}
-		return;
 	}
 
 	public SimpleQuestObject getObject()

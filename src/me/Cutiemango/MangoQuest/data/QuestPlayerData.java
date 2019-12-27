@@ -1,24 +1,18 @@
 package me.Cutiemango.MangoQuest.data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+
+import me.Cutiemango.MangoQuest.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
-import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestIO;
-import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.ConfigSettings;
-import me.Cutiemango.MangoQuest.DebugHandler;
-import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.event.QuestFinishEvent;
@@ -136,7 +130,7 @@ public class QuestPlayerData
 			for (String s : save.getStringList("FinishedConversation"))
 			{
 				QuestConversation qc = ConversationManager.getConversation(s);
-				if (qc != null && !finishedConversations.contains(qc))
+				if (qc != null)
 					finishedConversations.add(qc);
 			}
 		}
@@ -261,17 +255,16 @@ public class QuestPlayerData
 
 	public boolean checkStartConv(Quest q)
 	{
-		if (ConversationManager.getStartConversation(q) != null)
+		if (ConversationManager.getStartConversation(q) == null)
+			return true;
+		StartTriggerConversation conv = ConversationManager.getStartConversation(q);
+		if (!hasFinished(conv))
 		{
-			StartTriggerConversation conv = ConversationManager.getStartConversation(q);
-			if (!hasFinished(conv))
-			{
-				if (ConversationManager.isInConvProgress(p, conv))
-					ConversationManager.openConversation(p, ConversationManager.getConvProgress(p));
-				else
-					ConversationManager.startConversation(p, conv);
-				return false;
-			}
+			if (ConversationManager.isInConvProgress(p, conv))
+				ConversationManager.openConversation(p, ConversationManager.getConvProgress(p));
+			else
+				ConversationManager.startConversation(p, conv);
+			return false;
 		}
 		return true;
 	}
@@ -316,7 +309,6 @@ public class QuestPlayerData
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.ForceTakeQuest", q.getQuestName()));
 		DebugHandler.log(3, "[Listener] Player " + p.getName() + " accepted a new quest " + q.getQuestName());
 		Bukkit.getPluginManager().callEvent(new QuestTakeEvent(p, q));
-		return;
 	}
 
 	public void forceNextStage(Quest q, boolean msg)
@@ -328,7 +320,6 @@ public class QuestPlayerData
 		if (msg)
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.ForceNextStage", q.getQuestName()));
 		DebugHandler.log(3, "[Listener] Player " + p.getName() + "'s quest stage of quest " + q.getQuestName() + " shifted.");
-		return;
 	}
 
 	public void forceFinishObj(Quest q, int id, boolean msg)
@@ -344,7 +335,6 @@ public class QuestPlayerData
 			if (msg)
 				QuestChatManager.info(p, I18n.locMsg("CommandInfo.ForceFinishObject", qop.getObject().toPlainText()));
 			DebugHandler.log(3, "[Listener] Player " + p.getName() + "'s quest object of quest " + q.getQuestName() + " finished");
-			return;
 		}
 	}
 
@@ -358,7 +348,6 @@ public class QuestPlayerData
 			QuestChatManager.info(p, I18n.locMsg("CommandInfo.ForceFinishQuest", q.getQuestName()));
 		DebugHandler.log(3, "[Listener] Player " + p.getName() + "'s quest " + q.getQuestName() + " finished");
 		Bukkit.getPluginManager().callEvent(new QuestFinishEvent(p, q));
-		return;
 	}
 
 	public void forceQuit(Quest q, boolean msg)
@@ -370,7 +359,6 @@ public class QuestPlayerData
 		if (msg)
 			QuestChatManager.error(p, I18n.locMsg("CommandInfo.ForceQuitQuest", q.getQuestName()));
 		DebugHandler.log(3, "[Listener] Player " + p.getName() + " quitted quest " + q.getQuestName());
-		return;
 	}
 
 	public void quitQuest(Quest q)
@@ -380,257 +368,223 @@ public class QuestPlayerData
 
 	public List<QuestProgress> getNPCtoTalkWith(NPC npc)
 	{
-		List<QuestProgress> l = new ArrayList<>();
-		for (QuestProgress qp : currentQuests)
-		{
-			for (QuestObjectProgress qop : qp.getCurrentObjects())
-			{
-				if (qop.getObject() instanceof QuestObjectTalkToNPC && ((NPCObject) qop.getObject()).getTargetNPC().equals(npc) && !qop.isFinished())
-					l.add(qp);
-			}
-		}
-		return l;
+		ArrayList<QuestProgress> all = new ArrayList<>();
+		currentQuests.stream()
+				.filter(qp -> qp.getCurrentObjects().stream().anyMatch(qop -> checkNPC(qop, npc)))
+				.forEach(all::add);
+		return all;
 	}
 
 	public boolean isNearNPC(NPC npc)
 	{
 		if (npc == null || npc.getStoredLocation() == null)
 			return true;
-		if (npc.getStoredLocation().distance(p.getLocation()) > 20)
-			return false;
-		else
-			return true;
+		return npc.getStoredLocation().distance(p.getLocation()) < 20;
+	}
+	
+	public boolean checkPlayerInWorld(Quest q)
+	{
+		return q.hasWorldLimit() ? p.getWorld().getName().equals(q.getWorldLimit().getName()) : true;
+	}
+	
+	public void objectSuccess(QuestProgress qp, QuestObjectProgress qop)
+	{
+		qop.setProgress(qop.getProgress() + 1);
+		new BukkitRunnable()
+		{
+			@Override
+			public void run()
+			{
+				checkFinished(qp, qop);
+			}
+		}.runTaskLater(Main.getInstance(), 1L);
 	}
 
 	public void breakBlock(Material m)
 	{
-		for (Iterator<QuestProgress> it = currentQuests.iterator(); it.hasNext();)
-		{
-			QuestProgress qp = it.next();
-			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
-				continue;
-			for (Iterator<QuestObjectProgress> iterator = qp.getCurrentObjects().iterator(); iterator.hasNext();)
-			{
-				QuestObjectProgress qop = iterator.next();
-				if (qop.isFinished())
-					continue;
-				if (qop.getObject() instanceof QuestObjectBreakBlock)
-				{
-					QuestObjectBreakBlock o = (QuestObjectBreakBlock) qop.getObject();
-					if (o.getType().equals(m))
-					{
-						qop.setProgress(qop.getProgress() + 1);
-						this.checkFinished(qp, qop);
-						continue;
-					}
-				}
-			}
-		}
+		currentQuests.stream()
+			.filter(qp -> checkPlayerInWorld(qp.getQuest()))
+			.forEach(qp ->
+				qp.getCurrentObjects().stream()
+					.filter(qop -> checkBlock(qop, m))
+					.collect(Collectors.toList())
+					.forEach(qop -> objectSuccess(qp, qop)));
+	}
+
+	private boolean checkBlock(QuestObjectProgress qop, Material m)
+	{
+		if (qop.isFinished() || !(qop.getObject() instanceof QuestObjectBreakBlock))
+			return false;
+		return ((QuestObjectBreakBlock) qop.getObject()).getType() == m;
 	}
 
 	public void talkToNPC(NPC npc)
 	{
-		for (Iterator<QuestProgress> it = currentQuests.iterator(); it.hasNext();)
+		currentQuests.stream()
+			.filter(qp -> checkPlayerInWorld(qp.getQuest()))
+			.forEach(qp ->
+				qp.getCurrentObjects().stream()
+					.filter(qop -> checkNPC(qop, npc))
+					.collect(Collectors.toList())
+					.forEach(qop -> checkFinished(qp, qop)));
+	}
+
+	private boolean checkNPC(QuestObjectProgress qop, NPC npc)
+	{
+		if (qop.isFinished() || !(qop.getObject() instanceof QuestObjectTalkToNPC))
+			return false;
+		return ((QuestObjectTalkToNPC) qop.getObject()).getTargetNPC().getId() == npc.getId();
+	}
+	
+	// Checks whether the player has submitted a correct item
+	// Returns true if submitted at least 1 item.
+	private boolean checkItem(NPC npc, QuestObjectProgress qop)
+	{
+		if (qop.isFinished() || !(qop.getObject() instanceof QuestObjectDeliverItem))
+			return false;
+		QuestObjectDeliverItem o = (QuestObjectDeliverItem) qop.getObject();
+		ItemStack itemToDeliver = p.getInventory().getItemInMainHand();
+		int amountNeeded = o.getAmount() - qop.getProgress();
+		if (o.getTargetNPC().equals(npc))
 		{
-			QuestProgress qp = it.next();
-			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
-				continue;
-			for (Iterator<QuestObjectProgress> iterator = qp.getCurrentObjects().iterator(); iterator.hasNext();)
+			if (o.getItem().isSimilar(itemToDeliver) || (ConfigSettings.USE_WEAK_ITEM_CHECK && QuestValidater.weakItemCheck(itemToDeliver, o.getItem())))
 			{
-				QuestObjectProgress qop = iterator.next();
-				if (qop.isFinished())
-					continue;
-				if (qop.getObject() instanceof QuestObjectTalkToNPC)
+				if (itemToDeliver.getAmount() > amountNeeded)
 				{
-					if (((QuestObjectTalkToNPC) qop.getObject()).getTargetNPC().equals(npc))
-					{
-						this.checkFinished(qp, qop);
-						return;
-					}
+					itemToDeliver.setAmount(itemToDeliver.getAmount() - amountNeeded);
+					qop.setProgress(o.getAmount());
 				}
+				else
+				{
+					p.getInventory().setItemInMainHand(null);
+					if (itemToDeliver.getAmount() == amountNeeded)
+						qop.setProgress(o.getAmount());
+					else
+						qop.setProgress(qop.getProgress() + itemToDeliver.getAmount());
+				}
+				return true;
 			}
+			DebugHandler.log(5, "[Listener] The item submitted is not correct.");
 		}
+		DebugHandler.log(5, "[Listener] NPC not correct.");
+		return false;
 	}
 
 	public boolean deliverItem(NPC npc)
 	{
-		for (Iterator<QuestProgress> it = currentQuests.iterator(); it.hasNext();)
-		{
-			QuestProgress qp = it.next();
-			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
-				continue;
-			for (Iterator<QuestObjectProgress> iterator = qp.getCurrentObjects().iterator(); iterator.hasNext();)
+		AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any = new AtomicReference<>();
+		currentQuests.stream()
+			.filter(qp -> checkPlayerInWorld(qp.getQuest()))
+			.forEach(qp ->
 			{
-				QuestObjectProgress qop = iterator.next();
-				if (qop.isFinished())
-					continue;
-				if (qop.getObject() instanceof QuestObjectDeliverItem)
-				{
-					QuestObjectDeliverItem o = (QuestObjectDeliverItem) qop.getObject();
-					ItemStack itemtoDeliver = Main.getInstance().handler.getItemInMainHand(p);
-					int amountNeeded = o.getAmount() - qop.getProgress();
-					if (o.getTargetNPC().equals(npc))
-					{
-						if (o.getItem().isSimilar(itemtoDeliver) || (ConfigSettings.USE_WEAK_ITEM_CHECK && QuestValidater.weakItemCheck(itemtoDeliver, o.getItem())))
-						{
-							if (itemtoDeliver.getAmount() > amountNeeded)
-							{
-								itemtoDeliver.setAmount(itemtoDeliver.getAmount() - amountNeeded);
-								qop.setProgress(o.getAmount());
-							}
-							else
-							{
-								Main.getInstance().handler.setItemInMainHand(p, null);
-								if (itemtoDeliver.getAmount() == amountNeeded)
-									qop.setProgress(o.getAmount());
-								else
-									qop.setProgress(qop.getProgress() + itemtoDeliver.getAmount());
-							}
-							this.checkFinished(qp, qop);
-							return true;
-						}
-					}
-				}
-			}
+				Optional<QuestObjectProgress> obj = qp.getCurrentObjects().stream()
+					.filter(qop -> checkItem(npc, qop))
+					.findFirst();
+				obj.ifPresent(qop -> any.set(new Pair<>(qp, qop)));
+			});
+		if (any.get() != null)
+		{
+			Pair<QuestProgress, QuestObjectProgress> pair = any.get();
+			checkFinished(pair.getKey(), pair.getValue());
+			DebugHandler.log(5, "[Listener] Player " + p.getName() + " handed in one or more quest-requiring item(s).");
+			return true;
 		}
-		return false;
+		else
+		{
+			DebugHandler.log(5, "[Listener] Player " + p.getName() + " did not hand in any quest-requiring items.");
+			return false;
+		}
+	}
+	
+	private boolean checkMob(QuestObjectProgress qop, Entity e)
+	{
+		if (qop.isFinished() || !(qop.getObject() instanceof QuestObjectKillMob))
+			return false;
+		QuestObjectKillMob o = (QuestObjectKillMob)qop.getObject();
+		if (!e.getType().equals(o.getType()))
+			return false;
+		if (o.hasCustomName())
+			return e.getCustomName() != null && e.getCustomName().equals(o.getCustomName());
+		return true;
 	}
 
 	public void killEntity(Entity e)
 	{
-		for (Iterator<QuestProgress> it = currentQuests.iterator(); it.hasNext();)
-		{
-			QuestProgress qp = it.next();
-			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
-				continue;
-			for (Iterator<QuestObjectProgress> iterator = qp.getCurrentObjects().iterator(); iterator.hasNext();)
-			{
-				QuestObjectProgress qop = iterator.next();
-				if (qop.isFinished())
-					continue;
-				if (qop.getObject() instanceof QuestObjectKillMob)
-				{
-					QuestObjectKillMob o = (QuestObjectKillMob) qop.getObject();
-					if (o.hasCustomName())
-					{
-						if (e.getCustomName() == null || !e.getCustomName().equals(o.getCustomName()) || !e.getType().equals(o.getType()))
-							continue;
-						else
-						{
-							qop.setProgress(qop.getProgress() + 1);
-							this.checkFinished(qp, qop);
-							continue;
-						}
-					}
-					else
-					{
-						if (e.getType().equals(o.getType()))
-						{
-							qop.setProgress(qop.getProgress() + 1);
-							this.checkFinished(qp, qop);
-							continue;
-						}
-					}
-				}
-			}
-		}
+		currentQuests.stream()
+			.filter(qp -> checkPlayerInWorld(qp.getQuest()))
+			.forEach(qp ->
+				qp.getCurrentObjects().stream()
+					.filter(qop -> checkMob(qop, e))
+					.collect(Collectors.toList())
+					.forEach(qop -> objectSuccess(qp, qop)));
 	}
 
 	public void killMythicMob(String mtmMob)
 	{
-		for (Iterator<QuestProgress> it = currentQuests.iterator(); it.hasNext();)
-		{
-			QuestProgress qp = it.next();
-			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
-				continue;
-			for (Iterator<QuestObjectProgress> iterator = qp.getCurrentObjects().iterator(); iterator.hasNext();)
-			{
-				QuestObjectProgress qop = iterator.next();
-				if (qop.isFinished())
-					continue;
-				if (qop.getObject() instanceof QuestObjectKillMob)
-				{
-					QuestObjectKillMob o = (QuestObjectKillMob) qop.getObject();
-					if (o.isMythicObject())
-					{
-						if (o.getMythicMob().getInternalName().equals(mtmMob))
-						{
-							qop.addProgress(1);
-							this.checkFinished(qp, qop);
-							continue;
-						}
-					}
-				}
-			}
-		}
+		currentQuests.stream()
+				.filter(qp -> checkPlayerInWorld(qp.getQuest()))
+				.forEach(qp ->
+						qp.getCurrentObjects().stream()
+								.filter(qop -> checkMythicMob(qop, mtmMob))
+								.collect(Collectors.toList())
+								.forEach(qop -> objectSuccess(qp, qop)));
+	}
+	private boolean checkMythicMob(QuestObjectProgress qop, String mtmMob)
+	{
+		if (qop.isFinished() || !(qop.getObject() instanceof QuestObjectKillMob))
+			return false;
+		QuestObjectKillMob o = (QuestObjectKillMob)qop.getObject();
+		if (!o.isMythicObject())
+			return false;
+		return o.getMythicMob().getInternalName().equals(mtmMob);
 	}
 
 	public void consumeItem(ItemStack is)
 	{
-		for (Iterator<QuestProgress> it = currentQuests.iterator(); it.hasNext();)
-		{
-			QuestProgress qp = it.next();
-			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
-				continue;
-			for (Iterator<QuestObjectProgress> iterator = qp.getCurrentObjects().iterator(); iterator.hasNext();)
-			{
-				QuestObjectProgress qop = iterator.next();
-				if (qop.isFinished())
-					continue;
-				if (qop.getObject() instanceof QuestObjectConsumeItem)
-				{
-					QuestObjectConsumeItem o = (QuestObjectConsumeItem) qop.getObject();
-					if (is.isSimilar(o.getItem()))
-					{
-						qop.addProgress(1);
-						checkFinished(qp, qop);
-						continue;
-					}
-				}
-			}
-		}
+		currentQuests.stream()
+				.filter(qp -> checkPlayerInWorld(qp.getQuest()))
+				.forEach(qp ->
+						qp.getCurrentObjects().stream()
+								.filter(qop -> checkConsume(qop, is))
+								.collect(Collectors.toList())
+								.forEach(qop -> objectSuccess(qp, qop)));
+	}
+
+	private boolean checkConsume(QuestObjectProgress qop, ItemStack is)
+	{
+		if (qop.isFinished() || !(qop.getObject() instanceof QuestObjectConsumeItem))
+			return false;
+		QuestObjectConsumeItem o = (QuestObjectConsumeItem) qop.getObject();
+		return o.getItem().isSimilar(is) || (ConfigSettings.USE_WEAK_ITEM_CHECK && QuestValidater.weakItemCheck(is, o.getItem()));
 	}
 
 	public void reachLocation(Location l)
 	{
-		for (Iterator<QuestProgress> it = currentQuests.iterator(); it.hasNext();)
-		{
-			QuestProgress qp = it.next();
-			if (qp.getQuest().hasWorldLimit() && !p.getWorld().getName().equals(qp.getQuest().getWorldLimit().getName()))
-				continue;
-			for (Iterator<QuestObjectProgress> iterator = qp.getCurrentObjects().iterator(); iterator.hasNext();)
-			{
-				QuestObjectProgress qop = iterator.next();
-				if (qop.isFinished())
-					continue;
-				if (qop.getObject() instanceof QuestObjectReachLocation)
-				{
-					QuestObjectReachLocation o = (QuestObjectReachLocation) qop.getObject();
-					if (l.getX() < (o.getLocation().getX() + o.getRadius()) && l.getX() > (o.getLocation().getX() - o.getRadius()))
-						if (l.getY() < (o.getLocation().getY() + o.getRadius()) && l.getY() > (o.getLocation().getY() - o.getRadius()))
-							if (l.getZ() < (o.getLocation().getZ() + o.getRadius()) && l.getZ() > (o.getLocation().getZ() - o.getRadius()))
-							{
-								qop.finish();
-								this.checkFinished(qp, qop);
-								continue;
-							}
-				}
-			}
-		}
+		currentQuests.stream()
+				.filter(qp -> checkPlayerInWorld(qp.getQuest()))
+				.forEach(qp ->
+						qp.getCurrentObjects().stream()
+								.filter(qop -> checkLocation(qop, l))
+								.collect(Collectors.toList())
+								.forEach(qop -> objectSuccess(qp, qop)));
+	}
+
+	private boolean checkLocation(QuestObjectProgress qop, Location l)
+	{
+		if (qop.isFinished() || !(qop.getObject() instanceof QuestObjectReachLocation))
+			return false;
+		QuestObjectReachLocation o = (QuestObjectReachLocation) qop.getObject();
+		if (l.getX() < (o.getLocation().getX() + o.getRadius()) && l.getX() > (o.getLocation().getX() - o.getRadius()))
+			if (l.getY() < (o.getLocation().getY() + o.getRadius()) && l.getY() > (o.getLocation().getY() - o.getRadius()))
+				return l.getZ() < (o.getLocation().getZ() + o.getRadius()) && l.getZ() > (o.getLocation().getZ() - o.getRadius());
+		return false;
 	}
 
 	public void removeProgress(Quest q)
 	{
-		Iterator<QuestProgress> it = currentQuests.iterator();
-		while (it.hasNext())
-		{
-			QuestProgress qp = it.next();
-			if (q.getInternalID().equals(qp.getQuest().getInternalID()))
-			{
-				currentQuests.remove(qp);
-				return;
-			}
-		}
+		currentQuests.stream()
+				.filter(qp -> QuestValidater.weakValidate(q, qp.getQuest()))
+				.findFirst().ifPresent(qp -> currentQuests.remove(qp));
 	}
 
 	public Set<QuestFinishData> getFinishQuests()
@@ -683,7 +637,6 @@ public class QuestPlayerData
 			return;
 		}
 		finishedQuests.add(new QuestFinishData(q, 1, System.currentTimeMillis(), reward));
-		return;
 	}
 
 	public boolean hasTakenReward(Quest q)
@@ -702,30 +655,15 @@ public class QuestPlayerData
 
 	public void checkRewardUnclaimed()
 	{
-		Set<NPC> set = new HashSet<>();
 		for (QuestFinishData data : finishedQuests)
 		{
 			if (!data.isRewardTaken())
 			{
 				Quest q = data.getQuest();
 				if (!q.isCommandQuest())
-				{
 					QuestChatManager.info(p, I18n.locMsg("QuestReward.RewardUnclaimed", q.getQuestNPC().getName()));
-					set.add(q.getQuestNPC());
-				}
 			}
 		}
-	}
-
-	public Set<Quest> getUnclaimedReward()
-	{
-		Set<Quest> set = new HashSet<>();
-		for (QuestFinishData data : finishedQuests)
-		{
-			if (!data.isRewardTaken())
-				set.add(data.getQuest());
-		}
-		return set;
 	}
 
 	public boolean isCurrentlyDoing(Quest q)
@@ -782,22 +720,14 @@ public class QuestPlayerData
 
 	public void checkQuestFail()
 	{
-		Iterator<QuestProgress> it = currentQuests.iterator();
-		while (it.hasNext())
-		{
-			QuestProgress qp = it.next();
-			if (!qp.getQuest().isTimeLimited())
-				continue;
-			if (System.currentTimeMillis() > qp.getQuest().getTimeLimit() + qp.getTakeTime())
-			{
-				forceQuit(qp.getQuest(), false);
-				QuestChatManager.info(p, I18n.locMsg("QuestJourney.QuestFailed", qp.getQuest().getQuestName()));
-				DebugHandler.log(3, "[Listener] Player " + p.getName() + " failed quest " + qp.getQuest().getQuestName() + " because time is due.");
-			}
-			else
-				continue;
-		}
-		return;
+		currentQuests.stream()
+				.filter(qp -> qp.getQuest().isTimeLimited() && System.currentTimeMillis() > qp.getQuest().getTimeLimit() + qp.getTakeTime())
+				.forEach(qp ->
+				{
+					forceQuit(qp.getQuest(), false);
+					QuestChatManager.info(p, I18n.locMsg("QuestJourney.QuestFailed", qp.getQuest().getQuestName()));
+					DebugHandler.log(3, "[Listener] Player " + p.getName() + " failed quest " + qp.getQuest().getQuestName() + " because time is due.");
+				});
 	}
 
 	public long getDelay(long last, long quest)
@@ -810,7 +740,7 @@ public class QuestPlayerData
 		return scoreboard;
 	}
 
-	public boolean checkFinished(QuestProgress qp, QuestObjectProgress qop)
+	public void checkFinished(QuestProgress qp, QuestObjectProgress qop)
 	{
 		SimpleQuestObject o = qop.getObject();
 		qop.checkIfFinished();
@@ -822,7 +752,6 @@ public class QuestPlayerData
 					+ qop.getObject().getConfigString());
 			qp.checkIfnextStage();
 			Bukkit.getPluginManager().callEvent(new QuestObjectProgressEvent(this, qp.getQuest(), qop.getObject()));
-			return true;
 		}
 		else
 		{
@@ -830,7 +759,22 @@ public class QuestPlayerData
 				QuestChatManager.info(p, I18n.locMsg("QuestJourney.ProgressText", qp.getQuest().getQuestName()) + o.toDisplayText() + " " + I18n
 						.locMsg("CommandInfo.Progress", Integer.toString(qop.getProgress()), Integer.toString(((NumerableObject) o).getAmount())));
 			else
-				if (o instanceof CustomQuestObject)
+				if (o instanceof QuestObjectReachLocation)
+				{
+					if (qop.getProgress() >= 1)
+					{
+						qop.finish();
+						new BukkitRunnable()
+						{
+							@Override
+							public void run()
+							{
+								checkFinished(qp, qop);
+							}
+						}.runTaskLater(Main.getInstance(), 1L);
+					}
+				}
+				else if (o instanceof CustomQuestObject)
 					QuestChatManager.info(p,
 							I18n.locMsg("QuestJourney.ProgressText", qp.getQuest().getQuestName()) + ((CustomQuestObject) o).getProgressText(qop));
 				else
@@ -841,16 +785,20 @@ public class QuestPlayerData
 							qop.openConversation(p);
 							DebugHandler.log(2, "[Listener] Player " + p.getName() + "'s quest " + qp.getQuest().getQuestName()
 									+ " has unfinished conversation.");
-							return false;
 						}
 						else
 						{
 							qop.finish();
-							checkFinished(qp, qop);
-							return true;
+							new BukkitRunnable()
+							{
+								@Override
+								public void run()
+								{
+									checkFinished(qp, qop);
+								}
+							}.runTaskLater(Main.getInstance(), 1L);
 						}
 					}
-			return false;
 		}
 	}
 }

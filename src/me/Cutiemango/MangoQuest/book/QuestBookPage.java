@@ -8,15 +8,11 @@ public class QuestBookPage
 	public QuestBookPage()
 	{
 		page = new TextComponent("");
-		textleft = new TextComponent("");
-		lineUsed = 1;
 	}
-	
+
 	public QuestBookPage(TextComponent text)
 	{
 		page = text;
-		textleft = new TextComponent("");
-		lineUsed = 1;
 	}
 
 	private TextComponent page = new TextComponent("");
@@ -110,10 +106,6 @@ public class QuestBookPage
 			// 沒有的話就直接加入
 			else
 				page.addExtra(result);
-		}
-		else
-		{
-			
 		}
 		// 如果是剩下的字串含有@標記
 		if (align.getLeft().contains("@"))

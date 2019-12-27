@@ -44,7 +44,6 @@ public class QuestBookGUIManager
 
 		// Objects
 		p1.add(I18n.locMsg("QuestEditor.QuestObjects")).changeLine();
-		;
 		for (int i = 0; i < q.getQuest().getStages().size(); i++)
 		{
 			if (q.getCurrentStage() > i)
@@ -234,11 +233,7 @@ public class QuestBookGUIManager
 		page.add(I18n.locMsg("QuestJourney.QuestToTake")).changeLine();
 		for (Quest q : QuestStorage.Quests.values())
 		{
-			if (!q.getSettings().displayOnTake())
-				continue;
-			if (!qd.canTake(q, false))
-				continue;
-			else
+			if (q.getSettings().displayOnTake() && qd.canTake(q, false))
 			{
 				QuestUtil.checkOutOfBounds(page, book);
 				page = book.getLastEditingPage();

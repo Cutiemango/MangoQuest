@@ -40,7 +40,6 @@ public class CommandRemoveConv
 				removeAction(conv, sender, args);
 				break;
 		}
-		return;
 	}
 
 	private static void removeConfirm(Player sender, String[] args)
@@ -51,7 +50,6 @@ public class CommandRemoveConv
 			{
 				QuestConversation target = ConversationManager.getConversation(args[3]);
 				ConversationEditorManager.removeConfirmGUI(sender, target);
-				return;
 			}
 		}
 	}
@@ -72,7 +70,6 @@ public class CommandRemoveConv
 				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ConversationRemoved", target.getName()));
 				QuestStorage.Conversations.remove(args[3]);
 				ConversationEditorManager.removeGUI(sender);
-				return;
 			}
 		}
 	}
@@ -102,6 +99,5 @@ public class CommandRemoveConv
 				break;
 		}
 		ConversationEditorManager.editConversation(sender);
-		return;
 	}
 }

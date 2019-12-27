@@ -95,8 +95,8 @@ public class TriggerObject
 				QuestUtil.sendTitle(p, 5, 5, 5, "", object);
 				break;
 			case OPEN_CONVERSATION:
-				if (ConversationManager.getConversation((String)object) != null)
-					ConversationManager.startConversation(p, ConversationManager.getConversation((String)object));
+				if (ConversationManager.getConversation(object) != null)
+					ConversationManager.startConversation(p, ConversationManager.getConversation(object));
 				break;
 			case SEND_TITLE:
 				QuestUtil.sendTitle(p, 5, 5, 5, object, "");

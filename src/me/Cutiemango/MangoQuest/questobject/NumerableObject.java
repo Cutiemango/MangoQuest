@@ -37,27 +37,22 @@ public abstract class NumerableObject extends SimpleQuestObject implements Edito
 	@Override
 	public boolean receiveCommandInput(Player sender, String type, String obj)
 	{
-		switch (type)
+		if (type.equals("amount") && QuestValidater.validateInteger(obj))
 		{
-			case "amount":
-				if (!QuestValidater.validateInteger(obj))
-					return false;
-				this.setAmount(Integer.parseInt(obj));
-				break;
+			setAmount(Integer.parseInt(obj));
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	@Override
 	public EditorListenerObject createCommandOutput(Player sender, String command, String type)
 	{
 		EditorListenerObject obj = null;
-		switch (type)
+		if (type.equals("amount"))
 		{
-			case "amount":
-				obj = new EditorListenerObject(ListeningType.STRING, command, Syntax.of("I", I18n.locMsg("Syntax.Number"), ""));
-				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterAmount"));
-				break;
+			obj = new EditorListenerObject(ListeningType.STRING, command, Syntax.of("I", I18n.locMsg("Syntax.Number"), ""));
+			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterAmount"));
 		}
 		return obj;
 	}

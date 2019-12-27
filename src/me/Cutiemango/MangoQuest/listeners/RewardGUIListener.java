@@ -42,7 +42,6 @@ public class RewardGUIListener
 				else if (e.getClick().isRightClick())
 					QuestUtil.executeCommandAsync(p, "mq q reward remove " + i);
 				p.closeInventory();
-				return;
 			}
 			else if (I18n.locMsg("QuestReward.RewardEditTitle").contains(inv.getTitle()))
 			{
@@ -81,8 +80,6 @@ public class RewardGUIListener
 						QuestRewardManager.openEditRewardGUI(p, i);
 					}
 				}.runTaskLater(Main.getInstance(), 3L);
-				
-				return;
 			}
 			else if (inv.getTitle().contains(I18n.locMsg("QuestReward.ChoiceEditTitle")))
 			{
@@ -90,10 +87,9 @@ public class RewardGUIListener
 				{
 					e.setCancelled(true);
 					p.closeInventory();
-					String index = inv.getTitle().substring(inv.getTitle().length()-1, inv.getTitle().length());
+					String index = inv.getTitle().substring(inv.getTitle().length()-1);
 					QuestRewardManager.removeRewardChoice(p, Integer.parseInt(index));
 					QuestRewardManager.openEditMainGUI(p);
-					return;
 				}
 			}
 		}
@@ -110,10 +106,7 @@ public class RewardGUIListener
 			if (item == null || item.getType() == Material.AIR)
 				continue;
 			if (QuestGUIItem.isGUIItem(item))
-			{
-				p.getInventory().remove(item);;
-				continue;
-			}
+				p.getInventory().remove(item);
 		}
 		
 		InventoryView inv = e.getView();
@@ -152,7 +145,7 @@ public class RewardGUIListener
 			try
 			{
 				index = Integer.parseInt(ChatColor.stripColor(lore.get(lore.size()-1)));
-			} catch (Exception ex) {};
+			} catch (Exception ex) {}
 		}
 		
 		return index;

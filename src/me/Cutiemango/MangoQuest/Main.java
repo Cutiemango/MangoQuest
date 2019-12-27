@@ -1,6 +1,8 @@
 package me.Cutiemango.MangoQuest;
 
 import java.util.logging.Level;
+
+import me.Cutiemango.MangoQuest.versions.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,10 +19,6 @@ import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.manager.CustomObjectManager;
 import me.Cutiemango.MangoQuest.manager.PluginHooker;
-import me.Cutiemango.MangoQuest.versions.VersionHandler;
-import me.Cutiemango.MangoQuest.versions.Version_v1_13_R1;
-import me.Cutiemango.MangoQuest.versions.Version_v1_13_R2;
-import me.Cutiemango.MangoQuest.versions.Version_v1_14_R1;
 
 public class Main extends JavaPlugin
 {
@@ -58,6 +56,9 @@ public class Main extends JavaPlugin
 				break;
 			case "v1_14_R1":
 				handler = new Version_v1_14_R1();
+				break;
+			case "v1_15_R1":
+				handler = new Version_v1_15_R1();
 				QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.TestingVersion"));
 				break;
 			default:

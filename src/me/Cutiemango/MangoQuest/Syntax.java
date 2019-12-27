@@ -16,10 +16,10 @@ public class Syntax
 	// D - Positive and negative integer (including 0)
 	
 	// The order of customRegex
-	private String order = "";
+	private String order;
 	// The regex that will be used in matcher
-	private String regex = "";
-	private String desc = "";
+	private String regex;
+	private String desc;
 	// Dividers that used in the customRegex
 	private Set<String> dividers = new HashSet<>();
 

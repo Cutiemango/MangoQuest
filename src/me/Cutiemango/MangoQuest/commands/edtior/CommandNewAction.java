@@ -26,10 +26,7 @@ public class CommandNewAction
 		String acttype = args[2];
 		int index = Integer.parseInt(args[3]);
 		if (args.length == 4)
-		{
 			ConversationEditorManager.selectActionType(sender, acttype, "new", index);
-			return;
-		}
 		else
 			if (args.length == 5)
 			{
@@ -66,9 +63,8 @@ public class CommandNewAction
 				}
 				EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq ce new " + acttype + " " + index + " " + act.toString(), null));
 				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-				return;
 			}
-			else if (args.length >= 6)
+			else
 			{
 				String s = "";
 				for (int j = 5; j < args.length; j++)
@@ -104,7 +100,6 @@ public class CommandNewAction
 						break;
 				}
 				ConversationEditorManager.editConversation(sender);
-				return;
 			}
 	}
 }

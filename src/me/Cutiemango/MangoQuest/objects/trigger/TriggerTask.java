@@ -1,14 +1,14 @@
 package me.Cutiemango.MangoQuest.objects.trigger;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.DebugHandler;
+import org.bukkit.entity.Player;
+
+import java.util.List;
 
 public class TriggerTask
 {
 	private Player target;
-	private List<TriggerObject> list = new ArrayList<>();
+	private List<TriggerObject> list;
 	private int stage = -1;
 	private int index;
 	

@@ -1,11 +1,6 @@
 package me.Cutiemango.MangoQuest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -44,7 +39,7 @@ public class QuestUtil
 		return QuestStorage.Players.get(p.getName());
 	}
 
-	public static final double cut(double d)
+	public static double cut(double d)
 	{
 		return Math.floor((d * 100)) / 100;
 	}
@@ -128,7 +123,6 @@ public class QuestUtil
 			book.newPage();
 			book.getLastEditingPage().add(book.getPage(book.size() - 2).getTextleft());
 		}
-		return;
 	}
 
 	public static String convertTime(long l)
@@ -213,11 +207,8 @@ public class QuestUtil
 	@SafeVarargs
 	public static <T> List<T> createList(T... args)
 	{
-		List<T> list = new ArrayList<T>();
-		for (T obj : args)
-		{
-			list.add(obj);
-		}
+		List<T> list = new ArrayList<>();
+		Collections.addAll(list, args);
 		return list;
 	}
 

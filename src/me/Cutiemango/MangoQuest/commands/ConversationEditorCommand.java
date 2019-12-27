@@ -30,10 +30,7 @@ public class ConversationEditorCommand
 		}
 		QuestConversation conv = ConversationEditorManager.getEditingConversation(sender);
 		if (args.length == 1)
-		{
 			ConversationEditorManager.mainGUI(sender);
-			return;
-		}
 		else
 			if (args.length == 2)
 			{
@@ -115,7 +112,6 @@ public class ConversationEditorCommand
 						break;
 				}
 				ConversationEditorManager.exit(sender);
-				return;
 			}
 			else
 			{
