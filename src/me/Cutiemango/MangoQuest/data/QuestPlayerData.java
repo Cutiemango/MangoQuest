@@ -1,25 +1,13 @@
 package me.Cutiemango.MangoQuest.data;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-
 import me.Cutiemango.MangoQuest.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.Scoreboard;
+import me.Cutiemango.MangoQuest.conversation.ConversationManager;
+import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.event.QuestFinishEvent;
 import me.Cutiemango.MangoQuest.event.QuestObjectProgressEvent;
 import me.Cutiemango.MangoQuest.event.QuestTakeEvent;
-import me.Cutiemango.MangoQuest.conversation.ConversationManager;
-import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.manager.RequirementManager;
@@ -28,15 +16,21 @@ import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
 import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
 import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
-import me.Cutiemango.MangoQuest.questobject.interfaces.NPCObject;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectBreakBlock;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectConsumeItem;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectDeliverItem;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectKillMob;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectReachLocation;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectTalkToNPC;
+import me.Cutiemango.MangoQuest.questobject.objects.*;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Scoreboard;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class QuestPlayerData
 {
@@ -390,25 +384,34 @@ public class QuestPlayerData
 	public void objectSuccess(QuestProgress qp, QuestObjectProgress qop)
 	{
 		qop.setProgress(qop.getProgress() + 1);
-		new BukkitRunnable()
-		{
-			@Override
-			public void run()
-			{
-				checkFinished(qp, qop);
-			}
-		}.runTaskLater(Main.getInstance(), 1L);
+		checkFinished(qp, qop);
 	}
 
 	public void breakBlock(Material m)
 	{
+		HashSet<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> set = new HashSet<>();
 		currentQuests.stream()
 			.filter(qp -> checkPlayerInWorld(qp.getQuest()))
 			.forEach(qp ->
 				qp.getCurrentObjects().stream()
 					.filter(qop -> checkBlock(qop, m))
 					.collect(Collectors.toList())
-					.forEach(qop -> objectSuccess(qp, qop)));
+					.forEach(qop ->
+					{
+						AtomicReference<Pair<QuestProgress, QuestObjectProgress>> ref = new AtomicReference<>();
+						ref.set(new Pair<>(qp, qop));
+						set.add(ref);
+					}));
+		if (set.isEmpty())
+			return;
+		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : set)
+		{
+			if (any.get() != null)
+			{
+				Pair<QuestProgress, QuestObjectProgress> pair = any.get();
+				objectSuccess(pair.getKey(), pair.getValue());
+			}
+		}
 	}
 
 	private boolean checkBlock(QuestObjectProgress qop, Material m)
@@ -420,13 +423,22 @@ public class QuestPlayerData
 
 	public void talkToNPC(NPC npc)
 	{
+		AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any = new AtomicReference<>();
 		currentQuests.stream()
 			.filter(qp -> checkPlayerInWorld(qp.getQuest()))
 			.forEach(qp ->
-				qp.getCurrentObjects().stream()
-					.filter(qop -> checkNPC(qop, npc))
-					.collect(Collectors.toList())
-					.forEach(qop -> checkFinished(qp, qop)));
+			{
+				Optional<QuestObjectProgress> obj = qp.getCurrentObjects().stream()
+						.filter(qop -> checkItem(npc, qop))
+						.findFirst();
+				obj.ifPresent(qop -> any.set(new Pair<>(qp, qop)));
+			});
+		if (any.get() != null)
+		{
+			Pair<QuestProgress, QuestObjectProgress> pair = any.get();
+			checkFinished(pair.getKey(), pair.getValue());
+			DebugHandler.log(5, "[Listener] Player " + p.getName() + " talked to a npc.");
+		}
 	}
 
 	private boolean checkNPC(QuestObjectProgress qop, NPC npc)
@@ -508,26 +520,58 @@ public class QuestPlayerData
 		return true;
 	}
 
-	public void killEntity(Entity e)
+	public void killMob(Entity e)
 	{
+		HashSet<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> set = new HashSet<>();
 		currentQuests.stream()
 			.filter(qp -> checkPlayerInWorld(qp.getQuest()))
 			.forEach(qp ->
-				qp.getCurrentObjects().stream()
-					.filter(qop -> checkMob(qop, e))
-					.collect(Collectors.toList())
-					.forEach(qop -> objectSuccess(qp, qop)));
+					qp.getCurrentObjects().stream()
+							.filter(qop -> checkMob(qop, e))
+							.collect(Collectors.toList())
+							.forEach(qop ->
+							{
+								AtomicReference<Pair<QuestProgress, QuestObjectProgress>> ref = new AtomicReference<>();
+								ref.set(new Pair<>(qp, qop));
+								set.add(ref);
+							}));
+		if (set.isEmpty())
+			return;
+		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : set)
+		{
+			if (any.get() != null)
+			{
+				Pair<QuestProgress, QuestObjectProgress> pair = any.get();
+				objectSuccess(pair.getKey(), pair.getValue());
+			}
+		}
 	}
 
 	public void killMythicMob(String mtmMob)
 	{
+		HashSet<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> set = new HashSet<>();
 		currentQuests.stream()
 				.filter(qp -> checkPlayerInWorld(qp.getQuest()))
 				.forEach(qp ->
 						qp.getCurrentObjects().stream()
 								.filter(qop -> checkMythicMob(qop, mtmMob))
 								.collect(Collectors.toList())
-								.forEach(qop -> objectSuccess(qp, qop)));
+								.forEach(qop ->
+								{
+									AtomicReference<Pair<QuestProgress, QuestObjectProgress>> ref = new AtomicReference<>();
+									ref.set(new Pair<>(qp, qop));
+									set.add(ref);
+								}));
+		if (set.isEmpty())
+			return;
+		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : set)
+		{
+			if (any.get() != null)
+			{
+				Pair<QuestProgress, QuestObjectProgress> pair = any.get();
+				objectSuccess(pair.getKey(), pair.getValue());
+			}
+		}
 	}
 	private boolean checkMythicMob(QuestObjectProgress qop, String mtmMob)
 	{
@@ -541,13 +585,29 @@ public class QuestPlayerData
 
 	public void consumeItem(ItemStack is)
 	{
+		HashSet<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> set = new HashSet<>();
 		currentQuests.stream()
 				.filter(qp -> checkPlayerInWorld(qp.getQuest()))
 				.forEach(qp ->
 						qp.getCurrentObjects().stream()
 								.filter(qop -> checkConsume(qop, is))
 								.collect(Collectors.toList())
-								.forEach(qop -> objectSuccess(qp, qop)));
+								.forEach(qop ->
+								{
+									AtomicReference<Pair<QuestProgress, QuestObjectProgress>> ref = new AtomicReference<>();
+									ref.set(new Pair<>(qp, qop));
+									set.add(ref);
+								}));
+		if (set.isEmpty())
+			return;
+		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : set)
+		{
+			if (any.get() != null)
+			{
+				Pair<QuestProgress, QuestObjectProgress> pair = any.get();
+				objectSuccess(pair.getKey(), pair.getValue());
+			}
+		}
 	}
 
 	private boolean checkConsume(QuestObjectProgress qop, ItemStack is)
@@ -560,13 +620,29 @@ public class QuestPlayerData
 
 	public void reachLocation(Location l)
 	{
+		HashSet<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> set = new HashSet<>();
 		currentQuests.stream()
 				.filter(qp -> checkPlayerInWorld(qp.getQuest()))
 				.forEach(qp ->
 						qp.getCurrentObjects().stream()
 								.filter(qop -> checkLocation(qop, l))
 								.collect(Collectors.toList())
-								.forEach(qop -> objectSuccess(qp, qop)));
+								.forEach(qop ->
+								{
+									AtomicReference<Pair<QuestProgress, QuestObjectProgress>> ref = new AtomicReference<>();
+									ref.set(new Pair<>(qp, qop));
+									set.add(ref);
+								}));
+		if (set.isEmpty())
+			return;
+		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : set)
+		{
+			if (any.get() != null)
+			{
+				Pair<QuestProgress, QuestObjectProgress> pair = any.get();
+				objectSuccess(pair.getKey(), pair.getValue());
+			}
+		}
 	}
 
 	private boolean checkLocation(QuestObjectProgress qop, Location l)

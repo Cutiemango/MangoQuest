@@ -134,7 +134,7 @@ public class PlayerListener
 						return;
 					}
 				}
-				qd.killEntity(e);
+				qd.killMob(e);
 			}
 		}
 	}

@@ -168,9 +168,13 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 			}
 			mtmMob = Main.getHooker().getMythicMob(id);
 			customName = mtmMob.getDisplayName().get();
-			if (mtmMob.getEntityType().contains("BABY"))
+			String typeName = mtmMob.getEntityType().toUpperCase();
+			if (typeName.contains("BABY"))
+			{
 				isBaby = true;
-			type = EntityType.valueOf(mtmMob.getEntityType().replace("BABY_", "").toUpperCase());
+				typeName = typeName.replace("BABY_", "");
+			}
+			type = EntityType.valueOf(typeName);
 		}
 		else
 			if (config.getString(path + "MobName") != null)

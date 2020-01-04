@@ -1,16 +1,12 @@
 package me.Cutiemango.MangoQuest.commands;
 
-import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.ConfigSettings;
+import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
-import me.Cutiemango.MangoQuest.conversation.QuestChoice;
-import me.Cutiemango.MangoQuest.conversation.QuestConversation;
-import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
-import me.Cutiemango.MangoQuest.conversation.ConversationManager;
+import me.Cutiemango.MangoQuest.conversation.*;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
-import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.entity.Player;
 
 public class ConversationCommand
 {
@@ -67,7 +63,7 @@ public class ConversationCommand
 							choice.choose(sender, Integer.parseInt(args[2]));
 						return;
 					case "npc":
-						NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[2]));
+						NPC npc = Main.getHooker().getNPC(args[2]);
 						if (npc != null)
 							QuestUtil.getData(sender).talkToNPC(npc);
 						return;
