@@ -31,9 +31,6 @@ public class QuestConfigManager
 		npcIO = new QuestIO("npc.yml", true, false, false);
 		
 		DebugHandler.log(1, "[Config] File Loaded.");
-		
-		loader.init();
-		saver.init();
 	}
 	
 	public static QuestConfigLoader getLoader()

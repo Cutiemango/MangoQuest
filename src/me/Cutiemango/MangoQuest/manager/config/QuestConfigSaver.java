@@ -34,18 +34,14 @@ public class QuestConfigSaver
 	public QuestConfigSaver(QuestConfigManager cm)
 	{
 		manager = cm;
+		quest = manager.globalQuest;
+		conv = manager.globalConv;
 	}
 	
 	private QuestConfigManager manager;
 	
 	private QuestIO quest;
 	private QuestIO conv;
-	
-	public void init()
-	{
-		quest = manager.globalQuest;
-		conv = manager.globalConv;
-	}
 	
 	public void saveConversation(QuestConversation qc)
 	{

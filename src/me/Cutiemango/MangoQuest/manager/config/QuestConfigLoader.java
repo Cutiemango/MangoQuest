@@ -58,6 +58,8 @@ public class QuestConfigLoader
 	{
 		manager = cm;
 		config = manager.configIO;
+		translation = manager.translateIO;
+		npc = manager.npcIO;
 	}
 	
 	private QuestConfigManager manager;
@@ -65,12 +67,6 @@ public class QuestConfigLoader
 	private QuestIO translation;
 	private QuestIO npc;
 	private QuestIO config;
-	
-	public void init()
-	{
-		translation = manager.translateIO;
-		npc = manager.npcIO;
-	}
 	
 	public void loadAll()
 	{
@@ -257,12 +253,12 @@ public class QuestConfigLoader
 		else
 			config.set("pluginPrefix", "&6MangoQuest>");
 		
-		// Maxium Quests
+		// Maximum Quests
 		if (config.getInt("maxQuestAmount") != 0)
-			ConfigSettings.MAXIUM_QUEST_AMOUNT = config.getInt("maxQuestAmount");
+			ConfigSettings.MAXIMUM_QUEST_AMOUNT = config.getInt("maxQuestAmount");
 		else
 		{
-			ConfigSettings.MAXIUM_QUEST_AMOUNT = 4;
+			ConfigSettings.MAXIMUM_QUEST_AMOUNT = 4;
 			config.set("maxQuestAmount", 4);
 		}
 		
@@ -275,7 +271,7 @@ public class QuestConfigLoader
 		
 		if (!config.contains("scoreboardMaxCanTakeQuestAmount"))
 			config.set("scoreboardMaxCanTakeQuestAmount", 3);
-		ConfigSettings.MAXMIUM_DISPLAY_TAKEQUEST_AMOUNT = config.getInt("scoreboardMaxCanTakeQuestAmount");
+		ConfigSettings.MAXIMUM_DISPLAY_QUEST_AMOUNT = config.getInt("scoreboardMaxCanTakeQuestAmount");
 		
 		// Particle Settings
 		if (!config.contains("useParticleEffect"))

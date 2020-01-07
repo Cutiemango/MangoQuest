@@ -25,7 +25,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.*;
@@ -265,7 +264,7 @@ public class QuestPlayerData
 
 	public boolean checkQuestSize(boolean msg)
 	{
-		if (currentQuests.size() + 1 > ConfigSettings.MAXIUM_QUEST_AMOUNT)
+		if (currentQuests.size() + 1 > ConfigSettings.MAXIMUM_QUEST_AMOUNT)
 		{
 			if (msg)
 				QuestChatManager.info(p, I18n.locMsg("CommandInfo.QuestListFull"));
@@ -429,7 +428,7 @@ public class QuestPlayerData
 			.forEach(qp ->
 			{
 				Optional<QuestObjectProgress> obj = qp.getCurrentObjects().stream()
-						.filter(qop -> checkItem(npc, qop))
+						.filter(qop -> checkNPC(qop, npc))
 						.findFirst();
 				obj.ifPresent(qop -> any.set(new Pair<>(qp, qop)));
 			});
@@ -450,7 +449,7 @@ public class QuestPlayerData
 	
 	// Checks whether the player has submitted a correct item
 	// Returns true if submitted at least 1 item.
-	private boolean checkItem(NPC npc, QuestObjectProgress qop)
+	private boolean checkItem(QuestObjectProgress qop, NPC npc)
 	{
 		if (qop.isFinished() || !(qop.getObject() instanceof QuestObjectDeliverItem))
 			return false;
@@ -469,16 +468,14 @@ public class QuestPlayerData
 				else
 				{
 					p.getInventory().setItemInMainHand(null);
-					if (itemToDeliver.getAmount() == amountNeeded)
-						qop.setProgress(o.getAmount());
-					else
-						qop.setProgress(qop.getProgress() + itemToDeliver.getAmount());
+					qop.setProgress(itemToDeliver.getAmount() == amountNeeded ? o.getAmount() : qop.getProgress() + itemToDeliver.getAmount());
 				}
 				return true;
 			}
 			DebugHandler.log(5, "[Listener] The item submitted is not correct.");
+			return false;
 		}
-		DebugHandler.log(5, "[Listener] NPC not correct.");
+		DebugHandler.log(5, "[Listener] NPC not correct. Required " + o.getTargetNPC().getId() + " but get " + npc.getId());
 		return false;
 	}
 
@@ -490,7 +487,7 @@ public class QuestPlayerData
 			.forEach(qp ->
 			{
 				Optional<QuestObjectProgress> obj = qp.getCurrentObjects().stream()
-					.filter(qop -> checkItem(npc, qop))
+					.filter(qop -> checkItem(qop, npc))
 					.findFirst();
 				obj.ifPresent(qop -> any.set(new Pair<>(qp, qop)));
 			});
@@ -686,7 +683,7 @@ public class QuestPlayerData
 		{
 			for (QuestObjectProgress op : getProgress(q).getCurrentObjects())
 			{
-				if (op.getObject() instanceof QuestObjectTalkToNPC)
+				if (op.getObject() instanceof QuestObjectTalkToNPC && !op.isFinished())
 					return I18n.locMsg("QuestGUI.QuestReturnSymbol").replaceAll("§0", "§f") + ChatColor.BOLD + q.getQuestName();
 			}
 			return I18n.locMsg("QuestGUI.QuestDoingSymbol").replaceAll("§0", "§f") + ChatColor.BOLD + q.getQuestName();
@@ -723,13 +720,13 @@ public class QuestPlayerData
 		return data.isRewardTaken();
 	}
 
-	public void rewardClaimed(Quest q)
+	public void claimReward(Quest q)
 	{
 		getFinishData(q).setRewardTaken(true);
 		save();
 	}
 
-	public void checkRewardUnclaimed()
+	public void checkUnclaimedReward()
 	{
 		for (QuestFinishData data : finishedQuests)
 		{
@@ -772,14 +769,11 @@ public class QuestPlayerData
 				QuestChatManager.info(p, I18n.locMsg("CommandInfo.CommandInfo.NoPermTakeQuest"));
 			return false;
 		}
-		if (q.hasRequirement())
+		if (q.hasRequirement() && !RequirementManager.meetRequirementWith(p, q.getRequirements()).succeed())
 		{
-			if (!RequirementManager.meetRequirementWith(p, q.getRequirements()).succeed())
-			{
-				if (sendmsg)
-					QuestChatManager.info(p, q.getFailMessage());
-				return false;
-			}
+			if (sendmsg)
+				QuestChatManager.info(p, q.getFailMessage());
+			return false;
 		}
 		if (hasFinished(q))
 		{
@@ -840,14 +834,7 @@ public class QuestPlayerData
 					if (qop.getProgress() >= 1)
 					{
 						qop.finish();
-						new BukkitRunnable()
-						{
-							@Override
-							public void run()
-							{
-								checkFinished(qp, qop);
-							}
-						}.runTaskLater(Main.getInstance(), 1L);
+						checkFinished(qp, qop);
 					}
 				}
 				else if (o instanceof CustomQuestObject)
@@ -865,14 +852,7 @@ public class QuestPlayerData
 						else
 						{
 							qop.finish();
-							new BukkitRunnable()
-							{
-								@Override
-								public void run()
-								{
-									checkFinished(qp, qop);
-								}
-							}.runTaskLater(Main.getInstance(), 1L);
+							checkFinished(qp, qop);
 						}
 					}
 		}

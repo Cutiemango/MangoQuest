@@ -82,7 +82,7 @@ public class RewardCache
 			reward.getChoice(i).executeReward(owner);
 		}
 		QuestChatManager.info(owner, I18n.locMsg("QuestReward.RewardReceived"));
-		QuestUtil.getData(owner).rewardClaimed(quest);
+		QuestUtil.getData(owner).claimReward(quest);
 		QuestRewardManager.removeCache(owner);
 		DebugHandler.log(3, "[Listener] Player " + owner.getName() + " has claimed reward of quest " + quest.getQuestName());
 	}

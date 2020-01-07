@@ -127,40 +127,13 @@ public class QuestUtil
 
 	public static String convertTime(long l)
 	{
-		String s = "";
+		long days = l / 86400000, hours = (l % 86400000) / 3600000, minutes = (l % 3600000) / 60000, seconds = (l % 60000) / 1000;
 
-		long days = l / 86400000;
-		long hours = (l % 86400000) / 3600000;
-		long minutes = ((l % 86400000) % 3600000) / 60000;
-		long seconds = (((l % 86400000) % 3600000) % 60000) / 1000;
-
-		if (l == 0)
-		{
-			s = I18n.locMsg("TimeFormat.NoCooldown");
-			return s;
-		}
-
-		if (days > 0)
-		{
-			s += days + " " + I18n.locMsg("TimeFormat.Day");
-			if (hours > 0 || minutes > 0 || seconds > 0)
-				s += ", ";
-		}
-		if (hours > 0)
-		{
-			s += hours + " " + I18n.locMsg("TimeFormat.Hour");
-			if (minutes > 0 || seconds > 0)
-				s += ", ";
-		}
-		if (minutes > 0)
-		{
-			s += minutes + " " + I18n.locMsg("TimeFormat.Minute");
-			if (seconds > 0)
-				s += ", ";
-		}
-		if (seconds > 0)
-			s += seconds + " " + I18n.locMsg("TimeFormat.Second");
-		return s;
+		return String.format("%s%s%s%s%s", days > 0 ? days + " 天 " : "",
+				hours > 0 ? hours + " 小時 " : "",
+				minutes > 0 ? minutes + " 分鐘 " : "",
+				seconds > 0 ? seconds + " 秒 " : "",
+				l < 1000 ? "即將" : "").trim();
 	}
 
 	public static String getItemName(ItemStack is)

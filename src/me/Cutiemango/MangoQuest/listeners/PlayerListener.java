@@ -39,7 +39,7 @@ public class PlayerListener
 				QuestPlayerData qd = new QuestPlayerData(p);
 				QuestStorage.Players.put(p.getName(), qd);
 				qd.checkQuestFail();
-				qd.checkRewardUnclaimed();
+				qd.checkUnclaimedReward();
 			}
 		}.runTaskLater(Main.getInstance(), 20L);
 	}

@@ -64,7 +64,7 @@ public class ScoreboardManager
 			if (!q.getSettings().displayOnTake())
 				continue;
 			count++;
-			if (count > ConfigSettings.MAXMIUM_DISPLAY_TAKEQUEST_AMOUNT)
+			if (count > ConfigSettings.MAXIMUM_DISPLAY_QUEST_AMOUNT)
 				break;
 			if (pd.canTake(q, false))
 			{
