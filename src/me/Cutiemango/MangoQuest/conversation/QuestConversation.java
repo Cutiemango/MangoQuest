@@ -1,12 +1,13 @@
 package me.Cutiemango.MangoQuest.conversation;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class QuestConversation
 {

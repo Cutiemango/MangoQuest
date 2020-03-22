@@ -1,10 +1,8 @@
 package me.Cutiemango.MangoQuest.editor;
 
-import java.util.HashMap;
-import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.book.FlexiableBook;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
@@ -13,10 +11,13 @@ import me.Cutiemango.MangoQuest.conversation.QuestBaseAction;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.entity.Player;
+
+import java.util.HashMap;
 
 public class ConversationEditorManager
 {

@@ -1,11 +1,5 @@
 package me.Cutiemango.MangoQuest.manager;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.bukkit.ChatColor;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
 import me.Cutiemango.MangoQuest.ConfigSettings;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestStorage;
@@ -18,6 +12,13 @@ import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
 import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectDeliverItem;
+import org.bukkit.ChatColor;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ScoreboardManager

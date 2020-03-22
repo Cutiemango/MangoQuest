@@ -1,10 +1,11 @@
 package me.Cutiemango.MangoQuest.conversation;
 
-import java.util.ArrayList;
-import java.util.List;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.citizensnpcs.api.npc.NPC;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StartTriggerConversation extends QuestConversation
 {

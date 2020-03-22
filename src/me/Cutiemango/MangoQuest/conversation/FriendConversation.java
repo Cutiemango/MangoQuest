@@ -1,7 +1,8 @@
 package me.Cutiemango.MangoQuest.conversation;
 
-import java.util.List;
 import net.citizensnpcs.api.npc.NPC;
+
+import java.util.List;
 
 public class FriendConversation extends QuestConversation
 {

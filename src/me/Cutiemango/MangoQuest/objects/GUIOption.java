@@ -1,9 +1,5 @@
 package me.Cutiemango.MangoQuest.objects;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.RequirementManager;
@@ -11,6 +7,10 @@ import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerTask;
 import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.entity.Player;
+
+import java.util.EnumMap;
+import java.util.List;
 
 public class GUIOption
 {

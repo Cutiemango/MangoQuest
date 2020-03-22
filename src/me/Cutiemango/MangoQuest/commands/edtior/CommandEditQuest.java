@@ -1,41 +1,37 @@
 package me.Cutiemango.MangoQuest.commands.edtior;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import com.sucy.skill.SkillAPI;
+import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.Syntax;
+import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
+import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
+import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
+import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
+import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject.TriggerObjectType;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
+import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
+import me.Cutiemango.MangoQuest.questobject.objects.*;
+import net.citizensnpcs.api.CitizensAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import com.sucy.skill.SkillAPI;
-import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.Syntax;
-import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
-import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
-import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
-import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
-import me.Cutiemango.MangoQuest.manager.QuestValidater;
-import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
-import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
-import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
-import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
-import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject.TriggerObjectType;
-import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
-import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectBreakBlock;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectConsumeItem;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectDeliverItem;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectKillMob;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectReachLocation;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectTalkToNPC;
-import net.citizensnpcs.api.CitizensAPI;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class CommandEditQuest
 {

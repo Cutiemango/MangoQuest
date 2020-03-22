@@ -1,11 +1,11 @@
 package me.Cutiemango.MangoQuest.commands;
 
+import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
 public class CommandReceiver implements CommandExecutor
 {

@@ -1,7 +1,5 @@
 package me.Cutiemango.MangoQuest.commands.edtior;
 
-import java.util.List;
-import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Syntax;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction;
@@ -9,10 +7,13 @@ import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
+import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
-import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
+import org.bukkit.entity.Player;
+
+import java.util.List;
 
 public class CommandNewAction
 {

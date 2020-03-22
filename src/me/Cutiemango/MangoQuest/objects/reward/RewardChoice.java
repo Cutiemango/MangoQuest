@@ -1,10 +1,10 @@
 package me.Cutiemango.MangoQuest.objects.reward;
 
-import java.util.ArrayList;
-import java.util.List;
+import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
+
+import java.util.List;
 
 public class RewardChoice
 {

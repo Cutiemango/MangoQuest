@@ -1,6 +1,15 @@
 package me.Cutiemango.MangoQuest.versions;
 
-import java.util.ArrayList;
+import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.HoverEvent.Action;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_14_R1.*;
+import net.minecraft.server.v1_14_R1.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_14_R1.PacketPlayOutTitle.EnumTitleAction;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,21 +19,8 @@ import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftMetaBook;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.HoverEvent.Action;
-import net.minecraft.server.v1_14_R1.EnumHand;
-import net.minecraft.server.v1_14_R1.NBTTagCompound;
-import net.minecraft.server.v1_14_R1.PacketPlayOutOpenBook;
-import net.minecraft.server.v1_14_R1.PacketPlayOutTitle;
-import net.minecraft.server.v1_14_R1.PacketPlayOutWorldParticles;
-import net.minecraft.server.v1_14_R1.Particles;
-import net.minecraft.server.v1_14_R1.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_14_R1.PacketPlayOutTitle.EnumTitleAction;
+
+import java.util.ArrayList;
 
 public class Version_v1_14_R1 implements VersionHandler
 {

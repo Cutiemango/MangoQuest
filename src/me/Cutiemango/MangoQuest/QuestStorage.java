@@ -1,21 +1,13 @@
 package me.Cutiemango.MangoQuest;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
-import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
-import me.Cutiemango.MangoQuest.conversation.FriendConversation;
-import me.Cutiemango.MangoQuest.conversation.QuestChoice;
-import me.Cutiemango.MangoQuest.conversation.QuestConversation;
-import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
+import me.Cutiemango.MangoQuest.conversation.*;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
+
+import java.util.*;
 
 public class QuestStorage
 {

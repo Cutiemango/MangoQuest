@@ -1,15 +1,17 @@
 package me.Cutiemango.MangoQuest.editor;
 
-import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Syntax;
+import org.bukkit.entity.Player;
 
 public class EditorListenerObject
 {
 	public EditorListenerObject(ListeningType ltype, String cmd, Syntax s)
 	{
 		type = ltype;
-		command = cmd;
+
+		// Prevents "/" in the command.
+		command = cmd.replaceFirst("/", "");
 		syntax = s;
 	}
 

@@ -1,8 +1,8 @@
 package me.Cutiemango.MangoQuest.questobject.interfaces;
 
-import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
+import org.bukkit.entity.Player;
 
 public interface EditorObject
 {

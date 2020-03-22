@@ -1,12 +1,13 @@
 package me.Cutiemango.MangoQuest.manager;
 
-import java.util.logging.Level;
+import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.QuestStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.QuestStorage;
+
+import java.util.logging.Level;
 
 public class QuestChatManager
 {

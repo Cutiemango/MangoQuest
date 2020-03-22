@@ -1,19 +1,6 @@
 package me.Cutiemango.MangoQuest.manager.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.logging.Level;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import me.Cutiemango.MangoQuest.DebugHandler;
-import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestIO;
-import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.*;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
@@ -28,23 +15,29 @@ import me.Cutiemango.MangoQuest.objects.reward.RewardChoice;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Level;
 
 public class QuestConfigSaver
 {
 	public QuestConfigSaver(QuestConfigManager cm)
 	{
 		manager = cm;
-		quest = manager.globalQuest;
-		conv = manager.globalConv;
 	}
 	
 	private QuestConfigManager manager;
 	
-	private QuestIO quest;
-	private QuestIO conv;
-	
 	public void saveConversation(QuestConversation qc)
 	{
+		QuestIO conv = manager.getGlobalConversation();
 		String cpath = "Conversations." + qc.getInternalID() + ".";
 		conv.set(cpath + "NPC", qc.getNPC().getId());
 		conv.set(cpath + "ConversationName", qc.getName());
@@ -74,6 +67,7 @@ public class QuestConfigSaver
 
 	public void saveQuest(Quest q)
 	{
+		QuestIO quest = manager.getGlobalQuest();
 		String qpath = "Quests." + q.getInternalID() + ".";
 		quest.set(qpath + "QuestName", q.getQuestName());
 		quest.set(qpath + "QuestOutline", q.getQuestOutline());
@@ -130,6 +124,7 @@ public class QuestConfigSaver
 	@SuppressWarnings("unchecked")
 	public void saveRequirements(Quest q)
 	{
+		QuestIO quest = manager.getGlobalQuest();
 		String qpath = "Quests." + q.getInternalID() + ".";
 		// clear all data
 		quest.set(qpath + "Requirements", null);
@@ -159,6 +154,7 @@ public class QuestConfigSaver
 	
 	public void saveTrigger(Quest q)
 	{
+		QuestIO quest = manager.getGlobalQuest();
 		String qpath = "Quests." + q.getInternalID() + ".";
 		// clear all data 
 		quest.set(qpath + "TriggerEvents", null);
@@ -191,6 +187,7 @@ public class QuestConfigSaver
 	
 	public void saveStages(Quest q)
 	{
+		QuestIO quest = manager.getGlobalQuest();
 		String qpath = "Quests." + q.getInternalID() + ".";
 		int stageCount = 0;
 		int objCount = 0;
@@ -213,6 +210,7 @@ public class QuestConfigSaver
 	
 	public void saveReward(Quest q)
 	{
+		QuestIO quest = manager.getGlobalQuest();
 		String qpath = "Quests." + q.getInternalID() + ".";
 		quest.set(qpath + "Rewards", null);
 		QuestReward r = q.getQuestReward();
@@ -259,6 +257,7 @@ public class QuestConfigSaver
 	
 	public void removeConversation(QuestConversation qc)
 	{
+		QuestIO conv = manager.getGlobalQuest();
 		if (qc == null)
 			return;
 		conv.set("Conversations." + qc.getInternalID(), null);
@@ -269,6 +268,7 @@ public class QuestConfigSaver
 	
 	public void removeQuest(Quest q)
 	{
+		QuestIO quest = manager.getGlobalQuest();
 		if (q == null)
 			return;
 		quest.set("Quests." + q.getInternalID(), null);

@@ -1,16 +1,16 @@
 package me.Cutiemango.MangoQuest.commands.edtior;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Syntax;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
-import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
+import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestSetting;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 public class CommandEditSetting
 {

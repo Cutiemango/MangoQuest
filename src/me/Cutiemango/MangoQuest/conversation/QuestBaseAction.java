@@ -1,8 +1,5 @@
 package me.Cutiemango.MangoQuest.conversation;
 
-import java.util.Arrays;
-import java.util.List;
-import org.bukkit.scheduler.BukkitRunnable;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
@@ -10,6 +7,10 @@ import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class QuestBaseAction
 {

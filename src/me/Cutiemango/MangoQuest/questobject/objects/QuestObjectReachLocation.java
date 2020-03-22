@@ -1,9 +1,5 @@
 package me.Cutiemango.MangoQuest.questobject.objects;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.Syntax;
@@ -17,6 +13,10 @@ import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 public class QuestObjectReachLocation extends SimpleQuestObject implements EditorObject
 {

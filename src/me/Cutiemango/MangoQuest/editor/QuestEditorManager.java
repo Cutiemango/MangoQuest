@@ -1,32 +1,33 @@
 package me.Cutiemango.MangoQuest.editor;
 
-import java.util.HashMap;
-import java.util.List;
+import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestStorage;
+import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.book.FlexiableBook;
+import me.Cutiemango.MangoQuest.book.InteractiveText;
+import me.Cutiemango.MangoQuest.book.QuestBookPage;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
+import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.model.QuestSetting;
+import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject.TriggerObjectType;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
+import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
+import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestStorage;
-import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.book.FlexiableBook;
-import me.Cutiemango.MangoQuest.book.InteractiveText;
-import me.Cutiemango.MangoQuest.book.QuestBookPage;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestValidater;
-import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
-import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.model.QuestSetting;
-import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
-import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
-import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
-import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject.TriggerObjectType;
-import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
-import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class QuestEditorManager
 {
@@ -454,9 +455,10 @@ public class QuestEditorManager
 					i = 0;
 					for (String s : (List<String>) q.getRequirements().get(t))
 					{
-						p2.add("- ").endNormally();
-						p2.add(s).endNormally();
-						p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req QUEST " + i)).endNormally();
+						if (QuestUtil.getQuest(s) == null)
+							continue;
+						Quest quest = QuestUtil.getQuest(s);
+						p2.add("&0- &l" + quest.getQuestName() + "&0(" + s + ")").endNormally();
 						p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove req QUEST " + i)).endNormally();
 						p2.changeLine();
 						i++;

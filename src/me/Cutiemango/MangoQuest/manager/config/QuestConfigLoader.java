@@ -1,30 +1,7 @@
 package me.Cutiemango.MangoQuest.manager.config;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.logging.Level;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemStack;
-import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.ConfigSettings;
-import me.Cutiemango.MangoQuest.DebugHandler;
-import me.Cutiemango.MangoQuest.QuestIO;
-import me.Cutiemango.MangoQuest.QuestStorage;
-import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.conversation.FriendConversation;
-import me.Cutiemango.MangoQuest.conversation.QuestBaseAction;
-import me.Cutiemango.MangoQuest.conversation.QuestChoice;
-import me.Cutiemango.MangoQuest.conversation.QuestConversation;
-import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
+import me.Cutiemango.MangoQuest.*;
+import me.Cutiemango.MangoQuest.conversation.*;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
 import me.Cutiemango.MangoQuest.manager.CustomObjectManager;
@@ -40,34 +17,30 @@ import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
 import me.Cutiemango.MangoQuest.objects.reward.QuestReward;
 import me.Cutiemango.MangoQuest.objects.reward.RewardChoice;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
-import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject.TriggerObjectType;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectBreakBlock;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectConsumeItem;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectDeliverItem;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectKillMob;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectReachLocation;
-import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectTalkToNPC;
+import me.Cutiemango.MangoQuest.questobject.objects.*;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.ItemStack;
+
+import java.io.File;
+import java.util.*;
+import java.util.logging.Level;
 
 public class QuestConfigLoader
 {
 	public QuestConfigLoader(QuestConfigManager cm)
 	{
 		manager = cm;
-		config = manager.configIO;
-		translation = manager.translateIO;
-		npc = manager.npcIO;
 	}
 	
 	private QuestConfigManager manager;
 
-	private QuestIO translation;
-	private QuestIO npc;
-	private QuestIO config;
-	
 	public void loadAll()
 	{
 		loadTranslation();
@@ -80,8 +53,119 @@ public class QuestConfigLoader
 		SimpleQuestObject.initObjectNames();
 	}
 
+	public void loadConfig()
+	{
+		QuestIO config = manager.getConfig();
+		// Load i18n
+		boolean useModifiedLanguage = false;
+
+		if (config.getBoolean("useModifiedLanguage"))
+			useModifiedLanguage = true;
+
+		if (config.getString("language") != null)
+		{
+			String[] lang = config.getString("language").split("_");
+			if (lang.length > 1)
+			{
+				ConfigSettings.LOCALE_USING = new Locale(lang[0], lang[1]);
+				I18n.init(ConfigSettings.LOCALE_USING, useModifiedLanguage);
+				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.UsingLocale", config.getString("language")));
+			}
+		}
+		else
+		{
+			ConfigSettings.LOCALE_USING = ConfigSettings.DEFAULT_LOCALE;
+			I18n.init(ConfigSettings.LOCALE_USING, useModifiedLanguage);
+			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.LocaleNotFound"));
+			QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.UsingDefaultLocale", ConfigSettings.DEFAULT_LOCALE.toString()));
+			config.set("language", ConfigSettings.DEFAULT_LOCALE.toString());
+		}
+
+		// Use weak item check
+		ConfigSettings.USE_WEAK_ITEM_CHECK = config.getBoolean("useWeakItemCheck");
+		DebugHandler.log(5, "[Config] useWeakItemCheck=" + ConfigSettings.USE_WEAK_ITEM_CHECK);
+
+		// Enable Skip
+		ConfigSettings.ENABLE_SKIP = config.getBoolean("enableSkip");
+		DebugHandler.log(5, "[Config] enableSkip=" + ConfigSettings.ENABLE_SKIP);
+
+
+		// Save Interval
+		if (config.getInt("saveIntervalInSeconds") != 0)
+			ConfigSettings.PLAYER_DATA_SAVE_INTERVAL = config.getInt("saveIntervalInSeconds");
+		else
+		{
+			ConfigSettings.PLAYER_DATA_SAVE_INTERVAL = 600;
+			config.set("saveIntervalInSeconds", 600);
+		}
+
+		// Debug mode
+		DebugHandler.DEBUG_LEVEL = config.getInt("debugLevel");
+		if (config.getInt("debugLevel") > 0)
+			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.DebugMode", Integer.toString(DebugHandler.DEBUG_LEVEL)));
+		else
+			config.set("debugLevel", 0);
+
+		// Rightclick Settings
+		ConfigSettings.USE_RIGHT_CLICK_MENU = config.getBoolean("useRightClickMenu");
+		DebugHandler.log(5, "[Config] useRightClickMenu=" + ConfigSettings.USE_RIGHT_CLICK_MENU);
+
+		// Login Message
+		ConfigSettings.POP_LOGIN_MESSAGE = config.getBoolean("popLoginMessage");
+		DebugHandler.log(5, "[Config] popLoginMessage=" + ConfigSettings.POP_LOGIN_MESSAGE);
+
+		// Plugin Prefix
+		if (config.getString("pluginPrefix") != null)
+			QuestStorage.prefix = QuestChatManager.translateColor(config.getString("pluginPrefix"));
+		else
+			config.set("pluginPrefix", "&6MangoQuest>");
+
+		// Maximum Quests
+		if (config.getInt("maxQuestAmount") != 0)
+			ConfigSettings.MAXIMUM_QUEST_AMOUNT = config.getInt("maxQuestAmount");
+		else
+		{
+			ConfigSettings.MAXIMUM_QUEST_AMOUNT = 4;
+			config.set("maxQuestAmount", 4);
+		}
+
+		// Scoreboard settings
+		if (!config.contains("enableScoreboard"))
+			config.set("enableScoreboard", true);
+		ConfigSettings.ENABLE_SCOREBOARD = config.getBoolean("enableScoreboard");
+
+		DebugHandler.log(5, "[Config] enableScoreboard=" + ConfigSettings.ENABLE_SCOREBOARD);
+
+		if (!config.contains("scoreboardMaxCanTakeQuestAmount"))
+			config.set("scoreboardMaxCanTakeQuestAmount", 3);
+		ConfigSettings.MAXIMUM_DISPLAY_QUEST_AMOUNT = config.getInt("scoreboardMaxCanTakeQuestAmount");
+
+		// Particle Settings
+		if (!config.contains("useParticleEffect"))
+			config.set("useParticleEffect", true);
+		ConfigSettings.USE_PARTICLE_EFFECT = config.getBoolean("useParticleEffect");
+
+		DebugHandler.log(5, "[Config] useParticleEffect=" + ConfigSettings.USE_PARTICLE_EFFECT);
+
+		// Database Settings
+		ConfigSettings.USE_DATABASE = config.getBoolean("useDatabase");
+		DebugHandler.log(5, "[Config] useDatabase=" + ConfigSettings.USE_DATABASE);
+
+		if (ConfigSettings.USE_DATABASE)
+		{
+			ConfigSettings.DATABASE_ADDRESS = config.getString("databaseAddress");
+			ConfigSettings.DATABASE_PORT = config.getInt("databasePort");
+			ConfigSettings.DATABASE_USER = config.getString("databaseUser");
+			ConfigSettings.DATABASE_PASSWORD = config.getString("databasePassword");
+
+			DebugHandler.log(5, "[Config] Database login credentials loaded!");
+			DebugHandler.log(5, String.format("[Config] address=%s, port=%d, user=%s, pw=%s", ConfigSettings.DATABASE_ADDRESS, ConfigSettings.DATABASE_PORT, ConfigSettings.DATABASE_USER, ConfigSettings.DATABASE_PASSWORD));
+		}
+	}
+
 	public void loadTranslation()
 	{
+		QuestIO translation = manager.getTranslation();
 		if (translation.isSection("Material"))
 		{
 			for (String s : translation.getSection("Material"))
@@ -102,9 +186,8 @@ public class QuestConfigLoader
 				{
 					QuestStorage.EntityTypeMap.put(EntityType.valueOf(e), translation.getConfig().getString("EntityType." + e));
 				}
-				catch (IllegalArgumentException ex)
+				catch (IllegalArgumentException ignored)
 				{
-					continue;
 				}
 			}
 		}
@@ -131,6 +214,7 @@ public class QuestConfigLoader
 
 	public void loadNPC()
 	{
+		QuestIO npc = manager.getNPC();
 		int count = 0;
 		HashMap<Integer, Integer> cloneMap = new HashMap<>();
 		if (npc.isSection("NPC"))
@@ -185,100 +269,6 @@ public class QuestConfigLoader
 			QuestNPCManager.updateNPC(Main.getHooker().getNPC(id), QuestNPCManager.getNPCData(cloneMap.get(id)));
 		}
 		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.NPCLoaded", Integer.toString(count)));
-	}
-
-	public void loadConfig()
-	{
-		// Load i18n
-		boolean useModifiedLanguage = false;
-		
-		if (config.getBoolean("useModifiedLanguage"))
-			useModifiedLanguage = true;
-		
-		if (config.getString("language") != null)
-		{
-			String[] lang = config.getString("language").split("_");
-			if (lang.length > 1)
-			{
-				ConfigSettings.LOCALE_USING = new Locale(lang[0], lang[1]);
-				I18n.init(ConfigSettings.LOCALE_USING, useModifiedLanguage);
-				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.UsingLocale", config.getString("language")));
-			}
-		}
-		else
-		{
-			ConfigSettings.LOCALE_USING = ConfigSettings.DEFAULT_LOCALE;
-			I18n.init(ConfigSettings.LOCALE_USING, useModifiedLanguage);
-			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.LocaleNotFound"));
-			QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.UsingDefaultLocale", ConfigSettings.DEFAULT_LOCALE.toString()));
-			config.set("language", ConfigSettings.DEFAULT_LOCALE.toString());
-		}
-		
-		// Use weak item check
-		ConfigSettings.USE_WEAK_ITEM_CHECK = config.getBoolean("useWeakItemCheck");
-		DebugHandler.log(5, "[Config] useWeakItemCheck=" + ConfigSettings.USE_WEAK_ITEM_CHECK);
-		
-		// Enable Skip
-		ConfigSettings.ENABLE_SKIP = config.getBoolean("enableSkip");
-		DebugHandler.log(5, "[Config] enableSkip=" + ConfigSettings.ENABLE_SKIP);
-		
-		
-		// Save Interval
-		if (config.getInt("saveIntervalInSeconds") != 0)
-			ConfigSettings.PLAYER_DATA_SAVE_INTERVAL = config.getInt("saveIntervalInSeconds");
-		else
-		{
-			ConfigSettings.PLAYER_DATA_SAVE_INTERVAL = 600;
-			config.set("saveIntervalInSeconds", 600);
-		}
-		
-		// Debug mode
-		DebugHandler.DEBUG_LEVEL = config.getInt("debugLevel");
-		if (config.getInt("debugLevel") > 0)
-			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.DebugMode", Integer.toString(DebugHandler.DEBUG_LEVEL)));
-		else
-			config.set("debugLevel", 0);
-		
-		// Rightclick Settings
-		ConfigSettings.USE_RIGHT_CLICK_MENU = config.getBoolean("useRightClickMenu");
-		DebugHandler.log(5, "[Config] useRightClickMenu=" + ConfigSettings.USE_RIGHT_CLICK_MENU);
-		
-		// Login Message
-		ConfigSettings.POP_LOGIN_MESSAGE = config.getBoolean("popLoginMessage");
-		DebugHandler.log(5, "[Config] popLoginMessage=" + ConfigSettings.POP_LOGIN_MESSAGE);
-		
-		// Plugin Prefix
-		if (config.getString("pluginPrefix") != null)
-			QuestStorage.prefix = QuestChatManager.translateColor(config.getString("pluginPrefix"));
-		else
-			config.set("pluginPrefix", "&6MangoQuest>");
-		
-		// Maximum Quests
-		if (config.getInt("maxQuestAmount") != 0)
-			ConfigSettings.MAXIMUM_QUEST_AMOUNT = config.getInt("maxQuestAmount");
-		else
-		{
-			ConfigSettings.MAXIMUM_QUEST_AMOUNT = 4;
-			config.set("maxQuestAmount", 4);
-		}
-		
-		// Scoreboard settings
-		if (!config.contains("enableScoreboard"))
-			config.set("enableScoreboard", true);
-		ConfigSettings.ENABLE_SCOREBOARD = config.getBoolean("enableScoreboard");
-		
-		DebugHandler.log(5, "[Config] enableScoreboard=" + ConfigSettings.ENABLE_SCOREBOARD);
-		
-		if (!config.contains("scoreboardMaxCanTakeQuestAmount"))
-			config.set("scoreboardMaxCanTakeQuestAmount", 3);
-		ConfigSettings.MAXIMUM_DISPLAY_QUEST_AMOUNT = config.getInt("scoreboardMaxCanTakeQuestAmount");
-		
-		// Particle Settings
-		if (!config.contains("useParticleEffect"))
-			config.set("useParticleEffect", true);
-		ConfigSettings.USE_PARTICLE_EFFECT = config.getBoolean("useParticleEffect");
-		
-		DebugHandler.log(5, "[Config] useParticleEffect=" + ConfigSettings.USE_PARTICLE_EFFECT);
 	}
 
 	public void loadConversation()
@@ -372,6 +362,7 @@ public class QuestConfigLoader
 	
 	public void loadGUIOptions()
 	{
+		QuestIO npc = manager.getNPC();
 		if (!npc.isSection("GUIOptions"))
 			return;
 		int count = 0;
@@ -732,16 +723,19 @@ public class QuestConfigLoader
 					{
 						case CHOICE:
 						case NPC_TALK:
-						case COMMAND:
 						case WAIT:
 						case SENTENCE:
 						case FINISH:
+						case COMMAND:
+						case COMMAND_PLAYER:
+						case COMMAND_PLAYER_OP:
 							action = new QuestBaseAction(e, s.split("#")[1]);
 							break;
 						case BUTTON:
 						case CHANGE_LINE:
 						case CHANGE_PAGE:
 						case TAKE_QUEST:
+						case EXIT:
 						default:
 							action = new QuestBaseAction(e, null);
 							break;

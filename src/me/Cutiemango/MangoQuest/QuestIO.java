@@ -1,5 +1,13 @@
 package me.Cutiemango.MangoQuest;
 
+import com.google.common.base.Charsets;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,13 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import com.google.common.base.Charsets;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
 public class QuestIO
 {

@@ -1,7 +1,15 @@
 package me.Cutiemango.MangoQuest.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
+import me.Cutiemango.MangoQuest.*;
+import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
+import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
+import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
+import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
+import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.objects.reward.QuestGUIItem;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -9,18 +17,9 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.Syntax;
-import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
-import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
-import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
-import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
-import me.Cutiemango.MangoQuest.objects.reward.QuestGUIItem;
-import net.md_5.bungee.api.ChatColor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RewardGUIListener
 {
@@ -29,10 +28,12 @@ public class RewardGUIListener
 		Player p = (Player)e.getWhoClicked();
 		InventoryView inv = e.getView();
 		int i = getIndex(e.getCurrentItem());
-		
+
 		if (e.getCurrentItem() != null)
 		{
-			if (I18n.locMsg("QuestReward.RewardTitle").contains(inv.getTitle()))
+			DebugHandler.log(5, "I18n: " + QuestChatManager.translateColor(I18n.locMsg("QuestReward.RewardTitle")));
+			DebugHandler.log(5, "Inventory: " + inv.getTitle());
+			if (inv.getTitle().contains(QuestChatManager.translateColor(I18n.locMsg("QuestReward.RewardTitle"))))
 			{
 				e.setCancelled(true);
 				if (i == -1)
@@ -43,7 +44,7 @@ public class RewardGUIListener
 					QuestUtil.executeCommandAsync(p, "mq q reward remove " + i);
 				p.closeInventory();
 			}
-			else if (I18n.locMsg("QuestReward.RewardEditTitle").contains(inv.getTitle()))
+			else if (inv.getTitle().contains(QuestChatManager.translateColor(I18n.locMsg("QuestReward.RewardEditTitle"))))
 			{
 				
 				if (QuestGUIItem.isGUIItem(e.getCurrentItem()))
@@ -81,7 +82,7 @@ public class RewardGUIListener
 					}
 				}.runTaskLater(Main.getInstance(), 3L);
 			}
-			else if (inv.getTitle().contains(I18n.locMsg("QuestReward.ChoiceEditTitle")))
+			else if (inv.getTitle().contains(QuestChatManager.translateColor(I18n.locMsg("QuestReward.ChoiceEditTitle"))))
 			{
 				if (e.getCurrentItem().getType().equals(Material.BARRIER) && QuestGUIItem.isGUIItem(e.getCurrentItem()))
 				{
@@ -112,7 +113,7 @@ public class RewardGUIListener
 		InventoryView inv = e.getView();
 		if (inv != null)
 		{
-			if (inv.getTitle().contains(I18n.locMsg("QuestReward.ChoiceEditTitle")))
+			if (inv.getTitle().contains(QuestChatManager.translateColor(I18n.locMsg("QuestReward.ChoiceEditTitle"))))
 			{
 				int index = Integer.parseInt(inv.getTitle().split("@")[1]);
 				List<ItemStack> l = new ArrayList<>();

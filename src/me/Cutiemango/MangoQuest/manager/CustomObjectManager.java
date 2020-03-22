@@ -1,11 +1,12 @@
 package me.Cutiemango.MangoQuest.manager;
 
+import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
-import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
 
 public class CustomObjectManager
 {

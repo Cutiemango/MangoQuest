@@ -1,5 +1,13 @@
 package me.Cutiemango.MangoQuest.listeners;
 
+import com.nisovin.shopkeepers.api.ShopkeepersAPI;
+import me.Cutiemango.MangoQuest.*;
+import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
+import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
+import net.citizensnpcs.api.npc.NPC;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,18 +19,6 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.nisovin.shopkeepers.api.ShopkeepersAPI;
-import me.Cutiemango.MangoQuest.ConfigSettings;
-import me.Cutiemango.MangoQuest.DebugHandler;
-import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestStorage;
-import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.data.QuestPlayerData;
-import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
-import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
-import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
-import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
-import net.citizensnpcs.api.npc.NPC;
 import su.nightexpress.unrealshop.shop.objects.UShop;
 
 public class PlayerListener

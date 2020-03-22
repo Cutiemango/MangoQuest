@@ -1,11 +1,12 @@
 package me.Cutiemango.MangoQuest.book;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import net.md_5.bungee.api.chat.TextComponent;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class FlexiableBook
 {

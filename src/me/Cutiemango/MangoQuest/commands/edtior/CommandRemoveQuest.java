@@ -1,13 +1,8 @@
 package me.Cutiemango.MangoQuest.commands.edtior;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
@@ -17,6 +12,12 @@ import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 public class CommandRemoveQuest
 {

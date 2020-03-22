@@ -1,13 +1,14 @@
 package me.Cutiemango.MangoQuest.objects.reward;
 
-import java.util.List;
+import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+
+import java.util.List;
 
 public class QuestGUIItem
 {

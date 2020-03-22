@@ -1,5 +1,12 @@
 package me.Cutiemango.MangoQuest.listeners;
 
+import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
+import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
+import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.event.NPCDamageByEntityEvent;
+import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,21 +17,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
-import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
-import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
-import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.event.NPCDamageByEntityEvent;
-import net.citizensnpcs.api.event.NPCLeftClickEvent;
 
 public class MainListener implements Listener
 {

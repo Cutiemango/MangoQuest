@@ -1,8 +1,5 @@
 package me.Cutiemango.MangoQuest.manager;
 
-import org.bukkit.Bukkit;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
@@ -11,6 +8,9 @@ import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class QuestValidater
 {

@@ -1,24 +1,20 @@
 package me.Cutiemango.MangoQuest;
 
-import java.util.logging.Level;
-
+import me.Cutiemango.MangoQuest.commands.AdminCommand;
+import me.Cutiemango.MangoQuest.commands.CommandReceiver;
+import me.Cutiemango.MangoQuest.data.QuestPlayerData;
+import me.Cutiemango.MangoQuest.listeners.MainListener;
+import me.Cutiemango.MangoQuest.manager.*;
+import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
+import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.versions.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
-import me.Cutiemango.MangoQuest.commands.AdminCommand;
-import me.Cutiemango.MangoQuest.commands.CommandReceiver;
-import me.Cutiemango.MangoQuest.data.QuestPlayerData;
-import me.Cutiemango.MangoQuest.listeners.MainListener;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
-import me.Cutiemango.MangoQuest.manager.ScoreboardManager;
-import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
-import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
-import me.Cutiemango.MangoQuest.manager.CustomObjectManager;
-import me.Cutiemango.MangoQuest.manager.PluginHooker;
+
+import java.util.logging.Level;
 
 public class Main extends JavaPlugin
 {
@@ -40,7 +36,6 @@ public class Main extends JavaPlugin
 		configManager = new QuestConfigManager();
 		pluginHooker = new PluginHooker(this);
 		pluginHooker.hookPlugins();
-		configManager.loadFile();
 		SimpleQuestObject.initObjectNames();
 
 		getServer().getPluginManager().registerEvents(new MainListener(), this);

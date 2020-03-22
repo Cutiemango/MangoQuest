@@ -17,5 +17,10 @@ public class ConfigSettings
 	public static boolean ENABLE_SKIP = false;
 	
 	public static boolean USE_WEAK_ITEM_CHECK = false;
-	
+
+	public static boolean USE_DATABASE = false;
+	public static String DATABASE_ADDRESS = "localhost";
+	public static int DATABASE_PORT = 3306;
+	public static String DATABASE_USER = "admin";
+	public static String DATABASE_PASSWORD = "1234";
 }

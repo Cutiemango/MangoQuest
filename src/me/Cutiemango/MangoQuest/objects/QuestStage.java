@@ -1,8 +1,9 @@
 package me.Cutiemango.MangoQuest.objects;
 
+import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
+
 import java.util.ArrayList;
 import java.util.List;
-import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 
 public class QuestStage
 {

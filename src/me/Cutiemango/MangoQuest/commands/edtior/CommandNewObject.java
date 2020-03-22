@@ -1,26 +1,27 @@
 package me.Cutiemango.MangoQuest.commands.edtior;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.Syntax;
-import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
-import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
+import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.QuestStage;
 import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
-import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject.TriggerObjectType;
+import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectBreakBlock;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommandNewObject
 {
@@ -104,13 +105,23 @@ public class CommandNewObject
 	private static void addRequirements(Quest q, Player sender, String[] args)
 	{
 		RequirementType t = RequirementType.valueOf(args[3]);
-		if (t.hasIndex() && args.length == 5)
+		if (t.hasIndex() && t == RequirementType.QUEST)
 		{
-			int index = Integer.parseInt(args[4]);
-			if (t == RequirementType.QUEST)
+			if (args.length == 6)
 			{
-				QuestEditorManager.selectQuest(sender, "/mq e edit req " + t.toString() + " " + index);
-				((List<String>) q.getRequirements().get(t)).add("");
+				if (QuestUtil.getQuest(args[5]) != null)
+				{
+					Quest quest = QuestUtil.getQuest(args[5]);
+					((List<String>) q.getRequirements().get(t)).add(args[5]);
+					QuestEditorManager.editQuestRequirement(sender);
+					return;
+				}
+			}
+			else if (args.length == 5)
+			{
+				int index = Integer.parseInt(args[4]);
+				QuestEditorManager.selectQuest(sender, "/mq e addnew req QUEST " + index);
+				return;
 			}
 		}
 		else if (t == RequirementType.FRIEND_POINT)

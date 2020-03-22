@@ -1,10 +1,5 @@
 package me.Cutiemango.MangoQuest.manager;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import com.sucy.skill.SkillAPI;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
@@ -12,6 +7,12 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.objects.requirement.RequirementFailResult;
 import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
 
 public class RequirementManager
 {

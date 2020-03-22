@@ -1,7 +1,5 @@
 package me.Cutiemango.MangoQuest.book;
 
-import org.bukkit.Location;
-import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
@@ -14,6 +12,8 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Location;
+import org.bukkit.inventory.ItemStack;
 
 public class TextComponentFactory
 {
@@ -87,6 +87,8 @@ public class TextComponentFactory
 				long d = qd.getDelay(qd.getFinishData(q).getLastFinish(), q.getRedoDelay());
 				if (d > 0)
 					return regHoverEvent(text, I18n.locMsg("QuestJourney.WaitFor", QuestUtil.convertTime(d)));
+				if (!qd.hasTakenReward(q))
+					return regHoverEvent(text, I18n.locMsg("QuestReward.RewardNotTaken"));
 			}
 			if (q.hasRequirement())
 			{

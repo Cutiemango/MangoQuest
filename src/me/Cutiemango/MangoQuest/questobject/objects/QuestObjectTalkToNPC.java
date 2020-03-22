@@ -1,8 +1,5 @@
 package me.Cutiemango.MangoQuest.questobject.objects;
 
-import java.util.logging.Level;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestIO;
@@ -22,6 +19,10 @@ import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
 import me.Cutiemango.MangoQuest.questobject.interfaces.NPCObject;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.util.logging.Level;
 
 public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject, EditorObject
 {

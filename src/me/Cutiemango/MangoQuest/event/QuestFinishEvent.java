@@ -1,9 +1,9 @@
 package me.Cutiemango.MangoQuest.event;
 
+import me.Cutiemango.MangoQuest.model.Quest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import me.Cutiemango.MangoQuest.model.Quest;
 
 public class QuestFinishEvent extends Event
 {

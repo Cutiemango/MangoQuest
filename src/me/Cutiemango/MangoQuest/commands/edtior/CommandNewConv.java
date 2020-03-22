@@ -1,6 +1,5 @@
 package me.Cutiemango.MangoQuest.commands.edtior;
 
-import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Syntax;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
@@ -8,10 +7,11 @@ import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.entity.Player;
 
 public class CommandNewConv
 {

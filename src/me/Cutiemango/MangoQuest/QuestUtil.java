@@ -1,13 +1,5 @@
 package me.Cutiemango.MangoQuest;
 
-import java.util.*;
-import java.util.logging.Level;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.book.FlexiableBook;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
@@ -15,6 +7,15 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.*;
+import java.util.logging.Level;
 
 public class QuestUtil
 {

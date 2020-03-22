@@ -6,6 +6,17 @@ language: "zh_TW"
 #【使用自己修改過的語系檔案】
 useModifiedLanguage: false
 
+#【使用資料庫】
+# 若使用資料庫，請將此處調整為true。
+useDatabase: false
+
+#【資料庫設定】
+# 請填入正確的連線資料以便插件連接資料庫。
+databaseAddress: "localhost"
+databasePort: "3306"
+databaseName: "sample"
+databasePassword: "1234"
+
 #【插件前綴】
 # 使用聲明：
 # 更改插件前綴是為各位服主在訊息辨別上更加方便，

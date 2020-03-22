@@ -1,7 +1,5 @@
 package me.Cutiemango.MangoQuest.manager;
 
-import java.util.HashMap;
-import org.bukkit.entity.Entity;
 import com.nisovin.shopkeepers.api.ShopkeepersAPI;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
@@ -11,6 +9,9 @@ import me.Cutiemango.MangoQuest.objects.GUIOption;
 import me.Cutiemango.MangoQuest.objects.QuestNPC;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.entity.Entity;
+
+import java.util.HashMap;
 
 public class QuestNPCManager
 {

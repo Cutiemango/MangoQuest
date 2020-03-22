@@ -1,12 +1,13 @@
 package me.Cutiemango.MangoQuest.objects;
 
+import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.model.Quest;
+import net.citizensnpcs.api.npc.NPC;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Random;
-import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.model.Quest;
-import net.citizensnpcs.api.npc.NPC;
 
 public class QuestNPC
 {

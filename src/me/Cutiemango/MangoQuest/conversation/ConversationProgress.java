@@ -1,20 +1,17 @@
 package me.Cutiemango.MangoQuest.conversation;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestStorage;
-import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.DebugHandler;
-import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.*;
 import me.Cutiemango.MangoQuest.book.FlexiableBook;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ConversationProgress
 {

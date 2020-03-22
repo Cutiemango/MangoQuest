@@ -1,10 +1,10 @@
 package me.Cutiemango.MangoQuest.event;
 
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 public class QuestObjectProgressEvent extends Event
 {

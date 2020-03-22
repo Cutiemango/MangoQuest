@@ -1,7 +1,8 @@
 package me.Cutiemango.MangoQuest;
 
-import java.util.logging.Level;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+
+import java.util.logging.Level;
 
 public class DebugHandler
 {

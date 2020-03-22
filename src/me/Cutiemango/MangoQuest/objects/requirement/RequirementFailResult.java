@@ -1,9 +1,9 @@
 package me.Cutiemango.MangoQuest.objects.requirement;
 
-import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.model.Quest;
+import org.bukkit.inventory.ItemStack;
 
 public class RequirementFailResult
 {

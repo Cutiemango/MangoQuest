@@ -1,18 +1,9 @@
 package me.Cutiemango.MangoQuest.model;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import me.Cutiemango.MangoQuest.QuestStorage;
-import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.QuestStorage;
+import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
@@ -26,6 +17,12 @@ import me.Cutiemango.MangoQuest.objects.trigger.TriggerTask;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.*;
 
 public class Quest
 {
@@ -191,16 +188,6 @@ public class Quest
 		return stages;
 	}
 
-	public List<SimpleQuestObject> getAllObjects()
-	{
-		List<SimpleQuestObject> list = new ArrayList<>();
-		for (QuestStage qs : stages)
-		{
-			list.addAll(qs.getObjects());
-		}
-		return list;
-	}
-
 	public QuestStage getStage(int index)
 	{
 		return stages.get(index);
@@ -264,16 +251,6 @@ public class Quest
 	public void setQuitCancelMsg(String s)
 	{
 		setting.quitCancelMsg = s;
-	}
-
-	public boolean useCustomFailMessage()
-	{
-		return setting.useCustomFailMessage;
-	}
-
-	public void setUseCustomFailMessage(boolean b)
-	{
-		setting.useCustomFailMessage = b;
 	}
 
 	public boolean isRedoable()

@@ -1,13 +1,9 @@
 package me.Cutiemango.MangoQuest.data;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.event.QuestFinishEvent;
-import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.reward.QuestReward;
@@ -16,6 +12,11 @@ import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectReachLocation;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectTalkToNPC;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class QuestProgress
 {

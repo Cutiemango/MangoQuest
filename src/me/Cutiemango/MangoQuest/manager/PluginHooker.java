@@ -1,22 +1,23 @@
 package me.Cutiemango.MangoQuest.manager;
 
-import java.util.logging.Level;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import com.nisovin.shopkeepers.api.ShopkeepersPlugin;
 import com.sucy.skill.SkillAPI;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.api.bukkit.BukkitAPIHelper;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
-import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.Main;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.CitizensPlugin;
 import net.citizensnpcs.api.npc.NPC;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import su.nightexpress.unrealshop.UnrealShop;
+
+import java.util.logging.Level;
 
 public class PluginHooker
 {

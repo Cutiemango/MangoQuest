@@ -1,9 +1,5 @@
 package me.Cutiemango.MangoQuest.manager;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
@@ -24,6 +20,11 @@ import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class QuestBookGUIManager
 {
@@ -153,7 +154,7 @@ public class QuestBookGUIManager
 			page = book.getLastEditingPage();
 			if (!QuestUtil.getData(p).meetFriendPointReq(c.get(i)))
 				continue;
-			page.add(new InteractiveText("- " + c.get(i).getContent()).clickCommand("/mq conv choose " + i)).changeLine();
+			page.add(new InteractiveText((i+1)+". " + c.get(i).getContent()).clickCommand("/mq conv choose " + i)).changeLine();
 		}
 		openBook(p, book.toSendableBook());
 	}

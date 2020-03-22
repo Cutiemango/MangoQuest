@@ -1,13 +1,8 @@
 package me.Cutiemango.MangoQuest.questobject;
 
-import java.util.HashMap;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemStack;
-import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestIO;
+import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.book.TextComponentFactory;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
@@ -15,6 +10,12 @@ import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
 
 public abstract class SimpleQuestObject
 {

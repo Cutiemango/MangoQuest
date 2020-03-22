@@ -1,5 +1,7 @@
 package me.Cutiemango.MangoQuest;
 
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,7 +12,6 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
 public class I18n
 {

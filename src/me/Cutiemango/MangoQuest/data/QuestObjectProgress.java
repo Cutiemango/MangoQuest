@@ -1,13 +1,13 @@
 package me.Cutiemango.MangoQuest.data;
 
-import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
 import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
 import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectTalkToNPC;
-import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.conversation.ConversationManager;
+import org.bukkit.entity.Player;
 
 public class QuestObjectProgress
 {

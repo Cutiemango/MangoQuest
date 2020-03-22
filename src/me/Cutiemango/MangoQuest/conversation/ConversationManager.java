@@ -1,6 +1,5 @@
 package me.Cutiemango.MangoQuest.conversation;
 
-import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.ConfigSettings;
 import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
@@ -11,6 +10,7 @@ import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
+import org.bukkit.entity.Player;
 
 public class ConversationManager
 {

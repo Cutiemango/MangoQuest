@@ -1,14 +1,5 @@
 package me.Cutiemango.MangoQuest.manager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
@@ -19,6 +10,16 @@ import me.Cutiemango.MangoQuest.objects.reward.RewardCache;
 import me.Cutiemango.MangoQuest.objects.reward.RewardChoice;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class QuestRewardManager implements Listener
 {
@@ -29,8 +30,9 @@ public class QuestRewardManager implements Listener
 	{
 		if (!QuestEditorManager.checkEditorMode(p, false))
 			return;
-		QuestReward reward = QuestEditorManager.getCurrentEditingQuest(p).getQuestReward();
-		Inventory inv = Bukkit.createInventory(null, 27, I18n.locMsg("QuestReward.RewardEditTitle"));
+		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
+		QuestReward reward = q.getQuestReward();
+		Inventory inv = Bukkit.createInventory(null, 27, QuestChatManager.translateColor(I18n.locMsg("QuestReward.RewardEditTitle") + ChatColor.stripColor(q.getQuestName())));
 		int a = reward.getChoiceAmount();
 		
 		for (int i = 0; i < a + 1; i++)
@@ -59,10 +61,10 @@ public class QuestRewardManager implements Listener
 			return;
 		String title = I18n.locMsg("QuestReward.ChoiceEditTitle");
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
-		title += q.getQuestName();
+		title += ChatColor.stripColor(QuestChatManager.translateColor(q.getQuestName()));
 		if (title.length() >= 32)
 			title = title.substring(0, 27) + "...";
-		title += "@" + Integer.toString(index);
+		title += "@" + index;
 		Inventory inv = Bukkit.createInventory(null, 27, title);
 		
 		if (q.getQuestReward().getChoices().size() <= index)
@@ -108,7 +110,7 @@ public class QuestRewardManager implements Listener
 	private static ItemStack glassPane(int amount)
 	{
 		QuestGUIItem glassPane = new QuestGUIItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE, 1);
-		glassPane.setName(I18n.locMsg("QuestReward.EditGlassPane", Integer.toString(amount)));
+		glassPane.setName("&0");
 		return glassPane.get();
 	}
 	

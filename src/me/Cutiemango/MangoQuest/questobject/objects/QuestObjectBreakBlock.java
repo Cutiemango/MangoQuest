@@ -1,20 +1,20 @@
 package me.Cutiemango.MangoQuest.questobject.objects;
 
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
+import me.Cutiemango.MangoQuest.DebugHandler;
+import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
-import me.Cutiemango.MangoQuest.DebugHandler;
-import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 
 public class QuestObjectBreakBlock extends NumerableObject implements EditorObject
 {

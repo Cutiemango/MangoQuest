@@ -1,8 +1,14 @@
 package me.Cutiemango.MangoQuest.editor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import me.Cutiemango.MangoQuest.DebugHandler;
+import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -13,15 +19,10 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
-import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
-import me.Cutiemango.MangoQuest.DebugHandler;
-import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
-import net.citizensnpcs.api.npc.NPC;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class EditorListenerHandler
 {

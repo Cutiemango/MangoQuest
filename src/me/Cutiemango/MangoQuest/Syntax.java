@@ -1,11 +1,12 @@
 package me.Cutiemango.MangoQuest;
 
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
+import org.bukkit.entity.Player;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import org.bukkit.entity.Player;
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
-import me.Cutiemango.MangoQuest.manager.QuestValidater;
 
 public class Syntax
 {

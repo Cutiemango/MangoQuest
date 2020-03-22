@@ -1,6 +1,5 @@
 package me.Cutiemango.MangoQuest.questobject;
 
-import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.Syntax;
@@ -11,6 +10,7 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
+import org.bukkit.entity.Player;
 
 public abstract class NumerableObject extends SimpleQuestObject implements EditorObject
 {

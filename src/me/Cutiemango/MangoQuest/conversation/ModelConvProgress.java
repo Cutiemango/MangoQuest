@@ -1,9 +1,9 @@
 package me.Cutiemango.MangoQuest.conversation;
 
-import org.bukkit.entity.Player;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
+import org.bukkit.entity.Player;
 
 public class ModelConvProgress extends ConversationProgress
 {
