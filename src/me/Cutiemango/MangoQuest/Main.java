@@ -6,6 +6,7 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.listeners.MainListener;
 import me.Cutiemango.MangoQuest.manager.*;
 import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
+import me.Cutiemango.MangoQuest.manager.database.DatabaseLoader;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.versions.*;
 import org.bukkit.Bukkit;
@@ -37,6 +38,7 @@ public class Main extends JavaPlugin
 		pluginHooker = new PluginHooker(this);
 		pluginHooker.hookPlugins();
 		SimpleQuestObject.initObjectNames();
+		DatabaseLoader.initPlayerDB();
 
 		getServer().getPluginManager().registerEvents(new MainListener(), this);
 
@@ -71,11 +73,7 @@ public class Main extends JavaPlugin
 			{
 				CustomObjectManager.loadCustomObjects();
 				QuestConfigManager.getLoader().loadAll();
-				for (Player p : Bukkit.getOnlinePlayers())
-				{
-					QuestPlayerData qd = new QuestPlayerData(p);
-					QuestStorage.Players.put(p.getName(), qd);
-				}
+				loadPlayers();
 			}
 		}.runTaskLater(this, 5L);
 
@@ -109,11 +107,7 @@ public class Main extends JavaPlugin
 		SimpleQuestObject.initObjectNames();
 		CustomObjectManager.loadCustomObjects();
 		QuestConfigManager.getLoader().loadAll();
-		for (Player p : Bukkit.getOnlinePlayers())
-		{
-			QuestPlayerData qd = new QuestPlayerData(p);
-			QuestStorage.Players.put(p.getName(), qd);
-		}
+		loadPlayers();
 	}
 
 
@@ -125,6 +119,15 @@ public class Main extends JavaPlugin
 	public static PluginHooker getHooker()
 	{
 		return instance.pluginHooker;
+	}
+
+	public void loadPlayers()
+	{
+		for (Player p : Bukkit.getOnlinePlayers())
+		{
+			QuestPlayerData qd = ConfigSettings.USE_DATABASE ? DatabaseLoader.loadPlayer(p) : new QuestPlayerData(p);
+			QuestStorage.Players.put(p.getName(), qd);
+		}
 	}
 
 	public void savePlayers()

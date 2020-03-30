@@ -49,21 +49,25 @@ public class QuestPlayerData
 	{
 		owner = p;
 
-		if (ConfigSettings.USE_DATABASE)
-			DatabaseLoader.loadPlayer(this);
-		else
+		if (!ConfigSettings.USE_DATABASE)
+		{
 			loadFromYml();
+			save();
+		}
+	}
+
+	public QuestPlayerData(Player p, Set<QuestProgress> q, Set<QuestFinishData> fd, Set<String> convs, HashMap<Integer, Integer> map)
+	{
+		owner = p;
+		currentQuests = q;
+		finishedQuests = fd;
+		finishedConversations = convs;
+		friendPointStorage = map;
 	}
 
 	public void loadFromYml()
 	{
 		save = new QuestIO(owner);
-		load();
-		save();
-	}
-
-	public void load()
-	{
 		save.set("LastKnownID", owner.getName());
 
 		if (save.isSection("QuestProgress"))
