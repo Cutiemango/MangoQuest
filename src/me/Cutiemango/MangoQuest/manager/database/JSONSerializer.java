@@ -13,6 +13,12 @@ import java.util.logging.Level;
 
 public class JSONSerializer
 {
+	/**
+	 * Serialize the object list into a json string.
+	 * (so that it can be stored in the database)
+	 * @param lst list of object progress
+	 * @return json string
+	 */
 	public static String jsonSerialize(List<QuestObjectProgress> lst)
 	{
 		JSONObject json = new JSONObject();
@@ -21,6 +27,19 @@ public class JSONSerializer
 		return json.toJSONString();
 	}
 
+	/**
+	 * Deserialize the object progress from a json string.
+	 * Should be in this format:
+	 * {
+	 *     "0": 1
+	 *     "1": 2
+	 *     "2": 0
+	 * }
+	 *
+	 * @param objs object list from the same quest
+	 * @param obj json string
+	 * @return deserialized object list
+	 */
 	public static List<QuestObjectProgress> jsonDeserialize(List<SimpleQuestObject> objs, String obj)
 	{
 		List<QuestObjectProgress> prog = new ArrayList<>();

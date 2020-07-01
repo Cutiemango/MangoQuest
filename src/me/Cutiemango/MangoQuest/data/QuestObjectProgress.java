@@ -1,24 +1,13 @@
 package me.Cutiemango.MangoQuest.data;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
-import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
 import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectTalkToNPC;
 import org.bukkit.entity.Player;
-import org.json.simple.JSONObject;
-
-import java.lang.reflect.Type;
-import java.util.List;
 
 public class QuestObjectProgress
 {

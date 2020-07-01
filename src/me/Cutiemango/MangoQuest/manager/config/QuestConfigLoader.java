@@ -217,7 +217,7 @@ public class QuestConfigLoader
 		QuestIO npc = manager.getNPC();
 		int count = 0;
 		HashMap<Integer, Integer> cloneMap = new HashMap<>();
-		if (npc.isSection("NPC"))
+		if (npc.contains("NPC") && npc.isSection("NPC"))
 		{
 			for (Integer id : npc.getIntegerSection("NPC"))
 			{
@@ -248,12 +248,12 @@ public class QuestConfigLoader
 						HashSet<GUIOption> set = new HashSet<>();
 						for (String s : npc.getStringList("NPC." + id + ".GUIOptions"))
 						{
-							GUIOption option = QuestNPCManager.getOption(s);
 							if (s == null)
 							{
 								QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.OptionNotFound", s, Integer.toString(id)));
 								continue;
 							}
+							GUIOption option = QuestNPCManager.getOption(s);
 							set.add(option);
 						}
 						npcdata.setOptions(set);

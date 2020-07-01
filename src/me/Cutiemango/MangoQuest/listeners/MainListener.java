@@ -1,6 +1,8 @@
 package me.Cutiemango.MangoQuest.listeners;
 
+import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
@@ -44,37 +46,41 @@ public class MainListener implements Listener
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e)
 	{
+		Player p = e.getPlayer();
+		QuestPlayerData qd = QuestUtil.getData(p);
+		if (qd == null)
+		{
+			DebugHandler.log(4, "[Listener] Player " + p.getName() + " has no player data.");
+			return;
+		}
 		if (e.getBlock() != null && e.getBlock().getType() != null)
 		{
-			PlayerListener.onBreakBlock(e.getPlayer(), e.getBlock().getType());
-			EditorListenerHandler.onBlockBreak(e.getPlayer(), e.getBlock(), e);
+			PlayerListener.onBreakBlock(p, e.getBlock().getType());
+			EditorListenerHandler.onBlockBreak(p, e.getBlock(), e);
 		}
 	}
 
 	@EventHandler
 	public void onConsumeItem(PlayerItemConsumeEvent e)
 	{
+		Player p = e.getPlayer();
+		QuestPlayerData qd = QuestUtil.getData(p);
+		if (qd == null)
+		{
+			DebugHandler.log(4, "[Listener] Player " + p.getName() + " has no player data.");
+			return;
+		}
 		if (e.getItem() != null && !e.isCancelled())
-			PlayerListener.onConsumeItem(e.getPlayer(), e.getItem());
+			PlayerListener.onConsumeItem(p, e.getItem());
 	}
 
 	@EventHandler
 	public void onMove(PlayerMoveEvent e)
 	{
-		if (QuestUtil.getData(e.getPlayer()) != null && e.getTo() != null)
-			PlayerListener.onMove(e.getPlayer(), e.getTo());
-	}
-
-	@EventHandler
-	public void onChat(AsyncPlayerChatEvent e)
-	{
-		EditorListenerHandler.onChat(e.getPlayer(), e.getMessage(), e);
-	}
-
-	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent e)
-	{
-		EditorListenerHandler.onPlayerInteract(e.getPlayer(), e.getAction(), e.getItem(), e);
+		Player p = e.getPlayer();
+		QuestPlayerData qd = QuestUtil.getData(p);
+		if (qd != null && e.getTo() != null)
+			PlayerListener.onMove(p, e.getTo());
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -82,8 +88,15 @@ public class MainListener implements Listener
 	{
 		if (e.getHand().equals(EquipmentSlot.OFF_HAND))
 			return;
+		Player p = e.getPlayer();
+		QuestPlayerData qd = QuestUtil.getData(p);
+		if (qd == null)
+		{
+			DebugHandler.log(4, "[Listener] Player " + p.getName() + " has no player data.");
+			return;
+		}
 		if (CitizensAPI.getNPCRegistry().isNPC(e.getRightClicked()))
-			PlayerListener.onNPCRightClick(e.getPlayer(), CitizensAPI.getNPCRegistry().getNPC(e.getRightClicked()), e);
+			PlayerListener.onNPCRightClick(p, CitizensAPI.getNPCRegistry().getNPC(e.getRightClicked()), e);
 	}
 	
 	@EventHandler(priority = EventPriority.LOWEST , ignoreCancelled = true)
@@ -92,6 +105,12 @@ public class MainListener implements Listener
 		if (!(e.getDamager() instanceof Player))
 			return;
 		Player p = (Player) e.getDamager();
+		QuestPlayerData qd = QuestUtil.getData(p);
+		if (qd == null)
+		{
+			DebugHandler.log(4, "[Listener] Player " + p.getName() + " has no player data.");
+			return;
+		}
 		if (QuestEditorManager.checkEditorMode(p, false) || ConversationEditorManager.checkEditorMode(p, false))
 			e.setCancelled(true);
 		return;
@@ -115,7 +134,16 @@ public class MainListener implements Listener
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e)
 	{
-		if (e.getClickedInventory() == null || e.getView().getTitle() == null || !(e.getWhoClicked() instanceof Player))
+		if (!(e.getWhoClicked() instanceof Player))
+			return;
+		Player p = (Player)e.getWhoClicked();
+		QuestPlayerData qd = QuestUtil.getData(p);
+		if (qd == null)
+		{
+			DebugHandler.log(4, "[Listener] Player " + p.getName() + " has no player data.");
+			return;
+		}
+		if (e.getClickedInventory() == null || e.getView().getTitle() == null)
 			return;
 		RewardGUIListener.onInventoryClick(e);
 	}
@@ -123,10 +151,36 @@ public class MainListener implements Listener
 	@EventHandler(ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageByEntityEvent e)
 	{
-		if (e.getDamager() instanceof Player && e.getEntity() instanceof Damageable)
-			EditorListenerHandler.onEntityDamage((Player) e.getDamager(), e.getEntity(), e);
-		else
+		if (!(e.getDamager() instanceof Player) || !(e.getEntity() instanceof Damageable))
 			return;
+		Player p = (Player)e.getDamager();
+		QuestPlayerData qd = QuestUtil.getData(p);
+		if (qd == null)
+		{
+			DebugHandler.log(4, "[Listener] Player " + p.getName() + " has no player data.");
+			return;
+		}
+		EditorListenerHandler.onEntityDamage(p, e.getEntity(), e);
+	}
+
+	@EventHandler
+	public void onChat(AsyncPlayerChatEvent e)
+	{
+		Player p = e.getPlayer();
+		EditorListenerHandler.onChat(p, e.getMessage(), e);
+	}
+
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent e)
+	{
+		Player p = e.getPlayer();
+		QuestPlayerData qd = QuestUtil.getData(p);
+		if (qd == null)
+		{
+			DebugHandler.log(4, "[Listener] Player " + p.getName() + " has no player data.");
+			return;
+		}
+		EditorListenerHandler.onPlayerInteract(p, e.getAction(), e.getItem(), e);
 	}
 
 }

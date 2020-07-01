@@ -5,6 +5,8 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import org.bukkit.entity.Player;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class DatabaseSaver
 {
@@ -12,12 +14,19 @@ public class DatabaseSaver
 	public static void savePlayerData(QuestPlayerData pd)
 	{
 		Connection conn = DatabaseManager.getConnection();
-
+		try
+		{
+			saveLoginData(pd, conn);
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
-	// INSERT INTO
-	public static void firstDefaultSave(Player p)
+	private static void saveLoginData(QuestPlayerData pd, Connection conn) throws SQLException
 	{
+		PreparedStatement ps = conn.prepareStatement("INSERT INTO `mq_playerdata` (`PDID`, `LastKnownID`, `UUID`) VALUES (?, ?, ?)");
 
 	}
 

@@ -38,7 +38,8 @@ public class Main extends JavaPlugin
 		pluginHooker = new PluginHooker(this);
 		pluginHooker.hookPlugins();
 		SimpleQuestObject.initObjectNames();
-		DatabaseLoader.initPlayerDB();
+		if (ConfigSettings.USE_DATABASE)
+			DatabaseLoader.initPlayerDB();
 
 		getServer().getPluginManager().registerEvents(new MainListener(), this);
 
@@ -56,6 +57,9 @@ public class Main extends JavaPlugin
 				break;
 			case "v1_15_R1":
 				handler = new Version_v1_15_R1();
+				break;
+			case "v1_16_R1":
+				handler = new Version_v1_16_R1();
 				QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.TestingVersion"));
 				break;
 			default:
@@ -156,13 +160,11 @@ public class Main extends JavaPlugin
 					
 					if (pd == null)
 						continue;
-					if (counter > ConfigSettings.PLAYER_DATA_SAVE_INTERVAL)
+					if (counter++ > ConfigSettings.PLAYER_DATA_SAVE_INTERVAL)
 					{
 						pd.save();
 						counter = 0;
 					}
-					else
-						counter++;
 					
 					pd.checkQuestFail();
 					

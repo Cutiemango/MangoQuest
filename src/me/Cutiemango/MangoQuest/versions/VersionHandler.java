@@ -7,14 +7,13 @@ import org.bukkit.inventory.ItemStack;
 
 public interface VersionHandler
 {
-
 	void sendTitle(Player p, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle);
 
 	void openBook(Player p, TextComponent... texts);
 
 	TextComponent textFactoryConvertLocation(String name, Location loc, boolean isFinished);
 
-	TextComponent textFactoryConvertItem(ItemStack it, boolean f);
+	TextComponent textFactoryConvertItem(final ItemStack item, boolean f);
 
 	boolean hasTag(Player p, String s);
 	

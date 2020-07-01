@@ -139,6 +139,11 @@ public class PlayerListener
 	public static void onBreakBlock(Player p, Material m)
 	{
 		QuestPlayerData qd = QuestUtil.getData(p);
+		if (qd == null)
+		{
+			DebugHandler.log(4, "[Listener] Player " + p.getName() + " has no player data.");
+			return;
+		}
 		qd.breakBlock(m);
 		DebugHandler.log(4, "[Listener] Player " + p.getName() + " broke block mat=" + m.toString());
 	}
@@ -146,6 +151,11 @@ public class PlayerListener
 	public static void onConsumeItem(Player p, ItemStack is)
 	{
 		QuestPlayerData qd = QuestUtil.getData(p);
+		if (qd == null)
+		{
+			DebugHandler.log(4, "[Listener] Player " + p.getName() + " has no player data.");
+			return;
+		}
 		qd.consumeItem(is);
 		DebugHandler.log(4, "[Listener] Player " + p.getName() + " consumed item mat=" + is.getType().toString());
 	}

@@ -6,7 +6,6 @@ import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
