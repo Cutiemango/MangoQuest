@@ -23,7 +23,6 @@ import java.util.List;
 
 public class ScoreboardManager
 {
-	@SuppressWarnings("deprecation")
 	public static Scoreboard update(QuestPlayerData pd)
 	{
 		Scoreboard s = pd.getScoreboard();
@@ -84,7 +83,7 @@ public class ScoreboardManager
 	private static String getLastAppliedColor(String s)
 	{
 		String color = "§f";
-		String text = QuestUtil.trimColor(s);
+		String text = QuestChatManager.trimColor(s);
 		if (text.lastIndexOf("§") == -1)
 			return "§f";
 		if (TextAlignment.ESCAPE_COLOR_CODES.contains(s.charAt(text.lastIndexOf("§") + 1)))
@@ -105,7 +104,7 @@ public class ScoreboardManager
 			String text = list.get(list.size() - (i+1));
 			if (text.length() > 40)
 			{
-				text = QuestUtil.trimColor(text);
+				text = QuestChatManager.trimColor(text);
 				String t1 = text.substring(0, 40);
 				String t2 = text.substring(40, text.length()-1);
 				
@@ -116,7 +115,7 @@ public class ScoreboardManager
 				}
 				
 				o.getScore(t1).setScore(scoreIndex+1);
-				o.getScore(QuestUtil.trimColor("    " + getLastAppliedColor(t1) + t2)).setScore(scoreIndex);
+				o.getScore(QuestChatManager.trimColor("    " + getLastAppliedColor(t1) + t2)).setScore(scoreIndex);
 				scoreIndex+=2;
 				continue;
 			}

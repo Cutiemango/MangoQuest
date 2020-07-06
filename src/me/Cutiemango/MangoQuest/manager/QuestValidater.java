@@ -27,13 +27,13 @@ public class QuestValidater
 			if (item.hasItemMeta() && model.hasItemMeta())
 			{
 				ItemMeta im = item.getItemMeta(), mm = model.getItemMeta();
-				if (QuestUtil.trimColor(im.getDisplayName()).equals(QuestUtil.trimColor(mm.getDisplayName())))
+				if (QuestChatManager.trimColor(im.getDisplayName()).equals(QuestChatManager.trimColor(mm.getDisplayName())))
 				{
 					if (im.getLore().size() != mm.getLore().size())
 						return false;
 					for (int i = 0; i < im.getLore().size(); i++)
 					{
-						if (!QuestUtil.trimColor(im.getLore().get(i)).equals(QuestUtil.trimColor(mm.getLore().get(i))))
+						if (!QuestChatManager.trimColor(im.getLore().get(i)).equals(QuestChatManager.trimColor(mm.getLore().get(i))))
 							return false;
 					}
 					

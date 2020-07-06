@@ -205,7 +205,7 @@ public class QuestPlayerData
 
 	public boolean hasFinished(QuestConversation qc)
 	{
-		return finishedConversations.contains(qc);
+		return finishedConversations.contains(qc.getInternalID());
 	}
 
 	public QuestProgress getProgress(Quest q)

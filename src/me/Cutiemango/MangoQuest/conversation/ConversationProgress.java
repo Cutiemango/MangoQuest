@@ -145,10 +145,14 @@ public class ConversationProgress
 		if (conv.hasNPC() && questFinish)
 		{
 			QuestUtil.getData(owner).addFinishConversation(conv);
+			if (conv instanceof StartTriggerConversation)
+			{
+				QuestUtil.executeCommandAsync(owner, "mq quest take " + ((StartTriggerConversation)conv).getQuest().getInternalID());
+				ConversationManager.finishConversation(owner);
+				return;
+			}
 			if (!(conv instanceof FriendConversation))
 				QuestUtil.executeCommandAsync(owner, "mq conv npc " + conv.getNPC().getId());
-			if (conv instanceof StartTriggerConversation)
-				QuestUtil.executeCommandAsync(owner, "mq quest take " + ((StartTriggerConversation)conv).getQuest().getInternalID());
 		}
 		ConversationManager.finishConversation(owner);
 	}

@@ -51,7 +51,6 @@ public class QuestObjectProgress
 		if (obj.hasConversation())
 		{
 			cp = ConversationManager.startConversation(p, obj.getConversation());
-			cp.nextAction();
 			return;
 		}
 	}

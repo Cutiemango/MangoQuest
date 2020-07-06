@@ -177,6 +177,7 @@ public class Main extends JavaPlugin
 						catch (Exception e)
 						{
 							System.out.println(e);
+							e.printStackTrace();
 							this.cancel();
 						}
 					}
@@ -193,6 +194,7 @@ public class Main extends JavaPlugin
 							{
 								QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.ScoreboardException"));
 								System.out.println(e);
+								e.printStackTrace();
 								this.cancel();
 							}
 						});
