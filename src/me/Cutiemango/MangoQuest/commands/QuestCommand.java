@@ -162,7 +162,7 @@ public class QuestCommand
 				switch (args[1])
 				{
 					case "view":
-						if (!QuestUtil.getData(sender).isCurrentlyDoing(quest))
+						if (!qd.isCurrentlyDoing(quest))
 							QuestBookGUIManager.openGUIwithProgress(sender, new QuestProgress(quest, sender));
 						else
 							QuestBookGUIManager.openGUIwithProgress(sender, qd.getProgress(quest));

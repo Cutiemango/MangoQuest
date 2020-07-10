@@ -470,10 +470,15 @@ public class QuestPlayerData
 		QuestObjectDeliverItem o = (QuestObjectDeliverItem) qop.getObject();
 		ItemStack itemToDeliver = owner.getInventory().getItemInMainHand();
 		int amountNeeded = o.getAmount() - qop.getProgress();
+		DebugHandler.log(5, "[Listener] Checking item submission...");
 		if (o.getTargetNPC().equals(npc))
 		{
+			DebugHandler.log(5, "[Listener] NPC check PASSED.");
+			DebugHandler.log(5, "[Listener] Bukkit similarity = " + o.getItem().isSimilar(itemToDeliver));
+			DebugHandler.log(5, "[Listener] Weak itemCheck = " + QuestValidater.weakItemCheck(itemToDeliver, o.getItem()));
 			if (o.getItem().isSimilar(itemToDeliver) || (ConfigSettings.USE_WEAK_ITEM_CHECK && QuestValidater.weakItemCheck(itemToDeliver, o.getItem())))
 			{
+				DebugHandler.log(5, "[Listener] Item similarity check PASSED.");
 				if (itemToDeliver.getAmount() > amountNeeded)
 				{
 					itemToDeliver.setAmount(itemToDeliver.getAmount() - amountNeeded);
@@ -486,7 +491,7 @@ public class QuestPlayerData
 				}
 				return true;
 			}
-			DebugHandler.log(5, "[Listener] The item submitted is not correct.");
+			DebugHandler.log(5, "[Listener] Failed due to the item submitted is not correct.");
 			return false;
 		}
 		DebugHandler.log(5, "[Listener] NPC not correct. Required " + o.getTargetNPC().getId() + " but get " + npc.getId());

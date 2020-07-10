@@ -30,9 +30,10 @@ public abstract class SimpleQuestObject
 		ALL_OBJECTS.put("REACH_LOCATION", I18n.locMsg("QuestObjectName.ReachLocation"));
 		ALL_OBJECTS.put("TALK_TO_NPC", I18n.locMsg("QuestObjectName.TalkToNPC"));
 	}
-	
+
 	/**
 	 * This is used for a TextComponent version of toDisplayText.
+	 * Mainly displayed on book.
 	 */
 	protected TextComponent toTextComponent(String s, boolean isFinished, Object... args)
 	{

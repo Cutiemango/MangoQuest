@@ -1,6 +1,7 @@
 package me.Cutiemango.MangoQuest.manager;
 
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
@@ -36,11 +37,15 @@ public class QuestValidater
 						if (!QuestChatManager.trimColor(im.getLore().get(i)).equals(QuestChatManager.trimColor(mm.getLore().get(i))))
 							return false;
 					}
-					
 					return true;
 				}
+				DebugHandler.log(5, "[ItemCheck] Item displayName mismatch.");
+				return false;
 			}
+			DebugHandler.log(5, "[ItemCheck] ItemMeta mismatch.");
+			return false;
 		}
+		DebugHandler.log(5, "[ItemCheck] Type is not correct.");
 		return false;
 	}
 	

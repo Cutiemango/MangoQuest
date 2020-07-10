@@ -87,31 +87,22 @@ public class Version_v1_16_R1 implements VersionHandler
 		return text;
 	}
 
-
+	/**
+	 * displayText = the real text displayed
+	 * hoverItem = the hover item
+	 */
 	@Override
 	public TextComponent textFactoryConvertItem(final ItemStack is, boolean finished)
 	{
-		String base = "";
+		String displayText = is.hasItemMeta() && is.getItemMeta().hasDisplayName() ? is.getItemMeta().getDisplayName() : QuestUtil.translate(is.getType());
 
-		if (is.hasItemMeta() && is.getItemMeta().hasDisplayName())
-		{
-			if (finished)
-				base = QuestChatManager.finishedObjectFormat(QuestUtil.translate(is.getType()));
-			else
-				base = is.getItemMeta().getDisplayName();
-		}
+		if (finished)
+			displayText = QuestChatManager.finishedObjectFormat(displayText);
 		else
-		{
-			ItemMeta im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + QuestUtil.translate(is.getType()));
-			is.setItemMeta(im);
-			if (finished)
-				base = QuestChatManager.finishedObjectFormat(QuestUtil.translate(is.getType()));
-			else
-				base = ChatColor.BLACK + QuestUtil.translate(is.getType());
-		}
+			displayText = ChatColor.BLACK + displayText;
 
-		TextComponent text = new TextComponent(base);
+		TextComponent text = new TextComponent(displayText);
+
 		net.minecraft.server.v1_16_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
 		NBTTagCompound tag = i.save(new NBTTagCompound());
 		String itemJson = tag.toString();

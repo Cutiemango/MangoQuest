@@ -53,8 +53,8 @@ public class Version_v1_13_R1 implements VersionHandler
 
 		// Finally to use written API.
 		meta.spigot().setPages(list.toArray(new BaseComponent[][] {}));
-		meta.setAuthor("MsngoQuest");
-		meta.setTitle("MsngoQuest");
+		meta.setAuthor("MangoQuest");
+		meta.setTitle("MangoQuest");
 		book.setItemMeta(meta);
 		
 		int slot = p.getInventory().getHeldItemSlot();
@@ -69,17 +69,23 @@ public class Version_v1_13_R1 implements VersionHandler
 	@Override
 	public TextComponent textFactoryConvertLocation(String name, Location loc, boolean isFinished)
 	{
-		TextComponent t = new TextComponent("");
+		if (loc == null)
+			return new TextComponent("");
+
 		ItemStack is = new ItemStack(Material.PAINTING);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(name);
-		if (loc != null)
-			im.setLore(QuestUtil.createList(I18n.locMsg("QuestJourney.NPCLocDisplay", loc.getWorld().getName(), Double.toString(Math.floor(loc.getX())), Double.toString(Math.floor(loc.getY())), Double.toString(Math.floor(loc.getZ())))));
+
+		String displayMsg = I18n.locMsg("QuestJourney.NPCLocDisplay",
+				loc.getWorld().getName(),
+				Integer.toString(loc.getBlockX()),
+				Integer.toString(loc.getBlockY()),
+				Integer.toString(loc.getBlockZ()));
+
+		im.setLore(QuestUtil.createList(displayMsg));
+
 		is.setItemMeta(im);
-		if (isFinished)
-			t = new TextComponent(QuestChatManager.finishedObjectFormat(name));
-		else
-			t = new TextComponent(name);
+		TextComponent text = new TextComponent(isFinished ? QuestChatManager.finishedObjectFormat(name) : name);
 
 		net.minecraft.server.v1_13_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
 		NBTTagCompound tag = i.save(new NBTTagCompound());
@@ -87,37 +93,28 @@ public class Version_v1_13_R1 implements VersionHandler
 
 		BaseComponent[] hoverEventComponents = new BaseComponent[]
 		{ new TextComponent(itemJson) };
-		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents));
+		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents));
 
-		return t;
+		return text;
 	}
 
 
+	/**
+	 * displayText = the real text displayed
+	 * hoverItem = the hover item
+	 */
 	@Override
-	public TextComponent textFactoryConvertItem(ItemStack it, boolean finished)
+	public TextComponent textFactoryConvertItem(ItemStack is, boolean finished)
 	{
-		String base = "";
-		ItemStack is = it.clone();
-		
-		if (is.hasItemMeta() && is.getItemMeta().hasDisplayName())
-		{
-			if (finished)
-				base = QuestChatManager.finishedObjectFormat(QuestUtil.translate(is.getType()));
-			else
-				base = is.getItemMeta().getDisplayName();
-		}
+		String displayText = is.hasItemMeta() && is.getItemMeta().hasDisplayName() ? is.getItemMeta().getDisplayName() : QuestUtil.translate(is.getType());
+
+		if (finished)
+			displayText = QuestChatManager.finishedObjectFormat(displayText);
 		else
-		{
-			ItemMeta im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + QuestUtil.translate(is.getType()));
-			is.setItemMeta(im);
-			if (finished)
-				base = QuestChatManager.finishedObjectFormat(QuestUtil.translate(is.getType()));
-			else
-				base = ChatColor.BLACK + QuestUtil.translate(is.getType());
-		}
-		
-		TextComponent text = new TextComponent(base);
+			displayText = ChatColor.BLACK + displayText;
+
+		TextComponent text = new TextComponent(displayText);
+
 		net.minecraft.server.v1_13_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
 		NBTTagCompound tag = i.save(new NBTTagCompound());
 		String itemJson = tag.toString();

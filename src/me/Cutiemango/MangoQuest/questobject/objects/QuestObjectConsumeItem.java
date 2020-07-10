@@ -52,11 +52,7 @@ public class QuestObjectConsumeItem extends ItemObject implements EditorObject
 	@Override
 	public String toDisplayText()
 	{
-		if (item.getItemMeta().hasDisplayName())
-			return I18n.locMsg("QuestObject.ConsumeItem", Integer.toString(amount), item.getItemMeta().getDisplayName());
-		else
-			return I18n.locMsg("QuestObject.ConsumeItem", Integer.toString(amount),
-					QuestUtil.translate(item.getType()));
+		return I18n.locMsg("QuestObject.ConsumeItem", Integer.toString(amount), QuestUtil.getItemName(item));
 	}
 
 	@Override

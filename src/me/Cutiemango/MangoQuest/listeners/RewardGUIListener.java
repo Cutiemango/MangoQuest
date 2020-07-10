@@ -31,8 +31,6 @@ public class RewardGUIListener
 
 		if (e.getCurrentItem() != null)
 		{
-			DebugHandler.log(5, "I18n: " + QuestChatManager.translateColor(I18n.locMsg("QuestReward.RewardTitle")));
-			DebugHandler.log(5, "Inventory: " + inv.getTitle());
 			if (inv.getTitle().contains(QuestChatManager.translateColor(I18n.locMsg("QuestReward.RewardTitle"))))
 			{
 				e.setCancelled(true);
