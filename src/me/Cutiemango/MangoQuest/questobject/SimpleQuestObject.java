@@ -29,6 +29,7 @@ public abstract class SimpleQuestObject
 		ALL_OBJECTS.put("KILL_MOB", I18n.locMsg("QuestObjectName.KillMob"));
 		ALL_OBJECTS.put("REACH_LOCATION", I18n.locMsg("QuestObjectName.ReachLocation"));
 		ALL_OBJECTS.put("TALK_TO_NPC", I18n.locMsg("QuestObjectName.TalkToNPC"));
+		ALL_OBJECTS.put("FISHING", I18n.locMsg("QuestObjectName.Fishing"));
 	}
 
 	/**

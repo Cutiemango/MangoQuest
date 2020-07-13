@@ -13,7 +13,7 @@ import me.Cutiemango.MangoQuest.objects.GUIOption;
 import me.Cutiemango.MangoQuest.objects.QuestNPC;
 import me.Cutiemango.MangoQuest.objects.QuestStage;
 import me.Cutiemango.MangoQuest.objects.QuestVersion;
-import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
+import me.Cutiemango.MangoQuest.objects.RequirementType;
 import me.Cutiemango.MangoQuest.objects.reward.QuestReward;
 import me.Cutiemango.MangoQuest.objects.reward.RewardChoice;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
@@ -504,7 +504,7 @@ public class QuestConfigLoader
 					int ocount = Integer.parseInt(objcount);
 					String loadPath = qpath + "Stages." + scount + "." + ocount + ".";
 					String objType = quest.getString(loadPath + "ObjectType");
-					SimpleQuestObject obj = null;
+					SimpleQuestObject obj;
 					switch (objType)
 					{
 						case "DELIVER_ITEM":
@@ -525,8 +525,11 @@ public class QuestConfigLoader
 						case "REACH_LOCATION":
 							obj = new QuestObjectReachLocation();
 							break;
+						case "FISHING":
+							obj = new QuestObjectFishing();
+							break;
 						case "CUSTOM_OBJECT":
-							if (CustomObjectManager.exist(quest.getString(loadPath + "ObjectClass")))
+							if (CustomObjectManager.hasCustomObject(quest.getString(loadPath + "ObjectClass")))
 								obj = CustomObjectManager.getSpecificObject(quest.getString(loadPath + "ObjectClass"));
 							else
 							{
@@ -749,7 +752,7 @@ public class QuestConfigLoader
 	
 	private void registerNPC(NPC npc)
 	{
-		if (npc != null && !QuestNPCManager.hasStorageData(npc.getId()))
+		if (npc != null && !QuestNPCManager.hasData(npc.getId()))
 		{
 			DebugHandler.log(5, "[Config] NPC of id=" + npc.getId() + " registered.");
 			QuestNPCManager.registerNPC(npc);

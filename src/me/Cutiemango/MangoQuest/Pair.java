@@ -1,5 +1,7 @@
 package me.Cutiemango.MangoQuest;
 
+import java.util.Objects;
+
 public class Pair<K, V>
 {
 	private final K key;
@@ -19,5 +21,19 @@ public class Pair<K, V>
 	public V getValue()
 	{
 		return value;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(key, value);
+	}
+
+	public boolean equals(Object o)
+	{
+		if (!(o instanceof Pair))
+			return false;
+		Pair pairObj = (Pair)o;
+		return key.equals(pairObj.getKey()) && value.equals(pairObj.getValue());
 	}
 }

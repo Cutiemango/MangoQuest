@@ -14,7 +14,7 @@ import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
+import me.Cutiemango.MangoQuest.objects.RequirementType;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject.TriggerObjectType;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
@@ -409,6 +409,9 @@ public class CommandEditQuest
 							break;
 						case "TALK_TO_NPC":
 							ob = new QuestObjectTalkToNPC(Main.getHooker().getNPC(0));
+							break;
+						case "FISHING":
+							ob = new QuestObjectFishing(1);
 							break;
 						default:
 							return;

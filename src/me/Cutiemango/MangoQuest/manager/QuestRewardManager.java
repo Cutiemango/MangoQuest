@@ -35,7 +35,7 @@ public class QuestRewardManager implements Listener
 		Inventory inv = Bukkit.createInventory(null, 27, QuestChatManager.translateColor(I18n.locMsg("QuestReward.RewardEditTitle") + ChatColor.stripColor(q.getQuestName())));
 		int a = reward.getChoiceAmount();
 		
-		for (int i = 0; i < Math.max(a + 1, MAXMIUM_CHOICES); i++)
+		for (int i = 0; i < Math.min(a + 1, MAXMIUM_CHOICES); i++)
 		{
 			if (i == a)
 				inv.setItem(getRewardSlot(a+1, i), newRewardChoice(i));

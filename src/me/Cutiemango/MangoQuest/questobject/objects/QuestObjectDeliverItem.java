@@ -26,11 +26,11 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject, Edi
 	// Reserved for initializing with load()
 	public QuestObjectDeliverItem(){}
 	
-	public QuestObjectDeliverItem(NPC n, ItemStack is, int deliveramount)
+	public QuestObjectDeliverItem(NPC n, ItemStack is, int deliverAmount)
 	{
 		npc = n;
 		item = is;
-		amount = deliveramount;
+		amount = deliverAmount;
 	}
 	
 	@Override

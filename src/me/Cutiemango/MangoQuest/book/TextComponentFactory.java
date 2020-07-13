@@ -7,13 +7,14 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.RequirementManager;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.objects.requirement.RequirementFailResult;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Optional;
 
 public class TextComponentFactory
 {
@@ -92,9 +93,9 @@ public class TextComponentFactory
 			}
 			if (q.hasRequirement())
 			{
-				RequirementFailResult f = RequirementManager.meetRequirementWith(qd.getPlayer(), q.getRequirements());
-				if (!f.succeed())
-					return regHoverEvent(text, f.getMessage());
+				Optional<String> msg = RequirementManager.meetRequirementWith(qd.getPlayer(), q.getRequirements());
+				if (msg.isPresent())
+					return regHoverEvent(text, msg.get());
 				else
 					return convertViewQuest(q);
 			}

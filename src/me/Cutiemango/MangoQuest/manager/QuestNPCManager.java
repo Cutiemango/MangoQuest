@@ -35,7 +35,7 @@ public class QuestNPCManager
 			if (CitizensAPI.getNPCRegistry().isNPC(e))
 			{
 				NPC npc = CitizensAPI.getNPCRegistry().getNPC(e);
-				if (!hasStorageData(npc.getId()))
+				if (!hasData(npc.getId()))
 					continue;
 				for (Quest q : getNPCData(npc.getId()).getGivenQuests())
 				{
@@ -66,21 +66,10 @@ public class QuestNPCManager
 	{
 		npcStorage.put(npc.getId(), npcdata);
 	}
-	
-	public static boolean hasStorageData(int id)
-	{
-		return npcStorage.containsKey(id);
-	}
-	
+
 	public static boolean hasData(int id)
 	{
-		boolean b = npcStorage.containsKey(id);
-		if (!b)
-		{
-			if (Main.getHooker().hasShopkeepersEnabled())
-				b = ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(Main.getHooker().getNPC(id).getEntity());
-		}
-		return b;
+		return npcStorage.containsKey(id);
 	}
 	
 	public static QuestNPC getNPCData(int id)
@@ -95,7 +84,7 @@ public class QuestNPCManager
 	
 	public static String getNPCMessage(int id, int fpoint)
 	{
-		if (!hasStorageData(id) || npcStorage.get(id) == null)
+		if (!hasData(id) || npcStorage.get(id) == null)
 			return I18n.locMsg("QuestJourney.DefaultNPCTalk");
 		return npcStorage.get(id).getMessage(fpoint);
 		

@@ -44,7 +44,7 @@ public class CustomObjectManager
 		}
 	}
 	
-	public static boolean exist(String className)
+	public static boolean hasCustomObject(String className)
 	{
 		return loadedObjects.containsKey(className);
 	}

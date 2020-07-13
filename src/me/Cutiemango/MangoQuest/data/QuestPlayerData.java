@@ -27,6 +27,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Scoreboard;
+import sun.security.ssl.Debug;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -543,14 +544,41 @@ public class QuestPlayerData
 			.filter(qp -> checkPlayerInWorld(qp.getQuest()))
 			.forEach(qp ->
 					qp.getCurrentObjects().stream()
-							.filter(qop -> checkMob(qop, e))
-							.collect(Collectors.toList())
-							.forEach(qop ->
-							{
-								AtomicReference<Pair<QuestProgress, QuestObjectProgress>> ref = new AtomicReference<>();
-								ref.set(new Pair<>(qp, qop));
-								set.add(ref);
-							}));
+						.filter(qop -> checkMob(qop, e))
+						.collect(Collectors.toList())
+						.forEach(qop ->
+						{
+							AtomicReference<Pair<QuestProgress, QuestObjectProgress>> ref = new AtomicReference<>();
+							ref.set(new Pair<>(qp, qop));
+							set.add(ref);
+						}));
+		if (set.isEmpty())
+			return;
+		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : set)
+		{
+			if (any.get() != null)
+			{
+				Pair<QuestProgress, QuestObjectProgress> pair = any.get();
+				objectSuccess(pair.getKey(), pair.getValue());
+			}
+		}
+	}
+
+	public void catchFish(Material fish)
+	{
+		HashSet<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> set = new HashSet<>();
+		currentQuests.stream()
+			.filter(qp -> checkPlayerInWorld(qp.getQuest()))
+			.forEach(qp ->
+					qp.getCurrentObjects().stream()
+						.filter(qop -> qop.getObject() instanceof QuestObjectFishing)
+						.collect(Collectors.toList())
+						.forEach(qop ->
+						{
+							AtomicReference<Pair<QuestProgress, QuestObjectProgress>> ref = new AtomicReference<>();
+							ref.set(new Pair<>(qp, qop));
+							set.add(ref);
+						}));
 		if (set.isEmpty())
 			return;
 		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : set)
@@ -762,29 +790,29 @@ public class QuestPlayerData
 		return false;
 	}
 
-	public boolean canTake(Quest q, boolean sendmsg)
+	public boolean canTake(Quest q, boolean sendMsg)
 	{
 		if (isCurrentlyDoing(q))
 		{
-			if (sendmsg)
+			if (sendMsg)
 				QuestChatManager.info(owner, I18n.locMsg("CommandInfo.AlreadyTaken"));
 			return false;
 		}
 		if (!q.isRedoable() && hasFinished(q))
 		{
-			if (sendmsg)
+			if (sendMsg)
 				QuestChatManager.info(owner, I18n.locMsg("CommandInfo.NotRedoable"));
 			return false;
 		}
 		if (q.usePermission() && !owner.hasPermission("MangoQuest.takeQuest." + q.getInternalID()))
 		{
-			if (sendmsg)
+			if (sendMsg)
 				QuestChatManager.info(owner, I18n.locMsg("CommandInfo.CommandInfo.NoPermTakeQuest"));
 			return false;
 		}
-		if (q.hasRequirement() && !RequirementManager.meetRequirementWith(owner, q.getRequirements()).succeed())
+		if (q.hasRequirement() && RequirementManager.meetRequirementWith(owner, q.getRequirements()).isPresent())
 		{
-			if (sendmsg)
+			if (sendMsg)
 				QuestChatManager.info(owner, q.getFailMessage());
 			return false;
 		}
@@ -793,13 +821,13 @@ public class QuestPlayerData
 			long d = getDelay(getFinishData(q).getLastFinish(), q.getRedoDelay());
 			if (d > 0)
 			{
-				if (sendmsg)
+				if (sendMsg)
 					QuestChatManager.info(owner, I18n.locMsg("CommandInfo.QuestCooldown", QuestUtil.convertTime(d)));
 				return false;
 			}
 			if (!hasTakenReward(q))
 			{
-				if (sendmsg)
+				if (sendMsg)
 					QuestChatManager.info(owner, I18n.locMsg("QuestReward.RewardNotTaken", QuestUtil.convertTime(d)));
 				return false;
 			}

@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.Cancellable;
@@ -21,6 +22,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import su.nightexpress.unrealshop.shop.objects.UShop;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class PlayerListener
 {
@@ -135,6 +139,14 @@ public class PlayerListener
 			}
 		}
 	}
+	public static void onFish(Player p, Item item)
+	{
+		QuestPlayerData qd = QuestUtil.getData(p);
+		List<Material> fishes = Arrays.asList(Material.COD, Material.SALMON, Material.PUFFERFISH, Material.TROPICAL_FISH);
+		if (fishes.contains(item.getItemStack().getType()))
+			qd.catchFish(item.getItemStack().getType());
+	}
+
 
 	public static void onBreakBlock(Player p, Material m)
 	{

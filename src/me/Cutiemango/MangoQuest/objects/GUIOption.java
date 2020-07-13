@@ -3,7 +3,6 @@ package me.Cutiemango.MangoQuest.objects;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.RequirementManager;
-import me.Cutiemango.MangoQuest.objects.requirement.RequirementType;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerTask;
 import net.citizensnpcs.api.npc.NPC;
@@ -51,7 +50,7 @@ public class GUIOption
 	
 	public boolean meetRequirementWith(Player p)
 	{
-		return RequirementManager.meetRequirementWith(p, requirementMap).succeed();
+		return !RequirementManager.meetRequirementWith(p, requirementMap).isPresent();
 	}
 
 	public String getDisplayText()

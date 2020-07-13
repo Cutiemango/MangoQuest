@@ -324,8 +324,6 @@ public class QuestBookGUIManager
 
 		// Interaction List
 		page.add(I18n.locMsg("QuestGUI.InteractionList")).changeLine();
-		if (!QuestNPCManager.hasStorageData(npc.getId()))
-			QuestNPCManager.registerNPC(npc);
 		
 		// Show GUIOptions
 		for (GUIOption option : QuestNPCManager.getNPCData(npc.getId()).getOptions())

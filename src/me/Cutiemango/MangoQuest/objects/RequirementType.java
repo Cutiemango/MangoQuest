@@ -1,4 +1,4 @@
-package me.Cutiemango.MangoQuest.objects.requirement;
+package me.Cutiemango.MangoQuest.objects;
 
 import me.Cutiemango.MangoQuest.I18n;
 
@@ -19,11 +19,6 @@ public enum RequirementType
 	{
 		name = s;
 		index = b;
-	}
-
-	public String toCustomString()
-	{
-		return name;
 	}
 
 	public boolean hasIndex()

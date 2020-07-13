@@ -9,7 +9,9 @@ import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCDamageByEntityEvent;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
+import org.bukkit.Material;
 import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -161,6 +163,16 @@ public class MainListener implements Listener
 			return;
 		}
 		EditorListenerHandler.onEntityDamage(p, e.getEntity(), e);
+	}
+
+	@EventHandler
+	public void onFish(PlayerFishEvent e)
+	{
+		if (e.getState().equals(PlayerFishEvent.State.CAUGHT_FISH))
+		{
+			Item item = (Item)e.getCaught();
+			PlayerListener.onFish(e.getPlayer(), item);
+		}
 	}
 
 	@EventHandler
