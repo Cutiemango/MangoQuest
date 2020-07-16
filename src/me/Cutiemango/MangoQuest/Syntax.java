@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class Syntax
 {
@@ -15,6 +16,7 @@ public class Syntax
 	// N - NPC's ID
 	// W - World
 	// D - Positive and negative integer (including 0)
+	// B - Boolean
 	
 	// The order of customRegex
 	private String order;
@@ -23,6 +25,8 @@ public class Syntax
 	private String desc;
 	// Dividers that used in the customRegex
 	private Set<String> dividers = new HashSet<>();
+
+	private boolean caseInsensitive;
 
 	private Syntax(String s, String d, String... divider)
 	{
@@ -40,6 +44,13 @@ public class Syntax
 		s = s.replaceAll("N", "-1|\\\\d+");
 		s = s.replaceAll("W", "\\\\S+");
 		s = s.replaceAll("D", "-?[0-9]\\\\d*");
+
+		if (s.contains("B"))
+		{
+			s = s.replaceAll("B", "(true|false)");
+			caseInsensitive = true;
+		}
+
 		regex = s;
 		desc = d;
 	}
@@ -53,7 +64,8 @@ public class Syntax
 	{
 		if (originalInput.contains("cancel"))
 			return false;
-		if (!originalInput.matches(regex))
+		Pattern pattern = caseInsensitive ? Pattern.compile(regex) : Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+		if (!pattern.matcher(originalInput).matches())
 		{
 			QuestChatManager.syntaxError(p, desc, originalInput);
 			return false;

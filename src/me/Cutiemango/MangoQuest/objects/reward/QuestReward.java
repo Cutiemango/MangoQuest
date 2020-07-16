@@ -27,22 +27,8 @@ public class QuestReward
 	protected int rewardAmount = 1;
 	protected boolean instantGiveReward = false;
 	
-	private int skillAPIexp;
-
-	public void addMoney(double d)
-	{
-		money += d;
-	}
-
-	public void addExp(int i)
-	{
-		experience += i;
-	}
-	
-	public void addSkillAPIExp(int i)
-	{
-		skillAPIexp += i;
-	}
+	private int skillapiExp;
+	private int qrpgExp;
 
 	public void addFriendPoint(int id, int value)
 	{
@@ -52,22 +38,6 @@ public class QuestReward
 	public void addCommand(String s)
 	{
 		command.add(s);
-	}
-
-	public void removeMoney(double d)
-	{
-		if (money < d)
-			money = 0;
-		else
-			money -= d;
-	}
-
-	public void removeExp(int i)
-	{
-		if (experience < i)
-			experience = 0;
-		else
-			experience -= i;
 	}
 
 	public boolean hasItem()
@@ -97,9 +67,14 @@ public class QuestReward
 	
 	public boolean hasSkillAPIExp()
 	{
-		return !(skillAPIexp == 0);
+		return skillapiExp != 0;
 	}
-	
+
+	public boolean hasQRPGExp()
+	{
+		return qrpgExp != 0;
+	}
+
 	public boolean hasMultipleChoices()
 	{
 		return itemChoices.size() > 1;
@@ -122,10 +97,15 @@ public class QuestReward
 	
 	public int getSkillAPIExp()
 	{
-		return skillAPIexp;
+		return skillapiExp;
 	}
 
-	public HashMap<Integer, Integer> getFp()
+	public int getQRPGExp()
+	{
+		return qrpgExp;
+	}
+
+	public HashMap<Integer, Integer> getFriendPointMap()
 	{
 		return friendPoints;
 	}
@@ -192,7 +172,12 @@ public class QuestReward
 	
 	public void setSkillAPIExp(int i)
 	{
-		skillAPIexp = i;
+		skillapiExp = i;
+	}
+
+	public void setQRPGExp(int i)
+	{
+		qrpgExp = i;
 	}
 	
 	public int getRewardAmount()
@@ -221,18 +206,14 @@ public class QuestReward
 
 	public void executeItemReward(Player p)
 	{
-		if (this.hasItem())
-		{
+		if (hasItem())
 			for (RewardChoice choice : itemChoices)
-			{
 				choice.executeReward(p);
-			}
-		}
 	}
 	
 	public void executeReward(Player p)
 	{
-		if (this.hasMoney())
+		if (hasMoney())
 		{
 			if (Main.getHooker().hasEconomyEnabled())
 			{
@@ -241,13 +222,13 @@ public class QuestReward
 			}
 		}
 
-		if (this.hasExp())
+		if (hasExp())
 		{
 			p.giveExp(experience);
 			QuestChatManager.info(p, I18n.locMsg("QuestReward.GiveExpReward", Double.toString(experience)));
 		}
 
-		if (this.hasFriendPoint())
+		if (hasFriendPoint())
 		{
 			QuestPlayerData qd = QuestUtil.getData(p);
 			for (Integer id : friendPoints.keySet())
@@ -256,7 +237,7 @@ public class QuestReward
 			}
 		}
 
-		if (this.hasCommand())
+		if (hasCommand())
 		{
 			for (String cmd : command)
 			{
@@ -265,12 +246,21 @@ public class QuestReward
 			}
 		}
 		
-		if (this.hasSkillAPIExp())
+		if (hasSkillAPIExp())
 		{
 			if (Main.getHooker().hasSkillAPIEnabled())
 			{
-				SkillAPI.getPlayerData(p).giveExp(skillAPIexp, ExpSource.COMMAND);
-				QuestChatManager.info(p, I18n.locMsg("QuestReward.GiveSkillAPIExpReward", Integer.toString(skillAPIexp)));
+				SkillAPI.getPlayerData(p).giveExp(skillapiExp, ExpSource.COMMAND);
+				QuestChatManager.info(p, I18n.locMsg("QuestReward.GiveRPGExpReward", Integer.toString(skillapiExp)));
+			}
+		}
+
+		if (hasQRPGExp())
+		{
+			if (Main.getHooker().hasQuantumRPGEnabled())
+			{
+				Main.getHooker().getQuantumRPG().getUserManager().getOrLoadUser(p).getActiveProfile().getClassData().addExp(qrpgExp);
+				QuestChatManager.info(p, I18n.locMsg("QuestReward.GiveRPGExpReward", Integer.toString(qrpgExp)));
 			}
 		}
 	}

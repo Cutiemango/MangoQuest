@@ -71,25 +71,17 @@ public class QuestConfigSaver
 		String qpath = "Quests." + q.getInternalID() + ".";
 		quest.set(qpath + "QuestName", q.getQuestName());
 		quest.set(qpath + "QuestOutline", q.getQuestOutline());
-		if (q.isCommandQuest())
-			quest.set(qpath + "QuestNPC", -1);
-		else
-			quest.set(qpath + "QuestNPC", q.getQuestNPC().getId());
-		
+
+		quest.set(qpath + "QuestNPC", q.isCommandQuest() ? -1 : q.getQuestNPC().getId());
+
 		if (q.getFailMessage() != null)
 			quest.set(qpath + "MessageRequirementNotMeet", q.getFailMessage());
 		
 		quest.set(qpath + "Redoable", q.isRedoable());
-		if (q.isRedoable())
-			quest.set(qpath + "RedoDelayMilliseconds", q.getRedoDelay());
-		else
-			quest.set(qpath + "RedoDelayMilliseconds", null);
-		
+		quest.set(qpath + "RedoDelayMilliseconds", q.isRedoable() ? q.getRedoDelay() : null);
+
 		quest.set(qpath + "TimeLimited", q.isTimeLimited());
-		if (q.isTimeLimited())
-			quest.set(qpath + "TimeLimitMilliseconds", q.getTimeLimit());
-		else
-			quest.set(qpath + "TimeLimitMilliseconds", null);
+		quest.set(qpath + "TimeLimitMilliseconds", q.isTimeLimited() ? q.getTimeLimit() : null);
 		
 		saveRequirements(q);
 		saveTrigger(q);
@@ -139,17 +131,27 @@ public class QuestConfigSaver
 			i++;
 			quest.getConfig().set(qpath + "Requirements.Item." + i, is);
 		}
+
 		HashMap<Integer, Integer> fpMap = (HashMap<Integer, Integer>) q.getRequirements().get(RequirementType.FRIEND_POINT);
 		quest.getConfig().set(qpath + "Requirements.FriendPoint", null);
 		for (Integer id : fpMap.keySet())
 		{
 			quest.set(qpath + "Requirements.FriendPoint." + id, fpMap.get(id));
 		}
-		if (Main.getInstance().pluginHooker.hasSkillAPIEnabled())
+
+		if (Main.getHooker().hasSkillAPIEnabled())
 		{
 			quest.set(qpath + "Requirements.SkillAPIClass", q.getRequirements().get(RequirementType.SKILLAPI_CLASS));
 			quest.set(qpath + "Requirements.SkillAPILevel", q.getRequirements().get(RequirementType.SKILLAPI_LEVEL));
 		}
+
+		if (Main.getHooker().hasQuantumRPGEnabled())
+		{
+			quest.set(qpath + "Requirements.QRPGClass", q.getRequirements().get(RequirementType.QRPG_CLASS));
+			quest.set(qpath + "Requirements.QRPGLevel", q.getRequirements().get(RequirementType.QRPG_LEVEL));
+		}
+
+		quest.set(qpath + "Requirements.AllowDescendant", q.getRequirements().get(RequirementType.ALLOW_DESCENDANT));
 	}
 	
 	public void saveTrigger(Quest q)
@@ -211,12 +213,15 @@ public class QuestConfigSaver
 	public void saveReward(Quest q)
 	{
 		QuestIO quest = manager.getGlobalQuest();
+
 		String qpath = "Quests." + q.getInternalID() + ".";
 		quest.set(qpath + "Rewards", null);
+
 		QuestReward r = q.getQuestReward();
 		quest.set(qpath + "Rewards.RewardAmount", r.getRewardAmount());
 		quest.set(qpath + "Rewards.InstantGiveReward", r.instantGiveReward());
 		quest.set(qpath + "Rewards.Choice", null);
+
 		if (r.hasItem())
 		{
 			int index = 0;
@@ -233,26 +238,25 @@ public class QuestConfigSaver
 		}
 		if (r.hasMoney())
 			quest.set(qpath + "Rewards.Money", r.getMoney());
+
 		if (r.hasExp())
 			quest.set(qpath + "Rewards.Experience", r.getExp());
+
 		if (r.hasFriendPoint())
-		{
-			for (Integer npc : r.getFp().keySet())
-			{
-				quest.set(qpath + "Rewards.FriendlyPoint." + npc, r.getFp().get(npc));
-			}
-		}
+			for (Integer npc : r.getFriendPointMap().keySet())
+				quest.set(qpath + "Rewards.FriendlyPoint." + npc, r.getFriendPointMap().get(npc));
+
 		if (r.hasCommand())
 			quest.set(qpath + "Rewards.Commands", r.getCommands());
-		if (r.hasSkillAPIExp() && Main.getInstance().pluginHooker.hasSkillAPIEnabled())
+
+		if (r.hasSkillAPIExp() && Main.getHooker().hasSkillAPIEnabled())
 			quest.set(qpath + "Rewards.SkillAPIExp", r.getSkillAPIExp());
+
+		if (r.hasQRPGExp() && Main.getHooker().hasQuantumRPGEnabled())
+			quest.set(qpath + "Rewards.QRPGExp", r.getQRPGExp());
+
 		if (!q.isCommandQuest())
-		{
-			if (!r.hasRewardNPC())
-				quest.set(qpath + "Rewards.RewardNPC", q.getQuestNPC().getId());
-			else
-				quest.set(qpath + "Rewards.RewardNPC", r.getRewardNPC().getId());
-		}
+			quest.set(qpath + "Rewards.RewardNPC", (r.hasRewardNPC() ? r.getRewardNPC() : q.getQuestNPC()).getId());
 	}
 	
 	public void removeConversation(QuestConversation qc)

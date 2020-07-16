@@ -15,6 +15,7 @@ import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.RequirementType;
+import me.Cutiemango.MangoQuest.objects.reward.QuestReward;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject.TriggerObjectType;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
@@ -176,6 +177,7 @@ public class CommandEditQuest
 				{
 					case LEVEL:
 					case SKILLAPI_LEVEL:
+					case QRPG_LEVEL:
 						q.getRequirements().put(t, Integer.parseInt(args[4]));
 						break;
 					case MONEY:
@@ -198,13 +200,22 @@ public class CommandEditQuest
 						}
 						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.FriendPointRegistered", sp[0], sp[1]));
 						break;
+					case ALLOW_DESCENDANT:
+						q.getRequirements().put(t, Boolean.parseBoolean(args[4]));
+						break;
 					case ITEM:
+						break;
+					case QRPG_CLASS:
+						if (args[4].equalsIgnoreCase("none") || Main.getHooker().getQuantumRPG().getModuleCache().getClassManager().getClassById(args[4]) != null)
+							q.getRequirements().put(t, args[4]);
+						else
+							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.RPGClassNotValid", args[4]));
 						break;
 					case SKILLAPI_CLASS:
 						if (SkillAPI.isClassRegistered(args[4]))
 							q.getRequirements().put(t, args[4]);
 						else
-							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.NotSkillAPIClass", args[4]));
+							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.RPGClassNotValid", args[4]));
 						break;
 				}
 				QuestEditorManager.editQuestRequirement(sender);
@@ -217,7 +228,13 @@ public class CommandEditQuest
 					case MONEY:
 					case SKILLAPI_CLASS:
 					case SKILLAPI_LEVEL:
+					case QRPG_CLASS:
+					case QRPG_LEVEL:
 						EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req " + t.toString(), null));
+						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+						break;
+					case ALLOW_DESCENDANT:
+						EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit req " + t.toString(), Syntax.of("B", I18n.locMsg("Syntax.Boolean"))));
 						QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
 						break;
 					case FRIEND_POINT:
@@ -432,6 +449,7 @@ public class CommandEditQuest
 	// /mq e edit reward [type] [value]
 	private static void editReward(Quest q, Player sender, String[] args)
 	{
+		QuestReward reward = q.getQuestReward();
 		if (args.length == 4)
 		{
 			switch (args[3].toLowerCase())
@@ -442,7 +460,10 @@ public class CommandEditQuest
 					break;
 				case "choiceamount":
 				case "exp":
+				// skillapiexp
 				case "saexp":
+				// qrpgexp
+				case "qrpgexp":
 					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit reward " + args[3], Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
 					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ExpAmount"));
 					break;
@@ -478,32 +499,35 @@ public class CommandEditQuest
 							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
 							break;
 						}
-						q.getQuestReward().setMoney(money);
+						reward.setMoney(money);
 						break;
 					case "exp":
-						q.getQuestReward().setExp(Integer.parseInt(args[4]));
+						reward.setExp(Integer.parseInt(args[4]));
 						break;
 					case "saexp":
-						q.getQuestReward().setSkillAPIExp(Integer.parseInt(args[4]));
+						reward.setSkillAPIExp(Integer.parseInt(args[4]));
+						break;
+					case "qrpgexp":
+						reward.setQRPGExp(Integer.parseInt(args[4]));
 						break;
 					case "npc":
 						if (!QuestValidater.validateNPC(args[4]))
 							return;
-						q.getQuestReward().setRewardNPC(Main.getHooker().getNPC(args[4]));
+						reward.setRewardNPC(Main.getHooker().getNPC(args[4]));
 						QuestRewardManager.openEditMainGUI(sender);
 						return;
 					case "choiceamount":
 						int i = Integer.parseInt(args[4]);
 						if (i > q.getQuestReward().getChoiceAmount())
 							QuestChatManager.error(sender, I18n.locMsg("QuestReward.TooManyChoices"));
-						q.getQuestReward().setRewardAmount(i);
+						reward.setRewardAmount(i);
 						QuestRewardManager.openEditMainGUI(sender);
 						return;
 					case "fp":
 						String[] sp = args[4].split(":");
 						try
 						{
-							q.getQuestReward().getFp().put(Integer.parseInt(sp[0]), Integer.parseInt(sp[1]));
+							reward.getFriendPointMap().put(Integer.parseInt(sp[0]), Integer.parseInt(sp[1]));
 						}
 						catch (NumberFormatException e)
 						{
@@ -528,7 +552,7 @@ public class CommandEditQuest
 						String cmd = QuestUtil.convertArgsString(args, 5);
 						int index = Integer.parseInt(args[4]);
 						if (!cmd.equals(""))
-							q.getQuestReward().getCommands().set(index, cmd);
+							reward.getCommands().set(index, cmd);
 					}
 					QuestEditorManager.editQuest(sender);
 				}

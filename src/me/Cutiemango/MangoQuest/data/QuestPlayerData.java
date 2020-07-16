@@ -810,7 +810,7 @@ public class QuestPlayerData
 				QuestChatManager.info(owner, I18n.locMsg("CommandInfo.CommandInfo.NoPermTakeQuest"));
 			return false;
 		}
-		if (q.hasRequirement() && RequirementManager.meetRequirementWith(owner, q.getRequirements()).isPresent())
+		if (q.hasRequirement() && RequirementManager.meetRequirementWith(owner, q.getRequirements(), false).isPresent())
 		{
 			if (sendMsg)
 				QuestChatManager.info(owner, q.getFailMessage());

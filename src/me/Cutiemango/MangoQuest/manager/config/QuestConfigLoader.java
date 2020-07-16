@@ -582,23 +582,29 @@ public class QuestConfigLoader
 			
 			HashMap<Integer, Integer> fMap = new HashMap<>();
 			if (config.isSection(path + "Requirements.FriendPoint"))
-			{
 				for (Integer id : config.getIntegerSection(path + "Requirements.FriendPoint"))
-				{
 					fMap.put(id, config.getInt(path + "Requirements.FriendPoint." + id));
-				}
-			}
+
 			map.put(RequirementType.FRIEND_POINT, fMap);
 
 			if (Main.getHooker().hasSkillAPIEnabled())
 			{
-				map.put(RequirementType.SKILLAPI_CLASS, "none");
-				map.put(RequirementType.SKILLAPI_LEVEL, 0);
 				if (config.getString(path + "Requirements.SkillAPIClass") != null)
 					map.put(RequirementType.SKILLAPI_CLASS, config.getString(path + "Requirements.SkillAPIClass"));
 				if (config.getInt(path + "Requirements.SkillAPILevel") != 0)
 					map.put(RequirementType.SKILLAPI_LEVEL, config.getInt(path + "Requirements.SkillAPILevel"));
 			}
+
+			if (Main.getHooker().hasQuantumRPGEnabled())
+			{
+				if (config.getString(path + "Requirements.QRPGClass") != null)
+					map.put(RequirementType.QRPG_CLASS, config.getString(path + "Requirements.QRPGClass"));
+				if (config.getInt(path + "Requirements.QRPGLevel") != 0)
+					map.put(RequirementType.QRPG_LEVEL, config.getInt(path + "Requirements.QRPGLevel"));
+			}
+
+			if (config.getBoolean(path + "Requirements.AllowDescendant"))
+				map.put(RequirementType.ALLOW_DESCENDANT, config.getBoolean(path + "Requirements.AllowDescendant"));
 		}
 		return map;
 	}
@@ -673,9 +679,9 @@ public class QuestConfigLoader
 		}
 		
 		if (quest.getDouble(qpath + "Rewards.Money") != 0)
-			reward.addMoney(quest.getDouble(qpath + "Rewards.Money"));
+			reward.setMoney(quest.getDouble(qpath + "Rewards.Money"));
 		if (quest.getInt(qpath + "Rewards.Experience") != 0)
-			reward.addExp(quest.getInt(qpath + "Rewards.Experience"));
+			reward.setExp(quest.getInt(qpath + "Rewards.Experience"));
 		if (quest.isSection(qpath + "Rewards.FriendlyPoint"))
 		{
 			for (String s : quest.getSection(qpath + "Rewards.FriendlyPoint"))
@@ -696,6 +702,12 @@ public class QuestConfigLoader
 		{
 			if (quest.getInt(qpath + "Rewards.SkillAPIExp") != 0)
 				reward.setSkillAPIExp(quest.getInt(qpath + "Rewards.SkillAPIExp"));
+		}
+
+		if (Main.getHooker().hasQuantumRPGEnabled())
+		{
+			if (quest.getInt(qpath + "Rewards.QRPGExp") != 0)
+				reward.setQRPGExp(quest.getInt(qpath + "Rewards.QRPGExp"));
 		}
 		return reward;
 	}

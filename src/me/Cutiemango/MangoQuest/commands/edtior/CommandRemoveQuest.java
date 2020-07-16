@@ -68,7 +68,7 @@ public class CommandRemoveQuest
 					q.getQuestReward().getChoices().remove(Integer.parseInt(args[4]));
 					break;
 				case "fp":
-					q.getQuestReward().getFp().remove(Integer.parseInt(args[4]));
+					q.getQuestReward().getFriendPointMap().remove(Integer.parseInt(args[4]));
 					break;
 				case "command":
 					q.getQuestReward().getCommands().remove(Integer.parseInt(args[4]));

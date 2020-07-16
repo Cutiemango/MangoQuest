@@ -80,17 +80,16 @@ public class PlayerListener
 			DebugHandler.log(3, "[Listener] Player " + p.getName() + " tried to deliver item.");
 			return;
 		}
-		else
-			if (Main.getHooker().hasShopkeepersEnabled())
+		else if (Main.getHooker().hasShopkeepersEnabled())
+		{
+			if (ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(npc.getEntity()))
 			{
-				if (ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(npc.getEntity()))
-				{
-					QuestBookGUIManager.openNPCInfo(p, npc, true);
-					DebugHandler.log(4, "[Listener] Shopkeepers NPC detected(id=" + npc.getId() + "), opening trading book GUI...");
-					return;
-				}
+				QuestBookGUIManager.openNPCInfo(p, npc, true);
+				DebugHandler.log(4, "[Listener] Shopkeepers NPC detected(id=" + npc.getId() + "), opening trading book GUI...");
+				return;
 			}
-		if (Bukkit.getServer().getPluginManager().isPluginEnabled("UnrealShop"))
+		}
+		if (Main.getHooker().hasUnrealShopEnabled())
 		{
 			for (UShop localUShop : Main.getHooker().getUnrealShop().getSM().getShops())
 			{

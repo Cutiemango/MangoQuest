@@ -50,7 +50,7 @@ public class GUIOption
 	
 	public boolean meetRequirementWith(Player p)
 	{
-		return !RequirementManager.meetRequirementWith(p, requirementMap).isPresent();
+		return !RequirementManager.meetRequirementWith(p, requirementMap, true).isPresent();
 	}
 
 	public String getDisplayText()

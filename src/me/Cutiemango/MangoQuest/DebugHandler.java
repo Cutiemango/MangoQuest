@@ -8,10 +8,10 @@ public class DebugHandler
 {
 	public static int DEBUG_LEVEL = 0;
 	
-	public static void log(int lvl, String s)
+	public static void log(int lvl, String s, Object... args)
 	{
 		if (DEBUG_LEVEL >= lvl)
-			QuestChatManager.logCmd(Level.INFO, "[Debug] " + s);
+			QuestChatManager.logCmd(Level.INFO, "[Debug] " + String.format(s, args));
 	}
 	
 	public static void debug(String s)

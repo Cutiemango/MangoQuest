@@ -55,6 +55,9 @@ public class Quest
 			{
 				switch (t)
 				{
+					case ALLOW_DESCENDANT:
+						requirements.put(RequirementType.ALLOW_DESCENDANT, false);
+						break;
 					case FRIEND_POINT:
 						requirements.put(RequirementType.FRIEND_POINT, new HashMap<Integer, Integer>());
 						break;
@@ -70,11 +73,13 @@ public class Quest
 					case QUEST:
 						requirements.put(RequirementType.QUEST, new ArrayList<String>());
 						break;
+					case QRPG_CLASS:
 					case SKILLAPI_CLASS:
-						requirements.put(RequirementType.SKILLAPI_CLASS, "none");
+						requirements.put(t, "none");
 						break;
+					case QRPG_LEVEL:
 					case SKILLAPI_LEVEL:
-						requirements.put(RequirementType.SKILLAPI_LEVEL, 0);
+						requirements.put(t, 0);
 						break;
 				}
 			}

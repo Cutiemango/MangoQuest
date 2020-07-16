@@ -4,7 +4,7 @@ version: 1.9.3
 api-version: 1.13
 authors: [Cutiemango]
 depend: [Vault, Citizens]
-softdepend: [MythicMobs, UnrealShop, SkillAPI]
+softdepend: [MythicMobs, UnrealShop, SkillAPI, QuantumRPG, Shopkeepers]
 commands:
    mq:
       description: Main command for MangoQuest

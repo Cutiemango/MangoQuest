@@ -93,7 +93,7 @@ public class TextComponentFactory
 			}
 			if (q.hasRequirement())
 			{
-				Optional<String> msg = RequirementManager.meetRequirementWith(qd.getPlayer(), q.getRequirements());
+				Optional<String> msg = RequirementManager.meetRequirementWith(qd.getPlayer(), q.getRequirements(), true);
 				if (msg.isPresent())
 					return regHoverEvent(text, msg.get());
 				else

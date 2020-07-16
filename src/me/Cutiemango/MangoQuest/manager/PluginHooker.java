@@ -1,7 +1,5 @@
 package me.Cutiemango.MangoQuest.manager;
 
-import com.nisovin.shopkeepers.api.ShopkeepersPlugin;
-import com.sucy.skill.SkillAPI;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.api.bukkit.BukkitAPIHelper;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
@@ -9,12 +7,11 @@ import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.CitizensPlugin;
 import net.citizensnpcs.api.npc.NPC;
-import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import su.nightexpress.quantumrpg.QuantumRPG;
 import su.nightexpress.unrealshop.UnrealShop;
 
 import java.util.logging.Level;
@@ -30,11 +27,12 @@ public class PluginHooker
 	private Main plugin;
 
 	private Economy economy;
-	private CitizensPlugin citizens;
-	private Vault vault;
-	private ShopkeepersPlugin shopkeepers;
-	private SkillAPI skillapi;
-	private UnrealShop Ushop;
+	private boolean citizens;
+	private boolean shopkeepers;
+	private boolean mythicMobs;
+	private boolean skillAPI;
+	private QuantumRPG quantumRPG;
+	private UnrealShop unrealShop;
 
 	public void hookPlugins()
 	{
@@ -42,7 +40,7 @@ public class PluginHooker
 		{
 			if (plugin.getServer().getPluginManager().isPluginEnabled("Citizens"))
 			{
-				citizens = (CitizensPlugin) plugin.getServer().getPluginManager().getPlugin("Citizens");
+				citizens = true;
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.CitizensHooked"));
 			}
 			else
@@ -56,7 +54,6 @@ public class PluginHooker
 			
 			if (plugin.getServer().getPluginManager().isPluginEnabled("Vault"))
 			{
-				vault = (Vault) plugin.getServer().getPluginManager().getPlugin("Vault");
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.VaultHooked"));
 			}
 			else
@@ -68,38 +65,53 @@ public class PluginHooker
 
 			if (plugin.getServer().getPluginManager().isPluginEnabled("MythicMobs"))
 			{
+				mythicMobs = true;
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.MythicMobsHooked"));
 			}
 			else
 			{
-				DebugHandler.log(1, I18n.locMsg("PluginHooker.MythicMobsNotHooked"));
+				DebugHandler.log(1, "MythicMobs not hooked.");
 			}
 			
 			if (plugin.getServer().getPluginManager().isPluginEnabled("Shopkeepers"))
 			{
-				shopkeepers = (ShopkeepersPlugin) plugin.getServer().getPluginManager().getPlugin("Shopkeepers");
+				shopkeepers = true;
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.ShopkeepersHooked"));
 			}
 			else
 			{
-				DebugHandler.log(1, I18n.locMsg("PluginHooker.ShopkeepersNotHooked"));
+				DebugHandler.log(1, "Shopkeepers not hooked.");
 			}
 			
 			
 			if (plugin.getServer().getPluginManager().isPluginEnabled("SkillAPI"))
 			{
+				skillAPI = true;
 				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.SkillAPIHooked"));
-				skillapi = (SkillAPI) plugin.getServer().getPluginManager().getPlugin("SkillAPI");
 			}
 			else
 			{
-				DebugHandler.log(1, I18n.locMsg("PluginHooker.SkillAPINotHooked"));
+				DebugHandler.log(1, "SkillAPI not hooked.");
 			}
 			
 			if (plugin.getServer().getPluginManager().isPluginEnabled("UnrealShop"))
 			{
-				Ushop = (UnrealShop) plugin.getServer().getPluginManager().getPlugin("UnrealShop");
-				// msg
+				unrealShop = (UnrealShop) plugin.getServer().getPluginManager().getPlugin("UnrealShop");;
+				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.UnrealShopHooked"));
+			}
+			else
+			{
+				DebugHandler.log(1, "UnrealShop not hooked.");
+			}
+
+			if (plugin.getServer().getPluginManager().isPluginEnabled("QuantumRPG"))
+			{
+				quantumRPG = (QuantumRPG) plugin.getServer().getPluginManager().getPlugin("QuantumRPG");
+				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.QuantumRPGHooked"));
+			}
+			else
+			{
+				DebugHandler.log(1, "QuantumRPG not hooked.");
 			}
 		}
 		catch (Exception e){}
@@ -115,40 +127,54 @@ public class PluginHooker
 			QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("PluginHooker.EconomyNotHooked"));
 	}
 
+	public boolean hasEconomyEnabled()
+	{
+		return economy != null;
+	}
+
+	public boolean hasMythicMobEnabled()
+	{
+		return mythicMobs;
+	}
+
+	public boolean hasCitizensEnabled()
+	{
+		return citizens;
+	}
+
+	public boolean hasShopkeepersEnabled()
+	{
+		return shopkeepers;
+	}
+	
+	public boolean hasSkillAPIEnabled()
+	{
+		return skillAPI;
+	}
+
+	public boolean hasUnrealShopEnabled()
+	{
+		return unrealShop != null;
+	}
+
+	public boolean hasQuantumRPGEnabled()
+	{
+		return quantumRPG != null;
+	}
+
 	public Economy getEconomy()
 	{
 		return economy;
 	}
 
-	public boolean hasEconomyEnabled()
+	public QuantumRPG getQuantumRPG()
 	{
-		return economy != null;
+		return quantumRPG;
 	}
-	
+
 	public UnrealShop getUnrealShop()
 	{
-		return Ushop;
-	}
-
-
-	public boolean hasMythicMobEnabled()
-	{
-		return plugin.getServer().getPluginManager().isPluginEnabled("MythicMobs");
-	}
-
-	public boolean hasCitizensEnabled()
-	{
-		return citizens != null;
-	}
-
-	public boolean hasShopkeepersEnabled()
-	{
-		return shopkeepers != null;
-	}
-	
-	public boolean hasSkillAPIEnabled()
-	{
-		return skillapi != null;
+		return unrealShop;
 	}
 
 	public BukkitAPIHelper getMythicMobsAPI()

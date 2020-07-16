@@ -105,13 +105,12 @@ public class CommandNewObject
 	private static void addRequirements(Quest q, Player sender, String[] args)
 	{
 		RequirementType t = RequirementType.valueOf(args[3]);
-		if (t.hasIndex() && t == RequirementType.QUEST)
+		if (t == RequirementType.QUEST)
 		{
 			if (args.length == 6)
 			{
 				if (QuestUtil.getQuest(args[5]) != null)
 				{
-					Quest quest = QuestUtil.getQuest(args[5]);
 					((List<String>) q.getRequirements().get(t)).add(args[5]);
 					QuestEditorManager.editQuestRequirement(sender);
 					return;
@@ -193,7 +192,7 @@ public class CommandNewObject
 						String[] sp = args[4].split(":");
 						try
 						{
-							q.getQuestReward().getFp().put(Integer.parseInt(sp[0]), Integer.parseInt(sp[1]));
+							q.getQuestReward().getFriendPointMap().put(Integer.parseInt(sp[0]), Integer.parseInt(sp[1]));
 						}
 						catch (NumberFormatException e)
 						{

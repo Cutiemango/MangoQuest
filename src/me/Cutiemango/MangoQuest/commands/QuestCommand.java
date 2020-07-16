@@ -93,7 +93,7 @@ public class QuestCommand
 									return;
 								}
 							}
-							if (Bukkit.getPluginManager().isPluginEnabled("UnrealShop"))
+							if (hooker.hasUnrealShopEnabled())
 							{
 								for (UShop localUShop : Main.getHooker().getUnrealShop().getSM().getShops())
 								{

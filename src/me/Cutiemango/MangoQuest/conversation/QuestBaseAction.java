@@ -6,6 +6,7 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -90,17 +91,12 @@ public class QuestBaseAction
 				break;
 			case NPC_TALK:
 				String[] split = target.split("@");
-				if (split.length == 1)
-				{
+
+				// the plugin user does not set a narrator name
+				if (split.length == 1 || !QuestValidater.validateNPC(split[1]))
 					cp.getCurrentPage().add(I18n.locMsg("QuestJourney.NPCMessage", split[0])).changeLine();
-					break;
-				}
 				else
-				{
-					NPC npc = Main.getHooker().getNPC(split[1]);
-					if (npc != null)
-						cp.getCurrentPage().add(I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), split[0])).changeLine();
-				}
+					cp.getCurrentPage().add(I18n.locMsg("QuestJourney.NPCFriendMessage", Main.getHooker().getNPC(split[1]).getName(), split[0])).changeLine();
 				break;
 			case WAIT:
 				new BukkitRunnable()
