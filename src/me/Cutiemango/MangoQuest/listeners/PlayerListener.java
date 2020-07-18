@@ -80,7 +80,7 @@ public class PlayerListener
 			DebugHandler.log(3, "[Listener] Player " + p.getName() + " tried to deliver item.");
 			return;
 		}
-		else if (Main.getHooker().hasShopkeepersEnabled())
+		if (Main.getHooker().hasShopkeepersEnabled())
 		{
 			if (ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(npc.getEntity()))
 			{

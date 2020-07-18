@@ -182,14 +182,12 @@ public class QuestRewardManager implements Listener
 	
 	public static String getItemName(ItemStack item)
 	{
-		String name = "";
 		if (item == null)
-			return "Unknown Item";
-		if (item.getType() == Material.BARRIER)
-			name = I18n.locMsg("QuestReward.DefaultRewardIcon");
+			return I18n.locMsg("Translation.UnknownItem");
+		else if (item.getType() == Material.BARRIER)
+			return I18n.locMsg("QuestReward.DefaultRewardIcon");
 		else
-			name = QuestChatManager.translateColor(QuestUtil.translate(item) + " &f" + ChatColor.stripColor(I18n.locMsg("QuestEditor.Amount", Integer.toString(item.getAmount()))));
-		return name;
+			return QuestChatManager.translateColor(QuestUtil.getItemName(item) +  " &f" + ChatColor.stripColor(I18n.locMsg("QuestEditor.Amount", Integer.toString(item.getAmount()))));
 	}
 	
 	/**

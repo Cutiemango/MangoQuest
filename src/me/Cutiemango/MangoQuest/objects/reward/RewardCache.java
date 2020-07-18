@@ -79,9 +79,8 @@ public class RewardCache
 	public void finish()
 	{
 		for (int i : choice)
-		{
 			reward.getChoice(i).executeReward(owner);
-		}
+
 		QuestChatManager.info(owner, I18n.locMsg("QuestReward.RewardReceived"));
 		QuestUtil.getData(owner).claimReward(quest);
 		QuestRewardManager.removeCache(owner);

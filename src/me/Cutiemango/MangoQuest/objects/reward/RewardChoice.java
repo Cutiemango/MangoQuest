@@ -18,9 +18,7 @@ public class RewardChoice
 	public void executeReward(Player p)
 	{
 		for (ItemStack item : rewards)
-		{
-			QuestRewardManager.giveRewardItem(p, item);
-		}
+			QuestRewardManager.giveRewardItem(p, item.clone());
 	}
 	
 	public List<ItemStack> getItems()
