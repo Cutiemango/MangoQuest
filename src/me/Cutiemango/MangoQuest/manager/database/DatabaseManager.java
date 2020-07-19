@@ -1,11 +1,11 @@
 package me.Cutiemango.MangoQuest.manager.database;
 
-import com.mysql.jdbc.Connection;
 import me.Cutiemango.MangoQuest.ConfigSettings;
 import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -20,7 +20,7 @@ public class DatabaseManager
 		try
 		{
 			if (_connection == null || _connection.isClosed())
-				_connection = (Connection) DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s?useSSL=false", ConfigSettings.DATABASE_ADDRESS, ConfigSettings.DATABASE_PORT, ConfigSettings.DATABASE_NAME), ConfigSettings.DATABASE_USER, ConfigSettings.DATABASE_PASSWORD);
+				_connection = DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s?useSSL=false", ConfigSettings.DATABASE_ADDRESS, ConfigSettings.DATABASE_PORT, ConfigSettings.DATABASE_NAME), ConfigSettings.DATABASE_USER, ConfigSettings.DATABASE_PASSWORD);
 			return _connection;
 		}
 		catch (SQLException e)
@@ -36,7 +36,7 @@ public class DatabaseManager
 	{
 		DebugHandler.log(5, "[Database] Initializing player's data table...");
 
-		java.sql.Connection conn = getConnection();
+		Connection conn = getConnection();
 		try
 		{
 			// Table playerData init
@@ -82,7 +82,7 @@ public class DatabaseManager
 						"    `PDID` INT(11) NOT NULL COMMENT '玩家資料流水號'," +
 						"    `QuestID` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '任務名稱(ID)'," +
 						"    `FinishedTimes` INT(11) NOT NULL COMMENT '完成次數'," +
-						"    `TakeStamp` BIGINT(20) NOT NULL DEFAULT '0' COMMENT '上次完成時間'," +
+						"    `LastFinishTime` BIGINT(20) NOT NULL DEFAULT '0' COMMENT '上次完成時間'," +
 						"    `RewardTaken` INT(11) NOT NULL DEFAULT 0 COMMENT '是否已領取獎勵'," +
 						"    PRIMARY KEY (`FQID`)," +
 						"    UNIQUE INDEX `FQID` (`FQID`)" +

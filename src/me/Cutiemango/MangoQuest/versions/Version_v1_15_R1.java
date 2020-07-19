@@ -17,7 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import javax.xml.soap.Text;
 import java.util.ArrayList;
 
 public class Version_v1_15_R1 implements VersionHandler

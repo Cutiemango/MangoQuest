@@ -1,6 +1,11 @@
 package me.Cutiemango.MangoQuest.data;
 
-import me.Cutiemango.MangoQuest.*;
+import me.Cutiemango.MangoQuest.ConfigSettings;
+import me.Cutiemango.MangoQuest.DebugHandler;
+import me.Cutiemango.MangoQuest.I18n;
+import me.Cutiemango.MangoQuest.Pair;
+import me.Cutiemango.MangoQuest.QuestIO;
+import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
@@ -28,9 +33,13 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Scoreboard;
-import sun.security.ssl.Debug;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -54,19 +63,8 @@ public class QuestPlayerData
 		load(ConfigSettings.USE_DATABASE);
 	}
 
-	// For YML format to Database migrating
-	public QuestPlayerData(Player p, boolean useDatabase)
+	public void loadExistingData(Set<QuestProgress> q, Set<QuestFinishData> fd, Set<String> convs, HashMap<Integer, Integer> map, int id)
 	{
-		owner = p;
-		// Load player pdid from database
-		loadFromDatabase();
-		// if useDatabase is false, overwrite with data from yml
-		load(useDatabase);
-	}
-
-	public QuestPlayerData(Player p, Set<QuestProgress> q, Set<QuestFinishData> fd, Set<String> convs, HashMap<Integer, Integer> map, int id)
-	{
-		owner = p;
 		currentQuests = q;
 		finishedQuests = fd;
 		finishedConversations = convs;
@@ -74,35 +72,20 @@ public class QuestPlayerData
 		PDID = id;
 	}
 
-	public void load(boolean useDatabase) {
-		if (useDatabase) {
-			loadFromDatabase();
-		} else {
+	public void load(boolean useDatabase)
+	{
+		if (useDatabase)
+			DatabaseLoader.loadPlayer(this);
+		else
 			loadFromYml();
-			save();
-		}
 	}
 
-	public void save() {
-		if (ConfigSettings.USE_DATABASE) {
-			saveToDatabase();
-		} else {
+	public void save()
+	{
+		if (ConfigSettings.USE_DATABASE)
+			DatabaseSaver.savePlayerData(this);
+		else
 			saveToYml();
-			save();
-		}
-	}
-
-	public void loadFromDatabase() {
-		QuestPlayerData data = DatabaseLoader.loadPlayer(owner);
-		PDID = data.PDID;
-		currentQuests = data.currentQuests;
-		finishedQuests = data.finishedQuests;
-		friendPointStorage = data.friendPointStorage;
-		finishedConversations = data.finishedConversations;
-	}
-
-	private void saveToDatabase() {
-		DatabaseSaver.saveQuestPlayerData(this);
 	}
 
 	public void loadFromYml()
@@ -121,7 +104,8 @@ public class QuestPlayerData
 					save.removeSection("QuestProgress." + index);
 					continue;
 				}
-				if (!(q.getVersion().getVersion() == save.getLong("QuestProgress." + q.getInternalID() + ".Version")))
+
+				if (q.getVersion().getTimeStamp() != save.getLong("QuestProgress." + q.getInternalID() + ".Version"))
 				{
 					QuestChatManager.error(owner, I18n.locMsg("CommandInfo.OutdatedQuestVersion", index));
 					save.removeSection("QuestProgress." + index);
@@ -138,9 +122,7 @@ public class QuestPlayerData
 					qplist.add(qp);
 					t++;
 				}
-				QuestProgress qp = new QuestProgress(q, owner, s, qplist);
-				if (save.getLong("QuestProgress." + index + ".TakeStamp") != 0)
-					qp.setTakeTime(save.getLong("QuestProgress." + index + ".TakeStamp"));
+				QuestProgress qp = new QuestProgress(q, owner, s, qplist, save.getLong("QuestProgress." + index + ".TakeStamp"));
 				currentQuests.add(qp);
 			}
 		}
@@ -151,10 +133,7 @@ public class QuestPlayerData
 			{
 				if (QuestUtil.getQuest(s) == null)
 				{
-					DebugHandler.log(3, "[Player] Quest id=" + s + " is not correctly loaded, causing some player's data leak.");
-					// QuestChatManager.error(p,
-					// I18n.locMsg("CommandInfo.TargetProgressNotFound", s));
-					// save.removeSection("FinishedQuest." + s);
+					DebugHandler.log(5, "[Player] Quest id=%s is not correctly loaded, causing some player's data leak.", s);
 					continue;
 				}
 
@@ -165,12 +144,8 @@ public class QuestPlayerData
 		}
 
 		if (save.isSection("FriendPoint"))
-		{
 			for (String s : save.getSection("FriendPoint"))
-			{
 				friendPointStorage.put(Integer.parseInt(s), save.getInt("FriendPoint." + s));
-			}
-		}
 
 		if (save.getStringList("FinishedConversation") != null)
 		{
@@ -201,25 +176,13 @@ public class QuestPlayerData
 		save.set("QuestProgress", "");
 
 		if (!currentQuests.isEmpty())
-		{
 			for (QuestProgress qp : currentQuests)
-			{
 				qp.save(save);
-			}
-		}
 
 		for (int i : friendPointStorage.keySet())
-		{
 			save.set("FriendPoint." + i, friendPointStorage.get(i));
-		}
 
-		Set<String> s = new HashSet<>();
-		for (String conv : finishedConversations)
-		{
-			s.add(conv);
-		}
-		save.set("FinishedConversation", QuestUtil.convert(s));
-
+		save.set("FinishedConversation", QuestUtil.convert(new HashSet<>(finishedConversations)));
 		save.save();
 	}
 
@@ -442,7 +405,7 @@ public class QuestPlayerData
 	
 	public boolean checkPlayerInWorld(Quest q)
 	{
-		return q.hasWorldLimit() ? owner.getWorld().getName().equals(q.getWorldLimit().getName()) : true;
+		return !q.hasWorldLimit() || owner.getWorld().getName().equals(q.getWorldLimit().getName());
 	}
 	
 	public void objectSuccess(QuestProgress qp, QuestObjectProgress qop)

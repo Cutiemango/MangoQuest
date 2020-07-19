@@ -29,10 +29,10 @@ public class RewardCache
 		reward = q.getQuestReward();
 	}
 	
-	private Set<Integer> choice = new HashSet<>();
-	private Quest quest;
-	private QuestReward reward;
-	private Player owner;
+	private final Set<Integer> choice = new HashSet<>();
+	private final Quest quest;
+	private final QuestReward reward;
+	private final Player owner;
 	
 	public void addChoice(Integer i)
 	{

@@ -33,8 +33,7 @@ public class CustomObjectManager
 	{
 		try
 		{
-			return loadedObjects.get(className).newInstance();
-			
+			return loadedObjects.get(className).getDeclaredConstructor().newInstance();
 		}
 		catch (Exception e)
 		{

@@ -235,8 +235,7 @@ public class QuestConfigLoader
 						for (String i : npc.getSection("NPC." + id + ".Messages"))
 						{
 							List<String> list = npc.getStringList("NPC." + id + ".Messages." + i);
-							HashSet<String> set = new HashSet<>();
-							set.addAll(list);
+							HashSet<String> set = new HashSet<>(list);
 							npcdata.putMessage(Integer.parseInt(i), set);
 						}
 					}
@@ -289,7 +288,7 @@ public class QuestConfigLoader
 					{
 						qc = new FriendConversation(name, id, npc, loadConvAction(act), conv.getInt("Conversations." + id + ".FriendPoint"));
 						QuestStorage.FriendConvs.add((FriendConversation)qc);
-						QuestStorage.Conversations.put(id, (FriendConversation)qc);
+						QuestStorage.Conversations.put(id, qc);
 					}
 					else if (conv.getBoolean("Conversations." + id + ".StartTriggerConversation"))
 					{
@@ -422,7 +421,7 @@ public class QuestConfigLoader
 						q.setFailMessage(quest.getString(qpath + "MessageRequirementNotMeet"));
 					
 					// Requirements
-					q.setRequirements(loadRequirements(quest, qpath));;
+					q.setRequirements(loadRequirements(quest, qpath));
 					q.initRequirements();
 
 					// Triggers
@@ -436,7 +435,7 @@ public class QuestConfigLoader
 					if (quest.getLong(qpath + "Version") == 0L)
 					{
 						QuestVersion ver = QuestVersion.instantVersion();
-						quest.set(qpath + "Version", ver.getVersion());
+						quest.set(qpath + "Version", ver.getTimeStamp());
 						q.registerVersion(ver);
 					}
 					else
@@ -479,7 +478,6 @@ public class QuestConfigLoader
 				else
 				{
 					QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.NPCError", questname));
-					continue;
 				}
 			}
 		}
@@ -642,7 +640,6 @@ public class QuestConfigLoader
 			}
 		}
 		q.setTriggers(map);
-		return;
 	}
 	
 	private QuestReward loadReward(QuestIO quest, String id)
@@ -659,7 +656,7 @@ public class QuestConfigLoader
 			{
 				if (index > 9)
 					continue;
-				RewardChoice choice = new RewardChoice(new ArrayList<ItemStack>());
+				RewardChoice choice = new RewardChoice(new ArrayList<>());
 				for (int itemIndex : quest.getIntegerSection(qpath + "Rewards.Choice." + index))
 				{
 					choice.addItem(quest.getItemStack(qpath + "Rewards.Choice." + index + "." + itemIndex));
@@ -714,7 +711,7 @@ public class QuestConfigLoader
 	private List<QuestBaseAction> loadConvAction(List<String> fromlist)
 	{
 		List<QuestBaseAction> list = new ArrayList<>();
-		EnumAction e = null;
+		EnumAction e;
 		for (String s : fromlist)
 		{
 			if (s.contains("#"))
@@ -728,32 +725,29 @@ public class QuestConfigLoader
 					QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.EnumActionError", s.split("#")[0]));
 					continue;
 				}
-				if (e != null)
+				QuestBaseAction action;
+				switch (e)
 				{
-					QuestBaseAction action;
-					switch (e)
-					{
-						case CHOICE:
-						case NPC_TALK:
-						case WAIT:
-						case SENTENCE:
-						case FINISH:
-						case COMMAND:
-						case COMMAND_PLAYER:
-						case COMMAND_PLAYER_OP:
-							action = new QuestBaseAction(e, s.split("#")[1]);
-							break;
-						case BUTTON:
-						case CHANGE_LINE:
-						case CHANGE_PAGE:
-						case TAKE_QUEST:
-						case EXIT:
-						default:
-							action = new QuestBaseAction(e, null);
-							break;
-					}
-					list.add(action);
+					case CHOICE:
+					case NPC_TALK:
+					case WAIT:
+					case SENTENCE:
+					case FINISH:
+					case COMMAND:
+					case COMMAND_PLAYER:
+					case COMMAND_PLAYER_OP:
+						action = new QuestBaseAction(e, s.split("#")[1]);
+						break;
+					case BUTTON:
+					case CHANGE_LINE:
+					case CHANGE_PAGE:
+					case TAKE_QUEST:
+					case EXIT:
+					default:
+						action = new QuestBaseAction(e, null);
+						break;
 				}
+				list.add(action);
 			}
 		}
 		return list;

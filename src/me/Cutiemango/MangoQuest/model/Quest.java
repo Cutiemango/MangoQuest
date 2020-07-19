@@ -99,7 +99,6 @@ public class Quest
 	private EnumMap<RequirementType, Object> requirements = new EnumMap<>(RequirementType.class);
 	private EnumMap<TriggerType, List<TriggerObject>> triggerMap = new EnumMap<>(TriggerType.class);
 
-
 	private QuestVersion version;
 
 	public String getInternalID()
@@ -349,10 +348,8 @@ public class Quest
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
 			QuestPlayerData pd = QuestUtil.getData(p);
-			Iterator<QuestProgress> it = pd.getProgresses().iterator();
-			while (it.hasNext())
+			for (QuestProgress qp : pd.getProgresses())
 			{
-				QuestProgress qp = it.next();
 				if (QuestValidater.detailedValidate(q, qp.getQuest()))
 				{
 					pd.forceQuit(q, true);

@@ -9,8 +9,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_13_R2.*;
-import net.minecraft.server.v1_13_R2.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_13_R2.PacketPlayOutTitle.EnumTitleAction;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -29,14 +27,8 @@ public class Version_v1_13_R2 implements VersionHandler
 	@Override
 	public void sendTitle(Player p, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle)
 	{
-		if (title == null)
-			title = "";
-		if (subtitle == null)
-			subtitle = "";
-		PacketPlayOutTitle ppot = new PacketPlayOutTitle(EnumTitleAction.TITLE, ChatSerializer.a("{\"text\":\"" + QuestChatManager.translateColor(title) + "\"}"), fadeIn, stay, fadeOut);
-		((CraftPlayer) p).getHandle().playerConnection.sendPacket(ppot);
-		PacketPlayOutTitle subppot = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, ChatSerializer.a("{\"text\":\"" + QuestChatManager.translateColor(subtitle) + "\"}"), fadeIn, stay, fadeOut);
-		((CraftPlayer) p).getHandle().playerConnection.sendPacket(subppot);
+		((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + QuestChatManager.translateColor(title == null ? "" : title) + "\"}"), fadeIn, stay, fadeOut));
+		((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + QuestChatManager.translateColor(subtitle == null ? "" : subtitle) + "\"}"), fadeIn, stay, fadeOut));
 	}
 
 	@Override
@@ -44,9 +36,7 @@ public class Version_v1_13_R2 implements VersionHandler
 	{
 		ArrayList<BaseComponent[]> list = new ArrayList<>();
 		for (TextComponent t : texts)
-		{
 			list.add(new BaseComponent[] {t});
-		}
 
 		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
 		CraftMetaBook meta = (CraftMetaBook)book.getItemMeta();

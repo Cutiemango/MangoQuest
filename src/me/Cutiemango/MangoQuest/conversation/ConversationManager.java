@@ -26,7 +26,7 @@ public class ConversationManager
 	{
 		ConversationProgress cp = new ConversationProgress(p, conv);
 		QuestStorage.ConvProgresses.put(p.getName(), cp);
-		DebugHandler.log(5, "Player " + p.getName() + " started conversation " + conv.getName() + "(" + conv.getInternalID() + ").");
+		DebugHandler.log(5, "[Conversations] Player %s started conversation %s(%s).", p.getName(), conv.getName(), conv.getInternalID());
 		cp.nextAction();
 		openConversation(p, cp);
 		return cp;
@@ -59,7 +59,6 @@ public class ConversationManager
 
 	/**
 	 * Gets a model conversation by internal id.
-	 * 
 	 * @param s The id of the conversation.
 	 */
 	public static QuestConversation getConversation(String s)
@@ -68,8 +67,7 @@ public class ConversationManager
 	}
 
 	/**
-	 * Gets a conversation progress by a specified player.
-	 * 
+	 * Gets a conversation progress by a specified player
 	 * @param p The player.
 	 */
 	public static ConversationProgress getConvProgress(Player p)
@@ -79,7 +77,6 @@ public class ConversationManager
 
 	/**
 	 * Gets a model choice by internal id.
-	 * 
 	 * @param s The internal id.
 	 */
 	public static QuestChoice getChoiceByName(String s)
@@ -89,7 +86,6 @@ public class ConversationManager
 
 	/**
 	 * Gets a choice data by a specified player.
-	 * 
 	 * @param p The player.
 	 */
 	public static QuestChoice getChoiceProgress(Player p)

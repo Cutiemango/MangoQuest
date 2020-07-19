@@ -21,25 +21,25 @@ import java.util.List;
 public class QuestProgress
 {
 
-	public QuestProgress(Quest quest, Player owner)
+	public QuestProgress(Quest q, Player p)
 	{
-		this.quest = quest;
-		this.owner = owner;
+		quest = q;
+		owner = p;
 		currentStage = 0;
 		objlist = new ArrayList<>();
 		for (SimpleQuestObject o : quest.getStage(currentStage).getObjects())
-		{
 			objlist.add(new QuestObjectProgress(o, 0));
-		}
+
 		takeStamp = System.currentTimeMillis();
 	}
 
-	public QuestProgress(Quest q, Player p, int s, List<QuestObjectProgress> o)
+	public QuestProgress(Quest q, Player p, int s, List<QuestObjectProgress> o, long stamp)
 	{
 		quest = q;
 		owner = p;
 		currentStage = s;
 		objlist = o;
+		takeStamp = stamp;
 	}
 
 	private Quest quest;
@@ -74,7 +74,7 @@ public class QuestProgress
 	public void save(QuestIO io)
 	{
 		io.set("QuestProgress." + quest.getInternalID() + ".QuestStage", currentStage);
-		io.set("QuestProgress." + quest.getInternalID() + ".Version", quest.getVersion().getVersion());
+		io.set("QuestProgress." + quest.getInternalID() + ".Version", quest.getVersion().getTimeStamp());
 		io.set("QuestProgress." + quest.getInternalID() + ".TakeStamp", takeStamp);
 		int t = 0;
 		int value = 0;
@@ -146,10 +146,5 @@ public class QuestProgress
 	public long getTakeTime()
 	{
 		return takeStamp;
-	}
-	
-	public void setTakeTime(long l)
-	{
-		takeStamp = l;
 	}
 }

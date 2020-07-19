@@ -105,7 +105,7 @@ public class QuestConfigSaver
 		if (!QuestValidater.detailedValidate(q, QuestUtil.getQuest(q.getInternalID())))
 		{
 			DebugHandler.log(3, "[Config] Quest of id=" + q.getInternalID() + " does not fully equals to the former version, replacing...");
-			quest.set(qpath + "Version", q.getVersion().getVersion());
+			quest.set(qpath + "Version", q.getVersion().getTimeStamp());
 		}
 		
 		DebugHandler.log(3, "[Config] Quest of id=" + q.getInternalID() + " is saved.");
