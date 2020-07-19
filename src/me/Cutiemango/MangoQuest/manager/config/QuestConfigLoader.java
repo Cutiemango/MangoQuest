@@ -9,11 +9,7 @@ import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
-import me.Cutiemango.MangoQuest.objects.GUIOption;
-import me.Cutiemango.MangoQuest.objects.QuestNPC;
-import me.Cutiemango.MangoQuest.objects.QuestStage;
-import me.Cutiemango.MangoQuest.objects.QuestVersion;
-import me.Cutiemango.MangoQuest.objects.RequirementType;
+import me.Cutiemango.MangoQuest.objects.*;
 import me.Cutiemango.MangoQuest.objects.reward.QuestReward;
 import me.Cutiemango.MangoQuest.objects.reward.RewardChoice;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerObject;
@@ -155,6 +151,7 @@ public class QuestConfigLoader
 		{
 			ConfigSettings.DATABASE_ADDRESS = config.getString("databaseAddress");
 			ConfigSettings.DATABASE_PORT = config.getInt("databasePort");
+			ConfigSettings.DATABASE_NAME = config.getString("databaseName");
 			ConfigSettings.DATABASE_USER = config.getString("databaseUser");
 			ConfigSettings.DATABASE_PASSWORD = config.getString("databasePassword");
 

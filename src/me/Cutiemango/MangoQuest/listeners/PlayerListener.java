@@ -7,10 +7,8 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
-import me.Cutiemango.MangoQuest.manager.database.DatabaseLoader;
 import net.citizensnpcs.api.npc.NPC;
 import org.apache.commons.lang.ArrayUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -37,7 +35,7 @@ public class PlayerListener
 			@Override
 			public void run()
 			{
-				QuestPlayerData qd = ConfigSettings.USE_DATABASE ? DatabaseLoader.loadPlayer(p) : new QuestPlayerData(p);
+				QuestPlayerData qd = new QuestPlayerData(p);
 				QuestStorage.Players.put(p.getName(), qd);
 				qd.checkQuestFail();
 				qd.checkUnclaimedReward();

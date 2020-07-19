@@ -6,7 +6,7 @@ import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.listeners.MainListener;
 import me.Cutiemango.MangoQuest.manager.*;
 import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
-import me.Cutiemango.MangoQuest.manager.database.DatabaseLoader;
+import me.Cutiemango.MangoQuest.manager.database.DatabaseManager;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import me.Cutiemango.MangoQuest.versions.*;
 import org.bukkit.Bukkit;
@@ -39,7 +39,7 @@ public class Main extends JavaPlugin
 		pluginHooker.hookPlugins();
 		SimpleQuestObject.initObjectNames();
 		if (ConfigSettings.USE_DATABASE)
-			DatabaseLoader.initPlayerDB();
+			DatabaseManager.initPlayerDB();
 
 		getServer().getPluginManager().registerEvents(new MainListener(), this);
 
@@ -129,7 +129,7 @@ public class Main extends JavaPlugin
 	{
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
-			QuestPlayerData qd = ConfigSettings.USE_DATABASE ? DatabaseLoader.loadPlayer(p) : new QuestPlayerData(p);
+			QuestPlayerData qd = new QuestPlayerData(p);
 			QuestStorage.Players.put(p.getName(), qd);
 		}
 	}

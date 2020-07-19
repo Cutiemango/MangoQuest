@@ -13,8 +13,9 @@ useDatabase: false
 #【資料庫設定】
 # 請填入正確的連線資料以便插件連接資料庫。
 databaseAddress: "localhost"
-databasePort: "3306"
+databasePort: 3306
 databaseName: "sample"
+databaseUser: "root"
 databasePassword: "1234"
 
 #【插件前綴】
