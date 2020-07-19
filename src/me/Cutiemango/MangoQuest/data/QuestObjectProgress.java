@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 
 public class QuestObjectProgress
 {
-
 	private boolean isFinished = false;
 	private SimpleQuestObject obj;
 	private ConversationProgress cp;
@@ -27,6 +26,7 @@ public class QuestObjectProgress
 	{
 		if (obj instanceof CustomQuestObject)
 			return;
+
 		if (obj instanceof QuestObjectTalkToNPC)
 		{
 			if (i == 1 || (cp != null && QuestUtil.getData(cp.getOwner()).hasFinished(cp.getConversation())))
@@ -37,35 +37,26 @@ public class QuestObjectProgress
 		{
 			if (((NumerableObject) obj).getAmount() == i)
 				isFinished = true;
+			return;
 		}
 		else
-			if (obj instanceof SimpleQuestObject)
-			{
-				if (i == 1)
-					isFinished = true;
-			}
+			if (obj != null && i == 1)
+				isFinished = true;
+
 	}
 
 	public void newConversation(Player p)
 	{
-		if (obj.hasConversation())
-		{
-			cp = ConversationManager.startConversation(p, obj.getConversation());
-			return;
-		}
+		cp = ConversationManager.startConversation(p, obj.getConversation());
 	}
 
 	public void openConversation(Player p)
 	{
-		if (cp == null)
+		if (obj.hasConversation())
 		{
-			if (obj.hasConversation())
+			if (cp == null)
 				newConversation(p);
-			return;
-		}
-		else
-		{
-			if (cp.isFinished())
+			else if (cp.isFinished())
 				finish();
 			else
 				ConversationManager.openConversation(p, cp);

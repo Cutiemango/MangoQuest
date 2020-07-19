@@ -1,12 +1,14 @@
 package me.Cutiemango.MangoQuest.manager.database;
 
 import me.Cutiemango.MangoQuest.DebugHandler;
+import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.data.QuestFinishData;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import org.bukkit.entity.Player;
 
@@ -22,14 +24,17 @@ import java.util.Set;
 public class DatabaseLoader
 {
 
-	public static QuestPlayerData loadPlayer(Player p)
+	public static void loadPlayer(QuestPlayerData pd)
 	{
 		try
 		{
 			Connection conn = DatabaseManager.getConnection();
 			PreparedStatement query = conn.prepareStatement("SELECT * FROM `mq_playerdata` WHERE `UUID` = ?");
+			Player p = pd.getPlayer();
 			query.setNString(1, p.getUniqueId().toString());
+
 			ResultSet rsRet = query.executeQuery();
+			// if player data found in database
 			if (rsRet.next())
 			{
 				int PDID = rsRet.getInt("PDID");
@@ -38,20 +43,34 @@ public class DatabaseLoader
 				Set<String> convs = getFinishedConversations(PDID);
 				HashMap<Integer, Integer> fp = getFriendPointMap(PDID);
 
-				DebugHandler.log(2, "[Database] Player " + p.getName() + "'s data has been loaded from the database.");
-				return new QuestPlayerData(p, prog, data, convs, fp, PDID);
-			} else {
-				// No previous player data found in database, initializing one
-				File f = new File(Main.getInstance().getDataFolder() + "/data/" , p.getUniqueId() + ".yml");
-				DatabaseSaver.savePlayer(p);
-				return new QuestPlayerData(p, !f.exists());
+				DebugHandler.log(2, "[Database] Player %s's data has been loaded from the database.", p.getName());
+				pd.loadExistingData(prog, data, convs, fp, PDID);
+			}
+			else
+			{
+				// no previous player data found in database, try to migrate data from yml file
+				File f = new File(Main.getInstance().getDataFolder() + "/data/", p.getUniqueId() + ".yml");
+				DatabaseSaver.saveLoginData(p);
+				// get PDID
+				pd.load(true);
+
+				// found yml data, start migrating
+				if (f.exists())
+				{
+					DebugHandler.log(2, "[Database] Found player %s's yml data, start migrating...", p.getName());
+					// load from yml
+					pd.load(false);
+
+					// save yml data to database
+					DatabaseSaver.savePlayerData(pd);
+					DebugHandler.log(2, "[Database] Migration completed.");
+				}
 			}
 		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
 		}
-		return null;
 	}
 
 	private static Set<QuestProgress> getQuestProgress(Player p, int PDID)
@@ -68,10 +87,25 @@ public class DatabaseLoader
 			while (rsRet.next())
 			{
 				if (QuestUtil.getQuest(rsRet.getString("QuestID")) == null)
+				{
+					DebugHandler.log(2, "[Database] Found an invalid quest (%s) in player's quest data, skipping...", rsRet.getString("QuestID"));
 					continue;
+				}
 				Quest q = QuestUtil.getQuest(rsRet.getString("QuestID"));
+				long version = rsRet.getLong("Version");
+
+				if (q.getVersion().getTimeStamp() != version)
+				{
+					QuestChatManager.error(p, I18n.locMsg("CommandInfo.OutdatedQuestVersion", q.getInternalID()));
+					continue;
+				}
+
 				int stage = rsRet.getInt("QuestStage");
-				prog.add(new QuestProgress(q, p, stage, JSONSerializer.jsonDeserialize(q.getStage(stage).getObjects(), rsRet.getString("QuestObjectProgress"))));
+				long takeStamp = rsRet.getLong("TakeStamp");
+
+				QuestProgress progress = new QuestProgress(q, p, stage, JSONSerializer.jsonDeserialize(q.getStage(stage).getObjects(),
+						rsRet.getString("QuestObjectProgress")), takeStamp);
+				prog.add(progress);
 			}
 		}
 		catch (SQLException e)
@@ -96,9 +130,12 @@ public class DatabaseLoader
 			while (rsRet.next())
 			{
 				if (QuestUtil.getQuest(rsRet.getString("QuestID")) == null)
+				{
+					DebugHandler.log(2, "[Database] Found an invalid quest (%s) in player's quest data, skipping...", rsRet.getString("QuestID"));
 					continue;
+				}
 				Quest q = QuestUtil.getQuest(rsRet.getString("QuestID"));
-				data.add(new QuestFinishData(q, rsRet.getInt("FinishedTimes"), rsRet.getLong("TakeStamp"), rsRet.getInt("RewardTaken") != 0));
+				data.add(new QuestFinishData(q, rsRet.getInt("FinishedTimes"), rsRet.getLong("LastFinishTime"), rsRet.getInt("RewardTaken") != 0));
 			}
 		}
 		catch (SQLException e)
@@ -120,9 +157,7 @@ public class DatabaseLoader
 
 			ResultSet rsRet = query.executeQuery();
 			while (rsRet.next())
-			{
 				map.put(rsRet.getInt("NPC"), rsRet.getInt("FriendPoint"));
-			}
 		}
 		catch (SQLException e)
 		{
@@ -145,7 +180,10 @@ public class DatabaseLoader
 			while (rsRet.next())
 			{
 				if (ConversationManager.getConversation(rsRet.getString("ConvID")) == null)
+				{
+					DebugHandler.log(2, "[Database] Found an invalid conversation (%s) in player's data, skipping...", rsRet.getString("QuestID"));
 					continue;
+				}
 				set.add(rsRet.getString("ConvID"));
 			}
 		}

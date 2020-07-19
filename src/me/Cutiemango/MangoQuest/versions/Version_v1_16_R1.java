@@ -54,7 +54,7 @@ public class Version_v1_16_R1 implements VersionHandler
 		int slot = p.getInventory().getHeldItemSlot();
 		ItemStack old = p.getInventory().getItem(slot);
 		p.getInventory().setItem(slot, book);
-		((org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutOpenBook(EnumHand.MAIN_HAND));
+		((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutOpenBook(EnumHand.MAIN_HAND));
 		p.getInventory().setItem(slot, old);
 	}
 
@@ -116,7 +116,7 @@ public class Version_v1_16_R1 implements VersionHandler
 	@Override
 	public boolean hasTag(Player p, String s)
 	{
-		return ((org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer) p).getHandle().getScoreboardTags().contains(s);
+		return ((CraftPlayer) p).getHandle().getScoreboardTags().contains(s);
 	}
 
 	@Override
@@ -142,6 +142,6 @@ public class Version_v1_16_R1 implements VersionHandler
 	{
 		location.setY(location.getY() + 2);
 		PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(Particles.NOTE, false, (float) location.getX(), (float) location.getY(), (float) location.getZ(), 0, 0, 0, 1, 1);
-		((org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+		((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
 	}
 }

@@ -2,27 +2,26 @@ package me.Cutiemango.MangoQuest.objects;
 
 public class QuestVersion
 {
-
 	public QuestVersion(long l)
 	{
-		questVersion = l;
+		timeStamp = l;
 	}
 
-	private long questVersion;
+	private long timeStamp;
 
-	public long getVersion()
+	public long getTimeStamp()
 	{
-		return questVersion;
+		return timeStamp;
 	}
 
 	public void update()
 	{
-		questVersion = System.currentTimeMillis();
+		timeStamp = System.currentTimeMillis();
 	}
 
 	public void retrieve(long version)
 	{
-		questVersion = version;
+		timeStamp = version;
 	}
 
 	public static QuestVersion instantVersion()

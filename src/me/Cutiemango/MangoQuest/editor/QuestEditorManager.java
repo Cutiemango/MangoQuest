@@ -600,7 +600,7 @@ public class QuestEditorManager
 		{
 			Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 			Inventory inv = Bukkit.createInventory(null, 27, "[" + type + "]" + q.getQuestName());
-			inv.addItem(list.toArray(new ItemStack[list.size()]));
+			inv.addItem(list.toArray(new ItemStack[0]));
 			p.openInventory(inv);
 		}
 	}

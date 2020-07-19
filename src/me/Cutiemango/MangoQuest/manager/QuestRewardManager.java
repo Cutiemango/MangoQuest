@@ -24,7 +24,7 @@ import java.util.List;
 public class QuestRewardManager implements Listener
 {
 	public static final int MAXMIUM_CHOICES = 9;
-	private static HashMap<String, RewardCache> rewardCache = new HashMap<>();
+	private static final HashMap<String, RewardCache> rewardCache = new HashMap<>();
 	
 	public static void openEditMainGUI(Player p)
 	{
@@ -50,7 +50,7 @@ public class QuestRewardManager implements Listener
 		for (int i = 0; i < 27; i++)
 		{
 			if (inv.getItem(i) == null || inv.getItem(i).getType().equals(Material.AIR))
-				inv.setItem(i, glassPane(reward.getRewardAmount()));
+				inv.setItem(i, glassPane());
 		}
 		p.openInventory(inv);
 	}
@@ -68,7 +68,7 @@ public class QuestRewardManager implements Listener
 		Inventory inv = Bukkit.createInventory(null, 27, title);
 		
 		if (q.getQuestReward().getChoices().size() <= index)
-			q.getQuestReward().getChoices().add(index, new RewardChoice(new ArrayList<ItemStack>()));
+			q.getQuestReward().getChoices().add(index, new RewardChoice(new ArrayList<>()));
 		
 		for (ItemStack item : q.getQuestReward().getChoice(index).getItems())
 		{
@@ -107,7 +107,7 @@ public class QuestRewardManager implements Listener
 		return chest.get();
 	}
 	
-	private static ItemStack glassPane(int amount)
+	private static ItemStack glassPane()
 	{
 		QuestGUIItem glassPane = new QuestGUIItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE, 1);
 		glassPane.setName("&0");
@@ -226,7 +226,6 @@ public class QuestRewardManager implements Listener
 			p.getInventory().addItem(is);
 			QuestChatManager.info(p, I18n.locMsg("QuestReward.GiveItemReward", QuestUtil.getItemName(is), Integer.toString(is.clone().getAmount())));
 		}
-		return;
 	}
 	
 	public static RewardCache getRewardCache(Player p)
