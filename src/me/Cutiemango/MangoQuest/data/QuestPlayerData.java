@@ -12,6 +12,7 @@ import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.manager.RequirementManager;
 import me.Cutiemango.MangoQuest.manager.database.DatabaseLoader;
+import me.Cutiemango.MangoQuest.manager.database.DatabaseSaver;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
 import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 
 public class QuestPlayerData
 {
+	private int PDID;
 	private Player owner;
 	private QuestIO save;
 
@@ -49,21 +51,58 @@ public class QuestPlayerData
 	public QuestPlayerData(Player p)
 	{
 		owner = p;
-
-		if (!ConfigSettings.USE_DATABASE)
-		{
-			loadFromYml();
-			save();
-		}
+		load(ConfigSettings.USE_DATABASE);
 	}
 
-	public QuestPlayerData(Player p, Set<QuestProgress> q, Set<QuestFinishData> fd, Set<String> convs, HashMap<Integer, Integer> map)
+	// For YML format to Database migrating
+	public QuestPlayerData(Player p, boolean useDatabase)
+	{
+		owner = p;
+		// Load player pdid from database
+		loadFromDatabase();
+		// if useDatabase is false, overwrite with data from yml
+		load(useDatabase);
+	}
+
+	public QuestPlayerData(Player p, Set<QuestProgress> q, Set<QuestFinishData> fd, Set<String> convs, HashMap<Integer, Integer> map, int id)
 	{
 		owner = p;
 		currentQuests = q;
 		finishedQuests = fd;
 		finishedConversations = convs;
 		friendPointStorage = map;
+		PDID = id;
+	}
+
+	public void load(boolean useDatabase) {
+		if (useDatabase) {
+			loadFromDatabase();
+		} else {
+			loadFromYml();
+			save();
+		}
+	}
+
+	public void save() {
+		if (ConfigSettings.USE_DATABASE) {
+			saveToDatabase();
+		} else {
+			saveToYml();
+			save();
+		}
+	}
+
+	public void loadFromDatabase() {
+		QuestPlayerData data = DatabaseLoader.loadPlayer(owner);
+		PDID = data.PDID;
+		currentQuests = data.currentQuests;
+		finishedQuests = data.finishedQuests;
+		friendPointStorage = data.friendPointStorage;
+		finishedConversations = data.finishedConversations;
+	}
+
+	private void saveToDatabase() {
+		DatabaseSaver.saveQuestPlayerData(this);
 	}
 
 	public void loadFromYml()
@@ -149,8 +188,7 @@ public class QuestPlayerData
 			QuestChatManager.info(owner, I18n.locMsg("CommandInfo.PlayerLoadComplete"));
 	}
 
-	public void save()
-	{
+	public void saveToYml() {
 		save.set("LastKnownID", owner.getName());
 		for (QuestFinishData q : finishedQuests)
 		{
@@ -188,6 +226,18 @@ public class QuestPlayerData
 	public Player getPlayer()
 	{
 		return owner;
+	}
+
+	public int getPDID() {
+		return PDID;
+	}
+
+	public HashMap<Integer, Integer> getFriendPointStorage() {
+		return friendPointStorage;
+	}
+
+	public Set<String> getFinishedConversations() {
+		return finishedConversations;
 	}
 
 	public boolean hasFinished(Quest q)
@@ -898,6 +948,7 @@ public class QuestPlayerData
 						}
 						else
 						{
+							qop.setProgress(1);
 							qop.finish();
 							checkFinished(qp, qop);
 						}

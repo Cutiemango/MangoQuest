@@ -23,7 +23,7 @@ public class JSONSerializer
 	{
 		JSONObject json = new JSONObject();
 		for (int i = 0; i < lst.size(); i++)
-			json.put(Integer.toString(i), lst.get(i).getProgress());
+			json.put(Integer.toString(i), Integer.toString(lst.get(i).getProgress()));
 		return json.toJSONString();
 	}
 
@@ -47,8 +47,12 @@ public class JSONSerializer
 		try
 		{
 			JSONObject json = (JSONObject) parser.parse(obj);
-			for (int i = 0; i < json.keySet().size(); i++)
-				prog.add(new QuestObjectProgress(objs.get(0), (Integer) json.get(Integer.toString(i))));
+			for (int i = 0; i < json.keySet().size(); i++) {
+				QuestObjectProgress progress =
+						new QuestObjectProgress(objs.get(i), Integer.parseInt(json.get(Integer.toString(i)).toString()));
+				progress.checkIfFinished();
+				prog.add(progress);
+			}
 		}
 		catch (ParseException e)
 		{

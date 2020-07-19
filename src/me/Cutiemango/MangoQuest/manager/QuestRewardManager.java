@@ -224,12 +224,7 @@ public class QuestRewardManager implements Listener
 		else
 		{
 			p.getInventory().addItem(is);
-			if (is.hasItemMeta() && is.getItemMeta().hasDisplayName())
-				QuestChatManager.info(p, I18n.locMsg("QuestReward.GiveItemReward", is.getItemMeta().getDisplayName(),
-						Integer.toString(is.getAmount())));
-			else
-				QuestChatManager.info(p, I18n.locMsg("QuestReward.GiveItemReward",
-						QuestUtil.translate(is.getType()), Integer.toString(is.getAmount())));
+			QuestChatManager.info(p, I18n.locMsg("QuestReward.GiveItemReward", QuestUtil.getItemName(is), Integer.toString(is.clone().getAmount())));
 		}
 		return;
 	}
