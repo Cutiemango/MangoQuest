@@ -11,6 +11,8 @@ import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
 import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectDeliverItem;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -19,6 +21,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ScoreboardManager
 {
@@ -81,62 +84,25 @@ public class ScoreboardManager
 		return s;
 	}
 
-	private static List<TextChunk> formatText(String uncolored)
-	{
-		final List<TextChunk> list = new ArrayList<>();
-		String text = QuestChatManager.translateColor(uncolored);
-		int index = -1;
-
-		TextChunk saved = new TextChunk();
-
-		for (int i = 0; i < text.toCharArray().length; i++)
-		{
-			// Color code
-			if (text.charAt(i) == '§')
-			{
-				if (index != -1)
-				{
-					saved.setText(text.substring(index, i));
-					list.add(saved);
-
-					saved = new TextChunk();
-					index = -1;
-				}
-				saved.addColor(text.charAt(++i));
-			}
-			// Normal text
-			else
-			{
-				if (index == -1)
-					index = i;
-			}
-		}
-		if (index != -1)
-		{
-			saved.setText(text.substring(index));
-			list.add(saved);
-		}
-		return list;
-	}
-	
 	private static void formatScoreboard(Objective o, List<String> list)
 	{
 		int scoreIndex = 0;
 		for (int i = 0; i < list.size(); i++)
 		{
 			String text = list.get(list.size() - (i+1));
-
-			List<TextChunk> chunks = formatText(text);
+			BaseComponent[] components = TextComponent.fromLegacyText(QuestChatManager.translateColor(text));
 			List<String> texts = new ArrayList<>();
+
 			StringBuilder saved = new StringBuilder();
-			for (TextChunk chunk : chunks)
+			for (BaseComponent comp : components)
 			{
-				if (saved.length() + chunk.length() >= SCOREBOARD_TEXT_LIMIT)
+				String legacy = comp.toLegacyText();
+				if (saved.length() + legacy.length() >= SCOREBOARD_TEXT_LIMIT)
 				{
 					texts.add(saved.toString());
 					saved = new StringBuilder("    ");
 				}
-				saved.append(chunk.toString());
+				saved.append(legacy);
 			}
 			texts.add(saved.toString());
 			Collections.reverse(texts);
@@ -177,41 +143,5 @@ public class ScoreboardManager
 			QuestChatManager.trimColor("&8&m&o     " + ChatColor.stripColor(array[1]));
 		}
 		return array;
-	}
-
-	private static class TextChunk
-	{
-		private ChatColor colorCode;
-		private ChatColor formatCode;
-		private String realText;
-
-		public void addColor(char c)
-		{
-			if (ChatColor.getByChar(c) != null)
-			{
-				ChatColor color = ChatColor.getByChar(c);
-				if (color.isColor())
-					colorCode = color;
-				else
-					if (color.isFormat())
-						formatCode = color;
-			}
-		}
-
-		public void setText(String text)
-		{
-			realText = text;
-		}
-
-		public int length()
-		{
-			return toString().length();
-		}
-
-		@Override
-		public String toString()
-		{
-			return String.format("%s%s%s", colorCode == null ? "" : colorCode, formatCode == null ? "" : formatCode, realText);
-		}
 	}
 }
