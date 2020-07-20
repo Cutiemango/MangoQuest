@@ -4,7 +4,6 @@ import me.Cutiemango.MangoQuest.ConfigSettings;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.book.TextAlignment;
 import me.Cutiemango.MangoQuest.data.QuestObjectProgress;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
@@ -18,11 +17,13 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
 
 public class ScoreboardManager
 {
+	public static final int SCOREBOARD_TEXT_LIMIT = 40;
+
 	public static Scoreboard update(QuestPlayerData pd)
 	{
 		Scoreboard s = pd.getScoreboard();
@@ -79,21 +80,43 @@ public class ScoreboardManager
 		formatScoreboard(o, scoreList);
 		return s;
 	}
-	
-	private static String getLastAppliedColor(String s)
+
+	private static List<TextChunk> formatText(String uncolored)
 	{
-		String color = "§f";
-		String text = QuestChatManager.trimColor(s);
-		if (text.lastIndexOf("§") == -1)
-			return "§f";
-		if (TextAlignment.ESCAPE_COLOR_CODES.contains(s.charAt(text.lastIndexOf("§") + 1)))
-			if (s.lastIndexOf("§") - 1 > 0)
-				color = "§" + text.charAt(text.lastIndexOf("§") - 1) + "§" + text.charAt(text.lastIndexOf("§") + 1);
+		final List<TextChunk> list = new ArrayList<>();
+		String text = QuestChatManager.translateColor(uncolored);
+		int index = -1;
+
+		TextChunk saved = new TextChunk();
+
+		for (int i = 0; i < text.toCharArray().length; i++)
+		{
+			// Color code
+			if (text.charAt(i) == '§')
+			{
+				if (index != -1)
+				{
+					saved.setText(text.substring(index, i));
+					list.add(saved);
+
+					saved = new TextChunk();
+					index = -1;
+				}
+				saved.addColor(text.charAt(++i));
+			}
+			// Normal text
 			else
-				color = "§" + text.charAt(text.lastIndexOf("§") + 1);
-		else
-			color = "§" + text.charAt(text.lastIndexOf("§") + 1);
-		return color;
+			{
+				if (index == -1)
+					index = i;
+			}
+		}
+		if (index != -1)
+		{
+			saved.setText(text.substring(index));
+			list.add(saved);
+		}
+		return list;
 	}
 	
 	private static void formatScoreboard(Objective o, List<String> list)
@@ -102,28 +125,28 @@ public class ScoreboardManager
 		for (int i = 0; i < list.size(); i++)
 		{
 			String text = list.get(list.size() - (i+1));
-			if (text.length() > 40)
+
+			List<TextChunk> chunks = formatText(text);
+			List<String> texts = new ArrayList<>();
+			StringBuilder saved = new StringBuilder();
+			for (TextChunk chunk : chunks)
 			{
-				text = QuestChatManager.trimColor(text);
-				String t1 = text.substring(0, 40);
-				String t2 = text.substring(40, text.length()-1);
-				
-				if (t1.charAt(t1.length()-1) == '§')
+				if (saved.length() + chunk.length() >= SCOREBOARD_TEXT_LIMIT)
 				{
-					t1 = text.substring(0, 39);
-					t2 = text.substring(39, text.length()-1);
+					texts.add(saved.toString());
+					saved = new StringBuilder("    ");
 				}
-				
-				o.getScore(t1).setScore(scoreIndex+1);
-				o.getScore(QuestChatManager.trimColor("    " + getLastAppliedColor(t1) + t2)).setScore(scoreIndex);
-				scoreIndex+=2;
-				continue;
+				saved.append(chunk.toString());
 			}
-			o.getScore(text).setScore(scoreIndex);
-			scoreIndex++;
+			texts.add(saved.toString());
+			Collections.reverse(texts);
+
+			for (String s : texts)
+				o.getScore(s).setScore(scoreIndex++);
 		}
-		return;
 	}
+
+
 	
 	private static String formatObjectDisplayText(QuestObjectProgress qop)
 	{
@@ -132,12 +155,12 @@ public class ScoreboardManager
 		else
 		{
 			if (qop.getObject() instanceof NumerableObject)	
-				return QuestChatManager.trimColor(" &f - " + qop.getObject().toDisplayText() + " " +
+				return QuestChatManager.trimColor("&f  - " + qop.getObject().toDisplayText() + " " +
 			I18n.locMsg("CommandInfo.Progress", Integer.toString(qop.getProgress()), Integer.toString(((NumerableObject) qop.getObject()).getAmount())));
 			else if (qop.getObject() instanceof CustomQuestObject)
-				return QuestChatManager.trimColor(" &f - " + ((CustomQuestObject)qop.getObject()).getProgressText(qop));
+				return QuestChatManager.trimColor("&f  - " + ((CustomQuestObject)qop.getObject()).getProgressText(qop));
 			else
-				return QuestChatManager.trimColor(" &f - " + qop.getObject().toDisplayText());
+				return QuestChatManager.trimColor("&f  - " + qop.getObject().toDisplayText());
 		}
 	}
 	
@@ -145,14 +168,50 @@ public class ScoreboardManager
 	{
 		QuestObjectDeliverItem obj = (QuestObjectDeliverItem)qop.getObject();
 		String[] array = new String[2];
-		array[0] = QuestChatManager.trimColor(" &f - " + I18n.locMsg("Scoreboard.QuestObject.ItemToDeliver", Integer.toString(obj.getAmount()), QuestUtil.translate(obj.getItem())));
+		array[0] = QuestChatManager.trimColor("&f  - " + I18n.locMsg("Scoreboard.QuestObject.ItemToDeliver", Integer.toString(obj.getAmount()), QuestUtil.translate(obj.getItem())));
 		array[1] = QuestChatManager.trimColor("    " + I18n.locMsg("Scoreboard.QuestObject.TargetNPC", obj.getTargetNPC().getName()) + " " +
 				I18n.locMsg("CommandInfo.Progress", Integer.toString(qop.getProgress()), Integer.toString(((NumerableObject) qop.getObject()).getAmount())));
 		if (qop.isFinished())
 		{
-			QuestChatManager.trimColor(" &8&m&o - " + ChatColor.stripColor(array[0]));
+			QuestChatManager.trimColor("&8&m&o  - " + ChatColor.stripColor(array[0]));
 			QuestChatManager.trimColor("&8&m&o     " + ChatColor.stripColor(array[1]));
 		}
 		return array;
+	}
+
+	private static class TextChunk
+	{
+		private ChatColor colorCode;
+		private ChatColor formatCode;
+		private String realText;
+
+		public void addColor(char c)
+		{
+			if (ChatColor.getByChar(c) != null)
+			{
+				ChatColor color = ChatColor.getByChar(c);
+				if (color.isColor())
+					colorCode = color;
+				else
+					if (color.isFormat())
+						formatCode = color;
+			}
+		}
+
+		public void setText(String text)
+		{
+			realText = text;
+		}
+
+		public int length()
+		{
+			return toString().length();
+		}
+
+		@Override
+		public String toString()
+		{
+			return String.format("%s%s%s", colorCode == null ? "" : colorCode, formatCode == null ? "" : formatCode, realText);
+		}
 	}
 }
