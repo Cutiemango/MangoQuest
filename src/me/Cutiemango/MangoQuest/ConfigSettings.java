@@ -18,10 +18,30 @@ public class ConfigSettings
 	
 	public static boolean USE_WEAK_ITEM_CHECK = false;
 
-	public static boolean USE_DATABASE = false;
+	public static SaveType SAVE_TYPE = SaveType.YML;
 	public static String DATABASE_ADDRESS = "localhost";
 	public static int DATABASE_PORT = 3306;
 	public static String DATABASE_NAME = "sample";
 	public static String DATABASE_USER = "admin";
 	public static String DATABASE_PASSWORD = "1234";
+
+	public enum SaveType {
+		YML("yml"),
+		SQL("sql"),
+		MONGODB("mongodb");
+
+		String _type;
+
+		SaveType(String type) {
+			_type = type;
+		}
+
+		public static SaveType fromString(String text)
+		{
+			for(SaveType type : SaveType.values())
+				if (type._type.equalsIgnoreCase(text))
+					return type;
+			return null;
+		}
+	}
 }

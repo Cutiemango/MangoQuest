@@ -144,10 +144,10 @@ public class QuestConfigLoader
 		DebugHandler.log(5, "[Config] useParticleEffect=" + ConfigSettings.USE_PARTICLE_EFFECT);
 
 		// Database Settings
-		ConfigSettings.USE_DATABASE = config.getBoolean("useDatabase");
-		DebugHandler.log(5, "[Config] useDatabase=" + ConfigSettings.USE_DATABASE);
+		ConfigSettings.SAVE_TYPE = ConfigSettings.SaveType.fromString(config.getString("saveType"));
+		DebugHandler.log(5, "[Config] saveType=" + ConfigSettings.SAVE_TYPE.toString());
 
-		if (ConfigSettings.USE_DATABASE)
+		if (ConfigSettings.SAVE_TYPE != ConfigSettings.SaveType.YML)
 		{
 			ConfigSettings.DATABASE_ADDRESS = config.getString("databaseAddress");
 			ConfigSettings.DATABASE_PORT = config.getInt("databasePort");

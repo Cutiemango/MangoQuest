@@ -6,9 +6,10 @@ language: "zh_TW"
 #【使用自己修改過的語系檔案】
 useModifiedLanguage: false
 
-#【使用資料庫】
-# 若使用資料庫，請將此處調整為true。
-useDatabase: false
+#【玩家資料儲存類型】
+# 使用資料庫，請將此處調整為"sql"或"mongodb"。
+# 若不使用則可設為"yml"。
+saveType: "yml"
 
 #【資料庫設定】
 # 請填入正確的連線資料以便插件連接資料庫。
