@@ -143,10 +143,22 @@ public class QuestConfigLoader
 
 		DebugHandler.log(5, "[Config] useParticleEffect=" + ConfigSettings.USE_PARTICLE_EFFECT);
 
-		// Database Settings
-		ConfigSettings.SAVE_TYPE = ConfigSettings.SaveType.fromString(config.getString("saveType"));
+		ConfigSettings.SAVE_TYPE = ConfigSettings.SaveType.YML;
+		if (config.getString("saveType") != null)
+		{
+			try
+			{
+				ConfigSettings.SAVE_TYPE = ConfigSettings.SaveType.valueOf(config.getString("saveType").toUpperCase());
+			}
+			catch (IllegalArgumentException ex)
+			{
+				DebugHandler.log(5, "[Config] User entered an invalid save type. Using default save type...");
+			}
+		}
+		
 		DebugHandler.log(5, "[Config] saveType=" + ConfigSettings.SAVE_TYPE.toString());
-
+		
+		// Database Settings
 		if (ConfigSettings.SAVE_TYPE != ConfigSettings.SaveType.YML)
 		{
 			ConfigSettings.DATABASE_ADDRESS = config.getString("databaseAddress");
