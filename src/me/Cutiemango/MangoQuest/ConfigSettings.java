@@ -25,23 +25,10 @@ public class ConfigSettings
 	public static String DATABASE_USER = "admin";
 	public static String DATABASE_PASSWORD = "1234";
 
-	public enum SaveType {
-		YML("yml"),
-		SQL("sql"),
-		MONGODB("mongodb");
-
-		String _type;
-
-		SaveType(String type) {
-			_type = type;
-		}
-
-		public static SaveType fromString(String text)
-		{
-			for(SaveType type : SaveType.values())
-				if (type._type.equalsIgnoreCase(text))
-					return type;
-			return null;
-		}
+	public enum SaveType
+	{
+		YML,
+		SQL,
+		MONGODB;
 	}
 }
