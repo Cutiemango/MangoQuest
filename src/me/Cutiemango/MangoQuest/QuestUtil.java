@@ -8,7 +8,6 @@ import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -89,15 +88,6 @@ public class QuestUtil
 
 	public static String convertArgsString(String[] array, int startIndex)
 	{
-//		String s = "";
-//		for (int i = startIndex; i < array.length; i++)
-//		{
-//			s = s + array[i];
-//			if (i + 1 == array.length)
-//				break;
-//			else
-//				s += " ";
-//		}
 		return String.join(" ", Arrays.copyOfRange(array, startIndex, array.length));
 	}
 
@@ -119,10 +109,10 @@ public class QuestUtil
 
 	public static void checkOutOfBounds(QuestBookPage page, FlexiableBook book)
 	{
-		if (page.pageOutOfBounds())
+		if (page.isOutOfBounds())
 		{
 			book.newPage();
-			book.getLastEditingPage().add(book.getPage(book.size() - 2).getTextleft());
+			book.getLastEditingPage().add(book.getPage(book.size() - 2).getSaved());
 		}
 	}
 

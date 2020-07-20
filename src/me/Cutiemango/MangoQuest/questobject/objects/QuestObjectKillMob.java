@@ -131,22 +131,22 @@ public class QuestObjectKillMob extends NumerableObject implements EditorObject
 	{
 		if (Main.getHooker().hasMythicMobEnabled())
 		{
-			page.add(I18n.locMsg("QuestEditor.MythicMobs")).endNormally();
+			page.add(I18n.locMsg("QuestEditor.MythicMobs"));
 			if (isMythicObject())
-				page.add(new InteractiveText(mtmMob.getDisplayName() + "(" + mtmMob.getInternalName() + ")")).endNormally();
+				page.add(new InteractiveText(mtmMob.getDisplayName() + "(" + mtmMob.getInternalName() + ")"));
 			else
-				page.add(I18n.locMsg("QuestEditor.NotSet")).endNormally();
+				page.add(I18n.locMsg("QuestEditor.NotSet"));
 			page.changeLine();
 			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " mtmmob")).changeLine();
 		}
-		page.add(I18n.locMsg("QuestEditor.MobName")).endNormally();
+		page.add(I18n.locMsg("QuestEditor.MobName"));
 		if (hasCustomName())
-			page.add(new InteractiveText(customName)).endNormally();
+			page.add(new InteractiveText(customName));
 		else
-			page.add(I18n.locMsg("QuestEditor.NotSet")).endNormally();
+			page.add(I18n.locMsg("QuestEditor.NotSet"));
 		page.changeLine();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " mobname")).changeLine();
-		page.add(I18n.locMsg("QuestEditor.MobType") + QuestUtil.translate(type)).endNormally();
+		page.add(I18n.locMsg("QuestEditor.MobType") + QuestUtil.translate(type));
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " mobtype")).changeLine();
 		super.formatEditorPage(page, stage, obj);
 	}

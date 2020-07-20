@@ -75,17 +75,17 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 	@Override
 	public void formatEditorPage(QuestBookPage page, int stage, int obj)
 	{
-		page.add(I18n.locMsg("QuestEditor.TalkNPC")).endNormally();
+		page.add(I18n.locMsg("QuestEditor.TalkNPC"));
 		if (npc == null)
-			page.add(new InteractiveText(I18n.locMsg("QuestEditor.NotSet"))).endNormally();
+			page.add(new InteractiveText(I18n.locMsg("QuestEditor.NotSet")));
 		else
-			page.add(new InteractiveText("").showNPCInfo(npc)).endNormally();
+			page.add(new InteractiveText("").showNPCInfo(npc));
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " npc")).changeLine();
-		page.add(I18n.locMsg("QuestEditor.ActivateConversation")).endNormally();
+		page.add(I18n.locMsg("QuestEditor.ActivateConversation"));
 		if (!hasConversation())
-			page.add(new InteractiveText(I18n.locMsg("QuestEditor.NotSet"))).endNormally();
+			page.add(new InteractiveText(I18n.locMsg("QuestEditor.NotSet")));
 		else
-			page.add(new InteractiveText(getConversation().getName() + "(" + activateConversation + ")")).endNormally();
+			page.add(new InteractiveText(getConversation().getName() + "(" + activateConversation + ")"));
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " conv")).changeLine();
 		page.changeLine();
 	}

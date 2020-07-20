@@ -1,45 +1,60 @@
 package me.Cutiemango.MangoQuest.book;
 
-import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.DebugHandler;
+import me.Cutiemango.MangoQuest.Pair;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
+
+import java.util.HashMap;
 
 public class QuestBookPage
 {
+	private static final double MAXIMUM_CHAR_PER_LINE = 19D;
+	private static final double MAXIMUM_LINE_PER_PAGE = 14D;
+
+	public static HashMap<Character.UnicodeBlock, Pair<Double, Double>> CHARACTER_SIZEMAP = new HashMap<>();
+
+	static
+	{
+		CHARACTER_SIZEMAP.put(Character.UnicodeBlock.BASIC_LATIN, new Pair<>(1D, 1.2D));
+		CHARACTER_SIZEMAP.put(Character.UnicodeBlock.DINGBATS, new Pair<>(1.5D, 1.55D));
+		CHARACTER_SIZEMAP.put(Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION, new Pair<>(1.5D, 1.55D));
+		CHARACTER_SIZEMAP.put(Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS, new Pair<>(1.5D, 1.55D));
+		CHARACTER_SIZEMAP.put(Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS, new Pair<>(1.5D, 1.55D));
+	}
+
 	public QuestBookPage()
 	{
-		page = new TextComponent("");
+		page = new TextComponent();
+		saved = new TextComponent();
 	}
 
 	public QuestBookPage(TextComponent text)
 	{
-		page = text;
+		this();
+		add(text);
 	}
 
-	private TextComponent page = new TextComponent("");
-	private TextComponent textleft = new TextComponent("");
+	// used for duplicating
+	public QuestBookPage(TextComponent p, TextComponent s, double d, int i)
+	{
+		page = p;
+		saved = s;
+		size = d;
+		lineUsed = i;
+	}
+
+	// the final page shown to the player
+	private final TextComponent page;
+
+	// currently saved text, will be added when:
+	// - changeLine
+	// - the page is going to be shown to the player
+	private TextComponent saved;
+
+	private double size = 0d;
 	private int lineUsed = 1;
-	
-	public void endNormally()
-	{
-		if (textleft.toPlainText() != "")
-		{
-			page.addExtra(textleft);
-			textleft = new TextComponent("");
-		}
-	}
-	
-	public String getCurrentLine()
-	{
-		String[] split = page.toPlainText().split("\n");
-		return split[split.length-1];
-	}
-
-	public void changeLine()
-	{
-		endNormally();
-		page.addExtra("\n");
-		lineUsed+=1;
-	}
 
 	public QuestBookPage add(String s)
 	{
@@ -49,113 +64,107 @@ public class QuestBookPage
 
 	public QuestBookPage add(TextComponent t)
 	{
-		t.addExtra(textleft);
-		String s = t.toPlainText();
-		TextAlignment align = new TextAlignment(s, lineUsed);
-		if (align.calculateCharSize(s) >= TextAlignment.MAXIUM_BOLD_CHAR_PER_LINE)
-			page.addExtra(align.getResult());
-		textleft = new TextComponent(QuestChatManager.translateColor(align.getLeft()));
-		lineUsed = align.lineUsed();
+//		DebugHandler.log(5, "Adding: %s", t.getText());
+		TextComponent sanitized = TextComponentFactory.formatSanitize(t);
+//		DebugHandler.log(5, "Sanitized: %s", sanitized.getText());
+
+		StringBuilder builder = new StringBuilder();
+		for (char c : sanitized.getText().toCharArray())
+		{
+			Pair<Double, Double> pair = CHARACTER_SIZEMAP.getOrDefault(Character.UnicodeBlock.of(c), new Pair<>(1d, 1d));
+			double charSize = sanitized.isBold() ? pair.getValue() : pair.getKey();
+//			DebugHandler.log(5, "Size: %2.2f, charSize: %2.2f", size, charSize);
+			if (size + charSize > MAXIMUM_CHAR_PER_LINE)
+			{
+				TextComponent left = new TextComponent();
+				left.setText(builder.toString());
+				left.copyFormatting(sanitized);
+				saved.addExtra(left);
+//				DebugHandler.log(5, "Saved: %s", saved.toLegacyText());
+
+				changeLine();
+				saved.copyFormatting(sanitized);
+//				DebugHandler.log(5, "Page: %s", page.toLegacyText());
+				builder = new StringBuilder();
+			}
+			builder.append(c);
+			size += charSize;
+		}
+
+		if (builder.length() != 0)
+		{
+			if (saved.toPlainText().length() == 0)
+			{
+				saved.copyFormatting(sanitized);
+				saved.setText(builder.toString());
+			}
+			else
+			{
+				TextComponent left = new TextComponent();
+				left.setText(builder.toString());
+				left.copyFormatting(sanitized);
+				saved.addExtra(left);
+			}
+		}
+
+		if (sanitized.getExtra() != null && !sanitized.getExtra().isEmpty())
+			for (BaseComponent comp : sanitized.getExtra())
+			{
+				if (!(comp instanceof TextComponent))
+					continue;
+				// we need to cancel out parent's formatting
+				if (comp.isBoldRaw() == null)
+					comp.setBold(false);
+				if (comp.isItalicRaw() == null)
+					comp.setItalic(false);
+				if (comp.isUnderlinedRaw() == null)
+					comp.setUnderlined(false);
+				if (comp.isStrikethroughRaw() == null)
+					comp.setStrikethrough(false);
+				comp.copyFormatting(sanitized, ComponentBuilder.FormatRetention.EVENTS, true);
+				add((TextComponent)comp);
+			}
 		return this;
 	}
 
 	public QuestBookPage add(InteractiveText it)
 	{
-		String s = it.get().toPlainText();
-		String left = textleft.toPlainText();
-		if (!page.toPlainText().endsWith("\n"))
-			left = getCurrentLine();
-		// 做一點標記
-		// @： 這本書原本剩下來還沒加進去的字串 與 新加進來的字串之間
-		// #： 加進字串後的終點標記
-		s = left + "@" + s + "#";
-		// 丟進書本整理器
-		TextAlignment align = new TextAlignment(s, lineUsed);
-//		DebugHandler.log(5, "String: " + s);
-//		DebugHandler.log(5, "Result: " + align.getResult());
-//		DebugHandler.log(5, "Left: " + align.getLeft());
-//		DebugHandler.log(5, "Char size: " + align.calculateCharSize(s));
-		// 如果整行字超過了一行最大字數
-		if (align.calculateCharSize(s) >= TextAlignment.MAXIUM_BOLD_CHAR_PER_LINE)
-		{
-			// 處理 left
-			String result = align.getResult().replace(getCurrentLine(), "");
-
-			// 如果整理後的字串(結果)裡面有@標記的話
-			if (result.contains("@"))
-			{
-				// 將其分開，先把沒有互動的字串加進書裡
-				String[] firstsplit = result.split("@");
-				page.addExtra(firstsplit[0]);
-				// 檢查剩下來的字串
-				for (int i = 1; i < firstsplit.length; i++)
-				{
-					// 如果剩下來的字串含有終止符號
-					if (firstsplit[i].contains("#"))
-					{
-						// 將其再分開
-						String[] secondsplit = firstsplit[i].split("#");
-						page.addExtra(it.toggleAlignText(secondsplit[0]));
-						page.addExtra(secondsplit[1]);
-					}
-					// 沒有的話就直接將其調整成互動字串，加進書本
-					else
-						page.addExtra(it.toggleAlignText(firstsplit[1]));
-				}
-			}
-			// 沒有的話就直接加入
-			else
-				page.addExtra(result);
-		}
-		// 如果是剩下的字串含有@標記
-		if (align.getLeft().contains("@"))
-		{
-			// 超極端狀況
-			if (align.getLeft().startsWith("@") && align.getLeft().contains("#"))
-			{
-				String[] split = align.getLeft().split("#");
-				textleft.addExtra(it.toggleAlignText(split[0].replace("@", "")));
-				if (split.length > 1)
-					textleft.addExtra(split[1]);
-			}
-			else
-			{
-				String[] firstsplit = align.getLeft().split("@");
-				if (align.getLeft().contains("#"))
-				{
-					String[] secondsplit = firstsplit[1].split("#");
-					textleft.addExtra(it.toggleAlignText(secondsplit[0]));
-					if (secondsplit.length > 1)
-						textleft.addExtra(secondsplit[1]);
-				}
-			}
-		}
-		else if (align.getLeft().contains("#") && !align.getLeft().contains("@"))
-		{
-			String[] split = align.getLeft().split("#");
-			textleft.addExtra(it.toggleAlignText(split[0]));
-		}
-		lineUsed = align.lineUsed();
+		add(it.get());
 		return this;
+	}
+
+	public void changeLine()
+	{
+		if (saved.toPlainText().length() != 0)
+		{
+			page.addExtra(saved);
+			saved = new TextComponent();
+		}
+		size = 0d;
+		page.addExtra("\n");
+		lineUsed+=1;
+//		DebugHandler.log(5, "Line changed.");
 	}
 
 	public TextComponent getOriginalPage()
 	{
+		if (saved.toPlainText().length() != 0)
+			page.addExtra(saved);
 		return page;
 	}
 	
 	public QuestBookPage duplicate()
 	{
-		return new QuestBookPage((TextComponent)page.duplicate());
+		return new QuestBookPage(page.duplicate(), saved.duplicate(), size, lineUsed);
+	}
+
+	public TextComponent getSaved()
+	{
+		return saved;
 	}
 	
-	public TextComponent getTextleft()
+	public boolean isOutOfBounds()
 	{
-		return textleft;
-	}
-	
-	public boolean pageOutOfBounds()
-	{
-		return lineUsed >= TextAlignment.MAXIUM_LINE_PER_PAGE;
+		return lineUsed >= MAXIMUM_LINE_PER_PAGE;
 	}
 }

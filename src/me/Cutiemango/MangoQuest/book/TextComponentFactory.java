@@ -9,6 +9,7 @@ import me.Cutiemango.MangoQuest.manager.RequirementManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
@@ -21,39 +22,45 @@ public class TextComponentFactory
 
 	// Note:
 	// The command argument here is "/" needed.
-
-	public static TextComponent regClickCmdEvent(String text, String command)
+	public static TextComponent regClickCmdEvent(TextComponent t, String command)
 	{
-		TextComponent t = new TextComponent(QuestChatManager.translateColor(text));
-		t.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
-		return t;
-	}
-
-	public static void regClickCmdEvent(TextComponent t, String command)
-	{
-		t.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
-	}
-
-	public static TextComponent regHoverEvent(String text, String s)
-	{
-		TextComponent t = new TextComponent(QuestChatManager.translateColor(text));
-		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]
-		{ new TextComponent(QuestChatManager.translateColor(s)) }));
-		return t;
+		TextComponent text = t.duplicate();
+		text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+		return text;
 	}
 
 	public static TextComponent regHoverEvent(TextComponent t, String s)
 	{
-		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]
-		{ new TextComponent(QuestChatManager.translateColor(s)) }));
+		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{ new TextComponent(QuestChatManager.translateColor(s)) }));
 		return t;
 	}
 
-	public static TextComponent regChangePageEvent(String text, Integer page)
+	public static TextComponent formatSanitize(TextComponent t)
 	{
-		TextComponent t = new TextComponent(QuestChatManager.translateColor(text));
-		t.setClickEvent(new ClickEvent(ClickEvent.Action.CHANGE_PAGE, page.toString()));
-		return t;
+		TextComponent result = new TextComponent();
+		if (t.toPlainText().contains("§") || t.toPlainText().contains("&") )
+		{
+			BaseComponent[] comps = TextComponent.fromLegacyText(QuestChatManager.translateColor(t.toPlainText()));
+			for (BaseComponent comp : comps)
+			{
+				// cancel out parent's formatting
+				if (comp.isBoldRaw() == null)
+					comp.setBold(false);
+				if (comp.isItalicRaw() == null)
+					comp.setItalic(false);
+				if (comp.isUnderlinedRaw() == null)
+					comp.setUnderlined(false);
+				if (comp.isStrikethroughRaw() == null)
+					comp.setStrikethrough(false);
+			}
+			result.copyFormatting(comps[0], ComponentBuilder.FormatRetention.FORMATTING, true);
+			result.copyFormatting(t, ComponentBuilder.FormatRetention.EVENTS, true);
+			result.setText(comps[0].toPlainText());
+			for (int i = 1; i < comps.length; i++)
+				result.addExtra(comps[i]);
+			return result;
+		}
+		else return t;
 	}
 
 	public static TextComponent convertItemHoverEvent(ItemStack it, boolean isFinished)

@@ -70,8 +70,7 @@ public class QuestChoice
 	public void apply(ConversationProgress cp)
 	{
 		QuestStorage.ChoiceProgresses.put(cp.getOwner().getName(), this);
-		cp.getCurrentPage().add(new InteractiveText(question.getText()).showText(I18n.locMsg("Conversation.ClickToAnswer"))
-				.clickCommand("/mq conv openchoice")).endNormally();
+		cp.getCurrentPage().add(new InteractiveText(question.getText()).showText(I18n.locMsg("Conversation.ClickToAnswer")).clickCommand("/mq conv openchoice"));
 	}
 
 	public void choose(Player p, int i)

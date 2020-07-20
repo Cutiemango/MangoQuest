@@ -69,7 +69,7 @@ public class QuestObjectBreakBlock extends NumerableObject implements EditorObje
 	@Override
 	public void formatEditorPage(QuestBookPage page, int stage, int obj)
 	{
-		page.add(I18n.locMsg("QuestEditor.BreakBlock") + QuestUtil.translate(block)).endNormally();
+		page.add(I18n.locMsg("QuestEditor.BreakBlock") + QuestUtil.translate(block));
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " block")).changeLine();
 		super.formatEditorPage(page, stage, obj);
 	}

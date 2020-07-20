@@ -90,14 +90,14 @@ public class QuestObjectReachLocation extends SimpleQuestObject implements Edito
 	@Override
 	public void formatEditorPage(QuestBookPage page, int stage, int obj)
 	{
-		page.add(I18n.locMsg("QuestEditor.ReachLocation")).endNormally();
-		page.add("(" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")").endNormally();
+		page.add(I18n.locMsg("QuestEditor.ReachLocation"));
+		page.add("(" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")");
 		page.changeLine();
-		page.add(I18n.locMsg("QuestEditor.ReachRadius") + radius + I18n.locMsg("QuestEditor.WithinBlocks")).endNormally();
-		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " loc")).endNormally();
+		page.add(I18n.locMsg("QuestEditor.ReachRadius") + radius + I18n.locMsg("QuestEditor.WithinBlocks"));
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " loc"));
 		page.changeLine();
-		page.add(I18n.locMsg("QuestEditor.LocationName") + name).endNormally();
-		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " locname")).endNormally();
+		page.add(I18n.locMsg("QuestEditor.LocationName") + name);
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " locname"));
 		page.changeLine();
 	}
 

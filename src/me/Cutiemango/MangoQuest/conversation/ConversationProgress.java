@@ -177,43 +177,38 @@ public class ConversationProgress
 		return currentBook;
 	}
 
-
 	public QuestBookPage getCurrentPage()
 	{
-		if (currentBook.getFirstPage().pageOutOfBounds())
+		if (currentBook.getFirstPage().isOutOfBounds())
 		{
 			currentBook.pushNewPage(conv);
-			currentBook.getFirstPage().add(currentBook.getPage(1).getTextleft()).endNormally();
+			currentBook.getFirstPage().add(currentBook.getPage(1).getSaved());
 		}
 		return currentBook.getFirstPage();
-	}
-
-	public void setCurrentBook(FlexiableBook book)
-	{
-		currentBook = book;
-		update();
 	}
 	
 	public void retrieve()
 	{
 		currentBook.setPage(0, history.getFirstPage().duplicate());
+		DebugHandler.log(5, "[Conversation] History retrieved.");
 	}
 
+	// write current book data into history
 	public void update()
 	{
-		int page = 0;
-		for (int i = 0; i <= page; i++)
+		for (int i = 0; i < currentBook.size(); i++)
 		{
-			if (page > history.size() - 1)
-				history.addPage(i, ConversationManager.generateNewPage(conv));
+			if (history.size() <= i)
+				history.addPage(i, new QuestBookPage());
 			history.setPage(i, currentBook.getPage(i).duplicate());
 		}
+		DebugHandler.log(5, "[Conversation] History written.");
 	}
 
 	public void newPage()
 	{
 		currentBook.pushNewPage(conv);
-		currentBook.getFirstPage().add(currentBook.getPage(1).getTextleft()).endNormally();
+		currentBook.getFirstPage().add(currentBook.getPage(1).getSaved());
 		update();
 	}
 

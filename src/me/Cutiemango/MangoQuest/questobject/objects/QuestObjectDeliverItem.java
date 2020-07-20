@@ -80,14 +80,14 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject, Edi
 	@Override
 	public void formatEditorPage(QuestBookPage page, int stage, int obj)
 	{
-		page.add(I18n.locMsg("QuestEditor.DeliverItem")).endNormally();
-		page.add(new InteractiveText("").showItem(item)).endNormally();
+		page.add(I18n.locMsg("QuestEditor.DeliverItem"));
+		page.add(new InteractiveText("").showItem(item));
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " item")).changeLine();
-		page.add(I18n.locMsg("QuestEditor.DeliverNPC")).endNormally();
+		page.add(I18n.locMsg("QuestEditor.DeliverNPC"));
 		if (npc == null)
-			page.add(new InteractiveText(I18n.locMsg("QuestEditor.NotSet"))).endNormally();
+			page.add(new InteractiveText(I18n.locMsg("QuestEditor.NotSet")));
 		else
-			page.add(new InteractiveText("").showNPCInfo(npc)).endNormally();
+			page.add(new InteractiveText("").showNPCInfo(npc));
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " itemnpc")).changeLine();
 		super.formatEditorPage(page, stage, obj);
 	}

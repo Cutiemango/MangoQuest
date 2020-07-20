@@ -5,7 +5,9 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.ItemTag;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Item;
 import net.minecraft.server.v1_16_R1.NBTTagCompound;
 import net.minecraft.server.v1_16_R1.PacketPlayOutWorldParticles;
 import net.minecraft.server.v1_16_R1.Particles;
@@ -78,12 +80,9 @@ public class Version_v1_16_R1 implements VersionHandler
 
 		is.setItemMeta(im);
 		TextComponent text = new TextComponent(isFinished ? QuestChatManager.finishedObjectFormat(name) : name);
+		ItemTag itemTag = ItemTag.ofNbt(CraftItemStack.asNMSCopy(is).save(new NBTTagCompound()).toString());
 
-		net.minecraft.server.v1_16_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
-		NBTTagCompound tag = i.save(new NBTTagCompound());
-
-		BaseComponent[] hoverEventComponents = new BaseComponent[]{ new TextComponent(tag.toString()) };
-		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents));
+		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Item(is.getType().getKey().toString(), is.getAmount(), itemTag)));
 		return text;
 	}
 
@@ -103,13 +102,8 @@ public class Version_v1_16_R1 implements VersionHandler
 
 		TextComponent text = new TextComponent(displayText);
 
-		net.minecraft.server.v1_16_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
-		NBTTagCompound tag = i.save(new NBTTagCompound());
-		String itemJson = tag.toString();
-
-		BaseComponent[] hoverEventComponents = new BaseComponent[]{ new TextComponent(itemJson) };
-		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents));
-
+		ItemTag itemTag = ItemTag.ofNbt(CraftItemStack.asNMSCopy(is).save(new NBTTagCompound()).toString());
+		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Item(is.getType().getKey().toString(), is.getAmount(), itemTag)));
 		return text;
 	}
 

@@ -104,7 +104,6 @@ public class QuestEditorManager
 		page = book.getLastEditingPage();
 		page.changeLine();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e"));
-		page.endNormally();
 		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 
@@ -127,7 +126,6 @@ public class QuestEditorManager
 		page = book.getLastEditingPage();
 		page.changeLine();
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e"));
-		page.endNormally();
 		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 
@@ -141,10 +139,8 @@ public class QuestEditorManager
 		p1.changeLine();
 		p1.add("  ");
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.WarnAccept")).clickCommand("/mq e remove quest " + q.getInternalID()));
-		p1.endNormally();
 		p1.add(" &8&l/ ");
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.WarnDeny")).clickCommand("/mq e remove"));
-		p1.endNormally();
 		QuestBookGUIManager.openBook(p, p1);
 	}
 
@@ -161,19 +157,19 @@ public class QuestEditorManager
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.QuestName", q.getQuestName())).clickCommand("/mq e edit name")
 				.showText(I18n.locMsg("QuestEditor.QuestName.ShowText"))).changeLine();
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.QuestNPC")).clickCommand("/mq e edit npc")
-				.showText(I18n.locMsg("QuestEditor.QuestNPC.ShowText"))).endNormally();
+				.showText(I18n.locMsg("QuestEditor.QuestNPC.ShowText")));
 		if (q.isCommandQuest())
-			p1.add(I18n.locMsg("QuestEditor.CommandQuest")).endNormally();
+			p1.add(I18n.locMsg("QuestEditor.CommandQuest"));
 		else
-			p1.add(new InteractiveText("").showNPCInfo(q.getQuestNPC())).endNormally();
+			p1.add(new InteractiveText("").showNPCInfo(q.getQuestNPC()));
 		p1.changeLine();
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.IsRedoable")).clickCommand("/mq e edit redo " + !q.isRedoable())
-				.showText(I18n.locMsg("QuestEditor.IsRedoable.ShowText." + !q.isRedoable()))).endNormally();
+				.showText(I18n.locMsg("QuestEditor.IsRedoable.ShowText." + !q.isRedoable())));
 		p1.add(I18n.locMsg("QuestEditor." + q.isRedoable())).changeLine();
 		if (q.isRedoable())
 		{
 			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.RedoDelay") + ChatColor.RESET).clickCommand("/mq e edit redodelay")
-					.showText(I18n.locMsg("QuestEditor.RedoDelay.ShowText"))).endNormally();
+					.showText(I18n.locMsg("QuestEditor.RedoDelay.ShowText")));
 			p1.add(QuestUtil.convertTime(q.getRedoDelay())).changeLine();
 		}
 		p1.changeLine();
@@ -182,13 +178,13 @@ public class QuestEditorManager
 		settings.add(I18n.locMsg("QuestEditor.QuestSettings")).changeLine();
 		QuestSetting vs = q.getSettings();
 		settings.add(new InteractiveText(I18n.locMsg("QuestEditor.IsQuitable")).clickCommand("/mq e edit quit " + !q.isQuitable())
-			.showText(I18n.locMsg("QuestEditor.IsQuitable.ShowText." + !q.isQuitable()))).endNormally();
+			.showText(I18n.locMsg("QuestEditor.IsQuitable.ShowText." + !q.isQuitable())));
 		settings.add(I18n.locMsg("QuestEditor." + q.isQuitable())).changeLine();
 		settings.add(new InteractiveText(I18n.locMsg("QuestEditor.UsePermission")).clickCommand("/mq e edit perm " + !q.usePermission())
-				.showText(I18n.locMsg("QuestEditor.UsePermission.ShowText." + !q.usePermission()))).endNormally();
+				.showText(I18n.locMsg("QuestEditor.UsePermission.ShowText." + !q.usePermission())));
 		settings.add(I18n.locMsg("QuestEditor." + q.usePermission())).changeLine();
 		settings.add(new InteractiveText((I18n.locMsg("QuestEditor.WorldLimit"))).clickCommand("/mq e edit world")
-				.showText(I18n.locMsg("QuestEditor.WorldLimit.ShowText"))).endNormally();
+				.showText(I18n.locMsg("QuestEditor.WorldLimit.ShowText")));
 		if (q.hasWorldLimit())
 			settings.add(q.getWorldLimit().getName()).changeLine();
 		else
@@ -196,21 +192,21 @@ public class QuestEditorManager
 		
 		settings.changeLine();
 
-		settings.add(new InteractiveText(I18n.locMsg("QuestVisibility.OnTake")).clickCommand("/mq e edit vis take " + !vs.displayOnTake()).showText(I18n.locMsg("QuestVisibility." + !vs.displayOnTake()))).endNormally();
+		settings.add(new InteractiveText(I18n.locMsg("QuestVisibility.OnTake")).clickCommand("/mq e edit vis take " + !vs.displayOnTake()).showText(I18n.locMsg("QuestVisibility." + !vs.displayOnTake())));
 		settings.add(I18n.locMsg("QuestEditor." + vs.displayOnTake())).changeLine();
-		settings.add(new InteractiveText(I18n.locMsg("QuestVisibility.OnProgress")).clickCommand("/mq e edit vis prog " + !vs.displayOnProgress()).showText(I18n.locMsg("QuestVisibility." + !vs.displayOnProgress()))).endNormally();
+		settings.add(new InteractiveText(I18n.locMsg("QuestVisibility.OnProgress")).clickCommand("/mq e edit vis prog " + !vs.displayOnProgress()).showText(I18n.locMsg("QuestVisibility." + !vs.displayOnProgress())));
 		settings.add(I18n.locMsg("QuestEditor." + vs.displayOnProgress())).changeLine();
-		settings.add(new InteractiveText(I18n.locMsg("QuestVisibility.OnFinish")).clickCommand("/mq e edit vis finish " + !vs.displayOnFinish()).showText(I18n.locMsg("QuestVisibility." + !vs.displayOnFinish()))).endNormally();
+		settings.add(new InteractiveText(I18n.locMsg("QuestVisibility.OnFinish")).clickCommand("/mq e edit vis finish " + !vs.displayOnFinish()).showText(I18n.locMsg("QuestVisibility." + !vs.displayOnFinish())));
 		settings.add(I18n.locMsg("QuestEditor." + vs.displayOnFinish())).changeLine();
-		settings.add(new InteractiveText(I18n.locMsg("QuestVisibility.OnInteraction")).clickCommand("/mq e edit vis interact " + !vs.displayOnInteraction()).showText(I18n.locMsg("QuestVisibility." + !vs.displayOnInteraction()))).endNormally();
+		settings.add(new InteractiveText(I18n.locMsg("QuestVisibility.OnInteraction")).clickCommand("/mq e edit vis interact " + !vs.displayOnInteraction()).showText(I18n.locMsg("QuestVisibility." + !vs.displayOnInteraction())));
 		settings.add(I18n.locMsg("QuestEditor." + vs.displayOnInteraction())).changeLine();
 		
-		settings.add(new InteractiveText(I18n.locMsg("QuestEditor.IsTimeLimited")).clickCommand("/mq e edit limit " + !q.isTimeLimited()).showText(I18n.locMsg("QuestEditor.IsTimeLimited.ShowText." + !q.isTimeLimited()))).endNormally();
+		settings.add(new InteractiveText(I18n.locMsg("QuestEditor.IsTimeLimited")).clickCommand("/mq e edit limit " + !q.isTimeLimited()).showText(I18n.locMsg("QuestEditor.IsTimeLimited.ShowText." + !q.isTimeLimited())));
 		settings.add(I18n.locMsg("QuestEditor." + q.isTimeLimited())).changeLine();
 		if (q.isTimeLimited())
 		{
 			settings.add(new InteractiveText(I18n.locMsg("QuestEditor.TimeLimit")).clickCommand("/mq e edit timelimit")
-					.showText(I18n.locMsg("QuestEditor.TimeLimit.ShowText"))).endNormally();
+					.showText(I18n.locMsg("QuestEditor.TimeLimit.ShowText")));
 			settings.add(QuestUtil.convertTime(q.getTimeLimit())).changeLine();
 		}
 		
@@ -241,25 +237,25 @@ public class QuestEditorManager
 		QuestBookPage p4 = new QuestBookPage();
 		p4.add(I18n.locMsg("QuestEditor.Reward")).changeLine();
 
-		p4.add(I18n.locMsg("QuestEditor.RewardMoney", Double.toString(q.getQuestReward().getMoney()))).endNormally();
+		p4.add(I18n.locMsg("QuestEditor.RewardMoney", Double.toString(q.getQuestReward().getMoney())));
 		p4.add(new InteractiveText(" " + I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward money").showText(I18n.locMsg("QuestEditor.RewardMoney.ShowText"))).changeLine();
 
-		p4.add(I18n.locMsg("QuestEditor.RewardExp", Integer.toString(q.getQuestReward().getExp()))).endNormally();
+		p4.add(I18n.locMsg("QuestEditor.RewardExp", Integer.toString(q.getQuestReward().getExp())));
 		p4.add(new InteractiveText(" " + I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward exp").showText(I18n.locMsg("QuestEditor.RewardExp.ShowText"))).changeLine();
 		
 		if (Main.getHooker().hasSkillAPIEnabled())
 		{
-			p4.add(I18n.locMsg("QuestEditor.RewardRPGExp", Integer.toString(q.getQuestReward().getSkillAPIExp()))).endNormally();
+			p4.add(I18n.locMsg("QuestEditor.RewardRPGExp", Integer.toString(q.getQuestReward().getSkillAPIExp())));
 			p4.add(new InteractiveText(" " + I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward saexp").showText(I18n.locMsg("QuestEditor.RewardRPGExp.ShowText"))).changeLine();
 		}
 
 		if (Main.getHooker().hasQuantumRPGEnabled())
 		{
-			p4.add(I18n.locMsg("QuestEditor.RewardRPGExp", Integer.toString(q.getQuestReward().getQRPGExp()))).endNormally();
+			p4.add(I18n.locMsg("QuestEditor.RewardRPGExp", Integer.toString(q.getQuestReward().getQRPGExp())));
 			p4.add(new InteractiveText(" " + I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward qrpgexp").showText(I18n.locMsg("QuestEditor.RewardRPGExp.ShowText"))).changeLine();
 		}
 	
-		p4.add(I18n.locMsg("QuestEditor.RewardFriendPoint")).endNormally();
+		p4.add(I18n.locMsg("QuestEditor.RewardFriendPoint"));
 		p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward fp").showText(I18n.locMsg("QuestEditor.RewardFriendPoint.ShowText"))).changeLine();
 		
 		if (q.getQuestReward().hasFriendPoint())
@@ -269,15 +265,15 @@ public class QuestEditorManager
 				NPC npc = CitizensAPI.getNPCRegistry().getById(n);
 				if (npc == null)
 					continue;
-				p4.add("- ").endNormally();
-				p4.add(new InteractiveText("").showNPCInfo(npc)).endNormally();
-				p4.add("&0 " + q.getQuestReward().getFriendPointMap().get(n) + " " + I18n.locMsg("QuestEditor.Point")).endNormally();
-				p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove reward fp " + n)).endNormally();
+				p4.add("- ");
+				p4.add(new InteractiveText("").showNPCInfo(npc));
+				p4.add("&0 " + q.getQuestReward().getFriendPointMap().get(n) + " " + I18n.locMsg("QuestEditor.Point"));
+				p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove reward fp " + n));
 				p4.changeLine();
 			}
 		}
 		
-		p4.add(I18n.locMsg("QuestEditor.RewardCommand")).endNormally();
+		p4.add(I18n.locMsg("QuestEditor.RewardCommand"));
 		p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew reward command").showText(I18n.locMsg("QuestEditor.RewardCommand.ShowText"))).changeLine();
 		if (q.getQuestReward().hasCommand())
 		{
@@ -285,13 +281,13 @@ public class QuestEditorManager
 			for (String s : q.getQuestReward().getCommands())
 			{
 				p4.add(new InteractiveText("- &0" + I18n.locMsg("QuestEditor.Command") + "(" + counter + ")").showText("&f/" + s));
-				p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward command " + (counter - 1))).endNormally();
-				p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove reward command " + (counter - 1))).endNormally();
+				p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward command " + (counter - 1)));
+				p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove reward command " + (counter - 1)));
 				p4.changeLine();
 				counter++;
 			}
 		}
-		p4.add(I18n.locMsg("QuestEditor.RewardItem")).endNormally();
+		p4.add(I18n.locMsg("QuestEditor.RewardItem"));
 		p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward item").showText(I18n.locMsg("QuestEditor.RewardItem.ShowText"))).changeLine();
 
 		QuestBookPage p5 = new QuestBookPage();
@@ -326,15 +322,15 @@ public class QuestEditorManager
 					continue;
 				QuestUtil.checkOutOfBounds(page, book);
 				page = book.getLastEditingPage();
-				page.add("- " + index + ".").endNormally();
+				page.add("- " + index + ".");
 				
 				
 				page.add(new InteractiveText(obj.getObjType().toCustomString())
-						.showText(QuestChatManager.toNormalDisplay(I18n.locMsg("QuestEditor.EditTriggerObjectType") + obj.getObject()))).endNormally();
+						.showText(QuestChatManager.toNormalDisplay(I18n.locMsg("QuestEditor.EditTriggerObjectType") + obj.getObject())));
 
-				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew evt " + type.toString() + " " + stage + " " + (realIndex+1) + " ")).endNormally();
-				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit evt " + type.toString() + " " + stage + " " + realIndex + " " + obj.getObjType().toString())).endNormally();
-				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove evt " + type.toString() + " " + stage + " " + realIndex)).endNormally();
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew evt " + type.toString() + " " + stage + " " + (realIndex+1) + " "));
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit evt " + type.toString() + " " + stage + " " + realIndex + " " + obj.getObjType().toString()));
+				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove evt " + type.toString() + " " + stage + " " + realIndex));
 
 				
 				page.changeLine();
@@ -346,7 +342,7 @@ public class QuestEditorManager
 			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew evt " + type.toString() + " " + stage + " " + 0 + " ")).changeLine();
 
 		page.changeLine();
-		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e edit evt")).endNormally();
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e edit evt"));
 		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 
@@ -363,7 +359,7 @@ public class QuestEditorManager
 		{
 			QuestUtil.checkOutOfBounds(p1, book);
 			p1 = book.getLastEditingPage();
-			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Stage", Integer.toString(i))).clickCommand("/mq e edit stage " + i)).endNormally();
+			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Stage", Integer.toString(i))).clickCommand("/mq e edit stage " + i));
 			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove stage " + i)).changeLine();
 		}
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew stage")).changeLine();
@@ -421,15 +417,15 @@ public class QuestEditorManager
 		p1.add(I18n.locMsg("QuestEditor.EditRequirement")).changeLine();
 
 		// Level Req
-		p1.add(I18n.locMsg("QuestEditor.LevelReq") + q.getRequirements().get(RequirementType.LEVEL)+ " ").endNormally();
+		p1.add(I18n.locMsg("QuestEditor.LevelReq") + q.getRequirements().get(RequirementType.LEVEL)+ " ");
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req LEVEL")).changeLine();
 
 		// Money Req
-		p1.add(I18n.locMsg("QuestEditor.MoneyReq") + q.getRequirements().get(RequirementType.MONEY) + " ").endNormally();
+		p1.add(I18n.locMsg("QuestEditor.MoneyReq") + q.getRequirements().get(RequirementType.MONEY) + " ");
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req MONEY")).changeLine();
 
 		// Item Req
-		p1.add(I18n.locMsg("QuestEditor.ItemReq")).endNormally();
+		p1.add(I18n.locMsg("QuestEditor.ItemReq"));
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req ITEM")).changeLine();
 
 		p1.changeLine();
@@ -440,14 +436,14 @@ public class QuestEditorManager
 
 			String classID = q.getRequirements().get(RequirementType.SKILLAPI_CLASS).toString();
 			String displayName = classID.equalsIgnoreCase("none") ? "null" : SkillAPI.getClass(classID).getName();
-			p1.add(I18n.locMsg("QuestEditor.RPGClassReq", displayName, classID)).endNormally();
+			p1.add(I18n.locMsg("QuestEditor.RPGClassReq", displayName, classID));
 			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req SKILLAPI_CLASS")).changeLine();
 
-			p1.add(I18n.locMsg("QuestEditor.RPGLevelReq", q.getRequirements().get(RequirementType.SKILLAPI_LEVEL).toString())).endNormally();
+			p1.add(I18n.locMsg("QuestEditor.RPGLevelReq", q.getRequirements().get(RequirementType.SKILLAPI_LEVEL).toString()));
 			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req SKILLAPI_LEVEL")).changeLine();
 
 			boolean allow = (Boolean) q.getRequirements().get(RequirementType.ALLOW_DESCENDANT);
-			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.AllowDescendant")).showText(I18n.locMsg("QuestEditor.AllowDescendant.ShowText." + !allow)).clickCommand("/mq e edit req ALLOW_DESCENDANT " + !allow)).endNormally();
+			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.AllowDescendant")).showText(I18n.locMsg("QuestEditor.AllowDescendant.ShowText." + !allow)).clickCommand("/mq e edit req ALLOW_DESCENDANT " + !allow));
 			p1.add(I18n.locMsg("QuestEditor." + allow)).changeLine();
 		}
 
@@ -457,14 +453,14 @@ public class QuestEditorManager
 
 			String classID = q.getRequirements().get(RequirementType.QRPG_CLASS).toString();
 			String displayName = classID.equalsIgnoreCase("none") ? "null" : Main.getHooker().getQuantumRPG().getModuleCache().getClassManager().getClassById(classID).getName();
-			p1.add(I18n.locMsg("QuestEditor.RPGClassReq", displayName, classID)).endNormally();
+			p1.add(I18n.locMsg("QuestEditor.RPGClassReq", displayName, classID));
 			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req QRPG_CLASS")).changeLine();
 
-			p1.add(I18n.locMsg("QuestEditor.RPGLevelReq", q.getRequirements().get(RequirementType.QRPG_LEVEL).toString())).endNormally();
+			p1.add(I18n.locMsg("QuestEditor.RPGLevelReq", q.getRequirements().get(RequirementType.QRPG_LEVEL).toString()));
 			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req QRPG_LEVEL")).changeLine();
 
 			boolean allow = (Boolean) q.getRequirements().get(RequirementType.ALLOW_DESCENDANT);
-			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.AllowDescendant")).showText(I18n.locMsg("QuestEditor.AllowDescendant.ShowText." + !allow)).clickCommand("/mq e edit req ALLOW_DESCENDANT " + !allow)).endNormally();
+			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.AllowDescendant")).showText(I18n.locMsg("QuestEditor.AllowDescendant.ShowText." + !allow)).clickCommand("/mq e edit req ALLOW_DESCENDANT " + !allow));
 			p1.add(I18n.locMsg("QuestEditor." + allow)).changeLine();
 		}
 
@@ -477,24 +473,24 @@ public class QuestEditorManager
 			if (QuestUtil.getQuest(s) == null)
 				continue;
 			Quest quest = QuestUtil.getQuest(s);
-			p2.add("&0- &l" + quest.getQuestName() + "&0(" + s + ")").endNormally();
+			p2.add("&0- &l" + quest.getQuestName() + "&0(" + s + ")");
 			p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove req QUEST " + counter)).changeLine();
 			counter++;
 		}
 		p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew req QUEST " + counter)).changeLine();
 
 		// Friend Points Req
-		p2.add(I18n.locMsg("QuestEditor.FriendPointReq")).endNormally();
+		p2.add(I18n.locMsg("QuestEditor.FriendPointReq"));
 		p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit req FRIEND_POINT")).changeLine();
 		for (Integer id : ((HashMap<Integer, Integer>) q.getRequirements().get(RequirementType.FRIEND_POINT)).keySet())
 		{
 			if (!QuestValidater.validateNPC(Integer.toString(id)))
 				continue;
 			NPC npc = Main.getHooker().getNPC(id);
-			p2.add("- ").endNormally();
-			p2.add(new InteractiveText("").showNPCInfo(npc)).endNormally();
-			p2.add("&0 " + ((HashMap<Integer, Integer>) q.getRequirements().get(RequirementType.FRIEND_POINT)).get(npc.getId()) + " " + I18n.locMsg("QuestEditor.Point")).endNormally();
-			p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove req FRIEND_POINT " + npc.getId())).endNormally();
+			p2.add("- ");
+			p2.add(new InteractiveText("").showNPCInfo(npc));
+			p2.add("&0 " + ((HashMap<Integer, Integer>) q.getRequirements().get(RequirementType.FRIEND_POINT)).get(npc.getId()) + " " + I18n.locMsg("QuestEditor.Point"));
+			p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove req FRIEND_POINT " + npc.getId()));
 			p2.changeLine();
 		}
 
@@ -509,7 +505,7 @@ public class QuestEditorManager
 		p1.add(I18n.locMsg("QuestEditor.SelectTriggerType")).changeLine();
 		for (TriggerType t : TriggerType.values())
 		{
-			p1.add(new InteractiveText("- [" + t.toCustomString() + "]").clickCommand("/mq e " + mode + " evt " + t.toString())).endNormally();
+			p1.add(new InteractiveText("- [" + t.toCustomString() + "]").clickCommand("/mq e " + mode + " evt " + t.toString()));
 			p1.changeLine();
 		}
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e gui")).changeLine();
@@ -523,7 +519,7 @@ public class QuestEditorManager
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 		for (int s = 1; s <= q.getStages().size(); s++)
 		{
-			p1.add(new InteractiveText("- " + I18n.locMsg("QuestEditor.Stage", Integer.toString(s))).clickCommand("/mq e " + mode + " evt " + t.toString() + " " + s)).endNormally();
+			p1.add(new InteractiveText("- " + I18n.locMsg("QuestEditor.Stage", Integer.toString(s))).clickCommand("/mq e " + mode + " evt " + t.toString() + " " + s));
 			p1.changeLine();
 		}
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e " + mode + " evt")).changeLine();
@@ -536,7 +532,7 @@ public class QuestEditorManager
 		p1.add(I18n.locMsg("QuestEditor.SelectTriggerObj")).changeLine();
 		for (TriggerObjectType otype : TriggerObjectType.values())
 		{
-			p1.add(new InteractiveText("- [" + otype.toCustomString() + "]").clickCommand("/mq e addnew evt " + t.toString() + " " + stage + " " + index + " " + otype.toString())).endNormally();
+			p1.add(new InteractiveText("- [" + otype.toCustomString() + "]").clickCommand("/mq e addnew evt " + t.toString() + " " + stage + " " + index + " " + otype.toString()));
 			p1.changeLine();
 		}
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e edit evt " + t.toString())).changeLine();
@@ -549,7 +545,7 @@ public class QuestEditorManager
 		p1.add(I18n.locMsg("QuestEditor.SelectObjectType")).changeLine();
 		for (String s : SimpleQuestObject.ALL_OBJECTS.keySet())
 		{
-			p1.add(new InteractiveText("- [" + SimpleQuestObject.ALL_OBJECTS.get(s) + "]").clickCommand("/mq e edit object " + stage + " " + obj + " type " + s)).endNormally();
+			p1.add(new InteractiveText("- [" + SimpleQuestObject.ALL_OBJECTS.get(s) + "]").clickCommand("/mq e edit object " + stage + " " + obj + " type " + s));
 			p1.changeLine();
 		}
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e edit object " + stage + " " + obj)).changeLine();
@@ -566,7 +562,7 @@ public class QuestEditorManager
 			QuestUtil.checkOutOfBounds(page, book);
 			page = book.getLastEditingPage();
 			page.add(new InteractiveText("&0- &l" + q.getQuestName() + "&0(" + q.getInternalID() + ")")
-					.clickCommand(cmd + " " + q.getInternalID())).endNormally();
+					.clickCommand(cmd + " " + q.getInternalID()));
 			page.changeLine();
 		}
 		QuestUtil.checkOutOfBounds(page, book);
@@ -578,15 +574,15 @@ public class QuestEditorManager
 		QuestBookPage p1 = new QuestBookPage();
 		p1.add(I18n.locMsg("QuestEditor.NewQuestTitle")).changeLine();
 		p1.add(I18n.locMsg("QuestEditor.NewQuestDesc")).changeLine();
-		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.NewQuestButton")).clickCommand("/mq e newquest create")).endNormally();
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.NewQuestButton")).clickCommand("/mq e newquest create"));
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
 		p1.changeLine();
 		String id = (q.getInternalID() != null) ? q.getInternalID() : I18n.locMsg("QuestEditor.NotSet");
-		p1.add(I18n.locMsg("QuestEditor.NewQuestID")).endNormally();
+		p1.add(I18n.locMsg("QuestEditor.NewQuestID"));
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e newquest id")).changeLine();
 		p1.add(id).changeLine();
 		String name = (q.getQuestName() != null) ? q.getQuestName() : I18n.locMsg("QuestEditor.NotSet");
-		p1.add(I18n.locMsg("QuestEditor.NewQuestName")).endNormally();
+		p1.add(I18n.locMsg("QuestEditor.NewQuestName"));
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e newquest name")).changeLine();
 		p1.add(name).changeLine();
 		p1.changeLine();
