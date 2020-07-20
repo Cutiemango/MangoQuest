@@ -18,6 +18,8 @@ import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.manager.RequirementManager;
 import me.Cutiemango.MangoQuest.manager.database.DatabaseLoader;
 import me.Cutiemango.MangoQuest.manager.database.DatabaseSaver;
+import me.Cutiemango.MangoQuest.manager.mongodb.MongodbLoader;
+import me.Cutiemango.MangoQuest.manager.mongodb.MongodbSaver;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
 import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
@@ -60,7 +62,6 @@ public class QuestPlayerData
 	public QuestPlayerData(Player p)
 	{
 		owner = p;
-		load(ConfigSettings.USE_DATABASE);
 	}
 
 	public void loadExistingData(Set<QuestProgress> q, Set<QuestFinishData> fd, Set<String> convs, HashMap<Integer, Integer> map, int id)
@@ -72,20 +73,36 @@ public class QuestPlayerData
 		PDID = id;
 	}
 
-	public void load(boolean useDatabase)
+	public void load(ConfigSettings.SaveType saveType)
 	{
-		if (useDatabase)
-			DatabaseLoader.loadPlayer(this);
-		else
-			loadFromYml();
+		switch(saveType)
+		{
+			case YML:
+				loadFromYml();
+				break;
+			case SQL:
+				DatabaseLoader.loadPlayer(this);
+				break;
+			case MONGODB:
+				MongodbLoader.loadPlayer(this);
+				break;
+		}
 	}
 
 	public void save()
 	{
-		if (ConfigSettings.USE_DATABASE)
-			DatabaseSaver.savePlayerData(this);
-		else
-			saveToYml();
+		switch(ConfigSettings.SAVE_TYPE)
+		{
+			case YML:
+				saveToYml();
+				break;
+			case SQL:
+				DatabaseSaver.savePlayerData(this);
+				break;
+			case MONGODB:
+				MongodbSaver.savePlayerData(this);
+				break;
+		}
 	}
 
 	public void loadFromYml()

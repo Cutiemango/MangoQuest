@@ -36,6 +36,7 @@ public class PlayerListener
 			public void run()
 			{
 				QuestPlayerData qd = new QuestPlayerData(p);
+				qd.load(ConfigSettings.SAVE_TYPE);
 				QuestStorage.Players.put(p.getName(), qd);
 				qd.checkQuestFail();
 				qd.checkUnclaimedReward();

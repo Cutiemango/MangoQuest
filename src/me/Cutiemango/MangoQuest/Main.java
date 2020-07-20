@@ -38,7 +38,7 @@ public class Main extends JavaPlugin
 		pluginHooker = new PluginHooker(this);
 		pluginHooker.hookPlugins();
 		SimpleQuestObject.initObjectNames();
-		if (ConfigSettings.USE_DATABASE)
+		if (ConfigSettings.SAVE_TYPE == ConfigSettings.SaveType.SQL)
 			DatabaseManager.initPlayerDB();
 
 		getServer().getPluginManager().registerEvents(new MainListener(), this);
@@ -130,6 +130,7 @@ public class Main extends JavaPlugin
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
 			QuestPlayerData qd = new QuestPlayerData(p);
+			qd.load(ConfigSettings.SAVE_TYPE);
 			QuestStorage.Players.put(p.getName(), qd);
 		}
 	}

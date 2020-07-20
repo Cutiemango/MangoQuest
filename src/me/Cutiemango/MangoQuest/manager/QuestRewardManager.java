@@ -223,8 +223,8 @@ public class QuestRewardManager implements Listener
 		}
 		else
 		{
-			p.getInventory().addItem(is);
 			QuestChatManager.info(p, I18n.locMsg("QuestReward.GiveItemReward", QuestUtil.getItemName(is), Integer.toString(is.clone().getAmount())));
+			p.getInventory().addItem(is);
 		}
 	}
 	

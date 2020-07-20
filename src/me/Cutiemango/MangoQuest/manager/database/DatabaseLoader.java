@@ -1,9 +1,6 @@
 package me.Cutiemango.MangoQuest.manager.database;
 
-import me.Cutiemango.MangoQuest.DebugHandler;
-import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.*;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.data.QuestFinishData;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
@@ -52,14 +49,14 @@ public class DatabaseLoader
 				File f = new File(Main.getInstance().getDataFolder() + "/data/", p.getUniqueId() + ".yml");
 				DatabaseSaver.saveLoginData(p);
 				// get PDID
-				pd.load(true);
+				pd.load(ConfigSettings.SaveType.SQL);
 
 				// found yml data, start migrating
 				if (f.exists())
 				{
 					DebugHandler.log(2, "[Database] Found player %s's yml data, start migrating...", p.getName());
 					// load from yml
-					pd.load(false);
+					pd.load(ConfigSettings.SaveType.YML);
 
 					// save yml data to database
 					DatabaseSaver.savePlayerData(pd);
