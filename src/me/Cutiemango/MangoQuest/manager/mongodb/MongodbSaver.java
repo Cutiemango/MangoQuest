@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 public class MongodbSaver
 {
-
     public static void savePlayerData(QuestPlayerData pd)
     {
         MongoCollection<Document> collection = MongodbManager.getCollection();

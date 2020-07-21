@@ -155,7 +155,8 @@ public class QuestBookPage
 	
 	public QuestBookPage duplicate()
 	{
-		return new QuestBookPage(page.duplicate(), saved.duplicate(), size, lineUsed);
+		// to support lower versions, duplicate is necessary
+		return new QuestBookPage((TextComponent)page.duplicate(), (TextComponent)saved.duplicate(), size, lineUsed);
 	}
 
 	public TextComponent getSaved()

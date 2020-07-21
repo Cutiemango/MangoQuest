@@ -6,15 +6,12 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
 import me.Cutiemango.MangoQuest.ConfigSettings;
-import me.Cutiemango.MangoQuest.DebugHandler;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 
-import java.util.Collections;
 import java.util.stream.StreamSupport;
 
-
-public class MongodbManager {
+public class MongodbManager
+{
 	private static MongoCollection<Document> collection;
 
 	public static MongoCollection<Document> getCollection()

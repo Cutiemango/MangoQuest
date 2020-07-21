@@ -52,7 +52,12 @@ public class MainListener implements Listener
 		QuestPlayerData qd = QuestUtil.getData(p);
 		if (qd == null)
 		{
-			DebugHandler.log(4, "[Listener] Player " + p.getName() + " has no player data.");
+			DebugHandler.log(5, "[Listener] Player %s has no player data.", p.getName());
+			return;
+		}
+		if (e.isCancelled())
+		{
+			DebugHandler.log(5, "[Listener] Detected player %s broke a block, but the event is cancelled.", p.getName());
 			return;
 		}
 		if (e.getBlock() != null && e.getBlock().getType() != null)

@@ -42,14 +42,16 @@ public class MongodbLoader
 		DebugHandler.log(5, "%s's data loaded", data.get("LastKnownID"));
 	}
 
-	private static Set<QuestFinishData> getFinishedQuests(Document data) {
+	private static Set<QuestFinishData> getFinishedQuests(Document data)
+	{
 		Set<QuestFinishData> quests = new HashSet<>();
 		data.get("FinishedQuests", Document.class)
 			.forEach((questID, questData) -> quests.add(getQuestFinishData(questID, (Document) questData)));
 		return  quests;
 	}
 
-	private static QuestFinishData getQuestFinishData(String questID, Document questData) {
+	private static QuestFinishData getQuestFinishData(String questID, Document questData)
+	{
 		Quest quest = QuestUtil.getQuest(questID);
 		int finishedTimes = questData.getInteger("FinishedTimes");
 		long lastFinishTime = questData.getLong("LastFinishTime");

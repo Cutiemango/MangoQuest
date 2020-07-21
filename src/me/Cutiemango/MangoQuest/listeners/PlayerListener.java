@@ -26,7 +26,6 @@ import java.util.List;
 
 public class PlayerListener
 {
-
 	public static void onPlayerJoin(Player p)
 	{
 		DebugHandler.log(2, "[Listener] Player " + p.getName() + " logged in.");
@@ -83,6 +82,8 @@ public class PlayerListener
 		{
 			if (ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(npc.getEntity()))
 			{
+				// close the shopkeeper's trading ui, because there's no way we can handle it before it fires
+				p.closeInventory();
 				QuestBookGUIManager.openNPCInfo(p, npc, true);
 				DebugHandler.log(4, "[Listener] Shopkeepers NPC detected(id=" + npc.getId() + "), opening trading book GUI...");
 				return;

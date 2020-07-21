@@ -41,8 +41,11 @@ public class QuestNPCManager
 				{
 					if (!q.isRedoable() && pd.hasFinished(q))
 						continue;
-					if (pd.hasFinished(q) && !pd.hasTakenReward(q) || pd.canTake(q, false) || !pd.getNPCtoTalkWith(npc).isEmpty())
+					if (pd.hasFinished(q) && !pd.hasTakenReward(q) && q.getQuestReward().getRewardNPC().getId() == npc.getId())
 						Main.getInstance().handler.playNPCEffect(pd.getPlayer(), e.getLocation());
+					else if (pd.canTake(q, false) || !pd.getNPCtoTalkWith(npc).isEmpty())
+					 	Main.getInstance().handler.playNPCEffect(pd.getPlayer(), e.getLocation());
+
 				}
 			}
 		}
