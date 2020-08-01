@@ -17,8 +17,9 @@ public class RewardChoice
 	
 	public void executeReward(Player p)
 	{
+		// the reward item needs to be cloned here to prevent bugs
 		for (ItemStack item : rewards)
-			QuestRewardManager.giveRewardItem(p, item);
+			QuestRewardManager.giveRewardItem(p, item.clone());
 	}
 	
 	public List<ItemStack> getItems()
