@@ -72,37 +72,46 @@ public class PlayerListener
 			DebugHandler.log(4, "[Listener] Event cancelled because the player is in editor mode.");
 			return;
 		}
-		QuestPlayerData pd = QuestUtil.getData(p);
-		if (pd.deliverItem(npc))
+
+		// Player can only access npc gui if they have no item held in hand.
+		// Else the system will try to detect if there are compatible item-delivering quests.
+		if (p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType() == Material.AIR)
 		{
-			DebugHandler.log(3, "[Listener] Player " + p.getName() + " tried to deliver item.");
-			return;
-		}
-		if (Main.getHooker().hasShopkeepersEnabled())
-		{
-			if (ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(npc.getEntity()))
+			if (Main.getHooker().hasShopkeepersEnabled())
 			{
-				// close the shopkeeper's trading ui, because there's no way we can handle it before it fires
-				p.closeInventory();
-				QuestBookGUIManager.openNPCInfo(p, npc, true);
-				DebugHandler.log(4, "[Listener] Shopkeepers NPC detected(id=" + npc.getId() + "), opening trading book GUI...");
-				return;
-			}
-		}
-		if (Main.getHooker().hasUnrealShopEnabled())
-		{
-			for (UShop localUShop : Main.getHooker().getUnrealShop().getSM().getShops())
-			{
-				if (ArrayUtils.contains(localUShop.getNpcId(), npc.getId()))
+				if (ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(npc.getEntity()))
 				{
+					// close the shopkeeper's trading ui, because there's no way we can handle it before it fires
+					p.closeInventory();
 					QuestBookGUIManager.openNPCInfo(p, npc, true);
-					DebugHandler.log(4, "[Listener] UnrealShop NPC detected(id=" + npc.getId() + "), opening trading book GUI...");
+					DebugHandler.log(4, "[Listener] Shopkeepers NPC detected(id=" + npc.getId() + "), opening trading book GUI...");
 					return;
 				}
 			}
+			if (Main.getHooker().hasUnrealShopEnabled())
+			{
+				for (UShop localUShop : Main.getHooker().getUnrealShop().getSM().getShops())
+				{
+					if (ArrayUtils.contains(localUShop.getNpcId(), npc.getId()))
+					{
+						QuestBookGUIManager.openNPCInfo(p, npc, true);
+						DebugHandler.log(4, "[Listener] UnrealShop NPC detected(id=" + npc.getId() + "), opening trading book GUI...");
+						return;
+					}
+				}
+			}
+			QuestBookGUIManager.openNPCInfo(p, npc, false);
+			DebugHandler.log(4, "[Listener] Opening NPC info(id=" + npc.getId() + ") for " + p.getName() + "...");
 		}
-		QuestBookGUIManager.openNPCInfo(p, npc, false);
-		DebugHandler.log(4, "[Listener] Opening NPC info(id=" + npc.getId() + ") for " + p.getName() + "...");
+		else
+		{
+			QuestPlayerData pd = QuestUtil.getData(p);
+			if (pd.deliverItem(npc))
+			{
+				DebugHandler.log(3, "[Listener] Player " + p.getName() + " tried to deliver item.");
+				return;
+			}
+		}
 	}
 
 	public static void onEntityDeath(Entity e)

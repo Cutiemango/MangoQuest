@@ -13,6 +13,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.List;
+import java.util.Optional;
+
 public class QuestValidater
 {
 	
@@ -21,26 +24,40 @@ public class QuestValidater
 		return s != null && Bukkit.getWorld(s) != null;
 	}
 	
-	public static boolean weakItemCheck(ItemStack item, ItemStack model)
+	public static boolean weakItemCheck(ItemStack original, ItemStack compare)
 	{
-		if (item.getType().equals(model.getType()))
+		if (original.getType().equals(compare.getType()))
 		{
-			if (item.hasItemMeta() && model.hasItemMeta())
+			if (original.hasItemMeta() && compare.hasItemMeta())
 			{
-				ItemMeta im = item.getItemMeta(), mm = model.getItemMeta();
-				if (QuestChatManager.trimColor(im.getDisplayName()).equals(QuestChatManager.trimColor(mm.getDisplayName())))
+				ItemMeta im = original.getItemMeta(), mm = compare.getItemMeta();
+
+				// Optional.equals(): The other object is considered equal if:
+				// it is also an Optional,
+				// and both instances have no value present,
+				// or the present values are "equal to" each other via equals().
+				Optional<String> oriName = Optional.ofNullable(im.getDisplayName()), cmpName = Optional.ofNullable(mm.getDisplayName());
+				// Name check
+				if (!oriName.equals(cmpName))
 				{
-					if (im.getLore().size() != mm.getLore().size())
-						return false;
-					for (int i = 0; i < im.getLore().size(); i++)
-					{
-						if (!QuestChatManager.trimColor(im.getLore().get(i)).equals(QuestChatManager.trimColor(mm.getLore().get(i))))
-							return false;
-					}
-					return true;
+					DebugHandler.log(5, "[ItemCheck] Item displayName mismatch.");
+					return false;
 				}
-				DebugHandler.log(5, "[ItemCheck] Item displayName mismatch.");
-				return false;
+
+				// List.equals() returns true if and only if:
+				// The specified object is also a list,
+				// both lists have the same size,
+				// and all corresponding pairs of elements in the two lists are equal.
+				Optional<List<String>> oriLore = Optional.ofNullable(im.getLore()), cmpLore = Optional.ofNullable(mm.getLore());
+
+				// Lore check
+				if (!oriLore.equals(cmpLore))
+				{
+					DebugHandler.log(5, "[ItemCheck] Item lore mismatch.");
+					return false;
+				}
+
+				return true;
 			}
 			DebugHandler.log(5, "[ItemCheck] ItemMeta mismatch.");
 			return false;
