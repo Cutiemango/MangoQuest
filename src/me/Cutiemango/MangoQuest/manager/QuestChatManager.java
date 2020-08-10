@@ -28,7 +28,12 @@ public class QuestChatManager
 	
 	public static String finishedObjectFormat(String s)
 	{
-		return translateColor("&8&m&o") + ChatColor.stripColor(s);
+		return I18n.locMsg("QuestGUI.ColorFormat.FinishedObject") + ChatColor.stripColor(s);
+	}
+
+	public static String unavailableQuestFormat(String s)
+	{
+		return I18n.locMsg("QuestGUI.ColorFormat.UnavailableQuest") + ChatColor.stripColor(s);
 	}
 	
 	public static String trimColor(String s)

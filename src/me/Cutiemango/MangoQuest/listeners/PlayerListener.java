@@ -7,6 +7,7 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectFishing;
 import net.citizensnpcs.api.npc.NPC;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Location;
@@ -105,6 +106,11 @@ public class PlayerListener
 		}
 		else
 		{
+			if (ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(npc.getEntity()))
+			{
+				p.closeInventory();
+				DebugHandler.log(4, "[Listener] Shopkeepers NPC detected, closing trading window.");
+			}
 			QuestPlayerData pd = QuestUtil.getData(p);
 			if (pd.deliverItem(npc))
 			{
@@ -133,25 +139,24 @@ public class PlayerListener
 			QuestPlayerData qd = QuestUtil.getData(attacker);
 			if (qd != null)
 			{
-				if (Main.getHooker().hasMythicMobEnabled())
+				if (Main.getHooker().hasMythicMobEnabled() && Main.getHooker().getMythicMobsAPI().isMythicMob(e))
 				{
-					if (Main.getHooker().getMythicMobsAPI().isMythicMob(e))
-					{
-						String type = Main.getHooker().getMythicMobsAPI().getMythicMobInstance(e).getType().getInternalName();
-						DebugHandler.log(4, "[Listener] Player " + attacker.getName() + " killed MythicMob id=" + type);
-						qd.killMythicMob(type);
-						return;
-					}
+					String type = Main.getHooker().getMythicMobsAPI().getMythicMobInstance(e).getType().getInternalName();
+					DebugHandler.log(4, "[Listener] Player " + attacker.getName() + " killed MythicMob, id: %s", type);
+					qd.killMythicMob(type);
 				}
-				qd.killMob(e);
+				else
+				{
+					DebugHandler.log(4, "[Listener] Player " + attacker.getName() + " killed normal mob: %s", e.getType().toString());
+					qd.killMob(e);
+				}
 			}
 		}
 	}
 	public static void onFish(Player p, Item item)
 	{
 		QuestPlayerData qd = QuestUtil.getData(p);
-		List<Material> fishes = Arrays.asList(Material.COD, Material.SALMON, Material.PUFFERFISH, Material.TROPICAL_FISH);
-		if (fishes.contains(item.getItemStack().getType()))
+		if (QuestObjectFishing.FISHES.contains(item.getItemStack().getType()))
 			qd.catchFish(item.getItemStack().getType());
 	}
 

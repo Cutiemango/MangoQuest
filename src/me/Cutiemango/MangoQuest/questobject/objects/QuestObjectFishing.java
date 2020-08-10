@@ -7,10 +7,16 @@ import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class QuestObjectFishing extends NumerableObject implements EditorObject
 {
+	public static final List<Material> FISHES = Arrays.asList(Material.COD, Material.SALMON, Material.PUFFERFISH, Material.TROPICAL_FISH);
+
 	public QuestObjectFishing()
 	{
 

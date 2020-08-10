@@ -77,7 +77,7 @@ public class TextComponentFactory
 	{
 		if (q == null)
 			return new TextComponent(I18n.locMsg("QuestEditor.NotSet"));
-		TextComponent t = new TextComponent(QuestChatManager.translateColor("&0&l" + q.getQuestName()));
+		TextComponent t = new TextComponent(I18n.locMsg("QuestGUI.ColorFormat.NormalQuest") + q.getQuestName());
 		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]
 		{ new TextComponent(I18n.locMsg("QuestJourney.ClickToView", q.getQuestName())) }));
 		t.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mq quest view " + q.getInternalID()));
@@ -86,7 +86,7 @@ public class TextComponentFactory
 
 	public static TextComponent convertRequirement(QuestPlayerData qd, Quest q)
 	{
-		TextComponent text = new TextComponent(QuestChatManager.translateColor("&7&o" + q.getQuestName()));
+		TextComponent text = new TextComponent(QuestChatManager.unavailableQuestFormat(q.getQuestName()));
 		if (!q.isRedoable() && qd.hasFinished(q))
 			return regHoverEvent(text, I18n.locMsg("CommandInfo.NotRedoable"));
 		else
@@ -98,7 +98,7 @@ public class TextComponentFactory
 				if (!qd.hasTakenReward(q))
 					return regHoverEvent(text, I18n.locMsg("QuestReward.RewardNotTaken"));
 			}
-			if (q.hasRequirement())
+			else if (q.hasRequirement())
 			{
 				Optional<String> msg = RequirementManager.meetRequirementWith(qd.getPlayer(), q.getRequirements(), true);
 				if (msg.isPresent())
