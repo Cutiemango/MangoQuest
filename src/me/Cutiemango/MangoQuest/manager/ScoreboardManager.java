@@ -30,12 +30,10 @@ public class ScoreboardManager
 	public static Scoreboard update(QuestPlayerData pd)
 	{
 		Scoreboard s = pd.getScoreboard();
-		Objective o = s.getObjective("quest");
-		String title = I18n.locMsg("Scoreboard.Title");
+		Objective o = s.getObjective("mangoquest");
 		if (o != null)
 			o.unregister();
-		o = s.registerNewObjective("quest", "dummy");
-		o.setDisplayName(title);
+		o = s.registerNewObjective("mangoquest", "dummy", I18n.locMsg("Scoreboard.Title"));
 		o.setDisplaySlot(DisplaySlot.SIDEBAR);
 		List<String> scoreList = new ArrayList<>();
 		

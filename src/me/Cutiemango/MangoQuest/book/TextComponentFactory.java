@@ -14,6 +14,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+import org.w3c.dom.Text;
 
 import java.util.Optional;
 
@@ -24,7 +25,7 @@ public class TextComponentFactory
 	// The command argument here is "/" needed.
 	public static TextComponent regClickCmdEvent(TextComponent t, String command)
 	{
-		TextComponent text = t.duplicate();
+		TextComponent text = (TextComponent)t.duplicate();
 		text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
 		return text;
 	}
