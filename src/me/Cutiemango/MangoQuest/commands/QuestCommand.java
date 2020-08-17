@@ -8,17 +8,17 @@ import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
-import me.Cutiemango.MangoQuest.manager.*;
+import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
+import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.GUIOption;
 import me.Cutiemango.MangoQuest.objects.reward.RewardCache;
-import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import su.nightexpress.unrealshop.shop.objects.UShop;
-import su.nightexpress.unrealshop.shop.types.OpenSource;
 
 public class QuestCommand
 {
@@ -77,32 +77,17 @@ public class QuestCommand
 						Player target = sender;
 						if (args.length == 4)
 							target = Bukkit.getPlayer(args[3]);
-						PluginHooker hooker = Main.getHooker();
-						if (hooker.hasCitizensEnabled())
+
+						NPC npc = Main.getHooker().getNPC(args[2]);
+						if (npc == null || !QuestUtil.getData(target).isNearNPC(npc))
+							return;
+						if (Main.getHooker().hasShopkeepersEnabled())
 						{
-							NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(args[2]));
-							if (npc == null || !QuestUtil.getData(target).isNearNPC(npc))
-								return;
-							if (hooker.hasShopkeepersEnabled())
+							Shopkeeper s = ShopkeepersAPI.getShopkeeperRegistry().getShopkeeperByEntity(npc.getEntity());
+							if (s != null)
 							{
-								Shopkeeper s = ShopkeepersAPI.getShopkeeperRegistry().getShopkeeperByEntity(npc.getEntity());
-								if (s != null)
-								{
-									target.closeInventory();
-									s.openTradingWindow(target);
-									return;
-								}
-							}
-							if (hooker.hasUnrealShopEnabled())
-							{
-								for (UShop localUShop : Main.getHooker().getUnrealShop().getSM().getShops())
-								{
-									if (ArrayUtils.contains(localUShop.getNpcId(), npc.getId()))
-									{
-										Main.getHooker().getUnrealShop().getSM().openShop(target, localUShop, OpenSource.NPC);
-										return;
-									}
-								}
+								target.closeInventory();
+								s.openTradingWindow(target);
 								return;
 							}
 						}

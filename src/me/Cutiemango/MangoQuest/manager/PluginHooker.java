@@ -12,7 +12,6 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import su.nightexpress.quantumrpg.QuantumRPG;
-import su.nightexpress.unrealshop.UnrealShop;
 
 import java.util.logging.Level;
 
@@ -32,7 +31,6 @@ public class PluginHooker
 	private boolean mythicMobs;
 	private boolean skillAPI;
 	private QuantumRPG quantumRPG;
-	private UnrealShop unrealShop;
 
 	public void hookPlugins()
 	{
@@ -93,16 +91,6 @@ public class PluginHooker
 			{
 				DebugHandler.log(1, "SkillAPI not hooked.");
 			}
-			
-			if (plugin.getServer().getPluginManager().isPluginEnabled("UnrealShop"))
-			{
-				unrealShop = (UnrealShop) plugin.getServer().getPluginManager().getPlugin("UnrealShop");;
-				QuestChatManager.logCmd(Level.INFO, I18n.locMsg("PluginHooker.UnrealShopHooked"));
-			}
-			else
-			{
-				DebugHandler.log(1, "UnrealShop not hooked.");
-			}
 
 			if (plugin.getServer().getPluginManager().isPluginEnabled("QuantumRPG"))
 			{
@@ -152,11 +140,6 @@ public class PluginHooker
 		return skillAPI;
 	}
 
-	public boolean hasUnrealShopEnabled()
-	{
-		return unrealShop != null;
-	}
-
 	public boolean hasQuantumRPGEnabled()
 	{
 		return quantumRPG != null;
@@ -170,11 +153,6 @@ public class PluginHooker
 	public QuantumRPG getQuantumRPG()
 	{
 		return quantumRPG;
-	}
-
-	public UnrealShop getUnrealShop()
-	{
-		return unrealShop;
 	}
 
 	public BukkitAPIHelper getMythicMobsAPI()

@@ -1,7 +1,11 @@
 package me.Cutiemango.MangoQuest.listeners;
 
 import com.nisovin.shopkeepers.api.ShopkeepersAPI;
-import me.Cutiemango.MangoQuest.*;
+import me.Cutiemango.MangoQuest.ConfigSettings;
+import me.Cutiemango.MangoQuest.DebugHandler;
+import me.Cutiemango.MangoQuest.Main;
+import me.Cutiemango.MangoQuest.QuestStorage;
+import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
@@ -9,7 +13,6 @@ import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectFishing;
 import net.citizensnpcs.api.npc.NPC;
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -20,10 +23,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import su.nightexpress.unrealshop.shop.objects.UShop;
 
-import java.util.Arrays;
-import java.util.List;
 
 public class PlayerListener
 {
@@ -89,24 +89,12 @@ public class PlayerListener
 					return;
 				}
 			}
-			if (Main.getHooker().hasUnrealShopEnabled())
-			{
-				for (UShop localUShop : Main.getHooker().getUnrealShop().getSM().getShops())
-				{
-					if (ArrayUtils.contains(localUShop.getNpcId(), npc.getId()))
-					{
-						QuestBookGUIManager.openNPCInfo(p, npc, true);
-						DebugHandler.log(4, "[Listener] UnrealShop NPC detected(id=" + npc.getId() + "), opening trading book GUI...");
-						return;
-					}
-				}
-			}
 			QuestBookGUIManager.openNPCInfo(p, npc, false);
 			DebugHandler.log(4, "[Listener] Opening NPC info(id=" + npc.getId() + ") for " + p.getName() + "...");
 		}
 		else
 		{
-			if (ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(npc.getEntity()))
+			if (Main.getHooker().hasShopkeepersEnabled() && ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(npc.getEntity()))
 			{
 				p.closeInventory();
 				DebugHandler.log(4, "[Listener] Shopkeepers NPC detected, closing trading window.");
