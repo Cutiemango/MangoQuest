@@ -594,14 +594,14 @@ public class QuestPlayerData
 		}
 	}
 
-	public void catchFish(Material fish)
+	public void catchFish()
 	{
 		HashSet<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> set = new HashSet<>();
 		currentQuests.stream()
 			.filter(qp -> checkPlayerInWorld(qp.getQuest()))
 			.forEach(qp ->
 					qp.getCurrentObjects().stream()
-						.filter(qop -> qop.getObject() instanceof QuestObjectFishing)
+						.filter(qop -> qop.getObject() instanceof QuestObjectFishing && !qop.isFinished())
 						.collect(Collectors.toList())
 						.forEach(qop ->
 						{

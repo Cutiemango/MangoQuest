@@ -145,7 +145,7 @@ public class PlayerListener
 	{
 		QuestPlayerData qd = QuestUtil.getData(p);
 		if (QuestObjectFishing.FISHES.contains(item.getItemStack().getType()))
-			qd.catchFish(item.getItemStack().getType());
+			qd.catchFish();
 	}
 
 
