@@ -26,23 +26,16 @@ public class QuestObjectProgress
 	{
 		if (obj instanceof CustomQuestObject)
 			return;
-
-		if (obj instanceof QuestObjectTalkToNPC)
+		else if (obj instanceof QuestObjectTalkToNPC)
 		{
 			if (i == 1 || (cp != null && QuestUtil.getData(cp.getOwner()).hasFinished(cp.getConversation())))
 				isFinished = true;
 			return;
 		}
-		if (obj instanceof NumerableObject)
-		{
-			if (((NumerableObject) obj).getAmount() == i)
-				isFinished = true;
-			return;
-		}
-		else
-			if (obj != null && i == 1)
-				isFinished = true;
-
+		else if (obj instanceof NumerableObject || ((NumerableObject) obj).getAmount() >= i)
+			isFinished = true;
+		else if (obj != null && i == 1)
+			isFinished = true;
 	}
 
 	public void newConversation(Player p)
@@ -81,11 +74,6 @@ public class QuestObjectProgress
 	public void finish()
 	{
 		isFinished = true;
-	}
-	
-	public void addProgress(int p)
-	{
-		i+=p;
 	}
 
 	public void setProgress(int p)
