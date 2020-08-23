@@ -14,12 +14,12 @@ public class QuestObjectProgress
 	private boolean isFinished = false;
 	private SimpleQuestObject obj;
 	private ConversationProgress cp;
-	private int i;
+	private int progress;
 
 	public QuestObjectProgress(SimpleQuestObject object, int amount)
 	{
 		obj = object;
-		i = amount;
+		progress = amount;
 	}
 
 	public void checkIfFinished()
@@ -28,13 +28,13 @@ public class QuestObjectProgress
 			return;
 		else if (obj instanceof QuestObjectTalkToNPC)
 		{
-			if (i == 1 || (cp != null && QuestUtil.getData(cp.getOwner()).hasFinished(cp.getConversation())))
+			if (progress == 1 || (cp != null && QuestUtil.getData(cp.getOwner()).hasFinished(cp.getConversation())))
 				isFinished = true;
 			return;
 		}
-		else if (obj instanceof NumerableObject || ((NumerableObject) obj).getAmount() >= i)
+		else if (obj instanceof NumerableObject || ((NumerableObject) obj).getAmount() <= progress)
 			isFinished = true;
-		else if (obj != null && i == 1)
+		else if (obj != null && progress == 1)
 			isFinished = true;
 	}
 
@@ -63,7 +63,7 @@ public class QuestObjectProgress
 
 	public int getProgress()
 	{
-		return i;
+		return progress;
 	}
 
 	public boolean isFinished()
@@ -78,7 +78,7 @@ public class QuestObjectProgress
 
 	public void setProgress(int p)
 	{
-		i = p;
+		progress = p;
 	}
 
 }
