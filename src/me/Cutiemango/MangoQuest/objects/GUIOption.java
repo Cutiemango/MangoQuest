@@ -68,24 +68,9 @@ public class GUIOption
 		this.displayText = QuestChatManager.translateColor(displayText);
 	}
 
-	public String getHoverText()
-	{
-		return hoverText;
-	}
-
 	public void setHoverText(String hoverText)
 	{
 		this.hoverText = QuestChatManager.translateColor(hoverText);
-	}
-
-	public EnumMap<RequirementType, Object> getRequirementMap()
-	{
-		return requirementMap;
-	}
-
-	public void setRequirement(RequirementType type, Object o)
-	{
-		requirementMap.put(type, o);
 	}
 
 	public List<TriggerObject> getClickEvent()

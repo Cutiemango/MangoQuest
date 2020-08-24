@@ -73,7 +73,7 @@ public class RequirementManager
 					}
 					break;
 				case SKILLAPI_CLASS:
-					if (Main.getHooker().hasSkillAPIEnabled() && SkillAPI.hasPlayerData(p))
+					if (Main.getHooker().hasSkillAPIEnabled() && SkillAPI.hasPlayerData(p) && SkillAPI.getPlayerData(p).getMainClass() != null)
 					{
 						String classID = (String) value;
 						com.sucy.skill.api.classes.RPGClass userClass = SkillAPI.getPlayerData(p).getMainClass().getData(),

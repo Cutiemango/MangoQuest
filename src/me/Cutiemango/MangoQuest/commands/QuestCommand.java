@@ -65,16 +65,14 @@ public class QuestCommand
 						sendHelp(sender);
 						return;
 					case "option":
-						if (!QuestValidater.validateNPC(args[2]))
+						Player target = sender;
+						if (QuestNPCManager.getOption(args[3]) == null || !QuestValidater.validateNPC(args[2]) || !QuestUtil.getData(target).isNearNPC(Main.getHooker().getNPC(args[2])))
 							return;
-						if (QuestNPCManager.getOption(args[3]) != null)
-						{
-							GUIOption option = QuestNPCManager.getOption(args[3]);
-							option.execute(sender);
-						}
+						GUIOption option = QuestNPCManager.getOption(args[3]);
+						option.execute(sender);
 						return;
 					case "trade":
-						Player target = sender;
+						target = sender;
 						if (args.length == 4)
 							target = Bukkit.getPlayer(args[3]);
 

@@ -428,6 +428,7 @@ public class QuestPlayerData
 	public void objectSuccess(QuestProgress qp, QuestObjectProgress qop)
 	{
 		qop.setProgress(qop.getProgress() + 1);
+		DebugHandler.log(5, "[Listener] Player %s's object succeeded: (%d/%d)", owner.getName(), qop.getProgress(), qop.getObject() instanceof NumerableObject ? ((NumerableObject) qop.getObject()).getAmount() : 1);
 		checkFinished(qp, qop);
 	}
 

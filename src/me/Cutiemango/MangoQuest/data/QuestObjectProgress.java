@@ -32,8 +32,12 @@ public class QuestObjectProgress
 				isFinished = true;
 			return;
 		}
-		else if (obj instanceof NumerableObject || ((NumerableObject) obj).getAmount() <= progress)
-			isFinished = true;
+		if (obj instanceof NumerableObject)
+		{
+			if (((NumerableObject) obj).getAmount() <= progress)
+				isFinished = true;
+			return;
+		}
 		else if (obj != null && progress == 1)
 			isFinished = true;
 	}
