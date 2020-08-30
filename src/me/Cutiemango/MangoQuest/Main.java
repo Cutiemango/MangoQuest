@@ -60,6 +60,9 @@ public class Main extends JavaPlugin
 				break;
 			case "v1_16_R1":
 				handler = new Version_v1_16_R1();
+				break;
+			case "v1_16_R2":
+				handler = new Version_v1_16_R2();
 				QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.TestingVersion"));
 				break;
 			default:
