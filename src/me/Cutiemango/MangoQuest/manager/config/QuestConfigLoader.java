@@ -9,6 +9,7 @@ import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
+import me.Cutiemango.MangoQuest.model.QuestSetting;
 import me.Cutiemango.MangoQuest.objects.*;
 import me.Cutiemango.MangoQuest.objects.reward.QuestReward;
 import me.Cutiemango.MangoQuest.objects.reward.RewardChoice;
@@ -438,12 +439,17 @@ public class QuestConfigLoader
 
 					// Triggers
 					loadTriggers(quest, q);
-					
-					if (quest.getBoolean(qpath + "Redoable"))
-					{
-						q.setRedoable(true);
-						q.setRedoDelay(quest.getLong(qpath + "RedoDelayMilliseconds"));
-					}
+
+					QuestSetting.RedoSetting redo = QuestSetting.RedoSetting.ONCE_ONLY;
+
+					if (quest.getString(qpath + "RedoSetting") != null)
+						redo = QuestSetting.RedoSetting.valueOf(quest.getString(qpath + "RedoSetting"));
+
+					q.setRedoSetting(redo);
+					q.setRedoDelay(quest.getLong(qpath + "RedoDelayMilliseconds"));
+					q.setResetHour(quest.getInt(qpath + "ResetHour"));
+					q.setResetDay(quest.getInt(qpath + "ResetDay"));
+
 					if (quest.getLong(qpath + "Version") == 0L)
 					{
 						QuestVersion ver = QuestVersion.instantVersion();

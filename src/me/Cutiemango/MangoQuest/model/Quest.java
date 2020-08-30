@@ -256,14 +256,19 @@ public class Quest
 		setting.quitCancelMsg = s;
 	}
 
-	public boolean isRedoable()
+	public QuestSetting.RedoSetting getRedoSetting()
 	{
-		return setting.isRedoable;
+		return setting.redoSetting;
 	}
 
-	public void setRedoable(boolean b)
+	public boolean isRedoable()
 	{
-		setting.isRedoable = b;
+		return setting.redoSetting != QuestSetting.RedoSetting.ONCE_ONLY;
+	}
+
+	public void setRedoSetting(QuestSetting.RedoSetting redo)
+	{
+		setting.redoSetting = redo;
 	}
 	
 	public boolean isTimeLimited()
@@ -289,6 +294,30 @@ public class Quest
 	public long getRedoDelay()
 	{
 		return setting.redoDelay;
+	}
+
+	public int getResetDay()
+	{
+		return setting.resetDay;
+	}
+
+	public int getResetHour()
+	{
+		return setting.resetHour;
+	}
+
+	public void setResetDay(int day)
+	{
+		if (day < 1 || day > 7)
+			return;
+		setting.resetDay = day;
+	}
+
+	public void setResetHour(int hour)
+	{
+		if (hour < 0 || hour > 23)
+			return;
+		setting.resetHour = hour;
 	}
 
 	public void setRedoDelay(long delay)

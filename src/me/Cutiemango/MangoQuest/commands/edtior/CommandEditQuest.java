@@ -55,6 +55,8 @@ public class CommandEditQuest
 			case "quit":
 			case "redo":
 			case "redodelay":
+			case "resethour":
+			case "resetday":
 			case "world":
 			case "perm":
 				CommandEditSetting.execute(q, sender, args);

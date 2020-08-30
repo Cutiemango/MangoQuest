@@ -64,6 +64,17 @@ public class QuestBookPage
 
 	public QuestBookPage add(TextComponent t)
 	{
+		if (t.getText().contains("\n"))
+		{
+			String[] split = t.getText().split("\n");
+			for (String s : split)
+			{
+				add(new TextComponent(s));
+				changeLine();
+			}
+			return this;
+		}
+
 //		DebugHandler.log(5, "Adding: %s", t.getText());
 		TextComponent sanitized = TextComponentFactory.formatSanitize(t);
 //		DebugHandler.log(5, "Sanitized: %s", sanitized.getText());

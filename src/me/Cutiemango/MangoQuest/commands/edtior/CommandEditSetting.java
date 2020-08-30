@@ -7,6 +7,7 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestSetting;
 import org.bukkit.Bukkit;
@@ -42,6 +43,12 @@ public class CommandEditSetting
 				break;
 			case "redodelay":
 				editRedoDelay(q, sender, args);
+				break;
+			case "resetday":
+				editResetDay(q, sender, args);
+				break;
+			case "resethour":
+				editResetHour(q, sender, args);
 				break;
 			case "world":
 				editWorld(q, sender, args);
@@ -141,18 +148,28 @@ public class CommandEditSetting
 		q.setQuitable(Boolean.parseBoolean(args[3]));
 		QuestEditorManager.editQuest(sender);
 	}
-	
+
+	// /mq e edit redo [redoSettingEnum]
 	private static void editRedo(Quest q, Player sender, String[] args)
 	{
 		if (args.length == 3)
 		{
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit redo", null));
-			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.RedoSetting"));
 		}
 		else
 			if (args.length == 4)
 			{
-				q.setRedoable(Boolean.parseBoolean(args[3]));
+				QuestSetting.RedoSetting redo;
+				try
+				{
+					redo = QuestSetting.RedoSetting.valueOf(args[3]);
+					q.setRedoSetting(redo);
+				}
+				catch (IllegalArgumentException e)
+				{
+					QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
+				}
 				QuestEditorManager.editQuest(sender);
 			}
 	}
@@ -170,6 +187,44 @@ public class CommandEditSetting
 			{
 				String mili = Integer.toString(Integer.parseInt(args[3]));
 				q.setRedoDelay(Long.parseLong(mili) * 1000);
+				QuestEditorManager.editQuest(sender);
+			}
+	}
+
+	private static void editResetHour(Quest q, Player sender, String[] args)
+	{
+		if (args.length == 3)
+		{
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit resethour", Syntax.of("I", I18n.locMsg("Syntax.Hour"), "")));
+			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+		}
+		else
+			if (args.length == 4)
+			{
+				int hour = Integer.parseInt(args[3]);
+				if (hour < 0 || hour > 23)
+					QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
+				else
+					q.setResetHour(hour);
+				QuestEditorManager.editQuest(sender);
+			}
+	}
+
+	private static void editResetDay(Quest q, Player sender, String[] args)
+	{
+		if (args.length == 3)
+		{
+			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit resetday", Syntax.of("I", I18n.locMsg("Syntax.Day"), "")));
+			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+		}
+		else
+			if (args.length == 4)
+			{
+				int day = Integer.parseInt(args[3]);
+				if (day < 1 || day > 7)
+					QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
+				else
+					q.setResetDay(day);
 				QuestEditorManager.editQuest(sender);
 			}
 	}

@@ -77,8 +77,10 @@ public class QuestConfigSaver
 		if (q.getFailMessage() != null)
 			quest.set(qpath + "MessageRequirementNotMeet", q.getFailMessage());
 		
-		quest.set(qpath + "Redoable", q.isRedoable());
-		quest.set(qpath + "RedoDelayMilliseconds", q.isRedoable() ? q.getRedoDelay() : null);
+		quest.set(qpath + "RedoSetting", q.getRedoSetting().toString());
+		quest.set(qpath + "RedoDelayMilliseconds", q.getRedoDelay());
+		quest.set(qpath + "ResetHour", q.getResetHour());
+		quest.set(qpath + "ResetDay", q.getResetDay());
 
 		quest.set(qpath + "TimeLimited", q.isTimeLimited());
 		quest.set(qpath + "TimeLimitMilliseconds", q.isTimeLimited() ? q.getTimeLimit() : null);

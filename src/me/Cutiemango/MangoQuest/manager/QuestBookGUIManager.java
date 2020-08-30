@@ -203,7 +203,7 @@ public class QuestBookGUIManager
 			if (qp.getQuest().isTimeLimited())
 			{
 				long timeleft = (qp.getTakeTime() + qp.getQuest().getTimeLimit()) - System.currentTimeMillis();
-				page.add(new InteractiveText(I18n.locMsg("QuestJourney.TimeLeft", QuestUtil.convertTime(timeleft)))).changeLine();
+				page.add(new InteractiveText(I18n.locMsg("QuestJourney.TimeLeft", TimeHandler.convertTime(timeleft)))).changeLine();
 			}
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{

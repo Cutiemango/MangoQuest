@@ -73,15 +73,16 @@ public class RequirementManager
 					}
 					break;
 				case SKILLAPI_CLASS:
+					String classID = (String) value;
+					if (classID.equalsIgnoreCase("none"))
+						break;
+
 					if (Main.getHooker().hasSkillAPIEnabled() && SkillAPI.hasPlayerData(p) && SkillAPI.getPlayerData(p).getMainClass() != null)
 					{
-						String classID = (String) value;
 						com.sucy.skill.api.classes.RPGClass userClass = SkillAPI.getPlayerData(p).getMainClass().getData(),
 								reqClass = SkillAPI.getClass(classID);
 
-						if (classID.equalsIgnoreCase("none"))
-							break;
-						else if (!SkillAPI.isClassRegistered(classID))
+						if (!SkillAPI.isClassRegistered(classID))
 							failMsg.add(I18n.locMsg("Requirements.NotMeet.NoClass") + classID);
 						else if (!SkillAPI.getPlayerData(p).isExactClass(reqClass))
 						{
@@ -116,19 +117,25 @@ public class RequirementManager
 					}
 					break;
 				case SKILLAPI_LEVEL:
-					if (Main.getHooker().hasSkillAPIEnabled() && SkillAPI.hasPlayerData(p))
-						if (SkillAPI.getPlayerData(p).getMainClass() == null || SkillAPI.getPlayerData(p).getMainClass().getLevel() < (Integer)value)
-							failMsg.add(I18n.locMsg("Requirements.NotMeet.RPGLevel", Integer.toString((Integer) value)));
+					int lvl = (Integer) value;
+					if (lvl == 0)
+						break;
+
+					else if (Main.getHooker().hasSkillAPIEnabled() && SkillAPI.hasPlayerData(p))
+						if (SkillAPI.getPlayerData(p).getMainClass() == null || SkillAPI.getPlayerData(p).getMainClass().getLevel() < lvl)
+							failMsg.add(I18n.locMsg("Requirements.NotMeet.RPGLevel", Integer.toString(lvl)));
 					break;
 				case QRPG_CLASS:
+					classID = (String) value;
+					if (classID.equalsIgnoreCase("none"))
+						break;
+
 					if (Main.getHooker().hasQuantumRPGEnabled())
 					{
 						UserProfile user = Main.getHooker().getQuantumRPG().getUserManager().getOrLoadUser(p).getActiveProfile();
-						String classID = (String) value, userClassID = user.getClassData().getClassId();
+						String userClassID = user.getClassData().getClassId();
 
-						if (classID.equalsIgnoreCase("none"))
-							break;
-						else if (Main.getHooker().getQuantumRPG().getModuleCache().getClassManager().getClassById(classID) == null)
+						if (Main.getHooker().getQuantumRPG().getModuleCache().getClassManager().getClassById(classID) == null)
 							failMsg.add(I18n.locMsg("Requirements.NotMeet.NoClass") + classID);
 						else if (!classID.equalsIgnoreCase(userClassID))
 						{
@@ -164,9 +171,11 @@ public class RequirementManager
 					}
 					break;
 				case QRPG_LEVEL:
-					if (Main.getHooker().hasQuantumRPGEnabled())
+					lvl = (Integer) value;
+					if (lvl == 0)
+						break;
+					else if (Main.getHooker().hasQuantumRPGEnabled())
 					{
-						int lvl = (Integer) value;
 						UserProfile user = Main.getHooker().getQuantumRPG().getUserManager().getOrLoadUser(p).getActiveProfile();
 						if (user.getClassData() == null || user.getClassData().getLevel() < lvl)
 						{

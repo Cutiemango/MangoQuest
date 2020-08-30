@@ -116,17 +116,6 @@ public class QuestUtil
 		}
 	}
 
-	public static String convertTime(long l)
-	{
-		long days = l / 86400000, hours = (l % 86400000) / 3600000, minutes = (l % 3600000) / 60000, seconds = (l % 60000) / 1000;
-
-		return String.format("%s%s%s%s%s", days > 0 ? days + " 天 " : "",
-				hours > 0 ? hours + " 小時 " : "",
-				minutes > 0 ? minutes + " 分鐘 " : "",
-				seconds > 0 ? seconds + " 秒 " : "",
-				l < 1000 ? "即將" : "").trim();
-	}
-
 	public static String getItemName(ItemStack is)
 	{
 		if (is.hasItemMeta() && is.getItemMeta().hasDisplayName())

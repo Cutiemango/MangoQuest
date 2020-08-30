@@ -16,6 +16,7 @@ import me.Cutiemango.MangoQuest.event.QuestTakeEvent;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.manager.RequirementManager;
+import me.Cutiemango.MangoQuest.manager.TimeHandler;
 import me.Cutiemango.MangoQuest.manager.database.DatabaseLoader;
 import me.Cutiemango.MangoQuest.manager.database.DatabaseSaver;
 import me.Cutiemango.MangoQuest.manager.mongodb.MongodbLoader;
@@ -847,21 +848,49 @@ public class QuestPlayerData
 				QuestChatManager.info(owner, q.getFailMessage());
 			return false;
 		}
+
 		if (hasFinished(q))
 		{
-			long d = getDelay(getFinishData(q).getLastFinish(), q.getRedoDelay());
-			if (d > 0)
+			long lastFinishTime = getFinishData(q).getLastFinish();
+			switch (q.getRedoSetting())
 			{
-				if (sendMsg)
-					QuestChatManager.info(owner, I18n.locMsg("CommandInfo.QuestCooldown", QuestUtil.convertTime(d)));
-				return false;
+				case ONCE_ONLY:
+					if (sendMsg)
+						QuestChatManager.info(owner, I18n.locMsg("CommandInfo.NotRedoable"));
+					return false;
+				case COOLDOWN:
+					long d = getDelay(lastFinishTime, q.getRedoDelay());
+					if (d > 0)
+					{
+						if (sendMsg)
+							QuestChatManager.info(owner, I18n.locMsg("CommandInfo.QuestCooldown", TimeHandler.convertTime(d)));
+						return false;
+					}
+					break;
+				case DAILY:
+					if (!TimeHandler.canTakeDaily(lastFinishTime, q.getResetHour()))
+					{
+						if (sendMsg)
+							QuestChatManager.info(owner, I18n.locMsg("CommandInfo.QuestCooldown", TimeHandler.convertTime(TimeHandler.getDailyCooldown(lastFinishTime, q.getResetHour()))));
+						return false;
+					}
+					break;
+				case WEEKLY:
+					if (!TimeHandler.canTakeWeekly(lastFinishTime, q.getResetDay(), q.getResetHour()))
+					{
+						if (sendMsg)
+							QuestChatManager.info(owner, I18n.locMsg("CommandInfo.QuestCooldown", TimeHandler.convertTime(TimeHandler.getWeeklyCooldown(lastFinishTime, q.getResetDay(), q.getResetHour()))));
+						return false;
+					}
+					break;
 			}
-			if (!hasTakenReward(q))
-			{
-				if (sendMsg)
-					QuestChatManager.info(owner, I18n.locMsg("QuestReward.RewardNotTaken", QuestUtil.convertTime(d)));
-				return false;
-			}
+		}
+
+		if (!hasTakenReward(q))
+		{
+			if (sendMsg)
+				QuestChatManager.info(owner, I18n.locMsg("QuestReward.RewardNotTaken"));
+			return false;
 		}
 		return true;
 	}

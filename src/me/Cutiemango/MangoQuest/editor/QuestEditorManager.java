@@ -11,6 +11,7 @@ import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
+import me.Cutiemango.MangoQuest.manager.TimeHandler;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.model.QuestSetting;
 import me.Cutiemango.MangoQuest.objects.RequirementType;
@@ -149,6 +150,7 @@ public class QuestEditorManager
 		if (!checkEditorMode(p, true))
 			return;
 		Quest q = getCurrentEditingQuest(p);
+		QuestSetting vs = q.getSettings();
 		EditorListenerHandler.unreigster(p);
 		QuestBookPage p1 = new QuestBookPage();
 		p1.add(I18n.locMsg("QuestEditor.BasicInfo")).changeLine();
@@ -159,24 +161,32 @@ public class QuestEditorManager
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.QuestNPC")).clickCommand("/mq e edit npc")
 				.showText(I18n.locMsg("QuestEditor.QuestNPC.ShowText")));
 		if (q.isCommandQuest())
-			p1.add(I18n.locMsg("QuestEditor.CommandQuest"));
+			p1.add(I18n.locMsg("QuestEditor.false"));
 		else
 			p1.add(new InteractiveText("").showNPCInfo(q.getQuestNPC()));
 		p1.changeLine();
-		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.IsRedoable")).clickCommand("/mq e edit redo " + !q.isRedoable())
-				.showText(I18n.locMsg("QuestEditor.IsRedoable.ShowText." + !q.isRedoable())));
-		p1.add(I18n.locMsg("QuestEditor." + q.isRedoable())).changeLine();
-		if (q.isRedoable())
+
+		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.RedoSetting", q.getRedoSetting().getName())).clickCommand("/mq e edit redo")
+				.showText(I18n.locMsg("QuestEditor.RedoSetting.ShowText"))).changeLine();
+
+		switch (q.getRedoSetting())
 		{
-			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.RedoDelay") + ChatColor.RESET).clickCommand("/mq e edit redodelay")
-					.showText(I18n.locMsg("QuestEditor.RedoDelay.ShowText")));
-			p1.add(QuestUtil.convertTime(q.getRedoDelay())).changeLine();
+			case COOLDOWN:
+				p1.add(new InteractiveText(I18n.locMsg("QuestEditor.RedoDelay", TimeHandler.convertTime(q.getRedoDelay()))).clickCommand("/mq e edit redodelay")
+						.showText(I18n.locMsg("QuestEditor.RedoDelay.ShowText"))).changeLine();
+				break;
+			case WEEKLY:
+				p1.add(new InteractiveText(I18n.locMsg("QuestEditor.ResetDay", I18n.locMsg("QuestEditor.ResetDay." + q.getResetDay()))).clickCommand("/mq e edit resetday")
+						.showText(I18n.locMsg("QuestEditor.ResetDay.ShowText"))).changeLine();
+			case DAILY:
+				p1.add(new InteractiveText(I18n.locMsg("QuestEditor.ResetHour", Integer.toString(q.getResetHour()))).clickCommand("/mq e edit resethour")
+						.showText(I18n.locMsg("QuestEditor.ResetHour.ShowText"))).changeLine();
+				break;
 		}
 		p1.changeLine();
 		
 		QuestBookPage settings = new QuestBookPage();
 		settings.add(I18n.locMsg("QuestEditor.QuestSettings")).changeLine();
-		QuestSetting vs = q.getSettings();
 		settings.add(new InteractiveText(I18n.locMsg("QuestEditor.IsQuitable")).clickCommand("/mq e edit quit " + !q.isQuitable())
 			.showText(I18n.locMsg("QuestEditor.IsQuitable.ShowText." + !q.isQuitable())));
 		settings.add(I18n.locMsg("QuestEditor." + q.isQuitable())).changeLine();
@@ -192,6 +202,7 @@ public class QuestEditorManager
 		
 		settings.changeLine();
 
+		// Display settings
 		settings.add(new InteractiveText(I18n.locMsg("QuestVisibility.OnTake")).clickCommand("/mq e edit vis take " + !vs.displayOnTake()).showText(I18n.locMsg("QuestVisibility." + !vs.displayOnTake())));
 		settings.add(I18n.locMsg("QuestEditor." + vs.displayOnTake())).changeLine();
 		settings.add(new InteractiveText(I18n.locMsg("QuestVisibility.OnProgress")).clickCommand("/mq e edit vis prog " + !vs.displayOnProgress()).showText(I18n.locMsg("QuestVisibility." + !vs.displayOnProgress())));
@@ -200,14 +211,15 @@ public class QuestEditorManager
 		settings.add(I18n.locMsg("QuestEditor." + vs.displayOnFinish())).changeLine();
 		settings.add(new InteractiveText(I18n.locMsg("QuestVisibility.OnInteraction")).clickCommand("/mq e edit vis interact " + !vs.displayOnInteraction()).showText(I18n.locMsg("QuestVisibility." + !vs.displayOnInteraction())));
 		settings.add(I18n.locMsg("QuestEditor." + vs.displayOnInteraction())).changeLine();
-		
+
+		// Time Limit
 		settings.add(new InteractiveText(I18n.locMsg("QuestEditor.IsTimeLimited")).clickCommand("/mq e edit limit " + !q.isTimeLimited()).showText(I18n.locMsg("QuestEditor.IsTimeLimited.ShowText." + !q.isTimeLimited())));
 		settings.add(I18n.locMsg("QuestEditor." + q.isTimeLimited())).changeLine();
 		if (q.isTimeLimited())
 		{
 			settings.add(new InteractiveText(I18n.locMsg("QuestEditor.TimeLimit")).clickCommand("/mq e edit timelimit")
 					.showText(I18n.locMsg("QuestEditor.TimeLimit.ShowText")));
-			settings.add(QuestUtil.convertTime(q.getTimeLimit())).changeLine();
+			settings.add(TimeHandler.convertTime(q.getTimeLimit())).changeLine();
 		}
 		
 		QuestBookPage p2 = new QuestBookPage();

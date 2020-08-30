@@ -6,6 +6,7 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.RequirementManager;
+import me.Cutiemango.MangoQuest.manager.TimeHandler;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -88,18 +89,32 @@ public class TextComponentFactory
 	public static TextComponent convertRequirement(QuestPlayerData qd, Quest q)
 	{
 		TextComponent text = new TextComponent(QuestChatManager.unavailableQuestFormat(q.getQuestName()));
-		if (!q.isRedoable() && qd.hasFinished(q))
-			return regHoverEvent(text, I18n.locMsg("CommandInfo.NotRedoable"));
-		else
-			if (qd.hasFinished(q))
+		if (qd.hasFinished(q))
+		{
+			long lastFinishTime = qd.getFinishData(q).getLastFinish();
+			long delay = -1L;
+			switch (q.getRedoSetting())
 			{
-				long d = qd.getDelay(qd.getFinishData(q).getLastFinish(), q.getRedoDelay());
-				if (d > 0)
-					return regHoverEvent(text, I18n.locMsg("QuestJourney.WaitFor", QuestUtil.convertTime(d)));
-				if (!qd.hasTakenReward(q))
-					return regHoverEvent(text, I18n.locMsg("QuestReward.RewardNotTaken"));
+				case ONCE_ONLY:
+					return regHoverEvent(text, I18n.locMsg("CommandInfo.NotRedoable"));
+				case COOLDOWN:
+					delay = qd.getDelay(lastFinishTime, q.getRedoDelay());
+					break;
+				case DAILY:
+					delay = TimeHandler.getDailyCooldown(lastFinishTime, q.getResetHour());
+					break;
+				case WEEKLY:
+					delay = TimeHandler.getWeeklyCooldown(lastFinishTime, q.getResetDay(), q.getResetHour());
+					break;
 			}
-			else if (q.hasRequirement())
+			if (delay > 0)
+				return regHoverEvent(text, I18n.locMsg("QuestJourney.WaitFor", TimeHandler.convertTime(delay)));
+
+			if (!qd.hasTakenReward(q))
+				return regHoverEvent(text, I18n.locMsg("QuestReward.RewardNotTaken"));
+		}
+		else
+			if (q.hasRequirement())
 			{
 				Optional<String> msg = RequirementManager.meetRequirementWith(qd.getPlayer(), q.getRequirements(), true);
 				if (msg.isPresent())
