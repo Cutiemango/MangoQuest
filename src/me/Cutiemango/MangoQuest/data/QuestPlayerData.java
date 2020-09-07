@@ -830,12 +830,6 @@ public class QuestPlayerData
 				QuestChatManager.info(owner, I18n.locMsg("CommandInfo.AlreadyTaken"));
 			return false;
 		}
-		if (!q.isRedoable() && hasFinished(q))
-		{
-			if (sendMsg)
-				QuestChatManager.info(owner, I18n.locMsg("CommandInfo.NotRedoable"));
-			return false;
-		}
 		if (q.usePermission() && !owner.hasPermission("MangoQuest.takeQuest." + q.getInternalID()))
 		{
 			if (sendMsg)
@@ -884,13 +878,12 @@ public class QuestPlayerData
 					}
 					break;
 			}
-		}
-
-		if (!hasTakenReward(q))
-		{
-			if (sendMsg)
-				QuestChatManager.info(owner, I18n.locMsg("QuestReward.RewardNotTaken"));
-			return false;
+			if (!hasTakenReward(q))
+			{
+				if (sendMsg)
+					QuestChatManager.info(owner, I18n.locMsg("QuestReward.RewardNotTaken"));
+				return false;
+			}
 		}
 		return true;
 	}

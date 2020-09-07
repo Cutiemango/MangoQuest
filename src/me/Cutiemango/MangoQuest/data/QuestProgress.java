@@ -53,17 +53,16 @@ public class QuestProgress
 		quest.trigger(owner, TriggerType.TRIGGER_ON_FINISH, -1);
 		QuestPlayerData pd = QuestUtil.getData(owner);
 		QuestReward reward = quest.getQuestReward();
-		boolean giveItem = reward.instantGiveReward();
-		if (!reward.hasMultipleChoices())
-			giveItem = true;
+
+		boolean giveItem = reward.instantGiveReward() || !reward.hasMultipleChoices();
+
 		pd.addFinishedQuest(quest, giveItem);
+
 		if (giveItem)
-		{
 			reward.executeItemReward(owner);
-			pd.getFinishData(quest).setRewardTaken(true);
-		}
 		else
 			pd.getFinishData(quest).setRewardTaken(false);
+
 		reward.executeReward(owner);
 		QuestChatManager.info(owner, I18n.locMsg("CommandInfo.CompleteMessage", quest.getQuestName()));
 		pd.removeProgress(quest);

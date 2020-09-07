@@ -10,6 +10,7 @@ import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
+import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.editor.ConversationEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
@@ -82,6 +83,11 @@ public class ConversationEditorCommand
 							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.ConversationEmpty"));
 							return;
 						}
+						else if (conv instanceof StartTriggerConversation && ((StartTriggerConversation)conv).getQuest() == null)
+						{
+							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.TriggerQuestEmpty"));
+							return;
+						}
 						QuestConfigManager.getSaver().saveConversation(conv);
 						QuestConversation.synchronizeLocal(conv);
 						QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ConvSaveCfgSuccess", conv.getName()));
@@ -94,6 +100,11 @@ public class ConversationEditorCommand
 						if (conv.getActions().isEmpty())
 						{
 							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.ConversationEmpty"));
+							return;
+						}
+						else if (conv instanceof StartTriggerConversation && ((StartTriggerConversation)conv).getQuest() == null)
+						{
+							QuestChatManager.error(sender, I18n.locMsg("EditorMessage.TriggerQuestEmpty"));
 							return;
 						}
 						QuestConfigManager.getSaver().saveConversation(conv);

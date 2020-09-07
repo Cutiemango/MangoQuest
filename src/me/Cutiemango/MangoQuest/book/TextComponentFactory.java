@@ -113,15 +113,14 @@ public class TextComponentFactory
 			if (!qd.hasTakenReward(q))
 				return regHoverEvent(text, I18n.locMsg("QuestReward.RewardNotTaken"));
 		}
-		else
-			if (q.hasRequirement())
-			{
-				Optional<String> msg = RequirementManager.meetRequirementWith(qd.getPlayer(), q.getRequirements(), true);
-				if (msg.isPresent())
-					return regHoverEvent(text, msg.get());
-				else
-					return convertViewQuest(q);
-			}
+		if (q.hasRequirement())
+		{
+			Optional<String> msg = RequirementManager.meetRequirementWith(qd.getPlayer(), q.getRequirements(), true);
+			if (msg.isPresent())
+				return regHoverEvent(text, msg.get());
+			else
+				return convertViewQuest(q);
+		}
 		return text;
 	}
 

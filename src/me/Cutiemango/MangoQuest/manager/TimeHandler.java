@@ -17,9 +17,13 @@ public class TimeHandler
 
 	public static long getDailyCooldown(long lastTimestamp, int hour)
 	{
-		Calendar availableTime = Calendar.getInstance();
+		Calendar availableTime = Calendar.getInstance(), lastFinishTime = Calendar.getInstance();
+		lastFinishTime.setTimeInMillis(lastTimestamp);
 		availableTime.setTimeInMillis(lastTimestamp);
-		availableTime.add(Calendar.DAY_OF_WEEK, 1);
+
+		// After the reset hour -> add 1 day
+		if (hour < lastFinishTime.get(Calendar.HOUR))
+			availableTime.add(Calendar.DAY_OF_WEEK, 1);
 
 		availableTime.set(Calendar.HOUR_OF_DAY, hour);
 		availableTime.set(Calendar.MINUTE, 0);
@@ -31,10 +35,18 @@ public class TimeHandler
 
 	public static long getWeeklyCooldown(long lastTimestamp, int day, int hour)
 	{
-		Calendar availableTime = Calendar.getInstance();
+		Calendar availableTime = Calendar.getInstance(), lastFinishTime = Calendar.getInstance();
+		lastFinishTime.setTimeInMillis(lastTimestamp);
 		availableTime.setTimeInMillis(lastTimestamp);
 
-		if (availableTime.get(Calendar.DAY_OF_WEEK) >= 1 + day % 7)
+		/* If lastFinishedDayOfWeek > resetDayOfWeek, add 1 week
+		 * (e.g. Wednesday > Tuesday)
+		 * OR
+		 * lastFinishedDayOfWeek == resetDayOfWeek AND resetHour < lastFinishedHour, add 1 week
+		 * (e.g. lastFinishedTime = Tuesday 14:00
+		 *       resetTime = Tuesday 09:00)
+		 */
+		if (lastFinishTime.get(Calendar.DAY_OF_WEEK) > 1 + day % 7 || lastFinishTime.get(Calendar.DAY_OF_WEEK) == 1 + day % 7 && hour < lastFinishTime.get(Calendar.HOUR))
 			availableTime.add(Calendar.WEEK_OF_MONTH, 1);
 
 		availableTime.set(Calendar.DAY_OF_WEEK, 1 + day % 7);

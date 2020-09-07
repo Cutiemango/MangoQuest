@@ -367,6 +367,8 @@ EditorMessage.PleaseQuitEdtior: "&c請退出編輯模式！"
 EditorMessage.Exited: "&a已經退出了編輯模式。"
 EditorMessage.QuestEmpty: "此任務沒有任何任務目標，無法被儲存！"
 EditorMessage.ConversationEmpty: "此任務沒有任何對話動作，無法被儲存！"
+EditorMessage.TriggerQuestEmpty: "此任務為對話觸發任務，但沒有選擇指定的觸發任務，無法被儲存！"
+
 EditorMessage.QuestSaveCfgSuccess: "&a任務 [%0] &a已經成功儲存至設定檔案！"
 EditorMessage.QuestSaveSevSuccess: "&b任務 [%0] &b已經設定與伺服器資料中的任務同步！"
 EditorMessage.ConvSaveCfgSuccess: "&a對話 [%0] &a已經成功儲存至設定檔案！"
