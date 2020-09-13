@@ -22,7 +22,7 @@ public class TimeHandler
 		availableTime.setTimeInMillis(lastTimestamp);
 
 		// After the reset hour -> add 1 day
-		if (hour < lastFinishTime.get(Calendar.HOUR))
+		if (hour <= lastFinishTime.get(Calendar.HOUR))
 			availableTime.add(Calendar.DAY_OF_WEEK, 1);
 
 		availableTime.set(Calendar.HOUR_OF_DAY, hour);

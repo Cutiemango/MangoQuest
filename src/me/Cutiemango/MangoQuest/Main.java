@@ -36,7 +36,6 @@ public class Main extends JavaPlugin
 
 		configManager = new QuestConfigManager();
 		pluginHooker = new PluginHooker(this);
-		pluginHooker.hookPlugins();
 		SimpleQuestObject.initObjectNames();
 		if (ConfigSettings.SAVE_TYPE == ConfigSettings.SaveType.SQL)
 			DatabaseManager.initPlayerDB();
@@ -78,6 +77,7 @@ public class Main extends JavaPlugin
 			@Override
 			public void run()
 			{
+				pluginHooker.hookPlugins();
 				CustomObjectManager.loadCustomObjects();
 				QuestConfigManager.getLoader().loadAll();
 				loadPlayers();
