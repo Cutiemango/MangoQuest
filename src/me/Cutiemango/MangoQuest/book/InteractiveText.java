@@ -25,11 +25,15 @@ public class InteractiveText
 		this(new TextComponent(TextComponent.fromLegacyText(QuestChatManager.translateColor(s))));
 	}
 
+	// similar to showItem
+	public InteractiveText(@NotNull ItemStack item)
+	{
+		text = TextComponentFactory.convertItemHoverEvent(item, false);
+	}
+
 	private TextComponent text;
 	
-	/*
-	 * "/" needed.
-	 */
+	// "/" needed.
 	public InteractiveText clickCommand(String cmd)
 	{
 		if (!cmd.startsWith("/"))

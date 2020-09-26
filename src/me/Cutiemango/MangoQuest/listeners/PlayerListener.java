@@ -6,6 +6,8 @@ import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.conversation.ConversationManager;
+import me.Cutiemango.MangoQuest.conversation.ConversationProgress;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.editor.EditorListenerHandler;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
@@ -24,6 +26,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Optional;
 
 public class PlayerListener
 {
@@ -37,7 +40,7 @@ public class PlayerListener
 			{
 				QuestPlayerData qd = new QuestPlayerData(p);
 				qd.load(ConfigSettings.SAVE_TYPE);
-				QuestStorage.Players.put(p.getName(), qd);
+				QuestStorage.playerData.put(p.getName(), qd);
 				qd.checkQuestFail();
 				qd.checkUnclaimedReward();
 			}
@@ -49,7 +52,16 @@ public class PlayerListener
 		QuestPlayerData qd = QuestUtil.getData(p);
 		if (qd != null)
 			qd.save();
-		QuestStorage.Players.remove(p.getName());
+		QuestStorage.playerData.remove(p.getName());
+
+		// clear the conversation progress
+		Optional<ConversationProgress> prog = Optional.ofNullable(ConversationManager.getConvProgress(p));
+		if (prog.isPresent())
+		{
+			prog.get().cancelTask();
+			QuestStorage.conversationProgress.remove(p.getName());
+		}
+
 		DebugHandler.log(2, "[Listener] Saved data of player " + p.getName() + ".");
 	}
 

@@ -5,7 +5,7 @@ import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.book.FlexiableBook;
+import me.Cutiemango.MangoQuest.book.FlexibleBook;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.manager.QuestBookGUIManager;
@@ -23,7 +23,6 @@ import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -89,44 +88,33 @@ public class QuestEditorManager
 	public static void editGUI(Player p)
 	{
 		EditorListenerHandler.unreigster(p);
-		FlexiableBook book = new FlexiableBook();
-		QuestBookPage page = book.getLastEditingPage();
-		page.add(I18n.locMsg("QuestEditor.Title")).changeLine();
-		page.add(I18n.locMsg("QuestEditor.ChooseEditQuest")).changeLine();
-		for (Quest q : QuestStorage.Quests.values())
+		FlexibleBook book = new FlexibleBook();
+		book.add(I18n.locMsg("QuestEditor.Title")).changeLine();
+		book.add(I18n.locMsg("QuestEditor.ChooseEditQuest")).changeLine();
+		for (Quest q : QuestStorage.localQuests.values())
 		{
-			QuestUtil.checkOutOfBounds(page, book);
-			page = book.getLastEditingPage();
-			page.add(new InteractiveText("&0- &0&l" + q.getQuestName() + "&0(" + q.getInternalID() + ")")
+			book.add(new InteractiveText("&0- &0&l" + q.getQuestName() + "&0(" + q.getInternalID() + ")")
 					.clickCommand("/mq e select " + q.getInternalID())).changeLine();
 		}
-		
-		QuestUtil.checkOutOfBounds(page, book);
-		page = book.getLastEditingPage();
-		page.changeLine();
-		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e"));
+		book.changeLine();
+		book.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e"));
 		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 
 	public static void removeGUI(Player p)
 	{
 		EditorListenerHandler.unreigster(p);
-		FlexiableBook book = new FlexiableBook();
-		QuestBookPage page = book.getLastEditingPage();
-		page.add(I18n.locMsg("QuestEditor.Title")).changeLine();
-		page.add(I18n.locMsg("QuestEditor.ChooseRemoveQuest")).changeLine();
-		for (Quest q : QuestStorage.Quests.values())
+		FlexibleBook book = new FlexibleBook();
+		book.add(I18n.locMsg("QuestEditor.Title")).changeLine();
+		book.add(I18n.locMsg("QuestEditor.ChooseRemoveQuest")).changeLine();
+		for (Quest q : QuestStorage.localQuests.values())
 		{
-			QuestUtil.checkOutOfBounds(page, book);
-			page = book.getLastEditingPage();
-			page.add(new InteractiveText("&0- &0&l" + q.getQuestName() + "&0(" + q.getInternalID() + ")")
+			book.add(new InteractiveText("&0- &0&l" + q.getQuestName() + "&0(" + q.getInternalID() + ")")
 					.clickCommand("/mq e remove confirm " + q.getInternalID()));
-			page.changeLine();
+			book.changeLine();
 		}
-		QuestUtil.checkOutOfBounds(page, book);
-		page = book.getLastEditingPage();
-		page.changeLine();
-		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e"));
+		book.changeLine();
+		book.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e"));
 		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 
@@ -184,7 +172,7 @@ public class QuestEditorManager
 				break;
 		}
 		p1.changeLine();
-		
+
 		QuestBookPage settings = new QuestBookPage();
 		settings.add(I18n.locMsg("QuestEditor.QuestSettings")).changeLine();
 		settings.add(new InteractiveText(I18n.locMsg("QuestEditor.IsQuitable")).clickCommand("/mq e edit quit " + !q.isQuitable())
@@ -199,7 +187,7 @@ public class QuestEditorManager
 			settings.add(q.getWorldLimit().getName()).changeLine();
 		else
 			settings.add(I18n.locMsg("QuestEditor.NotSet")).changeLine();
-		
+
 		settings.changeLine();
 
 		// Display settings
@@ -221,7 +209,7 @@ public class QuestEditorManager
 					.showText(I18n.locMsg("QuestEditor.TimeLimit.ShowText")));
 			settings.add(TimeHandler.convertTime(q.getTimeLimit())).changeLine();
 		}
-		
+
 		QuestBookPage p2 = new QuestBookPage();
 		p2.add(I18n.locMsg("QuestEditor.ReqEventStageInfo")).changeLine();
 		p2.changeLine();
@@ -254,7 +242,7 @@ public class QuestEditorManager
 
 		p4.add(I18n.locMsg("QuestEditor.RewardExp", Integer.toString(q.getQuestReward().getExp())));
 		p4.add(new InteractiveText(" " + I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward exp").showText(I18n.locMsg("QuestEditor.RewardExp.ShowText"))).changeLine();
-		
+
 		if (Main.getHooker().hasSkillAPIEnabled())
 		{
 			p4.add(I18n.locMsg("QuestEditor.RewardRPGExp", Integer.toString(q.getQuestReward().getSkillAPIExp())));
@@ -266,10 +254,10 @@ public class QuestEditorManager
 			p4.add(I18n.locMsg("QuestEditor.RewardRPGExp", Integer.toString(q.getQuestReward().getQRPGExp())));
 			p4.add(new InteractiveText(" " + I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward qrpgexp").showText(I18n.locMsg("QuestEditor.RewardRPGExp.ShowText"))).changeLine();
 		}
-	
+
 		p4.add(I18n.locMsg("QuestEditor.RewardFriendPoint"));
 		p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit reward fp").showText(I18n.locMsg("QuestEditor.RewardFriendPoint.ShowText"))).changeLine();
-		
+
 		if (q.getQuestReward().hasFriendPoint())
 		{
 			for (Integer n : q.getQuestReward().getFriendPointMap().keySet())
@@ -284,7 +272,7 @@ public class QuestEditorManager
 				p4.changeLine();
 			}
 		}
-		
+
 		p4.add(I18n.locMsg("QuestEditor.RewardCommand"));
 		p4.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew reward command").showText(I18n.locMsg("QuestEditor.RewardCommand.ShowText"))).changeLine();
 		if (q.getQuestReward().hasCommand())
@@ -317,14 +305,13 @@ public class QuestEditorManager
 	{
 		if (!checkEditorMode(p, true))
 			return;
-		FlexiableBook book = new FlexiableBook();
+		FlexibleBook book = new FlexibleBook();
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
-		QuestBookPage page = book.getLastEditingPage();
-		page.add(I18n.locMsg("QuestEditor.EditTrigger") + q.getQuestName()).changeLine();
-		page.add(I18n.locMsg("QuestEditor.EditTriggerType") + type.toCustomString(stage)).changeLine();
+		book.add(I18n.locMsg("QuestEditor.EditTrigger") + q.getQuestName()).changeLine();
+		book.add(I18n.locMsg("QuestEditor.EditTriggerType") + type.toCustomString(stage)).changeLine();
 		int index = 0;
 		int realIndex = -1;
-		
+
 		if (q.hasTrigger(type))
 		{
 			for (TriggerObject obj : q.getTriggerMap().get(type))
@@ -332,29 +319,25 @@ public class QuestEditorManager
 				realIndex++;
 				if (obj.getStage() != stage)
 					continue;
-				QuestUtil.checkOutOfBounds(page, book);
-				page = book.getLastEditingPage();
-				page.add("- " + index + ".");
-				
-				
-				page.add(new InteractiveText(obj.getObjType().toCustomString())
+				book.add("- " + index + ".");
+				book.add(new InteractiveText(obj.getObjType().toCustomString())
 						.showText(QuestChatManager.toNormalDisplay(I18n.locMsg("QuestEditor.EditTriggerObjectType") + obj.getObject())));
 
-				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew evt " + type.toString() + " " + stage + " " + (realIndex+1) + " "));
-				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit evt " + type.toString() + " " + stage + " " + realIndex + " " + obj.getObjType().toString()));
-				page.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove evt " + type.toString() + " " + stage + " " + realIndex));
+				book.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew evt " + type.toString() + " " + stage + " " + (realIndex+1) + " "));
+				book.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit evt " + type.toString() + " " + stage + " " + realIndex + " " + obj.getObjType().toString()));
+				book.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove evt " + type.toString() + " " + stage + " " + realIndex));
 
-				
-				page.changeLine();
+
+				book.changeLine();
 				index++;
 			}
 		}
-		
-		if (index == 0)
-			page.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew evt " + type.toString() + " " + stage + " " + 0 + " ")).changeLine();
 
-		page.changeLine();
-		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e edit evt"));
+		if (index == 0)
+			book.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew evt " + type.toString() + " " + stage + " " + 0 + " ")).changeLine();
+
+		book.changeLine();
+		book.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e edit evt"));
 		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 
@@ -362,21 +345,18 @@ public class QuestEditorManager
 	{
 		if (!checkEditorMode(p, true))
 			return;
-		FlexiableBook book = new FlexiableBook();
+		FlexibleBook book = new FlexibleBook();
 		Quest q = QuestEditorManager.getCurrentEditingQuest(p);
-		QuestBookPage p1 = book.getLastEditingPage();
-		p1.add(I18n.locMsg("QuestEditor.EditQuestStage")).changeLine();
-		p1.add(I18n.locMsg("QuestEditor.ChooseStage")).changeLine();
+		book.add(I18n.locMsg("QuestEditor.EditQuestStage")).changeLine();
+		book.add(I18n.locMsg("QuestEditor.ChooseStage")).changeLine();
 		for (int i = 1; i <= q.getStages().size(); i++)
 		{
-			QuestUtil.checkOutOfBounds(p1, book);
-			p1 = book.getLastEditingPage();
-			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Stage", Integer.toString(i))).clickCommand("/mq e edit stage " + i));
-			p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove stage " + i)).changeLine();
+			book.add(new InteractiveText(I18n.locMsg("QuestEditor.Stage", Integer.toString(i))).clickCommand("/mq e edit stage " + i));
+			book.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove stage " + i)).changeLine();
 		}
-		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew stage")).changeLine();
-		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e gui")).changeLine();
-		QuestBookGUIManager.openBook(p, p1);
+		book.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew stage")).changeLine();
+		book.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e gui")).changeLine();
+		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 
 	public static void editQuestObjects(Player p, int stage)
@@ -563,21 +543,17 @@ public class QuestEditorManager
 		p1.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq e edit object " + stage + " " + obj)).changeLine();
 		QuestBookGUIManager.openBook(p, p1);
 	}
-	
+
 	public static void selectQuest(Player p, String cmd)
 	{
-		FlexiableBook book = new FlexiableBook();
-		QuestBookPage page = book.getLastEditingPage();
-		page.add(I18n.locMsg("QuestEditor.ChooseTargetQuest")).changeLine();
-		for (Quest q : QuestStorage.Quests.values())
+		FlexibleBook book = new FlexibleBook();
+		book.add(I18n.locMsg("QuestEditor.ChooseTargetQuest")).changeLine();
+		for (Quest q : QuestStorage.localQuests.values())
 		{
-			QuestUtil.checkOutOfBounds(page, book);
-			page = book.getLastEditingPage();
-			page.add(new InteractiveText("&0- &l" + q.getQuestName() + "&0(" + q.getInternalID() + ")")
+			book.add(new InteractiveText("&0- &l" + q.getQuestName() + "&0(" + q.getInternalID() + ")")
 					.clickCommand(cmd + " " + q.getInternalID()));
-			page.changeLine();
+			book.changeLine();
 		}
-		QuestUtil.checkOutOfBounds(page, book);
 		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 

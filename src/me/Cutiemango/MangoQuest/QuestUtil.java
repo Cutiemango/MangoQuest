@@ -1,7 +1,5 @@
 package me.Cutiemango.MangoQuest;
 
-import me.Cutiemango.MangoQuest.book.FlexiableBook;
-import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
@@ -36,7 +34,7 @@ public class QuestUtil
 
 	public static QuestPlayerData getData(Player p)
 	{
-		return QuestStorage.Players.get(p.getName());
+		return QuestStorage.playerData.get(p.getName());
 	}
 
 	public static double cut(double d)
@@ -44,7 +42,7 @@ public class QuestUtil
 		return Math.floor((d * 100)) / 100;
 	}
 
-	public static void executeCommandAsync(Player p, String command)
+	public static void executeSyncCommand(Player p, String command)
 	{
 		if (p == null || command == null)
 			return;
@@ -52,7 +50,7 @@ public class QuestUtil
 
 	}
 	
-	public static void executeOPCommandAsync(Player p, String command)
+	public static void executeSyncOPCommand(Player p, String command)
 	{
 		if (p == null || command == null)
 			return;
@@ -79,7 +77,7 @@ public class QuestUtil
 		});
 	}
 	
-	public static void executeConsoleAsync(String command)
+	public static void executeSyncConsoleCommand(String command)
 	{
 		if (command == null)
 			return;
@@ -94,7 +92,7 @@ public class QuestUtil
 	public static Set<FriendConversation> getConversations(NPC npc, int fp)
 	{
 		Set<FriendConversation> set = new HashSet<>();
-		for (FriendConversation conv : QuestStorage.FriendConvs)
+		for (FriendConversation conv : QuestStorage.friendConversations)
 		{
 			if (conv.getNPC().equals(npc) && (fp >= conv.getReqPoint()))
 				set.add(conv);
@@ -104,16 +102,7 @@ public class QuestUtil
 
 	public static Quest getQuest(String s)
 	{
-		return QuestStorage.Quests.get(s);
-	}
-
-	public static void checkOutOfBounds(QuestBookPage page, FlexiableBook book)
-	{
-		if (page.isOutOfBounds())
-		{
-			book.newPage();
-			book.getLastEditingPage().add(book.getPage(book.size() - 2).getSaved());
-		}
+		return QuestStorage.localQuests.get(s);
 	}
 
 	public static String getItemName(ItemStack is)
@@ -134,8 +123,8 @@ public class QuestUtil
 
 	public static String translate(Material mat)
 	{
-		if (QuestStorage.TranslationMap.containsKey(mat))
-			return QuestStorage.TranslationMap.get(mat);
+		if (QuestStorage.translationMap.containsKey(mat))
+			return QuestStorage.translationMap.get(mat);
 		else return I18n.locMsg("Translation.UnknownItem");
 	}
 	
@@ -148,9 +137,9 @@ public class QuestUtil
 
 	public static String translate(EntityType e)
 	{
-		if (!QuestStorage.EntityTypeMap.containsKey(e))
+		if (!QuestStorage.entityTypeMap.containsKey(e))
 			return I18n.locMsg("Translation.UnknownEntity");
 		else
-			return QuestStorage.EntityTypeMap.get(e);
+			return QuestStorage.entityTypeMap.get(e);
 	}
 }

@@ -32,11 +32,11 @@ public class Quest
 		version = QuestVersion.instantVersion();
 	}
 
-	public Quest(String InternalID, String name, List<String> QuestOutline, QuestReward reward, List<QuestStage> stages, NPC npc)
+	public Quest(String internalID, String name, List<String> questOutline, QuestReward reward, List<QuestStage> stages, NPC npc)
 	{
-		this.internalID = InternalID;
+		this.internalID = internalID;
 		this.questName = QuestChatManager.translateColor(name);
-		this.outline = QuestOutline;
+		this.outline = questOutline;
 		this.reward = reward;
 		this.stages = stages;
 		this.questNPC = npc;
@@ -205,11 +205,6 @@ public class Quest
 	{
 		return triggerMap;
 	}
-	
-	public List<TriggerObject> getTrigger(TriggerType type)
-	{
-		return triggerMap.get(type);
-	}
 
 	public void setTriggers(EnumMap<TriggerType, List<TriggerObject>> map)
 	{
@@ -357,7 +352,7 @@ public class Quest
 		TriggerTask task = new TriggerTask(p, triggerMap.get(type));
 		if (type.hasStage())
 			task.withStage(stage);
-		DebugHandler.log(5, "[Triggers] Triggertask of " + type.toString() + " started with stage " + stage + ".");
+		DebugHandler.log(5, "[Triggers] Trigger task of %s started with stage %d.", type.toString(), stage);
 		task.start();
 	}
 
@@ -386,7 +381,7 @@ public class Quest
 				}
 			}
 		}
-		QuestStorage.Quests.put(q.getInternalID(), q);
+		QuestStorage.localQuests.put(q.getInternalID(), q);
 	}
 
 

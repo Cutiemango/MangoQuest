@@ -242,7 +242,7 @@ public class QuestReward
 			for (String cmd : command)
 			{
 				cmd = cmd.replace("<player>", p.getName());
-				QuestUtil.executeConsoleAsync(cmd);
+				QuestUtil.executeSyncConsoleCommand(cmd);
 			}
 		}
 		

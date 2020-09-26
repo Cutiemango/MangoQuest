@@ -169,6 +169,12 @@ public class QuestIO
 		return config.getInt(path);
 	}
 
+	public int getIntOrDefault(String path, int defaultValue)
+	{
+		int i = getInt(path);
+		return i == 0 ? defaultValue : i;
+	}
+
 	public double getDouble(String path)
 	{
 		return config.getDouble(path);
@@ -187,6 +193,12 @@ public class QuestIO
 	public String getString(String path)
 	{
 		return config.getString(path);
+	}
+
+	public String getStringOrDefault(String path, String defaultValue)
+	{
+		String s = getString(path);
+		return s == null ? defaultValue : s;
 	}
 
 	public List<String> getStringList(String path)

@@ -69,7 +69,7 @@ public class QuestChoice
 
 	public void apply(ConversationProgress cp)
 	{
-		QuestStorage.ChoiceProgresses.put(cp.getOwner().getName(), this);
+		QuestStorage.choiceProgress.put(cp.getOwner().getName(), this);
 		cp.getCurrentPage().add(new InteractiveText(question.getText()).showText(I18n.locMsg("Conversation.ClickToAnswer")).clickCommand("/mq conv openchoice"));
 	}
 
@@ -81,7 +81,7 @@ public class QuestChoice
 			return;
 		}
 		int count = 0;
-		ConversationProgress cp = QuestStorage.ConvProgresses.get(p.getName());
+		ConversationProgress cp = QuestStorage.conversationProgress.get(p.getName());
 		if (cp != null)
 		{
 			cp.retrieve();

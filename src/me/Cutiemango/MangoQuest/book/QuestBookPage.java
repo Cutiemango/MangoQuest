@@ -58,6 +58,8 @@ public class QuestBookPage
 
 	public QuestBookPage add(String s)
 	{
+		if (s.equals(""))
+			return this;
 		add(new TextComponent(s));
 		return this;
 	}

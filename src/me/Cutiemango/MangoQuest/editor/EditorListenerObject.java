@@ -29,7 +29,7 @@ public class EditorListenerObject
 			EditorListenerHandler.unreigster(p);
 			return;
 		}
-		QuestUtil.executeCommandAsync(p, command + " " + obj);
+		QuestUtil.executeSyncCommand(p, command + " " + obj);
 		EditorListenerHandler.currentListening.remove(p.getName());
 	}
 

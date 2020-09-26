@@ -7,7 +7,6 @@ import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestValidater;
-import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
@@ -78,13 +77,13 @@ public class QuestBaseAction
 				c.apply(cp);
 				break;
 			case COMMAND:
-				QuestUtil.executeConsoleAsync(target);
+				QuestUtil.executeSyncConsoleCommand(target);
 				break;
 			case COMMAND_PLAYER:
-				QuestUtil.executeCommandAsync(cp.getOwner(), target);
+				QuestUtil.executeSyncCommand(cp.getOwner(), target);
 				break;
 			case COMMAND_PLAYER_OP:
-				QuestUtil.executeOPCommandAsync(cp.getOwner(), target);
+				QuestUtil.executeSyncOPCommand(cp.getOwner(), target);
 				break;
 			case SENTENCE:
 				cp.getCurrentPage().add(QuestChatManager.translateColor(target)).changeLine();

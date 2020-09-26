@@ -80,13 +80,13 @@ public class TriggerObject
 				}.runTaskLater(Main.getInstance(), Long.parseLong(object) * 20);
 				return;
 			case COMMAND:
-				QuestUtil.executeConsoleAsync(object);
+				QuestUtil.executeSyncConsoleCommand(object);
 				break;
 			case COMMAND_PLAYER:
-				QuestUtil.executeCommandAsync(p, object);
+				QuestUtil.executeSyncCommand(p, object);
 				break;
 			case COMMAND_PLAYER_OP:
-				QuestUtil.executeOPCommandAsync(p, object);
+				QuestUtil.executeSyncOPCommand(p, object);
 				break;
 			case SEND_MESSAGE:
 				p.sendMessage(QuestChatManager.translateColor(object));

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class FlexiableBook
+public class FlexibleBook
 {
 	/*
 	 * When using this, please remember to add:
@@ -19,13 +19,38 @@ public class FlexiableBook
 	 *	to make sure that it changes page smoothly. 
 	 */
 	
-	public FlexiableBook()
+	public FlexibleBook()
 	{
 		pages = new LinkedList<>();
 		pages.add(new QuestBookPage());
 	}
 	
 	private LinkedList<QuestBookPage> pages;
+	private int currentPage = 0;
+
+	// Redirected book page operations
+	public FlexibleBook add(String s)
+	{
+		getCurrentPage().add(s);
+		return this;
+	}
+
+	public FlexibleBook add(TextComponent t)
+	{
+		getCurrentPage().add(t);
+		return this;
+	}
+
+	public FlexibleBook add(InteractiveText it)
+	{
+		getCurrentPage().add(it);
+		return this;
+	}
+
+	public void changeLine()
+	{
+		getCurrentPage().changeLine();
+	}
 
 	public QuestBookPage getPage(int index)
 	{
@@ -37,14 +62,23 @@ public class FlexiableBook
 		return pages.getFirst();
 	}
 	
-	public QuestBookPage getLastEditingPage()
+	public QuestBookPage getCurrentPage()
 	{
-		return pages.get(pages.size() - 1);
+		QuestBookPage page = pages.get(currentPage);
+		if (page.isOutOfBounds())
+		{
+			newPage();
+			// add the remnants
+			pages.getLast().add(page.getSaved());
+			page = pages.get(currentPage);
+		}
+		return page;
 	}
 	
 	public void newPage()
 	{
 		pages.add(new QuestBookPage());
+		currentPage++;
 	}
 	
 	public void setPage(int index, QuestBookPage page)
@@ -66,6 +100,7 @@ public class FlexiableBook
 	public void pushNewPage(QuestConversation conv)
 	{
 		pages.push(ConversationManager.generateNewPage(conv));
+		currentPage++;
 	}
 	
 	public int size()

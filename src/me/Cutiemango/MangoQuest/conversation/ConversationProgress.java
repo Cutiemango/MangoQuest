@@ -1,7 +1,7 @@
 package me.Cutiemango.MangoQuest.conversation;
 
 import me.Cutiemango.MangoQuest.*;
-import me.Cutiemango.MangoQuest.book.FlexiableBook;
+import me.Cutiemango.MangoQuest.book.FlexibleBook;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.conversation.QuestBaseAction.EnumAction;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
@@ -17,7 +17,7 @@ public class ConversationProgress
 {
 	public ConversationProgress(Player p, QuestConversation qc)
 	{
-		QuestStorage.ConvProgresses.put(p.getName(), this);
+		QuestStorage.conversationProgress.put(p.getName(), this);
 		owner = p;
 		conv = qc;
 		actQueue = new LinkedList<>(conv.getActions());
@@ -27,81 +27,104 @@ public class ConversationProgress
 		currentBook.removePage(1);
 	}
 
+	// actions that needs player interaction or wait
 	public static final List<EnumAction> STOP_ACTIONS = Arrays.asList(EnumAction.BUTTON, EnumAction.WAIT, EnumAction.CHOICE, EnumAction.FINISH, EnumAction.TAKE_QUEST, EnumAction.EXIT);
+
+	// actions that will cause the rush function to be disabled
 	public static final List<EnumAction> DISABLE_RUSH = Arrays.asList(EnumAction.BUTTON, EnumAction.CHOICE, EnumAction.TAKE_QUEST, EnumAction.EXIT);
+
+	// actions that need to be scheduled a task
+	public static final List<EnumAction> DELAYED_ACTIONS = Arrays.asList(EnumAction.BUTTON, EnumAction.CHANGE_PAGE, EnumAction.NPC_TALK, EnumAction.SENTENCE, EnumAction.TAKE_QUEST, EnumAction.CHOICE);
 	
 	protected Player owner;
 	protected QuestConversation conv;
 	protected LinkedList<QuestBaseAction> actQueue;
-	protected FlexiableBook currentBook = new FlexiableBook();
-	protected FlexiableBook history = new FlexiableBook();
+	protected FlexibleBook currentBook = new FlexibleBook();
+	protected FlexibleBook history = new FlexibleBook();
 	protected boolean isFinished;
 	
 	private int taskID = 0;
 
 	protected boolean rushed = false;
-	protected boolean disableRush = false;
+	protected boolean rushDisabled = false;
 
 	public void nextAction()
 	{
+		// need to handle if the player disconnects
+		if (!owner.isOnline())
+			return;
+
 		if (rushed)
 		{
-			while (actQueue.size() != 0)
+			while (!actQueue.isEmpty())
 			{
-				QuestBaseAction act = actQueue.getFirst();
+				QuestBaseAction act = actQueue.pollFirst();
+				act.execute(this);
+
+				// encountered an action that requires player to interact
 				if (DISABLE_RUSH.contains(act.getActionType()))
 				{
-					act.execute(this);
-					disableRush = true;
-					DebugHandler.log(5, "Rush disabled.");
-					actQueue.removeFirst();
-					break;
+					rushDisabled = true;
+					rushed = false;
+					DebugHandler.log(5, "[Conversation] Rush disabled.");
+
+					ConversationManager.openConversation(owner, this);
+					return;
 				}
-				act.execute(this);
-				actQueue.removeFirst();
 				update();
 			}
-			if (actQueue.size() == 0 && !disableRush)
+			// the action queue is cleared
+			DebugHandler.log(5, "[Conversation] Finished due to no actions left and no pending actions to be made by the player.");
+			finish(true);
+		}
+		else
+		{
+			if (actQueue.isEmpty())
 			{
-				DebugHandler.log(5, "Finished due to no actions left and no pending actions to make by the player.");
+				DebugHandler.log(5, "[Conversation] Conversation finished due to no actions left.");
 				finish(true);
+				return;
 			}
 			else
 			{
-				ConversationManager.openConversation(owner, this);
-				rushed = false;
+				QuestBaseAction act = actQueue.getFirst();
+				act.execute(this);
+				actQueue.pop();
+				rushDisabled = false;
+				DebugHandler.log(5, "[Conversation] Action type %s with param %s executed.", act.getActionType().toString(), act.getObject());
+				DebugHandler.log(5, "[Conversation] Rush enabled.");
+
+				if (act.getActionType() == EnumAction.EXIT)
+					return;
+
+				// still more actions
+
+				// if the action genre is not displaying text, execute immediately
+				if (!actQueue.isEmpty() && !DELAYED_ACTIONS.contains(actQueue.getFirst().getActionType()))
+				{
+					nextAction();
+					return;
+				}
+				else
+				{
+					// otherwise, schedule a task with specified delay (check if the action requires player interaction first)
+					if (!(STOP_ACTIONS.contains(act.getActionType())))
+					{
+						cancelTask();
+						registerTask();
+
+						// history needs to be written immediately
+						update();
+					}
+					ConversationManager.openConversation(owner, this);
+				}
 			}
-			return;
 		}
-		
-		if (actQueue.size() == 0)
-		{
-			DebugHandler.log(5, "Naturally finished due to no actions left.");
-			finish(true);
-			return;
-		}
-		actQueue.getFirst().execute(this);
-		disableRush = false;
-		DebugHandler.log(5, "Rush enabled.");
-		
-		if (actQueue.getFirst().getActionType() == EnumAction.EXIT)
-			return;
-
-		
-		if (!(STOP_ACTIONS.contains(actQueue.getFirst().getActionType())))
-		{
-			cancelTask();
-			registerTask();
-		}
-
-		ConversationManager.openConversation(owner, this);
-		actQueue.removeFirst();
-		
 	}
 	
 	public void rush()
 	{
-		if (disableRush)
+		if (rushDisabled)
 		{
 			QuestChatManager.error(owner, I18n.locMsg("Conversation.SkipDisabled"));
 			ConversationManager.openConversation(owner, this);
@@ -119,13 +142,12 @@ public class ConversationProgress
 			@Override
 			public void run()
 			{
-				update();
 				nextAction();
 			}
-		}.runTaskLater(Main.getInstance(), 25L).getTaskId();
+		}.runTaskLater(Main.getInstance(), ConfigSettings.CONVERSATION_ACTION_INTERVAL_IN_TICKS).getTaskId();
 	}
 	
-	private void cancelTask()
+	public void cancelTask()
 	{
 		if (taskID != 0)
 		{
@@ -147,12 +169,12 @@ public class ConversationProgress
 			QuestUtil.getData(owner).addFinishConversation(conv);
 			if (conv instanceof StartTriggerConversation)
 			{
-				QuestUtil.executeCommandAsync(owner, "mq quest take " + ((StartTriggerConversation)conv).getQuest().getInternalID());
+				QuestUtil.executeSyncCommand(owner, "mq quest take " + ((StartTriggerConversation)conv).getQuest().getInternalID());
 				ConversationManager.finishConversation(owner);
 				return;
 			}
 			if (!(conv instanceof FriendConversation))
-				QuestUtil.executeCommandAsync(owner, "mq conv npc " + conv.getNPC().getId());
+				QuestUtil.executeSyncCommand(owner, "mq conv npc " + conv.getNPC().getId());
 		}
 		ConversationManager.finishConversation(owner);
 	}
@@ -172,7 +194,7 @@ public class ConversationProgress
 		return conv;
 	}
 
-	public FlexiableBook getCurrentBook()
+	public FlexibleBook getCurrentBook()
 	{
 		return currentBook;
 	}

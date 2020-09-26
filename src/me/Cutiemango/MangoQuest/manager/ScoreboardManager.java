@@ -21,7 +21,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ScoreboardManager
 {
@@ -61,7 +60,7 @@ public class ScoreboardManager
 		
 		int count = 0;
 		scoreList.add(I18n.locMsg("Scoreboard.AvailableQuests"));
-		for (Quest q : QuestStorage.Quests.values())
+		for (Quest q : QuestStorage.localQuests.values())
 		{
 			if (!q.getSettings().displayOnTake())
 				continue;

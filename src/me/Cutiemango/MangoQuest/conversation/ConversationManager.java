@@ -15,42 +15,41 @@ import org.bukkit.entity.Player;
 public class ConversationManager
 {
 
+
 	/**
 	 * Starts a conversation from the beginning.
 	 * 
 	 * @param p The player to start a new conversation
 	 * @param conv The conversation to start
-	 * @return The progress of conversation
 	 */
-	public static ConversationProgress startConversation(Player p, QuestConversation conv)
+	public static void startConversation(Player p, QuestConversation conv)
 	{
 		ConversationProgress cp = new ConversationProgress(p, conv);
-		QuestStorage.ConvProgresses.put(p.getName(), cp);
+		QuestStorage.conversationProgress.put(p.getName(), cp);
 		DebugHandler.log(5, "[Conversations] Player %s started conversation %s(%s).", p.getName(), conv.getName(), conv.getInternalID());
 		cp.nextAction();
 		openConversation(p, cp);
-		return cp;
 	}
 
 	/**
 	 * Simulates a conversation from the beginning.
 	 * 
-	 * @param p The player to start a new conversation
-	 * @param conv The conversation to start
+	 * @param p The player to simulate conversation
+	 * @param conv The conversation
 	 */
 	public static void simulateConversation(Player p, QuestConversation conv)
 	{
 		ConversationProgress cp = new ModelConvProgress(p, conv);
-		QuestStorage.ConvProgresses.put(p.getName(), cp);
+		QuestStorage.conversationProgress.put(p.getName(), cp);
 		cp.nextAction();
 		openConversation(p, cp);
 	}
 
 	/**
-	 * Update player's conversation with a specified progress.
+	 * Send the book gui to the player with a conversation progress.
 	 * 
-	 * @param p The player to start a new conversation
-	 * @param cp The progress to update
+	 * @param p The player to send
+	 * @param cp The progress
 	 */
 	public static void openConversation(Player p, ConversationProgress cp)
 	{
@@ -63,7 +62,7 @@ public class ConversationManager
 	 */
 	public static QuestConversation getConversation(String s)
 	{
-		return QuestStorage.Conversations.get(s);
+		return QuestStorage.localConversations.get(s);
 	}
 
 	/**
@@ -72,7 +71,7 @@ public class ConversationManager
 	 */
 	public static ConversationProgress getConvProgress(Player p)
 	{
-		return QuestStorage.ConvProgresses.get(p.getName());
+		return QuestStorage.conversationProgress.get(p.getName());
 	}
 
 	/**
@@ -81,7 +80,7 @@ public class ConversationManager
 	 */
 	public static QuestChoice getChoiceByName(String s)
 	{
-		return QuestStorage.Choices.get(s);
+		return QuestStorage.localChoices.get(s);
 	}
 
 	/**
@@ -90,38 +89,38 @@ public class ConversationManager
 	 */
 	public static QuestChoice getChoiceProgress(Player p)
 	{
-		return QuestStorage.ChoiceProgresses.get(p.getName());
+		return QuestStorage.choiceProgress.get(p.getName());
 	}
 
 	public static StartTriggerConversation getStartConversation(Quest q)
 	{
-		return QuestStorage.StartConvs.get(q);
+		return QuestStorage.startTriggerConversations.get(q);
 	}
 	
 	public static boolean hasConvProgress(Player p)
 	{
-		return QuestStorage.ConvProgresses.containsKey(p.getName());
+		return QuestStorage.conversationProgress.containsKey(p.getName());
 	}
 
 	public static boolean isInConvProgress(Player p, QuestConversation conv)
 	{
-		if (QuestStorage.ConvProgresses.get(p.getName()) == null)
+		if (QuestStorage.conversationProgress.get(p.getName()) == null)
 			return false;
-		return QuestValidater.detailedValidate(conv, QuestStorage.ConvProgresses.get(p.getName()).getConversation());
+		return QuestValidater.detailedValidate(conv, QuestStorage.conversationProgress.get(p.getName()).getConversation());
 	}
 
 	public static void forceQuit(Player p, QuestConversation conv)
 	{
 		if (!isInConvProgress(p, conv))
 			return;
-		ConversationProgress cp = QuestStorage.ConvProgresses.get(p.getName());
+		ConversationProgress cp = QuestStorage.conversationProgress.get(p.getName());
 		cp.getCurrentPage().add(I18n.locMsg("CommandInfo.ForceQuitConv")).changeLine();
 		cp.getActionQueue().push(new QuestBaseAction(EnumAction.FINISH, "false"));
 	}
 	
 	public static void finishConversation(Player p)
 	{
-		QuestStorage.ConvProgresses.remove(p.getName());
+		QuestStorage.conversationProgress.remove(p.getName());
 	}
 
 	public static QuestBookPage generateNewPage(QuestConversation conv)

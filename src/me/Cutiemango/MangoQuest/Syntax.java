@@ -119,9 +119,4 @@ public class Syntax
 		}
 		return true;
 	}
-
-	public String getDescription()
-	{
-		return desc;
-	}
 }

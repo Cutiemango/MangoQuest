@@ -7,7 +7,6 @@ import me.Cutiemango.MangoQuest.editor.EditorListenerObject.ListeningType;
 import me.Cutiemango.MangoQuest.editor.QuestEditorManager;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.manager.QuestRewardManager;
-import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.reward.QuestGUIItem;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
@@ -37,9 +36,9 @@ public class RewardGUIListener
 				if (i == -1)
 					return;
 				if (e.getClick().isLeftClick())
-					QuestUtil.executeCommandAsync(p, "mq q reward add " + i);
+					QuestUtil.executeSyncCommand(p, "mq q reward add " + i);
 				else if (e.getClick().isRightClick())
-					QuestUtil.executeCommandAsync(p, "mq q reward remove " + i);
+					QuestUtil.executeSyncCommand(p, "mq q reward remove " + i);
 				p.closeInventory();
 			}
 			else if (inv.getTitle().contains(QuestChatManager.translateColor(I18n.locMsg("QuestReward.RewardEditTitle"))))
@@ -63,7 +62,7 @@ public class RewardGUIListener
 					else if (e.getCurrentItem().getType().equals(Material.PLAYER_HEAD))
 					{
 						p.closeInventory();
-						QuestUtil.executeCommandAsync(p, "mq e edit reward npc");
+						QuestUtil.executeSyncCommand(p, "mq e edit reward npc");
 						return;
 					}
 				}

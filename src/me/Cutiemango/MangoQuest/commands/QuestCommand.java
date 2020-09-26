@@ -135,12 +135,12 @@ public class QuestCommand
 						return;
 				}
 				
-				if (args.length < 3 || QuestStorage.Quests.get(args[2]) == null)
+				if (args.length < 3 || QuestStorage.localQuests.get(args[2]) == null)
 				{
 					QuestChatManager.error(sender, I18n.locMsg("CommandInfo.QuestNotFound"));
 					return;
 				}
-				Quest quest = QuestStorage.Quests.get(args[2]);
+				Quest quest = QuestStorage.localQuests.get(args[2]);
 				QuestPlayerData qd = QuestUtil.getData(sender);
 				switch (args[1])
 				{

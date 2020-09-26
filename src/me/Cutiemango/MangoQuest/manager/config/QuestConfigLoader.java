@@ -86,22 +86,17 @@ public class QuestConfigLoader
 		ConfigSettings.ENABLE_SKIP = config.getBoolean("enableSkip");
 		DebugHandler.log(5, "[Config] enableSkip=" + ConfigSettings.ENABLE_SKIP);
 
+		ConfigSettings.CONVERSATION_ACTION_INTERVAL_IN_TICKS = config.getIntOrDefault("conversationActionInterval", 25);
+		DebugHandler.log(5, "[Config] actionInterval=" + ConfigSettings.CONVERSATION_ACTION_INTERVAL_IN_TICKS);
 
 		// Save Interval
-		if (config.getInt("saveIntervalInSeconds") != 0)
-			ConfigSettings.PLAYER_DATA_SAVE_INTERVAL = config.getInt("saveIntervalInSeconds");
-		else
-		{
-			ConfigSettings.PLAYER_DATA_SAVE_INTERVAL = 600;
-			config.set("saveIntervalInSeconds", 600);
-		}
+		ConfigSettings.PLAYER_DATA_SAVE_INTERVAL = config.getIntOrDefault("saveIntervalInSeconds", 600);
+		DebugHandler.log(5, "[Config] saveInterval=" + ConfigSettings.PLAYER_DATA_SAVE_INTERVAL);
 
 		// Debug mode
 		DebugHandler.DEBUG_LEVEL = config.getInt("debugLevel");
 		if (config.getInt("debugLevel") > 0)
 			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.DebugMode", Integer.toString(DebugHandler.DEBUG_LEVEL)));
-		else
-			config.set("debugLevel", 0);
 
 		// Rightclick Settings
 		ConfigSettings.USE_RIGHT_CLICK_MENU = config.getBoolean("useRightClickMenu");
@@ -112,36 +107,23 @@ public class QuestConfigLoader
 		DebugHandler.log(5, "[Config] popLoginMessage=" + ConfigSettings.POP_LOGIN_MESSAGE);
 
 		// Plugin Prefix
-		if (config.getString("pluginPrefix") != null)
-			QuestStorage.prefix = QuestChatManager.translateColor(config.getString("pluginPrefix"));
-		else
-			config.set("pluginPrefix", "&6MangoQuest>");
+		QuestStorage.prefix = QuestChatManager.translateColor(config.getStringOrDefault("pluginPrefix", "&6MangoQuest>"));
 
 		// Maximum Quests
-		if (config.getInt("maxQuestAmount") != 0)
-			ConfigSettings.MAXIMUM_QUEST_AMOUNT = config.getInt("maxQuestAmount");
-		else
-		{
-			ConfigSettings.MAXIMUM_QUEST_AMOUNT = 4;
-			config.set("maxQuestAmount", 4);
-		}
+		ConfigSettings.MAXIMUM_QUEST_AMOUNT = config.getIntOrDefault("maxQuestAmount", 4);
 
 		// Scoreboard settings
 		if (!config.contains("enableScoreboard"))
 			config.set("enableScoreboard", true);
 		ConfigSettings.ENABLE_SCOREBOARD = config.getBoolean("enableScoreboard");
-
 		DebugHandler.log(5, "[Config] enableScoreboard=" + ConfigSettings.ENABLE_SCOREBOARD);
 
-		if (!config.contains("scoreboardMaxCanTakeQuestAmount"))
-			config.set("scoreboardMaxCanTakeQuestAmount", 3);
-		ConfigSettings.MAXIMUM_DISPLAY_QUEST_AMOUNT = config.getInt("scoreboardMaxCanTakeQuestAmount");
+		ConfigSettings.MAXIMUM_DISPLAY_QUEST_AMOUNT = config.getIntOrDefault("scoreboardMaxCanTakeQuestAmount", 3);
 
 		// Particle Settings
 		if (!config.contains("useParticleEffect"))
 			config.set("useParticleEffect", true);
 		ConfigSettings.USE_PARTICLE_EFFECT = config.getBoolean("useParticleEffect");
-
 		DebugHandler.log(5, "[Config] useParticleEffect=" + ConfigSettings.USE_PARTICLE_EFFECT);
 
 		ConfigSettings.SAVE_TYPE = ConfigSettings.SaveType.YML;
@@ -182,7 +164,7 @@ public class QuestConfigLoader
 			{
 				Material mat = Material.getMaterial(s);
 				if (mat != null)
-					QuestStorage.TranslationMap.put(mat, translation.getString("Material." + s));
+					QuestStorage.translationMap.put(mat, translation.getString("Material." + s));
 				else
 					DebugHandler.log(5, "Material " + s + " is null during the compatible search. Skipping...");
 			}
@@ -194,7 +176,7 @@ public class QuestConfigLoader
 			{
 				try
 				{
-					QuestStorage.EntityTypeMap.put(EntityType.valueOf(e), translation.getConfig().getString("EntityType." + e));
+					QuestStorage.entityTypeMap.put(EntityType.valueOf(e), translation.getConfig().getString("EntityType." + e));
 				}
 				catch (IllegalArgumentException ignored)
 				{
@@ -300,8 +282,8 @@ public class QuestConfigLoader
 					if (conv.getBoolean("Conversations." + id + ".FriendConversation"))
 					{
 						qc = new FriendConversation(name, id, npc, loadConvAction(act), conv.getInt("Conversations." + id + ".FriendPoint"));
-						QuestStorage.FriendConvs.add((FriendConversation)qc);
-						QuestStorage.Conversations.put(id, qc);
+						QuestStorage.friendConversations.add((FriendConversation)qc);
+						QuestStorage.localConversations.put(id, qc);
 					}
 					else if (conv.getBoolean("Conversations." + id + ".StartTriggerConversation"))
 					{
@@ -314,14 +296,14 @@ public class QuestConfigLoader
 							sconv.setAcceptMessage(conv.getString("Conversations." + id + ".AcceptMessage"));
 							sconv.setDenyMessage(conv.getString("Conversations." + id + ".DenyMessage"));
 							sconv.setQuestFullMessage(conv.getString("Conversations." + id + ".QuestFullMessage"));
-							QuestStorage.Conversations.put(id, sconv);
-							QuestStorage.StartConvs.put(q, sconv);
+							QuestStorage.localConversations.put(id, sconv);
+							QuestStorage.startTriggerConversations.put(q, sconv);
 						}
 					}
 					else
 					{
 						qc = new QuestConversation(name, id, npc, loadConvAction(act));
-						QuestStorage.Conversations.put(id, qc);
+						QuestStorage.localConversations.put(id, qc);
 					}
 					DebugHandler.log(5, "[Config] Successfully loaded conversation id=" + id);
 					count++;
@@ -360,7 +342,7 @@ public class QuestConfigLoader
 					list.add(i - 1, c);
 				}
 				QuestChoice c = new QuestChoice(q, list);
-				QuestStorage.Choices.put(id, c);
+				QuestStorage.localChoices.put(id, c);
 				DebugHandler.log(5, "[Config] Successfully loaded choice id=" + id);
 				count++;
 			}
@@ -478,7 +460,7 @@ public class QuestConfigLoader
 					q.setQuitAcceptMsg(quest.getString(qpath + "QuitSettings.QuitAcceptMsg"));
 					q.setQuitCancelMsg(quest.getString(qpath + "QuitSettings.QuitCancelMsg"));
 					
-					QuestStorage.Quests.put(internal, q);
+					QuestStorage.localQuests.put(internal, q);
 					if (npc != null)
 					{
 						QuestNPCManager.getNPCData(npc.getId()).registerQuest(q);

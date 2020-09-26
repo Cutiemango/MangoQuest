@@ -4,7 +4,7 @@ import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
-import me.Cutiemango.MangoQuest.book.FlexiableBook;
+import me.Cutiemango.MangoQuest.book.FlexibleBook;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
@@ -31,27 +31,27 @@ public class QuestBookGUIManager
 
 	public static void openGUIwithProgress(Player p, QuestProgress q)
 	{
-		QuestBookPage p1 = new QuestBookPage();
-		p1.add(I18n.locMsg("QuestEditor.QuestName", q.getQuest().getQuestName())).changeLine();
+		FlexibleBook book = new FlexibleBook();
+		book.add(I18n.locMsg("QuestEditor.QuestName", q.getQuest().getQuestName())).changeLine();
 
 		// NPC
 		if (!q.getQuest().isCommandQuest())
 		{
 			NPC npc = q.getQuest().getQuestNPC();
-			p1.add(I18n.locMsg("QuestEditor.QuestNPC"));
-			p1.add(new InteractiveText("").showNPCInfo(npc)).changeLine();
-			p1.changeLine();
+			book.add(I18n.locMsg("QuestEditor.QuestNPC"));
+			book.add(new InteractiveText("").showNPCInfo(npc)).changeLine();
+			book.changeLine();
 		}
 
 		// Objects
-		p1.add(I18n.locMsg("QuestEditor.QuestObjects")).changeLine();
+		book.add(I18n.locMsg("QuestEditor.QuestObjects")).changeLine();
 		for (int i = 0; i < q.getQuest().getStages().size(); i++)
 		{
 			if (q.getCurrentStage() > i)
 			{
 				for (SimpleQuestObject obj : q.getQuest().getStage(i).getObjects())
 				{
-					p1.add(obj.toTextComponent(true)).changeLine();
+					book.add(obj.toTextComponent(true)).changeLine();
 				}
 			}
 			else
@@ -62,13 +62,13 @@ public class QuestBookGUIManager
 						SimpleQuestObject obj = q.getQuest().getStage(i).getObjects().get(k);
 						QuestObjectProgress ob = q.getCurrentObjects().get(k);
 						if (ob.getObject().equals(obj) && ob.isFinished())
-							p1.add(obj.toTextComponent(true)).changeLine();
+							book.add(obj.toTextComponent(true)).changeLine();
 						else
 						{
-							p1.add(obj.toTextComponent(false));
+							book.add(obj.toTextComponent(false));
 							if (obj instanceof NumerableObject)
-								p1.add(" &8(" + ob.getProgress() + "/" + ((NumerableObject) obj).getAmount() + ")");
-							p1.changeLine();
+								book.add(" &8(" + ob.getProgress() + "/" + ((NumerableObject) obj).getAmount() + ")");
+							book.changeLine();
 						}
 					}
 				}
@@ -76,36 +76,33 @@ public class QuestBookGUIManager
 				{
 					for (int j = 0; j < q.getQuest().getStage(i).getObjects().size(); j++)
 					{
-						p1.add(I18n.locMsg("QuestJourney.NotRevealed")).changeLine();
+						book.add(I18n.locMsg("QuestJourney.NotRevealed")).changeLine();
 					}
 				}
 
 			// OutLine
-			QuestBookPage p2 = new QuestBookPage();
-			p2.add(I18n.locMsg("QuestEditor.Outline")).changeLine();
+			book.newPage();
+			book.add(I18n.locMsg("QuestEditor.Outline")).changeLine();
 			for (String out : q.getQuest().getQuestOutline())
-			{
-				p2.add(out).changeLine();
-			}
+				book.add(out).changeLine();
+
 
 			// Reward
-			QuestBookPage p3 = new QuestBookPage();
-			p3.add(I18n.locMsg("QuestEditor.Reward")).changeLine();
+			book.newPage();
+			book.add(I18n.locMsg("QuestEditor.Reward")).changeLine();
 
 			if (q.getQuest().getQuestReward().hasItem())
 			{
 				if (q.getQuest().getQuestReward().hasMultipleChoices())
 				{
-					p3.add(I18n.locMsg("QuestReward.SelectReward", Integer.toString(q.getQuest().getQuestReward().getChoiceAmount()), Integer.toString(q.getQuest().getQuestReward().getRewardAmount()))).changeLine();
+					book.add(I18n.locMsg("QuestReward.SelectReward", Integer.toString(q.getQuest().getQuestReward().getChoiceAmount()), Integer.toString(q.getQuest().getQuestReward().getRewardAmount()))).changeLine();
 					for (RewardChoice choice : q.getQuest().getQuestReward().getChoices())
 					{
-						p3.add("- ");
-						for (ItemStack item : choice.getItems())
-						{
-							p3.add(new InteractiveText("").showItem(item));
-							p3.add(", ");
-						}
-						p3.changeLine();
+						book.add("- ");
+						List<ItemStack> items = choice.getItems();
+						for (int j = 0; j < items.size(); j++)
+							book.add(new InteractiveText(items.get(j))).add(j == items.size() - 1 ? "" : ", ");
+						book.changeLine();
 					}
 				}
 				else
@@ -114,21 +111,21 @@ public class QuestBookGUIManager
 					{
 						if (is != null)
 						{
-							p3.add(new InteractiveText("").showItem(is));
-							p3.add(" ");
-							p3.add(I18n.locMsg("QuestReward.RewardAmount", Integer.toString(is.getAmount()))).changeLine();
+							book.add(new InteractiveText(is));
+							book.add(" ");
+							book.add(I18n.locMsg("QuestReward.RewardAmount", Integer.toString(is.getAmount()))).changeLine();
 						}
 					}
 				}
 			}
 
 			if (q.getQuest().getQuestReward().hasMoney())
-				p3.add(I18n.locMsg("QuestEditor.RewardMoney", Double.toString(QuestUtil.cut(q.getQuest().getQuestReward().getMoney())))).changeLine();
+				book.add(I18n.locMsg("QuestEditor.RewardMoney", Double.toString(QuestUtil.cut(q.getQuest().getQuestReward().getMoney())))).changeLine();
 
 			if (q.getQuest().getQuestReward().hasExp())
-				p3.add(I18n.locMsg("QuestEditor.RewardExp", Integer.toString(q.getQuest().getQuestReward().getExp()))).changeLine();
+				book.add(I18n.locMsg("QuestEditor.RewardExp", Integer.toString(q.getQuest().getQuestReward().getExp()))).changeLine();
 
-			openBook(p, p1, p2, p3);
+			openBook(p, book.toSendableBook());
 		}
 	}
 
@@ -144,143 +141,126 @@ public class QuestBookGUIManager
 
 	public static void openChoice(Player p, TextComponent q, List<Choice> c)
 	{
-		FlexiableBook book = new FlexiableBook();
-		QuestBookPage page = book.getLastEditingPage();
-		page.add(I18n.locMsg("Conversation.ChoiceTitle")).changeLine();
-		page.add(q).changeLine();
+		FlexibleBook book = new FlexibleBook();
+		book.add(I18n.locMsg("Conversation.ChoiceTitle")).changeLine();
+		book.add(q).changeLine();
 		for (int i = 0; i < c.size(); i++)
 		{
-			QuestUtil.checkOutOfBounds(page, book);
-			page = book.getLastEditingPage();
 			if (!QuestUtil.getData(p).meetFriendPointReq(c.get(i)))
 				continue;
-			page.add(new InteractiveText((i+1)+". " + c.get(i).getContent()).clickCommand("/mq conv choose " + i)).changeLine();
+			book.add(new InteractiveText((i+1)+". " + c.get(i).getContent()).clickCommand("/mq conv choose " + i)).changeLine();
 		}
 		openBook(p, book.toSendableBook());
 	}
 	
 	public static void openJourneyMenu(Player p)
 	{
-		FlexiableBook book = new FlexiableBook();
-		QuestBookPage page = book.getLastEditingPage();
-		page.add(new InteractiveText(I18n.locMsg("QuestJourney.QuestList")));
-		page.changeLine();
-		page.changeLine();
-		page.changeLine();
-		page.add(new InteractiveText("     " + I18n.locMsg("QuestJourney.QuestProgress")).clickCommand("/mq quest list progress"));
-		page.changeLine();
-		page.changeLine();
-		page.changeLine();
-		page.changeLine();
-		page.add(new InteractiveText("     " + I18n.locMsg("QuestJourney.QuestToTake")).clickCommand("/mq quest list doable"));
-		page.changeLine();
-		page.changeLine();
-		page.changeLine();
-		page.changeLine();
-		page.add(new InteractiveText("     " + I18n.locMsg("QuestJourney.QuestFinished")).clickCommand("/mq quest list finished"));
-		page.changeLine();
+		FlexibleBook book = new FlexibleBook();
+		book.add(new InteractiveText(I18n.locMsg("QuestJourney.QuestList")));
+		book.changeLine();
+		book.changeLine();
+		book.changeLine();
+		book.add(new InteractiveText("     " + I18n.locMsg("QuestJourney.QuestProgress")).clickCommand("/mq quest list progress"));
+		book.changeLine();
+		book.changeLine();
+		book.changeLine();
+		book.changeLine();
+		book.add(new InteractiveText("     " + I18n.locMsg("QuestJourney.QuestToTake")).clickCommand("/mq quest list doable"));
+		book.changeLine();
+		book.changeLine();
+		book.changeLine();
+		book.changeLine();
+		book.add(new InteractiveText("     " + I18n.locMsg("QuestJourney.QuestFinished")).clickCommand("/mq quest list finished"));
+		book.changeLine();
 		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 	
 	public static void openProgressJourney(Player p)
 	{
 		QuestPlayerData qd = QuestUtil.getData(p);
-		FlexiableBook book = new FlexiableBook();
-		QuestBookPage page = book.getLastEditingPage();
-		page.add(I18n.locMsg("QuestJourney.QuestProgress")).changeLine();
+		FlexibleBook book = new FlexibleBook();
+		book.add(I18n.locMsg("QuestJourney.QuestProgress")).changeLine();
 		for (QuestProgress qp : qd.getProgresses())
 		{
 			if (!qp.getQuest().getSettings().displayOnProgress())
 				continue;
-			QuestUtil.checkOutOfBounds(page, book);
-			page = book.getLastEditingPage();
-			page.changeLine();
+			book.changeLine();
 			if (qp.getQuest().isQuitable())
-				page.add(new InteractiveText(I18n.locMsg("QuestJourney.QuitButton")).clickCommand("/mq quest quit " + qp.getQuest().getInternalID()));
-			page.add(new InteractiveText("").showQuest(qp.getQuest()));
-			page.add(":");
-			page.changeLine();
+				book.add(new InteractiveText(I18n.locMsg("QuestJourney.QuitButton")).clickCommand("/mq quest quit " + qp.getQuest().getInternalID()));
+			book.add(new InteractiveText("").showQuest(qp.getQuest()));
+			book.add(":");
+			book.changeLine();
 			if (qp.getQuest().isTimeLimited())
 			{
 				long timeleft = (qp.getTakeTime() + qp.getQuest().getTimeLimit()) - System.currentTimeMillis();
-				page.add(new InteractiveText(I18n.locMsg("QuestJourney.TimeLeft", TimeHandler.convertTime(timeleft)))).changeLine();
+				book.add(new InteractiveText(I18n.locMsg("QuestJourney.TimeLeft", TimeHandler.convertTime(timeleft)))).changeLine();
 			}
 			for (QuestObjectProgress qop : qp.getCurrentObjects())
 			{
-				page.add("- ");
+				book.add("- ");
 				if (qop.isFinished())
-					page.add(qop.getObject().toTextComponent(true)).changeLine();
+					book.add(qop.getObject().toTextComponent(true)).changeLine();
 				else
 				{
-					page.add(qop.getObject().toTextComponent(false));
+					book.add(qop.getObject().toTextComponent(false));
 					if (qop.getObject() instanceof NumerableObject)
-						page.add(" &8(" + qop.getProgress() + "/" + ((NumerableObject) qop.getObject()).getAmount() + ")");
-					page.changeLine();
+						book.add(" &8(" + qop.getProgress() + "/" + ((NumerableObject) qop.getObject()).getAmount() + ")");
+					book.changeLine();
 				}
-				QuestUtil.checkOutOfBounds(page, book);
-				page = book.getLastEditingPage();
 			}
 		}
-		page.changeLine();
-		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq q list")).changeLine();
+		book.changeLine();
+		book.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq q list")).changeLine();
 		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 	
 	public static void openDoableJourney(Player p)
 	{
 		QuestPlayerData qd = QuestUtil.getData(p);
-		FlexiableBook book = new FlexiableBook();
-		QuestBookPage page = book.getLastEditingPage();
-		page.add(I18n.locMsg("QuestJourney.QuestToTake")).changeLine();
-		for (Quest q : QuestStorage.Quests.values())
+		FlexibleBook book = new FlexibleBook();
+		book.add(I18n.locMsg("QuestJourney.QuestToTake")).changeLine();
+		for (Quest q : QuestStorage.localQuests.values())
 		{
 			if (q.getSettings().displayOnTake() && qd.canTake(q, false))
 			{
-				QuestUtil.checkOutOfBounds(page, book);
-				page = book.getLastEditingPage();
-				page.add("- ");
-				page.add(new InteractiveText("").showQuest(q));
+				book.add("- ");
+				book.add(new InteractiveText("").showQuest(q));
 				if (q.isCommandQuest())
-					page.add(new InteractiveText(I18n.locMsg("QuestJourney.TakeButton")).clickCommand("/mq quest take " + q.getInternalID()));
-				page.changeLine();
-				QuestUtil.checkOutOfBounds(page, book);
-				page = book.getLastEditingPage();
+					book.add(new InteractiveText(I18n.locMsg("QuestJourney.TakeButton")).clickCommand("/mq quest take " + q.getInternalID()));
+				book.changeLine();
 			}
 		}
-		page.changeLine();
-		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq q list")).changeLine();
+		book.changeLine();
+		book.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq q list")).changeLine();
 		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 	
 	public static void openFinishedJourney(Player p)
 	{
 		QuestPlayerData qd = QuestUtil.getData(p);
-		FlexiableBook book = new FlexiableBook();
-		QuestBookPage page = book.getLastEditingPage();
-		page.add(I18n.locMsg("QuestJourney.QuestFinished")).changeLine();
+		FlexibleBook book = new FlexibleBook();
+		book.add(I18n.locMsg("QuestJourney.QuestFinished")).changeLine();
 		for (QuestFinishData qfd : qd.getFinishQuests())
 		{
 			if (!qfd.getQuest().getSettings().displayOnFinish())
 				continue;
-			QuestUtil.checkOutOfBounds(page, book);
-			page = book.getLastEditingPage();
 			if (!qfd.isRewardTaken() && qfd.getQuest().isCommandQuest())
 			{
-				page.add(I18n.locMsg("QuestGUI.NewQuestSymbol"));
-				page.add(new InteractiveText("").showQuest(qfd.getQuest()));
-				page.add(new InteractiveText(I18n.locMsg("QuestJourney.RewardButton")).clickCommand("/mq q reward select " + qfd.getQuest().getInternalID()).showText(I18n.locMsg("QuestGUI.Hover.ClaimReward")));
-				page.changeLine();
+				book.add(I18n.locMsg("QuestGUI.NewQuestSymbol"));
+				book.add(new InteractiveText("").showQuest(qfd.getQuest()));
+				book.add(new InteractiveText(I18n.locMsg("QuestJourney.RewardButton")).clickCommand("/mq q reward select " + qfd.getQuest().getInternalID()).showText(I18n.locMsg("QuestGUI.Hover.ClaimReward")));
+				book.changeLine();
 			}
 			else
 			{
-				page.add("- ");
-				page.add(new InteractiveText("").showQuest(qfd.getQuest()));
-				page.add(": ");
-				page.add(I18n.locMsg("QuestJourney.FinishedTimes", Integer.toString(qfd.getFinishedTimes()))).changeLine();
+				book.add("- ");
+				book.add(new InteractiveText("").showQuest(qfd.getQuest()));
+				book.add(": ");
+				book.add(I18n.locMsg("QuestJourney.FinishedTimes", Integer.toString(qfd.getFinishedTimes()))).changeLine();
 			}
 		}
-		page.changeLine();
-		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq q list")).changeLine();
+		book.changeLine();
+		book.add(new InteractiveText(I18n.locMsg("QuestEditor.Return")).clickCommand("/mq q list")).changeLine();
 		QuestBookGUIManager.openBook(p, book.toSendableBook());
 	}
 
@@ -314,108 +294,95 @@ public class QuestBookGUIManager
 	public static void openNPCInfo(Player p, NPC npc, boolean trade)
 	{
 		QuestPlayerData qd = QuestUtil.getData(p);
-		FlexiableBook book = new FlexiableBook();
-		QuestBookPage page = book.getLastEditingPage();
+		FlexibleBook book = new FlexibleBook();
 		List<String> holder = new ArrayList<>();
 
 		// Message
-		page.add(I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), QuestNPCManager.getNPCMessage(npc.getId(), qd.getNPCfp(npc.getId())))).changeLine();
-		page.changeLine();
+		book.add(I18n.locMsg("QuestJourney.NPCFriendMessage", npc.getName(), QuestNPCManager.getNPCMessage(npc.getId(), qd.getNPCfp(npc.getId())))).changeLine();
+		book.changeLine();
 
 		// Interaction List
-		page.add(I18n.locMsg("QuestGUI.InteractionList")).changeLine();
+		book.add(I18n.locMsg("QuestGUI.InteractionList")).changeLine();
 		
 		// Show GUIOptions
 		for (GUIOption option : QuestNPCManager.getNPCData(npc.getId()).getOptions())
 		{
 			if (!option.meetRequirementWith(p))
 				continue;
-			QuestUtil.checkOutOfBounds(page, book);
-			page = book.getLastEditingPage();
-			page.add(option.toInteractiveText(npc)).changeLine();
+			book.add(option.toInteractiveText(npc)).changeLine();
 		}
 		
 		// Trade Options
 		if (trade)
-			page.add(new InteractiveText(I18n.locMsg("QuestGUI.Trade")).clickCommand("/mq quest trade " + npc.getId())).changeLine();
+			book.add(new InteractiveText(I18n.locMsg("QuestGUI.Trade")).clickCommand("/mq quest trade " + npc.getId())).changeLine();
 		
 		
 		for (QuestProgress q : qd.getNPCtoTalkWith(npc))
 		{
-			QuestUtil.checkOutOfBounds(page, book);
-			page = book.getLastEditingPage();
-			page.add(I18n.locMsg("QuestGUI.QuestReturnSymbol"));
-			page.add(new InteractiveText("").showQuest(q.getQuest()));
-			page.add(new InteractiveText(I18n.locMsg("QuestGUI.Conversation")).clickCommand("/mq conv npc " + npc.getId()).showText(I18n.locMsg("QuestGUI.Hover.ClickToChat")));
+			book.add(I18n.locMsg("QuestGUI.QuestReturnSymbol"));
+			book.add(new InteractiveText("").showQuest(q.getQuest()));
+			book.add(new InteractiveText(I18n.locMsg("QuestGUI.Conversation")).clickCommand("/mq conv npc " + npc.getId()).showText(I18n.locMsg("QuestGUI.Hover.ClickToChat")));
 			if (q.getQuest().isQuitable())
 				if (qd.isCurrentlyDoing(q.getQuest()) && !q.getQuest().isCommandQuest() && q.getQuest().getQuestNPC().equals(npc))
 				{
-					page.add(new InteractiveText(I18n.locMsg("QuestJourney.QuitButton")).clickCommand("/mq quest quit " + q.getQuest().getInternalID())
+					book.add(new InteractiveText(I18n.locMsg("QuestJourney.QuitButton")).clickCommand("/mq quest quit " + q.getQuest().getInternalID())
 							.showText(I18n.locMsg("QuestGUI.Hover.QuitWarning", q.getQuest().getQuestName())));
 					holder.add(q.getQuest().getInternalID());
 				}
-			page.changeLine();
+			book.changeLine();
 		}
 
 		if (QuestNPCManager.hasData(npc.getId()))
 		{
 			for (Quest q : QuestNPCManager.getNPCData(npc.getId()).getRewardQuests())
 			{
-				QuestUtil.checkOutOfBounds(page, book);
-				page = book.getLastEditingPage();
 				if (qd.hasFinished(q) && q.getQuestReward().hasMultipleChoices() && !qd.getFinishData(q).isRewardTaken() && q.getQuestReward().getRewardNPC().getId() == npc.getId())
 				{
-					page.add(I18n.locMsg("QuestGUI.NewQuestSymbol"));
-					page.add(new InteractiveText("").showQuest(q));
-					page.add(new InteractiveText(I18n.locMsg("QuestJourney.RewardButton")).clickCommand("/mq q reward select " + q.getInternalID()).showText(I18n.locMsg("QuestGUI.Hover.ClaimReward"))).changeLine();
+					book.add(I18n.locMsg("QuestGUI.NewQuestSymbol"));
+					book.add(new InteractiveText("").showQuest(q));
+					book.add(new InteractiveText(I18n.locMsg("QuestJourney.RewardButton")).clickCommand("/mq q reward select " + q.getInternalID()).showText(I18n.locMsg("QuestGUI.Hover.ClaimReward"))).changeLine();
 				}
 			}
 			for (Quest q : QuestNPCManager.getNPCData(npc.getId()).getGivenQuests())
 			{
-				if (holder.contains(q.getInternalID()))
-					continue;
-				QuestUtil.checkOutOfBounds(page, book);
-				page = book.getLastEditingPage();
-				if (!q.isRedoable() && qd.hasFinished(q))
+				if (holder.contains(q.getInternalID()) || (!q.isRedoable() && qd.hasFinished(q)))
 					continue;
 				if (qd.canTake(q, false))
 				{
 					if (qd.hasFinished(q))
-						page.add(I18n.locMsg("QuestGUI.RedoableQuestSymbol"));
+						book.add(I18n.locMsg("QuestGUI.RedoableQuestSymbol"));
 					else
-						page.add(I18n.locMsg("QuestGUI.NewQuestSymbol"));
-					page.add(new InteractiveText("").showQuest(q));
-					page.add(new InteractiveText(I18n.locMsg("QuestJourney.TakeButton")).clickCommand("/mq quest take " + q.getInternalID()).showText(I18n.locMsg("QuestGUI.Hover.TakeQuest", q.getQuestName())));
-					page.changeLine();
+						book.add(I18n.locMsg("QuestGUI.NewQuestSymbol"));
+					book.add(new InteractiveText("").showQuest(q));
+					book.add(new InteractiveText(I18n.locMsg("QuestJourney.TakeButton")).clickCommand("/mq quest take " + q.getInternalID()).showText(I18n.locMsg("QuestGUI.Hover.TakeQuest", q.getQuestName())));
+					book.changeLine();
 				}
 				else
 					if (qd.isCurrentlyDoing(q))
 					{
-						page.add(I18n.locMsg("QuestGUI.QuestDoingSymbol"));
-						page.add(new InteractiveText("").showQuest(q));
+						book.add(I18n.locMsg("QuestGUI.QuestDoingSymbol"));
+						book.add(new InteractiveText("").showQuest(q));
 						if (q.isQuitable())
-							page.add(new InteractiveText(I18n.locMsg("QuestJourney.QuitButton")).clickCommand("/mq quest quit " + q.getInternalID())
+							book.add(new InteractiveText(I18n.locMsg("QuestJourney.QuitButton")).clickCommand("/mq quest quit " + q.getInternalID())
 								.showText(I18n.locMsg("QuestGUI.Hover.QuitWarning", q.getQuestName())));
-						page.changeLine();
+						book.changeLine();
 					}
 					else
 					{
-						page.add("&0- ");
-						page.add(new InteractiveText("").showRequirement(qd, q));
-						page.changeLine();
+						book.add("&0- ");
+						book.add(new InteractiveText("").showRequirement(qd, q));
+						book.changeLine();
 					}
 			}
 		}
 		
 		for (FriendConversation qc : QuestUtil.getConversations(npc, qd.getNPCfp(npc.getId())))
 		{
-			QuestUtil.checkOutOfBounds(page, book);
-			page = book.getLastEditingPage();
 			if (qd.hasFinished(qc))
-				page.add(new InteractiveText(I18n.locMsg("QuestGUI.OldFriendConversation", qc.getName())).clickCommand("/mq conv opennew " + qc.getInternalID()));
+				book.add(new InteractiveText(I18n.locMsg("QuestGUI.OldFriendConversation", qc.getName())).clickCommand("/mq conv opennew " + qc.getInternalID()));
 			else
-				page.add(new InteractiveText(I18n.locMsg("QuestGUI.NewFriendConversation", qc.getName())).clickCommand("/mq conv opennew " + qc.getInternalID()));
-			page.changeLine();
+				book.add(new InteractiveText(I18n.locMsg("QuestGUI.NewFriendConversation", qc.getName())).clickCommand("/mq conv opennew " + qc.getInternalID()));
+			book.changeLine();
 		}
 		openBook(p, book.toSendableBook());
 	}

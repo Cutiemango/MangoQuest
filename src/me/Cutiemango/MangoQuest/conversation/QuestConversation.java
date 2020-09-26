@@ -90,7 +90,7 @@ public class QuestConversation
 		{
 			ConversationManager.forceQuit(p, qc);
 		}
-		QuestStorage.Conversations.put(qc.getInternalID(), qc);
+		QuestStorage.localConversations.put(qc.getInternalID(), qc);
 	}
 
 }

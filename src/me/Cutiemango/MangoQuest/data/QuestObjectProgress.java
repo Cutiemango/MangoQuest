@@ -44,7 +44,8 @@ public class QuestObjectProgress
 
 	public void newConversation(Player p)
 	{
-		cp = ConversationManager.startConversation(p, obj.getConversation());
+		ConversationManager.startConversation(p, obj.getConversation());
+		cp = ConversationManager.getConvProgress(p);
 	}
 
 	public void openConversation(Player p)

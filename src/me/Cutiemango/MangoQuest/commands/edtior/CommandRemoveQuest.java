@@ -158,7 +158,7 @@ public class CommandRemoveQuest
 				}
 				QuestConfigManager.getSaver().removeQuest(target);
 				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.QuestRemoved", target.getQuestName()));
-				QuestStorage.Quests.remove(args[3]);
+				QuestStorage.localQuests.remove(args[3]);
 				QuestEditorManager.removeGUI(sender);
 			}
 		}

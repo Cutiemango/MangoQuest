@@ -13,33 +13,33 @@ public class QuestStorage
 {
 
 	// Saved With InternalID
-	public static LinkedHashMap<String, Quest> Quests = new LinkedHashMap<>();
+	public static LinkedHashMap<String, Quest> localQuests = new LinkedHashMap<>();
 
 	// Saved With PlayerName
-	public static Map<String, QuestPlayerData> Players = new HashMap<>();
-	public static Map<String, ConversationProgress> ConvProgresses = new HashMap<>();
-	public static Map<String, QuestChoice> ChoiceProgresses = new HashMap<>();
+	public static Map<String, QuestPlayerData> playerData = new HashMap<>();
+	public static Map<String, ConversationProgress> conversationProgress = new HashMap<>();
+	public static Map<String, QuestChoice> choiceProgress = new HashMap<>();
 
-	public static Map<String, QuestConversation> Conversations = new HashMap<>();
-	public static Set<FriendConversation> FriendConvs = new HashSet<>();
-	public static Map<Quest, StartTriggerConversation> StartConvs = new HashMap<>();
+	public static Map<String, QuestConversation> localConversations = new HashMap<>();
+	public static Set<FriendConversation> friendConversations = new HashSet<>();
+	public static Map<Quest, StartTriggerConversation> startTriggerConversations = new HashMap<>();
 
-	public static Map<String, QuestChoice> Choices = new HashMap<>();
+	public static Map<String, QuestChoice> localChoices = new HashMap<>();
 
-	public static Map<Material, String> TranslationMap = new EnumMap<>(Material.class);
-	public static Map<EntityType, String> EntityTypeMap = new EnumMap<>(EntityType.class);
+	public static Map<Material, String> translationMap = new EnumMap<>(Material.class);
+	public static Map<EntityType, String> entityTypeMap = new EnumMap<>(EntityType.class);
 
 	public static String prefix = ChatColor.GOLD + "MangoQuest>";
 
 	public static void clear()
 	{
-		Quests = new LinkedHashMap<>();
-		Players = new HashMap<>();
-		ConvProgresses = new HashMap<>();
-		FriendConvs = new HashSet<>();
-		Choices = new HashMap<>();
-		ChoiceProgresses = new HashMap<>();
-		Conversations = new HashMap<>();
+		localQuests = new LinkedHashMap<>();
+		playerData = new HashMap<>();
+		conversationProgress = new HashMap<>();
+		friendConversations = new HashSet<>();
+		localChoices = new HashMap<>();
+		choiceProgress = new HashMap<>();
+		localConversations = new HashMap<>();
 	}
 
 }

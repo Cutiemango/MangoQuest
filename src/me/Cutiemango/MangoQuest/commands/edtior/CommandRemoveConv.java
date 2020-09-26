@@ -69,7 +69,7 @@ public class CommandRemoveConv
 				}
 				QuestConfigManager.getSaver().removeConversation(target);
 				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ConversationRemoved", target.getName()));
-				QuestStorage.Conversations.remove(args[3]);
+				QuestStorage.localConversations.remove(args[3]);
 				ConversationEditorManager.removeGUI(sender);
 			}
 		}
