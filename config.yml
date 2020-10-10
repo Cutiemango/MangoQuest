@@ -66,3 +66,6 @@ useWeakItemCheck: false
 
 #【開放玩家跳過劇情】
 enableSkip: false
+
+#【任務對話物件執行間距(單位：毫秒)】
+conversationActionInterval: 25
