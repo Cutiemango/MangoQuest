@@ -2,6 +2,7 @@ package me.Cutiemango.MangoQuest.manager;
 
 import com.sucy.skill.SkillAPI;
 import joptsimple.internal.Strings;
+import me.Cutiemango.MangoQuest.ConfigSettings;
 import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
@@ -9,9 +10,9 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.objects.RequirementType;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import su.nightexpress.quantumrpg.data.api.RPGUser;
 import su.nightexpress.quantumrpg.data.api.UserProfile;
 import su.nightexpress.quantumrpg.modules.list.classes.api.RPGClass;
 
@@ -20,7 +21,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public class RequirementManager
 {
@@ -57,17 +57,52 @@ public class RequirementManager
 					}
 					break;
 				case ITEM:
-					for (ItemStack i : (List<ItemStack>) value)
+					if (!(value instanceof List))
 					{
-						if (i == null)
-							continue;
-						if (!p.getInventory().containsAtLeast(i, i.getAmount()))
+						DebugHandler.log(5, "[Requirements] Requirement type is ITEM, but the value is not a item list.");
+						break;
+					}
+					if (ConfigSettings.USE_WEAK_ITEM_CHECK)
+					{
+						HashMap<QuestValidater.WrappedWeakItem, Integer> reqItems = new HashMap<>();
+						for (ItemStack i : (List<ItemStack>) value)
+							if (i != null)
+								reqItems.put(new QuestValidater.WrappedWeakItem(i), i.getAmount());
+
+						for (ItemStack owned : p.getInventory().getContents())
 						{
-							failMsg.add(I18n.locMsg("Requirements.NotMeet.Item", QuestUtil.getItemName(i), Integer.toString(i.getAmount())));
-							if (debug)
+							if (owned == null || owned.getType() == Material.AIR) continue;
+							QuestValidater.WrappedWeakItem wrapped = new QuestValidater.WrappedWeakItem(owned);
+							if (reqItems.containsKey(wrapped))
+								reqItems.put(wrapped, Math.max(0, reqItems.get(wrapped) - owned.getAmount()));
+						}
+
+						for (QuestValidater.WrappedWeakItem wrapped : reqItems.keySet())
+						{
+							if (reqItems.get(wrapped) != 0)
 							{
-								DebugHandler.log(5, "[Requirements] User has failed requirement: " + t.toString());
-								DebugHandler.log(5, "[Requirements] Did not found enough (or any) %s in user's inventory.", QuestUtil.getItemName(i));
+								String name = wrapped.hasItemMeta() ? wrapped.getDisplayName().get() : QuestUtil.translate(wrapped.getType());
+								failMsg.add(I18n.locMsg("Requirements.NotMeet.Item", name, Integer.toString(reqItems.get(wrapped))));
+								if (debug)
+								{
+									DebugHandler.log(5, "[Requirements] User has failed requirement: " + t.toString());
+									DebugHandler.log(5, "[Requirements] Did not found enough (or any) %s in user's inventory.", name);
+								}
+							}
+						}
+					}
+					else
+					{
+						for (ItemStack i : (List<ItemStack>) value)
+						{
+							if (!p.getInventory().containsAtLeast(i, i.getAmount()))
+							{
+								failMsg.add(I18n.locMsg("Requirements.NotMeet.Item", QuestUtil.getItemName(i), Integer.toString(i.getAmount())));
+								if (debug)
+								{
+									DebugHandler.log(5, "[Requirements] User has failed requirement: " + t.toString());
+									DebugHandler.log(5, "[Requirements] Did not found enough (or any) %s in user's inventory.", QuestUtil.getItemName(i));
+								}
 							}
 						}
 					}

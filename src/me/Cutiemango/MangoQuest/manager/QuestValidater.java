@@ -3,22 +3,84 @@ package me.Cutiemango.MangoQuest.manager;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.Main;
-import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
 import me.Cutiemango.MangoQuest.conversation.StartTriggerConversation;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class QuestValidater
 {
-	
+	public static class WrappedWeakItem
+	{
+		public WrappedWeakItem(ItemStack item)
+		{
+			type = item.getType();
+			if (item.getItemMeta() != null)
+			{
+				hasItemMeta = true;
+				displayName = Optional.ofNullable(item.getItemMeta().getDisplayName());
+				lore = Optional.ofNullable(item.getItemMeta().getLore());
+			}
+		}
+
+		private Material type;
+		private boolean hasItemMeta;
+		private Optional<String> displayName = Optional.empty();
+		private Optional<List<String>> lore = Optional.empty();
+
+		public Material getType()
+		{
+			return type;
+		}
+
+		public boolean hasItemMeta()
+		{
+			return hasItemMeta;
+		}
+
+		public Optional<String> getDisplayName()
+		{
+			return displayName;
+		}
+
+		public Optional<List<String>> getLore()
+		{
+			return lore;
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return Objects.hash(type, hasItemMeta, displayName, lore);
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (!(obj instanceof WrappedWeakItem))
+				return false;
+			WrappedWeakItem other = (WrappedWeakItem) obj;
+			if (type != other.getType() || hasItemMeta != other.hasItemMeta())
+				return false;
+			if (hasItemMeta)
+			{
+				if (!displayName.equals(other.getDisplayName()))
+					return false;
+				return lore.equals(other.getLore());
+			}
+			return true;
+		}
+
+	}
 	public static boolean isWorld(String s)
 	{
 		return s != null && Bukkit.getWorld(s) != null;
@@ -28,35 +90,38 @@ public class QuestValidater
 	{
 		if (original.getType().equals(compare.getType()))
 		{
-			if (original.hasItemMeta() && compare.hasItemMeta())
+			Optional<ItemMeta> oriMeta = Optional.ofNullable(original.getItemMeta()), cmpMeta = Optional.ofNullable(compare.getItemMeta());
+			if (!oriMeta.equals(cmpMeta))
 			{
-				ItemMeta im = original.getItemMeta(), mm = compare.getItemMeta();
-
-				// Optional.equals(): The other object is considered equal if:
-				// it is also an Optional,
-				// and both instances have no value present,
-				// or the present values are "equal to" each other via equals().
-				Optional<String> oriName = Optional.ofNullable(im.getDisplayName()), cmpName = Optional.ofNullable(mm.getDisplayName());
-				// Name check
-				if (!oriName.equals(cmpName))
+				if (oriMeta.isPresent())
 				{
-					DebugHandler.log(5, "[ItemCheck] Item displayName mismatch.");
-					return false;
+					ItemMeta im = oriMeta.get(), mm = cmpMeta.get();
+
+					// Optional.equals(): The other object is considered equal if:
+					// it is also an Optional,
+					// and both instances have no value present,
+					// or the present values are "equal to" each other via equals().
+					Optional<String> oriName = Optional.ofNullable(im.getDisplayName()), cmpName = Optional.ofNullable(mm.getDisplayName());
+					// Name check
+					if (!oriName.equals(cmpName))
+					{
+						DebugHandler.log(5, "[ItemCheck] Item displayName mismatch.");
+						return false;
+					}
+
+					// List.equals() returns true if and only if:
+					// The specified object is also a list,
+					// both lists have the same size,
+					// and all corresponding pairs of elements in the two lists are equal.
+					Optional<List<String>> oriLore = Optional.ofNullable(im.getLore()), cmpLore = Optional.ofNullable(mm.getLore());
+
+					// Lore check
+					if (!oriLore.equals(cmpLore))
+					{
+						DebugHandler.log(5, "[ItemCheck] Item lore mismatch.");
+						return false;
+					}
 				}
-
-				// List.equals() returns true if and only if:
-				// The specified object is also a list,
-				// both lists have the same size,
-				// and all corresponding pairs of elements in the two lists are equal.
-				Optional<List<String>> oriLore = Optional.ofNullable(im.getLore()), cmpLore = Optional.ofNullable(mm.getLore());
-
-				// Lore check
-				if (!oriLore.equals(cmpLore))
-				{
-					DebugHandler.log(5, "[ItemCheck] Item lore mismatch.");
-					return false;
-				}
-
 				return true;
 			}
 			DebugHandler.log(5, "[ItemCheck] ItemMeta mismatch.");
