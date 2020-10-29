@@ -105,29 +105,38 @@ public class CommandNewObject
 	private static void addRequirements(Quest q, Player sender, String[] args)
 	{
 		RequirementType t = RequirementType.valueOf(args[3]);
-		if (t == RequirementType.QUEST)
+		switch(t)
 		{
-			if (args.length == 6)
-			{
-				if (QuestUtil.getQuest(args[5]) != null)
+			case QUEST:
+				if (args.length == 5)
 				{
-					((List<String>) q.getRequirements().get(t)).add(args[5]);
-					QuestEditorManager.editQuestRequirement(sender);
-					return;
+					if (QuestUtil.getQuest(args[4]) != null)
+					{
+						((List<String>) q.getRequirements().get(t)).add(args[4]);
+						QuestEditorManager.editQuestRequirement(sender);
+					}
 				}
-			}
-			else if (args.length == 5)
-			{
-				int index = Integer.parseInt(args[4]);
-				QuestEditorManager.selectQuest(sender, "/mq e addnew req QUEST " + index);
-				return;
-			}
-		}
-		else if (t == RequirementType.FRIEND_POINT)
-		{
-			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPoint"));
-			EditorListenerHandler.register(sender,
-					new EditorListenerObject(ListeningType.STRING, "mq e edit req FRIEND_POINT", Syntax.of("N:D", I18n.locMsg("Syntax.FriendPoint"), ":")));
+				else if (args.length == 4)
+					QuestEditorManager.selectQuest(sender, "/mq e addnew req QUEST");
+
+				break;
+			case FRIEND_POINT:
+				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.FriendPoint"));
+				EditorListenerHandler.register(sender,
+						new EditorListenerObject(ListeningType.STRING, "mq e edit req FRIEND_POINT", Syntax.of("N:D", I18n.locMsg("Syntax.FriendPoint"), ":")));
+				break;
+			case PERMISSION:
+				if (args.length == 5)
+				{
+					((List<String>) q.getRequirements().get(t)).add(args[4]);
+					QuestEditorManager.editQuestRequirement(sender);
+				}
+				else if (args.length == 4)
+				{
+					QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.Permission"));
+					EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e addnew req PERMISSION", null));
+				}
+				break;
 		}
 	}
 

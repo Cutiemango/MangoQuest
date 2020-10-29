@@ -89,6 +89,9 @@ public class TextComponentFactory
 	public static TextComponent convertRequirement(QuestPlayerData qd, Quest q)
 	{
 		TextComponent text = new TextComponent(QuestChatManager.unavailableQuestFormat(q.getQuestName()));
+		if (q.usePermission() && !qd.getPlayer().hasPermission("MangoQuest.takeQuest." + q.getInternalID()))
+			return regHoverEvent(text, I18n.locMsg("Requirements.NotMeet.Permission"));
+
 		if (qd.hasFinished(q))
 		{
 			long lastFinishTime = qd.getFinishData(q).getLastFinish();

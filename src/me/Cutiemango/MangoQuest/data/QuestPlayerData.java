@@ -833,7 +833,7 @@ public class QuestPlayerData
 		if (q.usePermission() && !owner.hasPermission("MangoQuest.takeQuest." + q.getInternalID()))
 		{
 			if (sendMsg)
-				QuestChatManager.info(owner, I18n.locMsg("CommandInfo.CommandInfo.NoPermTakeQuest"));
+				QuestChatManager.info(owner, I18n.locMsg("CommandInfo.NoPermTakeQuest"));
 			return false;
 		}
 		if (q.hasRequirement() && RequirementManager.meetRequirementWith(owner, q.getRequirements(), false).isPresent())
@@ -920,7 +920,7 @@ public class QuestPlayerData
 					+ I18n.locMsg("CommandInfo.Finished"));
 			DebugHandler.log(2, "[Listener] Player " + owner.getName() + "'s quest " + qp.getQuest().getQuestName() + " finished an object of "
 					+ qop.getObject().getConfigString());
-			qp.checkIfnextStage();
+			qp.checkIfNextStage();
 			Bukkit.getPluginManager().callEvent(new QuestObjectProgressEvent(this, qp.getQuest(), qop.getObject()));
 		}
 		else

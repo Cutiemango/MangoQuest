@@ -564,6 +564,11 @@ public class QuestConfigLoader
 			if (config.getStringList(path + "Requirements.Quest") != null)
 				list = config.getStringList(path + "Requirements.Quest");
 			map.put(RequirementType.QUEST, list);
+
+			list.clear();
+			if (config.getStringList(path + "Requirements.Permission") != null)
+				list = config.getStringList(path + "Requirements.Permission");
+			map.put(RequirementType.PERMISSION, list);
 			
 			List<ItemStack> l = new ArrayList<>();
 			if (config.isSection(path + "Requirements.Item"))

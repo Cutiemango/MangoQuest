@@ -465,11 +465,22 @@ public class QuestEditorManager
 			if (QuestUtil.getQuest(s) == null)
 				continue;
 			Quest quest = QuestUtil.getQuest(s);
-			p2.add("&0- &l" + quest.getQuestName() + "&0(" + s + ")");
+			p2.add("&0&l- " + quest.getQuestName() + "&0(" + s + ")");
 			p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove req QUEST " + counter)).changeLine();
 			counter++;
 		}
-		p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew req QUEST " + counter)).changeLine();
+		p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew req QUEST")).changeLine();
+
+		counter = 0;
+		// Permission Req
+		p2.add(I18n.locMsg("QuestEditor.PermissionReq")).changeLine();
+		for (String s : (List<String>) q.getRequirements().get(RequirementType.PERMISSION))
+		{
+			p2.add("&0&l- " + s);
+			p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Remove")).clickCommand("/mq e remove req PERMISSION " + counter)).changeLine();
+			counter++;
+		}
+		p2.add(new InteractiveText(I18n.locMsg("QuestEditor.Add")).clickCommand("/mq e addnew req PERMISSION")).changeLine();
 
 		// Friend Points Req
 		p2.add(I18n.locMsg("QuestEditor.FriendPointReq"));

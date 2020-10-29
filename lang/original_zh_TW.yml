@@ -89,6 +89,7 @@ Requirements.NotMeet.Special: "&c沒有達到指定的特殊任務條件。"
 Requirements.NotMeet.FriendPoint: "&c沒有達到需求的友好度。"
 Requirements.NotMeet.Default: "&c你並沒有達到指定的任務條件。"
 Requirements.NotMeet.NoClass: "&c設定資料有誤，沒有名為 [%0] 的職業。"
+Requirements.NotMeet.Permission: "&c你沒有權限接取此任務。"
 
 Conversation.ChoiceTitle: "&0=《&c&l選擇&0》="
 Conversation.Finished: "    &8=》 &2&l對話結束 &8《="
@@ -335,6 +336,7 @@ QuestEditor.LevelReq: "&0等級需求： "
 QuestEditor.ItemReq: "&0物品需求： "
 QuestEditor.FriendPointReq: "&0友好度需求： "
 QuestEditor.QuestReq: "&0任務需求： "
+QuestEditor.PermissionReq: "&0權限需求："
 
 QuestEditor.SkillAPIReq: "&8&l〈SkillAPI〉"
 QuestEditor.QRPGReq: "&8&l〈QuantumRPG〉"
@@ -430,6 +432,7 @@ EditorMessage.ExpAmount: "&c請關閉書本視窗，\n&c並輸入經驗值量。
 EditorMessage.NPCTalk: "&c請關閉書本視窗，\n&c並打開聊天窗輸入內容及NPC之ID。\n&4&l格式：[內容]@[NPC之ID]"
 EditorMessage.TitleAndSubtitle: "&c請關閉書本視窗，\n&c並打開聊天窗輸入要發送的標題訊息。\n&4&l格式：[主標題]%[副標題]"
 EditorMessage.Teleport: "&c請關閉書本視窗，\n&c並打開聊天窗輸入座標及世界。\n&4&l格式：[世界名稱]:[x]:[y]:[z]"
+EditorMessage.Permission: "&c請關閉書本視窗，\n&c並打開聊天窗輸入指定的權限節點。"
 EditorMessage.RedoSetting: "&c請關閉書本視窗，並依照設定輸入：\n&0ONCE_ONLY\n - 一次性任務(預設)\n&0DAILY\n - 每日(固定時間重置)\n&0WEEKLY\n - 每周(固定時間重置)\n&0COOLDOWN\n - 冷卻時間"
 
 Cmdlog.Disabled: "已經關閉！"

@@ -126,6 +126,7 @@ public class QuestConfigSaver
 		quest.set(qpath + "Requirements.Level", q.getRequirements().get(RequirementType.LEVEL));
 		quest.set(qpath + "Requirements.Quest", q.getRequirements().get(RequirementType.QUEST));
 		quest.set(qpath + "Requirements.Money", q.getRequirements().get(RequirementType.MONEY));
+		quest.set(qpath + "Requirements.Permission", q.getRequirements().get(RequirementType.PERMISSION));
 		int i = 0;
 		quest.getConfig().set(qpath + "Requirements.Item", null);
 		for (ItemStack is : (List<ItemStack>) q.getRequirements().get(RequirementType.ITEM))
@@ -136,10 +137,9 @@ public class QuestConfigSaver
 
 		HashMap<Integer, Integer> fpMap = (HashMap<Integer, Integer>) q.getRequirements().get(RequirementType.FRIEND_POINT);
 		quest.getConfig().set(qpath + "Requirements.FriendPoint", null);
-		for (Integer id : fpMap.keySet())
-		{
+
+		for (int id : fpMap.keySet())
 			quest.set(qpath + "Requirements.FriendPoint." + id, fpMap.get(id));
-		}
 
 		if (Main.getHooker().hasSkillAPIEnabled())
 		{

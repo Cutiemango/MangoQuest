@@ -7,6 +7,7 @@ public enum RequirementType
 	QUEST,
 	ITEM,
 	FRIEND_POINT,
+	PERMISSION,
 	ALLOW_DESCENDANT,
 	QRPG_CLASS,
 	QRPG_LEVEL,

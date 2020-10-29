@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.model.Quest;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
@@ -111,6 +112,14 @@ public class QuestUtil
 			return is.getItemMeta().getDisplayName();
 		else
 			return translate(is.getType());
+	}
+
+	public static String getItemName(QuestValidater.WrappedWeakItem wrapper)
+	{
+		if (wrapper.hasItemMeta() && wrapper.hasDisplayName())
+			return wrapper.getDisplayName();
+		else
+			return translate(wrapper.getType());
 	}
 
 	@SafeVarargs

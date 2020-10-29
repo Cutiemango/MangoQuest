@@ -94,7 +94,7 @@ public class QuestProgress
 		}
 	}
 
-	public void checkIfnextStage()
+	public void checkIfNextStage()
 	{
 		for (QuestObjectProgress o : objlist)
 		{

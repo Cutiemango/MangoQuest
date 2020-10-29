@@ -35,6 +35,22 @@ public class RequirementManager
 			Object value = requirements.get(t);
 			switch (t)
 			{
+				case PERMISSION:
+					if (!(value instanceof List))
+					{
+						DebugHandler.log(5, "[Requirements] Requirement type is PERMISSION, but the value is not a list.");
+						break;
+					}
+					List<String> permissions = (List<String>) value;
+					for (String perm : permissions)
+					{
+						if (!p.hasPermission(perm))
+						{
+							failMsg.add(I18n.locMsg("Requirements.NotMeet.Permission"));
+							break;
+						}
+					}
+					break;
 				case QUEST:
 					for (String s : (List<String>) value)
 					{
@@ -59,7 +75,7 @@ public class RequirementManager
 				case ITEM:
 					if (!(value instanceof List))
 					{
-						DebugHandler.log(5, "[Requirements] Requirement type is ITEM, but the value is not a item list.");
+						DebugHandler.log(5, "[Requirements] Requirement type is ITEM, but the value is not a list.");
 						break;
 					}
 					if (ConfigSettings.USE_WEAK_ITEM_CHECK)
@@ -81,12 +97,11 @@ public class RequirementManager
 						{
 							if (reqItems.get(wrapped) != 0)
 							{
-								String name = wrapped.hasItemMeta() ? wrapped.getDisplayName().get() : QuestUtil.translate(wrapped.getType());
-								failMsg.add(I18n.locMsg("Requirements.NotMeet.Item", name, Integer.toString(reqItems.get(wrapped))));
+								failMsg.add(I18n.locMsg("Requirements.NotMeet.Item", QuestUtil.getItemName(wrapped), Integer.toString(reqItems.get(wrapped))));
 								if (debug)
 								{
 									DebugHandler.log(5, "[Requirements] User has failed requirement: " + t.toString());
-									DebugHandler.log(5, "[Requirements] Did not found enough (or any) %s in user's inventory.", name);
+									DebugHandler.log(5, "[Requirements] Did not found enough (or any) %s in user's inventory.", QuestUtil.getItemName(wrapped));
 								}
 							}
 						}

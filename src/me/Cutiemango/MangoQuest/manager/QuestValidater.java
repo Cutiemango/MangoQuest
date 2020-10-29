@@ -27,14 +27,14 @@ public class QuestValidater
 			if (item.getItemMeta() != null)
 			{
 				hasItemMeta = true;
-				displayName = Optional.ofNullable(item.getItemMeta().getDisplayName());
+				displayName = item.getItemMeta().getDisplayName();
 				lore = Optional.ofNullable(item.getItemMeta().getLore());
 			}
 		}
 
 		private Material type;
 		private boolean hasItemMeta;
-		private Optional<String> displayName = Optional.empty();
+		private String displayName = "";
 		private Optional<List<String>> lore = Optional.empty();
 
 		public Material getType()
@@ -47,9 +47,14 @@ public class QuestValidater
 			return hasItemMeta;
 		}
 
-		public Optional<String> getDisplayName()
+		public String getDisplayName()
 		{
 			return displayName;
+		}
+
+		public boolean hasDisplayName()
+		{
+			return !displayName.equals("");
 		}
 
 		public Optional<List<String>> getLore()
@@ -91,7 +96,7 @@ public class QuestValidater
 		if (original.getType().equals(compare.getType()))
 		{
 			Optional<ItemMeta> oriMeta = Optional.ofNullable(original.getItemMeta()), cmpMeta = Optional.ofNullable(compare.getItemMeta());
-			if (!oriMeta.equals(cmpMeta))
+			if (oriMeta.isPresent() == cmpMeta.isPresent())
 			{
 				if (oriMeta.isPresent())
 				{

@@ -106,6 +106,7 @@ public class CommandRemoveQuest
 				case SKILLAPI_LEVEL:
 					break;
 				case QUEST:
+				case PERMISSION:
 					((List<String>) q.getRequirements().get(t)).remove(Integer.parseInt(args[4]));
 					break;
 				case FRIEND_POINT:

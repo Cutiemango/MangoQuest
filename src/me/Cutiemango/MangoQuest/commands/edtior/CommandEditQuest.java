@@ -185,6 +185,9 @@ public class CommandEditQuest
 					case MONEY:
 						q.getRequirements().put(t, Double.parseDouble(args[4]));
 						break;
+					case PERMISSION:
+					case ITEM:
+						break;
 					case QUEST:
 						QuestEditorManager.selectQuest(sender, "/mq e edit req " + t.toString() + " " + Integer.parseInt(args[4]));
 						return;
@@ -204,8 +207,6 @@ public class CommandEditQuest
 						break;
 					case ALLOW_DESCENDANT:
 						q.getRequirements().put(t, Boolean.parseBoolean(args[4]));
-						break;
-					case ITEM:
 						break;
 					case QRPG_CLASS:
 						if (args[4].equalsIgnoreCase("none") || Main.getHooker().getQuantumRPG().getModuleCache().getClassManager().getClassById(args[4]) != null)

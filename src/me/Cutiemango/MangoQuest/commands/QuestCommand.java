@@ -146,9 +146,9 @@ public class QuestCommand
 				{
 					case "view":
 						if (!qd.isCurrentlyDoing(quest))
-							QuestBookGUIManager.openGUIwithProgress(sender, new QuestProgress(quest, sender));
+							QuestBookGUIManager.openGUIWithProgress(sender, new QuestProgress(quest, sender));
 						else
-							QuestBookGUIManager.openGUIwithProgress(sender, qd.getProgress(quest));
+							QuestBookGUIManager.openGUIWithProgress(sender, qd.getProgress(quest));
 						return;
 					case "take":
 						qd.takeQuest(quest, true);
