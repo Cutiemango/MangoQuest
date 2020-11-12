@@ -26,9 +26,9 @@ public class TextComponentFactory
 	// The command argument here is "/" needed.
 	public static TextComponent regClickCmdEvent(TextComponent t, String command)
 	{
-		TextComponent text = (TextComponent)t.duplicate();
+		BaseComponent text = t.duplicate();
 		text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
-		return text;
+		return (TextComponent)text;
 	}
 
 	public static TextComponent regHoverEvent(TextComponent t, String s)
@@ -39,10 +39,12 @@ public class TextComponentFactory
 
 	public static TextComponent formatSanitize(TextComponent t)
 	{
-		TextComponent result = new TextComponent();
-		if (t.toPlainText().contains("§") || t.toPlainText().contains("&") )
+		if (t.getText() == null || t.getText().length() == 0)
+			return t;
+		else if (t.getText().contains("§") || t.getText().contains("&"))
 		{
-			BaseComponent[] comps = TextComponent.fromLegacyText(QuestChatManager.translateColor(t.toPlainText()));
+			TextComponent result = new TextComponent();
+			BaseComponent[] comps = TextComponent.fromLegacyText(QuestChatManager.translateColor(t.getText()));
 			for (BaseComponent comp : comps)
 			{
 				// cancel out parent's formatting
@@ -62,7 +64,7 @@ public class TextComponentFactory
 				result.addExtra(comps[i]);
 			return result;
 		}
-		else return t;
+		return t;
 	}
 
 	public static TextComponent convertItemHoverEvent(ItemStack it, boolean isFinished)

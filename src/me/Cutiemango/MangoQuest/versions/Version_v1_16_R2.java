@@ -3,6 +3,7 @@ package me.Cutiemango.MangoQuest.versions;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.ItemTag;
@@ -15,7 +16,7 @@ import net.minecraft.server.v1_16_R2.EnumHand;
 import net.minecraft.server.v1_16_R2.PacketPlayOutOpenBook;
 import net.minecraft.server.v1_16_R2.IChatBaseComponent;
 import net.minecraft.server.v1_16_R2.PacketPlayOutTitle;
-import org.bukkit.ChatColor;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_16_R2.inventory.CraftItemStack;
@@ -106,16 +107,16 @@ public class Version_v1_16_R2 implements VersionHandler
 			displayText = ChatColor.BLACK + displayText;
 
 		TextComponent text = new TextComponent(displayText);
+//
+//		net.minecraft.server.v1_16_R2.ItemStack i = CraftItemStack.asNMSCopy(is);
+//		NBTTagCompound tag = i.save(new NBTTagCompound());
+//		String itemJson = tag.toString();
+//
+//		BaseComponent[] hoverEventComponents = new BaseComponent[]{ new TextComponent(itemJson) };
+//		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents));
 
-		net.minecraft.server.v1_16_R2.ItemStack i = CraftItemStack.asNMSCopy(is);
-		NBTTagCompound tag = i.save(new NBTTagCompound());
-		String itemJson = tag.toString();
-
-		BaseComponent[] hoverEventComponents = new BaseComponent[]{ new TextComponent(itemJson) };
-		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents));
-
-		//		ItemTag itemTag = ItemTag.ofNbt(CraftItemStack.asNMSCopy(is).save(new NBTTagCompound()).toString());
-		//		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Item(is.getType().getKey().toString(), is.getAmount(), itemTag)));
+		ItemTag itemTag = ItemTag.ofNbt(CraftItemStack.asNMSCopy(is).save(new NBTTagCompound()).toString());
+		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Item(is.getType().getKey().toString(), is.getAmount(), itemTag)));
 		return text;
 	}
 

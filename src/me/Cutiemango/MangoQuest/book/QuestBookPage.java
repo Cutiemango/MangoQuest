@@ -79,7 +79,7 @@ public class QuestBookPage
 
 //		DebugHandler.log(5, "Adding: %s", t.getText());
 		TextComponent sanitized = TextComponentFactory.formatSanitize(t);
-//		DebugHandler.log(5, "Sanitized: %s", sanitized.getText());
+//		DebugHandler.log(5, "Sanitized: %s", sanitized);
 
 		StringBuilder builder = new StringBuilder();
 		for (char c : sanitized.getText().toCharArray())
@@ -121,6 +121,7 @@ public class QuestBookPage
 		}
 
 		if (sanitized.getExtra() != null && !sanitized.getExtra().isEmpty())
+		{
 			for (BaseComponent comp : sanitized.getExtra())
 			{
 				if (!(comp instanceof TextComponent))
@@ -134,9 +135,9 @@ public class QuestBookPage
 					comp.setUnderlined(false);
 				if (comp.isStrikethroughRaw() == null)
 					comp.setStrikethrough(false);
-				comp.copyFormatting(sanitized, ComponentBuilder.FormatRetention.EVENTS, true);
-				add((TextComponent)comp);
+				add((TextComponent) comp);
 			}
+		}
 		return this;
 	}
 
@@ -169,7 +170,8 @@ public class QuestBookPage
 	public QuestBookPage duplicate()
 	{
 		// to support lower versions, duplicate is necessary
-		return new QuestBookPage((TextComponent)page.duplicate(), (TextComponent)saved.duplicate(), size, lineUsed);
+		BaseComponent pageDup = page.duplicate(), saveDup = saved.duplicate();
+		return new QuestBookPage((TextComponent)pageDup, (TextComponent)saveDup, size, lineUsed);
 	}
 
 	public TextComponent getSaved()

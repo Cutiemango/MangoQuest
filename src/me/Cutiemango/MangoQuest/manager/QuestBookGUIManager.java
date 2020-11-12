@@ -49,13 +49,14 @@ public class QuestBookGUIManager
 		book.add(I18n.locMsg("QuestEditor.QuestObjects")).changeLine();
 		for (int i = 0; i < qp.getQuest().getStages().size(); i++)
 		{
-			for (int k = 0; k < qp.getCurrentObjects().size(); k++)
+			QuestStage stage = qp.getQuest().getStage(i);
+			for (int k = 0; k < stage.getObjects().size(); k++)
 			{
-				SimpleQuestObject obj = qp.getQuest().getStage(i).getObjects().get(k);
-				QuestObjectProgress qop = qp.getCurrentObjects().get(k);
+				SimpleQuestObject obj = stage.getObjects().get(k);
 
-				if (qp.getCurrentStage() == i && !qop.isFinished())
+				if (qp.getCurrentStage() == i && !qp.getCurrentObjects().get(k).isFinished())
 				{
+					QuestObjectProgress qop = qp.getCurrentObjects().get(k);
 					book.add(obj.toTextComponent(false));
 					if (obj instanceof NumerableObject)
 						book.add(" &8(" + qop.getProgress() + "/" + ((NumerableObject) obj).getAmount() + ")");

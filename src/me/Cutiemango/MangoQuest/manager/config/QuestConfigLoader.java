@@ -565,7 +565,9 @@ public class QuestConfigLoader
 				list = config.getStringList(path + "Requirements.Quest");
 			map.put(RequirementType.QUEST, list);
 
-			list.clear();
+			// clear won't work because java passes reference
+			// list.clear();
+			list = new ArrayList<>();
 			if (config.getStringList(path + "Requirements.Permission") != null)
 				list = config.getStringList(path + "Requirements.Permission");
 			map.put(RequirementType.PERMISSION, list);
