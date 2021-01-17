@@ -418,7 +418,7 @@ public class QuestPlayerData
 	{
 		if (npc == null || npc.getStoredLocation() == null)
 			return true;
-		return npc.getStoredLocation().distance(owner.getLocation()) < 20;
+		return npc.getStoredLocation().getWorld().getName().equals(owner.getWorld().getName()) && npc.getStoredLocation().distance(owner.getLocation()) < 20;
 	}
 	
 	public boolean checkPlayerInWorld(Quest q)
@@ -726,9 +726,10 @@ public class QuestPlayerData
 		if (qop.isFinished() || !(qop.getObject() instanceof QuestObjectReachLocation))
 			return false;
 		QuestObjectReachLocation o = (QuestObjectReachLocation) qop.getObject();
-		if (l.getX() < (o.getLocation().getX() + o.getRadius()) && l.getX() > (o.getLocation().getX() - o.getRadius()))
-			if (l.getY() < (o.getLocation().getY() + o.getRadius()) && l.getY() > (o.getLocation().getY() - o.getRadius()))
-				return l.getZ() < (o.getLocation().getZ() + o.getRadius()) && l.getZ() > (o.getLocation().getZ() - o.getRadius());
+		if (l.getWorld().getName().equals(o.getLocation().getWorld().getName()))
+			if (l.getX() < (o.getLocation().getX() + o.getRadius()) && l.getX() > (o.getLocation().getX() - o.getRadius()))
+				if (l.getY() < (o.getLocation().getY() + o.getRadius()) && l.getY() > (o.getLocation().getY() - o.getRadius()))
+					return l.getZ() < (o.getLocation().getZ() + o.getRadius()) && l.getZ() > (o.getLocation().getZ() - o.getRadius());
 		return false;
 	}
 

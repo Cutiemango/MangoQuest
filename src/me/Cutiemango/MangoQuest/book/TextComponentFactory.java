@@ -57,7 +57,7 @@ public class TextComponentFactory
 				if (comp.isStrikethroughRaw() == null)
 					comp.setStrikethrough(false);
 			}
-			result.copyFormatting(comps[0], ComponentBuilder.FormatRetention.FORMATTING, true);
+			result.copyFormatting(comps[0], ComponentBuilder.FormatRetention.FORMATTING, false);
 			result.copyFormatting(t, ComponentBuilder.FormatRetention.EVENTS, true);
 			result.setText(comps[0].toPlainText());
 			for (int i = 1; i < comps.length; i++)

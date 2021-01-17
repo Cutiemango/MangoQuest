@@ -9,26 +9,26 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.ItemTag;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Item;
-import net.minecraft.server.v1_16_R2.NBTTagCompound;
-import net.minecraft.server.v1_16_R2.PacketPlayOutWorldParticles;
-import net.minecraft.server.v1_16_R2.Particles;
-import net.minecraft.server.v1_16_R2.EnumHand;
-import net.minecraft.server.v1_16_R2.PacketPlayOutOpenBook;
-import net.minecraft.server.v1_16_R2.IChatBaseComponent;
-import net.minecraft.server.v1_16_R2.PacketPlayOutTitle;
+import net.minecraft.server.v1_16_R3.NBTTagCompound;
+import net.minecraft.server.v1_16_R3.PacketPlayOutWorldParticles;
+import net.minecraft.server.v1_16_R3.Particles;
+import net.minecraft.server.v1_16_R3.EnumHand;
+import net.minecraft.server.v1_16_R3.PacketPlayOutOpenBook;
+import net.minecraft.server.v1_16_R3.IChatBaseComponent;
+import net.minecraft.server.v1_16_R3.PacketPlayOutTitle;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_16_R2.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_16_R2.inventory.CraftMetaBook;
-import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftMetaBook;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 
-public class Version_v1_16_R2 implements VersionHandler
+public class Version_v1_16_R3 implements VersionHandler
 {
 
 	@Override
@@ -82,13 +82,8 @@ public class Version_v1_16_R2 implements VersionHandler
 		is.setItemMeta(im);
 		TextComponent text = new TextComponent(isFinished ? QuestChatManager.finishedObjectFormat(name) : name);
 
-		net.minecraft.server.v1_16_R2.ItemStack i = CraftItemStack.asNMSCopy(is);
-		NBTTagCompound tag = i.save(new NBTTagCompound());
-
-		BaseComponent[] hoverEventComponents = new BaseComponent[]{ new TextComponent(tag.toString()) };
-		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents));
-		//		ItemTag itemTag = ItemTag.ofNbt(CraftItemStack.asNMSCopy(is).save(new NBTTagCompound()).toString());
-		//		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Item(is.getType().getKey().toString(), is.getAmount(), itemTag)));
+		ItemTag itemTag = ItemTag.ofNbt(CraftItemStack.asNMSCopy(is).save(new NBTTagCompound()).toString());
+		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Item(is.getType().getKey().toString(), is.getAmount(), itemTag)));
 		return text;
 	}
 
@@ -107,9 +102,11 @@ public class Version_v1_16_R2 implements VersionHandler
 			displayText = ChatColor.BLACK + displayText;
 
 		TextComponent text = new TextComponent(displayText);
+		net.minecraft.server.v1_16_R3.ItemStack i = org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack.asNMSCopy(is);
+		NBTTagCompound tag = i.save(new NBTTagCompound());
 
-		ItemTag itemTag = ItemTag.ofNbt(CraftItemStack.asNMSCopy(is).save(new NBTTagCompound()).toString());
-		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Item(is.getType().getKey().toString(), is.getAmount(), itemTag)));
+		BaseComponent[] hoverEventComponents = new BaseComponent[]{ new TextComponent(tag.toString()) };
+		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents));
 		return text;
 	}
 
@@ -122,7 +119,7 @@ public class Version_v1_16_R2 implements VersionHandler
 	@Override
 	public ItemStack addGUITag(ItemStack item)
 	{
-		net.minecraft.server.v1_16_R2.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_16_R3.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound stag = (nmscopy.hasTag()) ? nmscopy.getTag() : new NBTTagCompound();
 		stag.setBoolean("GUIitem", true);
 		nmscopy.setTag(stag);
@@ -132,7 +129,7 @@ public class Version_v1_16_R2 implements VersionHandler
 	@Override
 	public boolean hasGUITag(ItemStack item)
 	{
-		net.minecraft.server.v1_16_R2.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_16_R3.ItemStack nmscopy = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound tag = (nmscopy.hasTag()) ? nmscopy.getTag() : new NBTTagCompound();
 		return tag.hasKey("GUIitem");
 	}

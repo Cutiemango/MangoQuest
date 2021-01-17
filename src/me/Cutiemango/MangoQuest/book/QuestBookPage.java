@@ -1,9 +1,7 @@
 package me.Cutiemango.MangoQuest.book;
 
-import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.Pair;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import java.util.HashMap;
@@ -135,6 +133,11 @@ public class QuestBookPage
 					comp.setUnderlined(false);
 				if (comp.isStrikethroughRaw() == null)
 					comp.setStrikethrough(false);
+				if (comp.getHoverEvent() == null && sanitized.getHoverEvent() != null)
+					comp.setHoverEvent(sanitized.getHoverEvent());
+				if (comp.getClickEvent() == null && sanitized.getClickEvent() != null)
+					comp.setClickEvent(sanitized.getClickEvent());
+
 				add((TextComponent) comp);
 			}
 		}
@@ -169,9 +172,8 @@ public class QuestBookPage
 	
 	public QuestBookPage duplicate()
 	{
-		// to support lower versions, duplicate is necessary
-		BaseComponent pageDup = page.duplicate(), saveDup = saved.duplicate();
-		return new QuestBookPage((TextComponent)pageDup, (TextComponent)saveDup, size, lineUsed);
+		// TextComponent.duplicate() will fail if user is not adopting new versions
+		return new QuestBookPage(new TextComponent(page), new TextComponent(saved), size, lineUsed);
 	}
 
 	public TextComponent getSaved()

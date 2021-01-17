@@ -70,6 +70,7 @@ public class QuestGUIItem
 	
 	public static boolean isGUIItem(ItemStack item)
 	{
+		if (item == null || item.getType() == Material.AIR) return false;
 		return Main.getInstance().handler.hasGUITag(item);
 	}
 }
