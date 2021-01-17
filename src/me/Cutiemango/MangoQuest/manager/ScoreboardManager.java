@@ -57,26 +57,6 @@ public class ScoreboardManager
 				scoreList.add(formatObjectDisplayText(qop));
 			}
 		}
-		
-		int count = 0;
-		scoreList.add(I18n.locMsg("Scoreboard.AvailableQuests"));
-		for (Quest q : QuestStorage.localQuests.values())
-		{
-			if (!q.getSettings().displayOnTake())
-				continue;
-			count++;
-			if (count > ConfigSettings.MAXIMUM_DISPLAY_QUEST_AMOUNT)
-				break;
-			if (pd.canTake(q, false))
-			{
-				scoreList.add(pd.getQuestDisplayFormat(q));
-				if (!q.isCommandQuest())
-					scoreList.add(QuestChatManager.trimColor(" &f - " + I18n.locMsg("Scoreboard.GoFindNPC", q.getQuestNPC().getName())));
-				else
-					scoreList.add(QuestChatManager.trimColor(" &f - " + I18n.locMsg("Scoreboard.TakeFromGUI")));
-			}
-		}
-		
 		formatScoreboard(o, scoreList);
 		return s;
 	}
