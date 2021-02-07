@@ -16,6 +16,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Optional;
+
 public class AdminCommand implements CommandExecutor
 {
 	// Command: /mqa [args]
@@ -49,44 +51,40 @@ public class AdminCommand implements CommandExecutor
 				QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
 				return false;
 			}
+			QuestPlayerData pd = QuestUtil.getData(target);
 			switch (args[0])
 			{
 				// /mqa nextstage [ID] [quest]
 				// /mqa forcetake [ID] [quest]
 				// /mqa forcefinish [ID] [quest]
 				case "nextstage":
+					Optional<Quest> quest = getQuestArg(args, 2);
+					quest.ifPresentOrElse(q -> pd.forceNextStage(q, true), () -> QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument")));
+					break;
 				case "forcetake":
+					quest = getQuestArg(args, 2);
+					quest.ifPresentOrElse(q -> pd.forceTake(q, true), () -> QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument")));
+					break;
 				case "forcefinish":
-					if (args.length < 3)
-						return false;
-					Quest q = QuestUtil.getQuest(args[2]);
-					if (q == null)
-					{
-						QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
-						return false;
-					}
-					QuestPlayerData pd = QuestUtil.getData(target);
-					if (args[0].equalsIgnoreCase("nextstage"))
-						pd.forceNextStage(q, true);
-					else
-						if (args[0].equalsIgnoreCase("forcetake"))
-							pd.forceTake(q, true);
-						else
-							pd.forceFinish(q, true);
+					quest = getQuestArg(args, 2);
+					quest.ifPresentOrElse(q -> pd.forceFinish(q, true), () -> QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument")));
+					break;
+				case "forcequit":
+					quest = getQuestArg(args, 2);
+					quest.ifPresentOrElse(q -> pd.forceQuit(q, true), () -> QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument")));
 					break;
 				// /mqa finishobject [ID] [quest] [objindex]
 				case "finishobject":
 					if (args.length < 4)
 						return false;
-					q = QuestUtil.getQuest(args[2]);
+					quest = getQuestArg(args, 2);
 					int obj = Integer.parseInt(args[3]);
-					if (q == null)
+					if (!quest.isPresent())
 					{
 						QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
 						return false;
 					}
-					pd = QuestUtil.getData(target);
-					pd.forceFinishObj(q, obj, true);
+					pd.forceFinishObj(quest.get(), obj, true);
 					break;
 					// /mqa removedata [ID]
 				case "removedata":
@@ -110,7 +108,6 @@ public class AdminCommand implements CommandExecutor
 					}
 					NPC npc = Main.getHooker().getNPC(args[3]);
 					int amount = Integer.parseInt(args[4]);
-					pd = QuestUtil.getData(target);
 					switch (args[2])
 					{
 						case "add":
@@ -145,6 +142,12 @@ public class AdminCommand implements CommandExecutor
 		sendAdminHelp(sender);
 		return true;
 	}
+
+	private Optional<Quest> getQuestArg(String[] args, int index)
+	{
+		return args.length > index ? Optional.empty() : Optional.ofNullable(QuestUtil.getQuest(args[index]));
+	}
+
 
 	public void sendAdminHelp(CommandSender p)
 	{

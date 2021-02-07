@@ -12,7 +12,13 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.logging.Level;
 
 public class QuestUtil
@@ -103,6 +109,8 @@ public class QuestUtil
 
 	public static Quest getQuest(String s)
 	{
+		if (s == null)
+			return null;
 		return QuestStorage.localQuests.get(s);
 	}
 

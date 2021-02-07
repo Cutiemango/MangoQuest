@@ -21,7 +21,10 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
 
 public class Quest
 {
@@ -69,6 +72,9 @@ public class Quest
 						break;
 					case MONEY:
 						requirements.put(RequirementType.MONEY, 0d);
+						break;
+					case PERMISSION:
+						requirements.put(RequirementType.PERMISSION, new ArrayList<String>());
 						break;
 					case QUEST:
 						requirements.put(RequirementType.QUEST, new ArrayList<String>());

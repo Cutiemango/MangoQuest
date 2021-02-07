@@ -8,19 +8,19 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.ItemTag;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Item;
+import net.minecraft.server.v1_16_R1.EnumHand;
+import net.minecraft.server.v1_16_R1.IChatBaseComponent;
 import net.minecraft.server.v1_16_R1.NBTTagCompound;
+import net.minecraft.server.v1_16_R1.PacketPlayOutOpenBook;
+import net.minecraft.server.v1_16_R1.PacketPlayOutTitle;
 import net.minecraft.server.v1_16_R1.PacketPlayOutWorldParticles;
 import net.minecraft.server.v1_16_R1.Particles;
-import net.minecraft.server.v1_16_R1.EnumHand;
-import net.minecraft.server.v1_16_R1.PacketPlayOutOpenBook;
-import net.minecraft.server.v1_16_R1.IChatBaseComponent;
-import net.minecraft.server.v1_16_R1.PacketPlayOutTitle;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftMetaBook;
-import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -81,13 +81,8 @@ public class Version_v1_16_R1 implements VersionHandler
 		is.setItemMeta(im);
 		TextComponent text = new TextComponent(isFinished ? QuestChatManager.finishedObjectFormat(name) : name);
 
-		net.minecraft.server.v1_16_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
-		NBTTagCompound tag = i.save(new NBTTagCompound());
-
-		BaseComponent[] hoverEventComponents = new BaseComponent[]{ new TextComponent(tag.toString()) };
-		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents));
-//		ItemTag itemTag = ItemTag.ofNbt(CraftItemStack.asNMSCopy(is).save(new NBTTagCompound()).toString());
-//		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Item(is.getType().getKey().toString(), is.getAmount(), itemTag)));
+		ItemTag itemTag = ItemTag.ofNbt(CraftItemStack.asNMSCopy(is).getTag().asString());
+		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Item(is.getType().getKey().toString(), is.getAmount(), itemTag)));
 		return text;
 	}
 
@@ -96,9 +91,9 @@ public class Version_v1_16_R1 implements VersionHandler
 	 * hoverItem = the hover item
 	 */
 	@Override
-	public TextComponent textFactoryConvertItem(final ItemStack is, boolean finished)
+	public TextComponent textFactoryConvertItem(final ItemStack item, boolean finished)
 	{
-		String displayText = is.hasItemMeta() && is.getItemMeta().hasDisplayName() ? is.getItemMeta().getDisplayName() : QuestUtil.translate(is.getType());
+		String displayText = QuestUtil.translate(item);
 
 		if (finished)
 			displayText = QuestChatManager.finishedObjectFormat(displayText);
@@ -106,16 +101,14 @@ public class Version_v1_16_R1 implements VersionHandler
 			displayText = ChatColor.BLACK + displayText;
 
 		TextComponent text = new TextComponent(displayText);
-
-		net.minecraft.server.v1_16_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
-		NBTTagCompound tag = i.save(new NBTTagCompound());
-		String itemJson = tag.toString();
-
-		BaseComponent[] hoverEventComponents = new BaseComponent[]{ new TextComponent(itemJson) };
-		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents));
-
-//		ItemTag itemTag = ItemTag.ofNbt(CraftItemStack.asNMSCopy(is).save(new NBTTagCompound()).toString());
-//		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Item(is.getType().getKey().toString(), is.getAmount(), itemTag)));
+		if (item != null)
+		{
+			NBTTagCompound tag = CraftItemStack.asNMSCopy(item).getTag();
+			if (tag == null)
+				return text;
+			ItemTag itemTag = ItemTag.ofNbt(tag.asString());
+			text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Item(item.getType().getKey().toString(), item.getAmount(), itemTag)));
+		}
 		return text;
 	}
 

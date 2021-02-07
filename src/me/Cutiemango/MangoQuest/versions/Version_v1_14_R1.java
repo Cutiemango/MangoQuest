@@ -5,9 +5,14 @@ import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_14_R1.*;
+import net.minecraft.server.v1_14_R1.EnumHand;
+import net.minecraft.server.v1_14_R1.IChatBaseComponent;
+import net.minecraft.server.v1_14_R1.NBTTagCompound;
+import net.minecraft.server.v1_14_R1.PacketPlayOutOpenBook;
+import net.minecraft.server.v1_14_R1.PacketPlayOutTitle;
+import net.minecraft.server.v1_14_R1.PacketPlayOutWorldParticles;
+import net.minecraft.server.v1_14_R1.Particles;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -91,9 +96,9 @@ public class Version_v1_14_R1 implements VersionHandler
 	 * hoverItem = the hover item
 	 */
 	@Override
-	public TextComponent textFactoryConvertItem(ItemStack is, boolean finished)
+	public TextComponent textFactoryConvertItem(ItemStack item, boolean finished)
 	{
-		String displayText = is.hasItemMeta() && is.getItemMeta().hasDisplayName() ? is.getItemMeta().getDisplayName() : QuestUtil.translate(is.getType());
+		String displayText = QuestUtil.translate(item);
 
 		if (finished)
 			displayText = QuestChatManager.finishedObjectFormat(displayText);
@@ -101,14 +106,15 @@ public class Version_v1_14_R1 implements VersionHandler
 			displayText = ChatColor.BLACK + displayText;
 
 		TextComponent text = new TextComponent(displayText);
-
-		net.minecraft.server.v1_14_R1.ItemStack i = CraftItemStack.asNMSCopy(is);
-		NBTTagCompound tag = i.save(new NBTTagCompound());
-		String itemJson = tag.toString();
-
-		BaseComponent[] hoverEventComponents = new BaseComponent[]{ new TextComponent(itemJson) };
-		text.setHoverEvent(new HoverEvent(Action.SHOW_ITEM, hoverEventComponents));
-
+		if (item != null)
+		{
+			NBTTagCompound tag = CraftItemStack.asNMSCopy(item).getTag();
+			if (tag == null)
+				return text;
+			String itemNBT = tag.asString();
+			BaseComponent[] hoverEventComponents = new BaseComponent[]{ new TextComponent(itemNBT) };
+			text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents));
+		}
 		return text;
 	}
 

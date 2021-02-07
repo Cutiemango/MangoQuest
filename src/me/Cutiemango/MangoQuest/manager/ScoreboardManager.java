@@ -1,13 +1,10 @@
 package me.Cutiemango.MangoQuest.manager;
 
-import me.Cutiemango.MangoQuest.ConfigSettings;
 import me.Cutiemango.MangoQuest.I18n;
-import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.data.QuestObjectProgress;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.data.QuestProgress;
-import me.Cutiemango.MangoQuest.model.Quest;
 import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
 import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectDeliverItem;
@@ -19,7 +16,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ScoreboardManager
@@ -66,9 +63,9 @@ public class ScoreboardManager
 		int scoreIndex = 0;
 		for (int i = 0; i < list.size(); i++)
 		{
-			String text = list.get(list.size() - (i+1));
+			String text = list.get(list.size() - 1 - i);
 			BaseComponent[] components = TextComponent.fromLegacyText(QuestChatManager.translateColor(text));
-			List<String> texts = new ArrayList<>();
+			LinkedList<String> texts = new LinkedList<>();
 
 			StringBuilder saved = new StringBuilder();
 			for (BaseComponent comp : components)
@@ -82,14 +79,11 @@ public class ScoreboardManager
 				saved.append(legacy);
 			}
 			texts.add(saved.toString());
-			Collections.reverse(texts);
 
-			for (String s : texts)
-				o.getScore(s).setScore(scoreIndex++);
+			while (texts.size() > 0)
+				o.getScore(texts.pollLast()).setScore(scoreIndex++);
 		}
 	}
-
-
 	
 	private static String formatObjectDisplayText(QuestObjectProgress qop)
 	{
