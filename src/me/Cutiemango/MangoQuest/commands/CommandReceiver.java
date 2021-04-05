@@ -11,18 +11,15 @@ public class CommandReceiver implements CommandExecutor
 {
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
-	{
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player))
 			return false;
 		Player p = (Player) sender;
-		if (args.length == 0)
-		{
+		if (args.length == 0) {
 			sendHelp(p);
 			return false;
 		}
-		switch (args[0])
-		{
+		switch (args[0]) {
 			case "conv":
 			case "c":
 				ConversationCommand.execute(p, args);
@@ -46,8 +43,7 @@ public class CommandReceiver implements CommandExecutor
 		return false;
 	}
 
-	public void sendHelp(Player p)
-	{
+	public void sendHelp(Player p) {
 		QuestChatManager.info(p, I18n.locMsg("CommandHelp.Title"));
 		QuestChatManager.info(p, I18n.locMsg("CommandHelp.Quest"));
 		QuestChatManager.info(p, I18n.locMsg("CommandHelp.Editor"));

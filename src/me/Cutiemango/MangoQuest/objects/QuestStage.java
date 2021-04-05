@@ -10,19 +10,19 @@ public class QuestStage
 
 	public QuestStage(List<SimpleQuestObject> obj)
 	{
-		AllObjects = obj;
+		objects = obj;
 	}
 
-	private List<SimpleQuestObject> AllObjects = new ArrayList<>();
+	private List<SimpleQuestObject> objects;
 
 	public List<SimpleQuestObject> getObjects()
 	{
-		return AllObjects;
+		return objects;
 	}
 
 	public SimpleQuestObject getObject(int index)
 	{
-		return AllObjects.get(index);
+		return objects.get(index);
 	}
 
 }

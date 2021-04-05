@@ -16,77 +16,68 @@ import org.bukkit.inventory.ItemStack;
 public class QuestObjectConsumeItem extends ItemObject implements EditorObject
 {
 	// Reserved for initializing with load()
-	public QuestObjectConsumeItem(){}
+	public QuestObjectConsumeItem() {
+	}
 
-	public QuestObjectConsumeItem(ItemStack is, int i)
-	{
+	public QuestObjectConsumeItem(ItemStack is, int i) {
 		item = is;
 		amount = i;
 	}
-	
+
 	@Override
-	public String getConfigString()
-	{
+	public String getConfigString() {
 		return "CONSUME_ITEM";
 	}
 
 	@Override
-	public String getObjectName()
-	{
+	public String getObjectName() {
 		return I18n.locMsg("QuestObjectName.ConsumeItem");
 	}
 
 	@Override
-	public void setAmount(int i)
-	{
+	public void setAmount(int i) {
 		item.setAmount(i);
 		amount = i;
 	}
 
 	@Override
-	public TextComponent toTextComponent(boolean isFinished)
-	{
+	public TextComponent toTextComponent(boolean isFinished) {
 		return super.toTextComponent(ChatColor.stripColor(I18n.locMsg("QuestObject.ConsumeItem")), isFinished, amount, item);
 	}
-	
+
 	@Override
-	public String toDisplayText()
-	{
+	public String toDisplayText() {
 		return I18n.locMsg("QuestObject.ConsumeItem", Integer.toString(amount), QuestUtil.getItemName(item));
 	}
 
 	@Override
-	public void formatEditorPage(QuestBookPage page, int stage, int obj)
-	{
+	public void formatEditorPage(QuestBookPage page, int stage, int obj) {
 		page.add(I18n.locMsg("QuestEditor.ConsumeItem"));
 		page.add(new InteractiveText(item));
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " item")).changeLine();
 		super.formatEditorPage(page, stage, obj);
 	}
-	
+
 	@Override
-	public boolean load(QuestIO config, String path)
-	{
+	public boolean load(QuestIO config, String path) {
 		item = config.getItemStack(path + "Item");
 		amount = item.getAmount();
 		return super.load(config, path);
 	}
 
 	@Override
-	public void save(QuestIO config, String objpath)
-	{
+	public void save(QuestIO config, String objpath) {
 		config.set(objpath + "Item", item);
 		super.save(config, objpath);
 	}
 
 	@Override
-	public boolean receiveCommandInput(Player sender, String type, String obj)
-	{
+	public boolean receiveCommandInput(Player sender, String type, String obj) {
 		return super.receiveCommandInput(sender, type, obj);
 	}
+
 	@Override
-	public EditorListenerObject createCommandOutput(Player sender, String command, String type)
-	{
+	public EditorListenerObject createCommandOutput(Player sender, String command, String type) {
 		return super.createCommandOutput(sender, command, type);
 	}
 

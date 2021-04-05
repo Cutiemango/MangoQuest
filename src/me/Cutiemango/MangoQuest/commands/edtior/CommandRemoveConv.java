@@ -17,12 +17,9 @@ import java.util.List;
 public class CommandRemoveConv
 {
 	// /mq ce remove args[2] args[3]
-	public static void execute(QuestConversation conv, Player sender, String[] args)
-	{
-		if (args.length >= 3)
-		{
-			switch (args[2])
-			{
+	public static void execute(QuestConversation conv, Player sender, String[] args) {
+		if (args.length >= 3) {
+			switch (args[2]) {
 				case "conv":
 					removeConv(sender, args);
 					return;
@@ -33,8 +30,7 @@ public class CommandRemoveConv
 		}
 		if (!ConversationEditorManager.checkEditorMode(sender, true))
 			return;
-		switch (args[2])
-		{
+		switch (args[2]) {
 			case "act":
 			case "acceptact":
 			case "denyact":
@@ -43,27 +39,20 @@ public class CommandRemoveConv
 		}
 	}
 
-	private static void removeConfirm(Player sender, String[] args)
-	{
-		if (args.length == 4)
-		{
-			if (ConversationManager.getConversation(args[3]) != null)
-			{
+	private static void removeConfirm(Player sender, String[] args) {
+		if (args.length == 4) {
+			if (ConversationManager.getConversation(args[3]) != null) {
 				QuestConversation target = ConversationManager.getConversation(args[3]);
 				ConversationEditorManager.removeConfirmGUI(sender, target);
 			}
 		}
 	}
 
-	private static void removeConv(Player sender, String[] args)
-	{
-		if (args.length == 4)
-		{
-			if (ConversationManager.getConversation(args[3]) != null)
-			{
+	private static void removeConv(Player sender, String[] args) {
+		if (args.length == 4) {
+			if (ConversationManager.getConversation(args[3]) != null) {
 				QuestConversation target = ConversationManager.getConversation(args[3]);
-				for (Player pl : Bukkit.getOnlinePlayers())
-				{
+				for (Player pl : Bukkit.getOnlinePlayers()) {
 					if (ConversationManager.isInConvProgress(pl, target))
 						ConversationManager.forceQuit(pl, target);
 				}
@@ -76,13 +65,11 @@ public class CommandRemoveConv
 	}
 
 	// /mq ce remove [acceptact/denyact/act] [index]
-	private static void removeAction(QuestConversation conv, Player sender, String[] args)
-	{
+	private static void removeAction(QuestConversation conv, Player sender, String[] args) {
 		if (args.length < 4)
 			return;
 		int index = Integer.parseInt(args[3]);
-		switch (args[2])
-		{
+		switch (args[2]) {
 			case "act":
 				List<QuestBaseAction> list = conv.getActions();
 				list.remove(index);

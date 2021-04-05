@@ -9,9 +9,9 @@ import org.bukkit.event.HandlerList;
 public class QuestObjectProgressEvent extends Event
 {
 	private static final HandlerList handlers = new HandlerList();
-	private QuestPlayerData data;
-	private Quest quest;
-	private SimpleQuestObject questObject;
+	private final QuestPlayerData data;
+	private final Quest quest;
+	private final SimpleQuestObject questObject;
 	
 	public QuestObjectProgressEvent(QuestPlayerData which, Quest q, SimpleQuestObject obj)
 	{
@@ -20,18 +20,15 @@ public class QuestObjectProgressEvent extends Event
 		questObject = obj;
 	}
 	
-	
 	public QuestPlayerData getPlayerData()
 	{
 		return data;
 	}
 
-
 	public SimpleQuestObject getQuestObject()
 	{
 		return questObject;
 	}
-
 
 	public Quest getQuest()
 	{

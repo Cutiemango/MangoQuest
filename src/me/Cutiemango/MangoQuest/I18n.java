@@ -18,62 +18,50 @@ public class I18n
 
 	private static ResourceBundle bundle;
 
-	public static void init(Locale local, boolean useCustom)
-	{
-		try
-		{
+	public static void init(Locale local, boolean useCustom) {
+		try {
 			if (bundle != null)
 				ResourceBundle.clearCache();
-			
+
 			String properties = "messages_" + ConfigSettings.LOCALE_USING.toString() + ".properties";
 			String langPath = "lang" + File.separator + "original_" + ConfigSettings.LOCALE_USING.toString() + ".yml";
-			
-			if (useCustom)
-			{
+
+			if (useCustom) {
 				QuestChatManager.logCmd(Level.INFO, "Using custom locale.");
 				if (!new File(Main.getInstance().getDataFolder() + File.separator + langPath).exists())
 					Main.getInstance().saveResource(langPath, true);
 				if (!new File(Main.getInstance().getDataFolder() + File.separator + properties).exists())
 					Main.getInstance().saveResource(properties, true);
-			}
-			else
-			{
+			} else {
 				QuestChatManager.logCmd(Level.INFO, "Using default locale.");
 				Main.getInstance().saveResource(properties, true);
 				Main.getInstance().saveResource(langPath, true);
 			}
 			bundle = ResourceBundle.getBundle("messages", local, new FileResClassLoader(I18n.class.getClassLoader(), Main.getInstance()));
 		}
-		catch (MissingResourceException e)
-		{
+		catch (MissingResourceException e) {
 			QuestChatManager.logCmd(Level.WARNING, "The plugin encountered an error during initializing the i18n file.");
 			e.printStackTrace();
 		}
 	}
 
-	public static String locMsg(String path)
-	{
+	public static String locMsg(String path) {
 		String format = bundle.getString(path);
 		format = QuestChatManager.translateColor(format);
 		return format;
 	}
 
-	public static String locMsg(String path, String... args)
-	{
+	public static String locMsg(String path, String... args) {
 		String format = bundle.getString(path);
 		format = QuestChatManager.translateColor(format);
-		if (format.contains("%"))
-		{
-			try
-			{
-				for (int arg = 0; arg < args.length; arg++)
-				{
+		if (format.contains("%")) {
+			try {
+				for (int arg = 0; arg < args.length; arg++) {
 					format = format.replace("[%" + arg + "]", args[arg]);
 				}
 				return format;
 			}
-			catch (Exception e)
-			{
+			catch (Exception e) {
 				QuestChatManager.logCmd(Level.WARNING, "An error occured whilst localizing " + path + " .");
 				e.printStackTrace();
 			}
@@ -85,41 +73,32 @@ public class I18n
 	{
 		private final File dataFolder;
 
-		FileResClassLoader(final ClassLoader classLoader, final Main plugin)
-		{
+		FileResClassLoader(final ClassLoader classLoader, final Main plugin) {
 			super(classLoader);
 			this.dataFolder = plugin.getDataFolder();
 		}
 
 		@Override
-		public URL getResource(final String string)
-		{
+		public URL getResource(final String string) {
 			final File file = new File(dataFolder, string);
-			if (file.exists())
-			{
-				try
-				{
+			if (file.exists()) {
+				try {
 					return file.toURI().toURL();
 				}
-				catch (MalformedURLException ex)
-				{
+				catch (MalformedURLException ex) {
 				}
 			}
 			return null;
 		}
 
 		@Override
-		public InputStream getResourceAsStream(final String string)
-		{
+		public InputStream getResourceAsStream(final String string) {
 			final File file = new File(dataFolder, string);
-			if (file.exists())
-			{
-				try
-				{
+			if (file.exists()) {
+				try {
 					return new FileInputStream(file);
 				}
-				catch (FileNotFoundException ex)
-				{
+				catch (FileNotFoundException ex) {
 				}
 			}
 			return null;

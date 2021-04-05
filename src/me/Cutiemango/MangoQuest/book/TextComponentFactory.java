@@ -21,32 +21,28 @@ import java.util.Optional;
 
 public class TextComponentFactory
 {
-
 	// Note:
-	// The command argument here is "/" needed.
-	public static TextComponent regClickCmdEvent(TextComponent t, String command)
-	{
+	// The command argument here needs "/".
+	public static TextComponent regClickCmdEvent(TextComponent t, String command) {
+		if (!command.startsWith("/"))
+			command = command + "/";
 		BaseComponent text = t.duplicate();
 		text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
-		return (TextComponent)text;
+		return (TextComponent) text;
 	}
 
-	public static TextComponent regHoverEvent(TextComponent t, String s)
-	{
-		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{ new TextComponent(QuestChatManager.translateColor(s)) }));
+	public static TextComponent regHoverEvent(TextComponent t, String s) {
+		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[] { new TextComponent(QuestChatManager.translateColor(s)) }));
 		return t;
 	}
 
-	public static TextComponent formatSanitize(TextComponent t)
-	{
+	public static TextComponent formatSanitize(TextComponent t) {
 		if (t.getText() == null || t.getText().length() == 0)
 			return t;
-		else if (t.getText().contains("§") || t.getText().contains("&"))
-		{
+		else if (t.getText().contains("§") || t.getText().contains("&")) {
 			TextComponent result = new TextComponent();
 			BaseComponent[] comps = TextComponent.fromLegacyText(QuestChatManager.translateColor(t.getText()));
-			for (BaseComponent comp : comps)
-			{
+			for (BaseComponent comp : comps) {
 				// cancel out parent's formatting
 				if (comp.isBoldRaw() == null)
 					comp.setBold(false);
@@ -67,39 +63,33 @@ public class TextComponentFactory
 		return t;
 	}
 
-	public static TextComponent convertItemHoverEvent(ItemStack it, boolean isFinished)
-	{
+	public static TextComponent convertItemHoverEvent(ItemStack it, boolean isFinished) {
 		return Main.getInstance().handler.textFactoryConvertItem(it, isFinished);
 	}
 
-	public static TextComponent convertLocHoverEvent(String name, Location loc, boolean isFinished)
-	{
+	public static TextComponent convertLocHoverEvent(String name, Location loc, boolean isFinished) {
 		return Main.getInstance().handler.textFactoryConvertLocation(name, loc, isFinished);
 	}
 
-	public static TextComponent convertViewQuest(Quest q)
-	{
+	public static TextComponent convertViewQuest(Quest q) {
 		if (q == null)
 			return new TextComponent(I18n.locMsg("QuestEditor.NotSet"));
 		TextComponent t = new TextComponent(I18n.locMsg("QuestGUI.ColorFormat.NormalQuest") + q.getQuestName());
-		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]
-		{ new TextComponent(I18n.locMsg("QuestJourney.ClickToView", q.getQuestName())) }));
+		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+				new BaseComponent[] { new TextComponent(I18n.locMsg("QuestJourney.ClickToView", q.getQuestName())) }));
 		t.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mq quest view " + q.getInternalID()));
 		return t;
 	}
 
-	public static TextComponent convertRequirement(QuestPlayerData qd, Quest q)
-	{
+	public static TextComponent convertRequirement(QuestPlayerData qd, Quest q) {
 		TextComponent text = new TextComponent(QuestChatManager.unavailableQuestFormat(q.getQuestName()));
 		if (q.usePermission() && !qd.getPlayer().hasPermission("MangoQuest.takeQuest." + q.getInternalID()))
 			return regHoverEvent(text, I18n.locMsg("Requirements.NotMeet.Permission"));
 
-		if (qd.hasFinished(q))
-		{
+		if (qd.hasFinished(q)) {
 			long lastFinishTime = qd.getFinishData(q).getLastFinish();
 			long delay = -1L;
-			switch (q.getRedoSetting())
-			{
+			switch (q.getRedoSetting()) {
 				case ONCE_ONLY:
 					return regHoverEvent(text, I18n.locMsg("CommandInfo.NotRedoable"));
 				case COOLDOWN:
@@ -118,13 +108,9 @@ public class TextComponentFactory
 			if (!qd.hasTakenReward(q))
 				return regHoverEvent(text, I18n.locMsg("QuestReward.RewardNotTaken"));
 		}
-		if (q.hasRequirement())
-		{
+		if (q.hasRequirement()) {
 			Optional<String> msg = RequirementManager.meetRequirementWith(qd.getPlayer(), q.getRequirements(), true);
-			if (msg.isPresent())
-				return regHoverEvent(text, msg.get());
-			else
-				return convertViewQuest(q);
+			return msg.map(s -> regHoverEvent(text, s)).orElseGet(() -> convertViewQuest(q));
 		}
 		return text;
 	}

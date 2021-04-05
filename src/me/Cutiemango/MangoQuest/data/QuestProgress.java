@@ -20,36 +20,28 @@ import java.util.List;
 
 public class QuestProgress
 {
+	public QuestProgress(Quest q, Player p) {
+		this(q, p, 0, new ArrayList<>(), System.currentTimeMillis());
 
-	public QuestProgress(Quest q, Player p)
-	{
-		quest = q;
-		owner = p;
-		currentStage = 0;
-		objlist = new ArrayList<>();
 		for (SimpleQuestObject o : quest.getStage(currentStage).getObjects())
-			objlist.add(new QuestObjectProgress(o, 0));
-
-		takeStamp = System.currentTimeMillis();
+			objList.add(new QuestObjectProgress(o, 0));
 	}
 
-	public QuestProgress(Quest q, Player p, int s, List<QuestObjectProgress> o, long stamp)
-	{
+	public QuestProgress(Quest q, Player p, int s, List<QuestObjectProgress> o, long stamp) {
 		quest = q;
 		owner = p;
 		currentStage = s;
-		objlist = o;
+		objList = o;
 		takeStamp = stamp;
 	}
 
-	private Quest quest;
-	private Player owner;
+	private final Quest quest;
+	private final Player owner;
 	private int currentStage;
-	private List<QuestObjectProgress> objlist;
-	private long takeStamp;
+	private List<QuestObjectProgress> objList;
+	private final long takeStamp;
 
-	public void finish()
-	{
+	public void finish() {
 		quest.trigger(owner, TriggerType.TRIGGER_ON_FINISH, -1);
 		QuestPlayerData pd = QuestUtil.getData(owner);
 		QuestReward reward = quest.getQuestReward();
@@ -70,80 +62,67 @@ public class QuestProgress
 		Bukkit.getPluginManager().callEvent(new QuestFinishEvent(owner, quest));
 	}
 
-	public void save(QuestIO io)
-	{
+	public void save(QuestIO io) {
 		io.set("QuestProgress." + quest.getInternalID() + ".QuestStage", currentStage);
 		io.set("QuestProgress." + quest.getInternalID() + ".Version", quest.getVersion().getTimeStamp());
 		io.set("QuestProgress." + quest.getInternalID() + ".TakeStamp", takeStamp);
 		int t = 0;
 		int value = 0;
-		for (QuestObjectProgress qop : objlist)
-		{
-			if (qop.isFinished())
-			{
+		for (QuestObjectProgress qop : objList) {
+			if (qop.isFinished()) {
 				if (qop.getObject() instanceof QuestObjectTalkToNPC || qop.getObject() instanceof QuestObjectReachLocation)
 					value = 1;
-				else
-					if (qop.getObject() instanceof NumerableObject)
-						value = ((NumerableObject) qop.getObject()).getAmount();
-			}
-			else
+				else if (qop.getObject() instanceof NumerableObject)
+					value = ((NumerableObject) qop.getObject()).getAmount();
+			} else
 				value = qop.getProgress();
 			io.set("QuestProgress." + quest.getInternalID() + ".QuestObjectProgress." + t, value);
 			t++;
 		}
 	}
 
-	public void checkIfNextStage()
-	{
-		for (QuestObjectProgress o : objlist)
-		{
+	public void checkIfNextStage() {
+		for (QuestObjectProgress o : objList) {
 			if (!o.isFinished())
 				return;
 		}
 		nextStage();
 	}
 
-	public void nextStage()
-	{
-		quest.trigger(owner, TriggerType.TRIGGER_STAGE_FINISH, currentStage+1);
-		if (currentStage+1 < quest.getStages().size())
-		{
+	public void nextStage() {
+		quest.trigger(owner, TriggerType.TRIGGER_STAGE_FINISH, currentStage + 1);
+		if (currentStage + 1 < quest.getStages().size()) {
 			currentStage++;
+			objList.clear();
+			for (SimpleQuestObject o : quest.getStage(currentStage).getObjects()) {
+				objList.add(new QuestObjectProgress(o, 0));
+			}
+			quest.trigger(owner, TriggerType.TRIGGER_STAGE_START, currentStage + 1);
+
 			QuestChatManager.info(owner, I18n.locMsg("CommandInfo.ProgressMessage", quest.getQuestName(), Integer.toString(currentStage),
 					Integer.toString(quest.getStages().size())));
-			objlist = new ArrayList<>();
-			for (SimpleQuestObject o : quest.getStage(currentStage).getObjects())
-			{
-				objlist.add(new QuestObjectProgress(o, 0));
-			}
-			quest.trigger(owner, TriggerType.TRIGGER_STAGE_START, currentStage+1);
+			return;
 		}
-		else finish();
+		finish();
 	}
 
-	public List<QuestObjectProgress> getCurrentObjects()
-	{
-		return objlist;
+	public List<QuestObjectProgress> getCurrentObjects() {
+		return objList;
 	}
 
-	public int getCurrentStage()
-	{
+	public int getCurrentStage() {
 		return currentStage;
 	}
 
-	public Quest getQuest()
-	{
+	public Quest getQuest() {
 		return this.quest;
 	}
 
-	public Player getOwner()
-	{
+	public Player getOwner() {
 		return this.owner;
 	}
-	
-	public long getTakeTime()
-	{
+
+	public long getTakeTime() {
 		return takeStamp;
 	}
 }

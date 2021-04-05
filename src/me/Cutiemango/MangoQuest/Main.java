@@ -4,11 +4,22 @@ import me.Cutiemango.MangoQuest.commands.AdminCommand;
 import me.Cutiemango.MangoQuest.commands.CommandReceiver;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.listeners.MainListener;
-import me.Cutiemango.MangoQuest.manager.*;
+import me.Cutiemango.MangoQuest.manager.CustomObjectManager;
+import me.Cutiemango.MangoQuest.manager.PluginHooker;
+import me.Cutiemango.MangoQuest.manager.QuestChatManager;
+import me.Cutiemango.MangoQuest.manager.QuestNPCManager;
+import me.Cutiemango.MangoQuest.manager.ScoreboardManager;
 import me.Cutiemango.MangoQuest.manager.config.QuestConfigManager;
 import me.Cutiemango.MangoQuest.manager.database.DatabaseManager;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
-import me.Cutiemango.MangoQuest.versions.*;
+import me.Cutiemango.MangoQuest.versions.VersionHandler;
+import me.Cutiemango.MangoQuest.versions.Version_v1_13_R1;
+import me.Cutiemango.MangoQuest.versions.Version_v1_13_R2;
+import me.Cutiemango.MangoQuest.versions.Version_v1_14_R1;
+import me.Cutiemango.MangoQuest.versions.Version_v1_15_R1;
+import me.Cutiemango.MangoQuest.versions.Version_v1_16_R1;
+import me.Cutiemango.MangoQuest.versions.Version_v1_16_R2;
+import me.Cutiemango.MangoQuest.versions.Version_v1_16_R3;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,8 +39,7 @@ public class Main extends JavaPlugin
 	private int counterTaskID = -1;
 
 	@Override
-	public void onEnable()
-	{
+	public void onEnable() {
 		instance = this;
 		getCommand("mq").setExecutor(new CommandReceiver());
 		getCommand("mqa").setExecutor(new AdminCommand());
@@ -43,8 +53,7 @@ public class Main extends JavaPlugin
 		getServer().getPluginManager().registerEvents(new MainListener(), this);
 
 		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-		switch (version)
-		{
+		switch (version) {
 			case "v1_13_R1":
 				handler = new Version_v1_13_R1();
 				break;
@@ -78,8 +87,7 @@ public class Main extends JavaPlugin
 		new BukkitRunnable()
 		{
 			@Override
-			public void run()
-			{
+			public void run() {
 				pluginHooker.hookPlugins();
 				CustomObjectManager.loadCustomObjects();
 				QuestConfigManager.getLoader().loadAll();
@@ -96,15 +104,13 @@ public class Main extends JavaPlugin
 	}
 
 	@Override
-	public void onDisable()
-	{
+	public void onDisable() {
 		stopCounter();
 		savePlayers();
 		DebugHandler.log(1, I18n.locMsg("Cmdlog.Disabled"));
 	}
 
-	public void reload()
-	{
+	public void reload() {
 		savePlayers();
 		QuestStorage.clear();
 		QuestNPCManager.clear();
@@ -120,85 +126,67 @@ public class Main extends JavaPlugin
 		loadPlayers();
 	}
 
-
-	public static Main getInstance()
-	{
+	public static Main getInstance() {
 		return instance;
 	}
 
-	public static PluginHooker getHooker()
-	{
+	public static PluginHooker getHooker() {
 		return instance.pluginHooker;
 	}
 
-	public void loadPlayers()
-	{
-		for (Player p : Bukkit.getOnlinePlayers())
-		{
+	public void loadPlayers() {
+		for (Player p : Bukkit.getOnlinePlayers()) {
 			QuestPlayerData qd = new QuestPlayerData(p);
 			qd.load(ConfigSettings.SAVE_TYPE);
 			QuestStorage.playerData.put(p.getName(), qd);
 		}
 	}
 
-	public void savePlayers()
-	{
-		for (Player p : Bukkit.getOnlinePlayers())
-		{
-			if (QuestUtil.getData(p) != null)
-			{
+	public void savePlayers() {
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (QuestUtil.getData(p) != null) {
 				QuestUtil.getData(p).save();
 				QuestChatManager.info(p, I18n.locMsg("CommandInfo.PlayerDataSaving"));
 			}
 		}
 	}
 
-	public void startCounter()
-	{
+	public void startCounter() {
 		counterTaskID = new BukkitRunnable()
 		{
 			int counter = 0;
+
 			@Override
-			public void run()
-			{
-				for (Player p : Bukkit.getOnlinePlayers())
-				{
+			public void run() {
+				for (Player p : Bukkit.getOnlinePlayers()) {
 					QuestPlayerData pd = QuestUtil.getData(p);
-					
+
 					if (pd == null)
 						continue;
-					if (counter++ > ConfigSettings.PLAYER_DATA_SAVE_INTERVAL)
-					{
+					if (counter++ > ConfigSettings.PLAYER_DATA_SAVE_INTERVAL) {
 						pd.save();
 						counter = 0;
 					}
-					
+
 					pd.checkQuestFail();
-					
-					if (ConfigSettings.USE_PARTICLE_EFFECT)
-					{
-						try
-						{
+
+					if (ConfigSettings.USE_PARTICLE_EFFECT) {
+						try {
 							QuestNPCManager.effectTask(pd);
 						}
-						catch (Exception e)
-						{
+						catch (Exception e) {
 							System.out.println(e);
 							e.printStackTrace();
 							this.cancel();
 						}
 					}
-					if (ConfigSettings.ENABLE_SCOREBOARD)
-					{
-						Bukkit.getScheduler().runTask(Main.instance, () ->
-						{
-							try
-							{
+					if (ConfigSettings.ENABLE_SCOREBOARD) {
+						Bukkit.getScheduler().runTask(Main.instance, () -> {
+							try {
 								Scoreboard score = ScoreboardManager.update(pd);
 								pd.getPlayer().setScoreboard(score);
 							}
-							catch (Exception e)
-							{
+							catch (Exception e) {
 								QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.ScoreboardException"));
 								System.out.println(e);
 								e.printStackTrace();
@@ -211,8 +199,7 @@ public class Main extends JavaPlugin
 		}.runTaskTimer(this, 0L, 20L).getTaskId();
 	}
 
-	public void stopCounter()
-	{
+	public void stopCounter() {
 		if (counterTaskID != -1)
 			Bukkit.getScheduler().cancelTask(counterTaskID);
 	}

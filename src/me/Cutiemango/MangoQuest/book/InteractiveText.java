@@ -8,76 +8,65 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 public class InteractiveText
 {
-	public InteractiveText(TextComponent t)
-	{
+	public InteractiveText(TextComponent t) {
 		text = t;
 	}
 
-	public InteractiveText(String s)
-	{
+	public InteractiveText(String s) {
 		this(new TextComponent(TextComponent.fromLegacyText(QuestChatManager.translateColor(s))));
 	}
 
 	// similar to showItem
-	public InteractiveText(@NotNull ItemStack item)
-	{
+	public InteractiveText(@NotNull ItemStack item) {
 		text = TextComponentFactory.convertItemHoverEvent(item, false);
 	}
 
 	private TextComponent text;
-	
+
 	// "/" needed.
-	public InteractiveText clickCommand(String cmd)
-	{
+	public InteractiveText clickCommand(String cmd) {
 		if (!cmd.startsWith("/"))
 			cmd = "/" + cmd;
 		text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, cmd));
 		return this;
 	}
 
-	public InteractiveText showItem(@NotNull ItemStack item)
-	{
+	public InteractiveText showItem(@NotNull ItemStack item) {
 		text.addExtra(TextComponentFactory.convertItemHoverEvent(item, false));
 		return this;
 	}
 
-	public InteractiveText showText(String s)
-	{
-		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{ new TextComponent(QuestChatManager.translateColor(s)) }));
+	public InteractiveText showText(String s) {
+		text.setHoverEvent(
+				new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[] { new TextComponent(QuestChatManager.translateColor(s)) }));
 		return this;
 	}
-	
-	public InteractiveText showNPCInfo(@NotNull NPC npc)
-	{
+
+	public InteractiveText showNPCInfo(@NotNull NPC npc) {
 		text.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getStoredLocation(), false));
 		return this;
 	}
 
 	// display: quest's displayName
 	// hover: "click to view"
-	public InteractiveText showQuest(Quest q)
-	{
+	public InteractiveText showQuest(Quest q) {
 		text = TextComponentFactory.convertViewQuest(q);
 		return this;
 	}
 
 	// display: quest's displayName
 	// hover: requirement message
-	public InteractiveText showRequirement(QuestPlayerData qd, Quest q)
-	{
+	public InteractiveText showRequirement(QuestPlayerData qd, Quest q) {
 		text = TextComponentFactory.convertRequirement(qd, q);
 		return this;
 	}
 
-	public TextComponent get()
-	{
+	public TextComponent get() {
 		return text;
 	}
 }

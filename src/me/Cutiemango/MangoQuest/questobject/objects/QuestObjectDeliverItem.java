@@ -22,64 +22,56 @@ import java.util.logging.Level;
 
 public class QuestObjectDeliverItem extends ItemObject implements NPCObject, EditorObject
 {
-	
+
 	// Reserved for initializing with load()
-	public QuestObjectDeliverItem(){}
-	
-	public QuestObjectDeliverItem(NPC n, ItemStack is, int deliverAmount)
-	{
+	public QuestObjectDeliverItem() {
+	}
+
+	public QuestObjectDeliverItem(NPC n, ItemStack is, int deliverAmount) {
 		npc = n;
 		item = is;
 		amount = deliverAmount;
 	}
-	
+
 	@Override
-	public String getConfigString()
-	{
+	public String getConfigString() {
 		return "DELIVER_ITEM";
 	}
 
 	@Override
-	public String getObjectName()
-	{
+	public String getObjectName() {
 		return I18n.locMsg("QuestObjectName.DeliverItem");
 	}
 
 	private NPC npc;
-	
+
 	@Override
-	public void setAmount(int i)
-	{
+	public void setAmount(int i) {
 		amount = i;
 	}
 
-	public NPC getTargetNPC()
-	{
+	public NPC getTargetNPC() {
 		return npc;
 	}
 
-	public void setTargetNPC(NPC targetNPC)
-	{
+	public void setTargetNPC(NPC targetNPC) {
 		npc = targetNPC;
 		if (!QuestNPCManager.hasData(npc.getId()))
 			QuestNPCManager.registerNPC(npc);
 	}
 
 	@Override
-	public TextComponent toTextComponent(boolean isFinished)
-	{
+	public TextComponent toTextComponent(boolean isFinished) {
 		return super.toTextComponent(ChatColor.stripColor(I18n.locMsg("QuestObject.DeliverItem")), isFinished, amount, item, npc);
 	}
-	
+
 	@Override
-	public String toDisplayText()
-	{
+	public String toDisplayText() {
 		return I18n.locMsg("QuestObject.DeliverItem", Integer.toString(amount), QuestUtil.getItemName(item), npc.getName());
 	}
 
 	@Override
-	public void formatEditorPage(QuestBookPage page, int stage, int obj)
-	{
+	public void formatEditorPage(QuestBookPage page, int stage, int obj) {
 		page.add(I18n.locMsg("QuestEditor.DeliverItem"));
 		page.add(new InteractiveText(item));
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " item")).changeLine();
@@ -88,16 +80,15 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject, Edi
 			page.add(new InteractiveText(I18n.locMsg("QuestEditor.NotSet")));
 		else
 			page.add(new InteractiveText("").showNPCInfo(npc));
-		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " itemnpc")).changeLine();
+		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " itemnpc"))
+				.changeLine();
 		super.formatEditorPage(page, stage, obj);
 	}
-	
+
 	@Override
-	public boolean load(QuestIO config, String path)
-	{
+	public boolean load(QuestIO config, String path) {
 		String s = config.getString(path + "TargetNPC");
-		if (!QuestValidater.validateNPC(s))
-		{
+		if (!QuestValidater.validateNPC(s)) {
 			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NPCNotValid", s));
 			return false;
 		}
@@ -110,18 +101,15 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject, Edi
 	}
 
 	@Override
-	public void save(QuestIO config, String objpath)
-	{
+	public void save(QuestIO config, String objpath) {
 		config.set(objpath + "TargetNPC", npc.getId());
 		config.set(objpath + "Item", item);
 		super.save(config, objpath);
 	}
 
 	@Override
-	public boolean receiveCommandInput(Player sender, String type, String obj)
-	{
-		if (type.equals("itemnpc"))
-		{
+	public boolean receiveCommandInput(Player sender, String type, String obj) {
+		if (type.equals("itemnpc")) {
 			if (!QuestValidater.validateNPC(obj))
 				return false;
 			setTargetNPC(Main.getHooker().getNPC(obj));
@@ -131,11 +119,9 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject, Edi
 	}
 
 	@Override
-	public EditorListenerObject createCommandOutput(Player sender, String command, String type)
-	{
+	public EditorListenerObject createCommandOutput(Player sender, String command, String type) {
 		EditorListenerObject obj;
-		if (type.equals("itemnpc"))
-		{
+		if (type.equals("itemnpc")) {
 			obj = new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, command, Syntax.of("N", I18n.locMsg("Syntax.NPCID"), ""));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ClickNPC"));
 			return obj;

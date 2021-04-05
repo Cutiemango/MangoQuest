@@ -15,10 +15,10 @@ public class EditorListenerObject
 		syntax = s;
 	}
 
-	private Syntax syntax;
-	private ListeningType type;
+	private final Syntax syntax;
+	private final ListeningType type;
 	// No "/" needed
-	private String command;
+	private final String command;
 
 	public void execute(Player p, String obj)
 	{
@@ -26,7 +26,7 @@ public class EditorListenerObject
 			return;
 		if (syntax != null && !syntax.matches(p, obj))
 		{
-			EditorListenerHandler.unreigster(p);
+			EditorListenerHandler.unregister(p);
 			return;
 		}
 		QuestUtil.executeSyncCommand(p, command + " " + obj);

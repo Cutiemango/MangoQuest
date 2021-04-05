@@ -12,16 +12,14 @@ import java.util.List;
 public class QuestConversation
 {
 	// Only init with command
-	public QuestConversation()
-	{
+	public QuestConversation() {
 		action = new ArrayList<>();
 		name = I18n.locMsg("QuestEditor.NotSet");
 		id = I18n.locMsg("QuestEditor.NotSet");
 		npc = null;
 	}
-	
-	public QuestConversation(String s, String internal, NPC n, List<QuestBaseAction> list)
-	{
+
+	public QuestConversation(String s, String internal, NPC n, List<QuestBaseAction> list) {
 		name = s;
 		action = list;
 		id = internal;
@@ -33,61 +31,49 @@ public class QuestConversation
 	protected String id;
 	protected NPC npc;
 
-	public List<QuestBaseAction> getActions()
-	{
+	public List<QuestBaseAction> getActions() {
 		return action;
 	}
 
-	public String getName()
-	{
+	public String getName() {
 		return name;
 	}
 
-	public String getInternalID()
-	{
+	public String getInternalID() {
 		return id;
 	}
 
-	public NPC getNPC()
-	{
+	public NPC getNPC() {
 		return npc;
 	}
 
-	public boolean hasNPC()
-	{
+	public boolean hasNPC() {
 		return npc != null;
 	}
-	
-	public void setInternalID(String s)
-	{
+
+	public void setInternalID(String s) {
 		id = s;
 	}
-	
-	public void setName(String s)
-	{
+
+	public void setName(String s) {
 		name = s;
 	}
-	
-	public void setNPC(NPC n)
-	{
+
+	public void setNPC(NPC n) {
 		npc = n;
 	}
-	
-	public void setActions(List<QuestBaseAction> l)
-	{
+
+	public void setActions(List<QuestBaseAction> l) {
 		action = l;
 	}
-	
+
 	@Override
-	public QuestConversation clone()
-	{
+	public QuestConversation clone() {
 		return new QuestConversation(name, id, npc, action);
 	}
-	
-	public static void synchronizeLocal(QuestConversation qc)
-	{
-		for (Player p : Bukkit.getOnlinePlayers())
-		{
+
+	public static void synchronizeLocal(QuestConversation qc) {
+		for (Player p : Bukkit.getOnlinePlayers()) {
 			ConversationManager.forceQuit(p, qc);
 		}
 		QuestStorage.localConversations.put(qc.getInternalID(), qc);

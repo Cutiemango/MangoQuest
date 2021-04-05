@@ -13,8 +13,7 @@ public class QuestBookPage
 
 	public static HashMap<Character.UnicodeBlock, Pair<Double, Double>> CHARACTER_SIZEMAP = new HashMap<>();
 
-	static
-	{
+	static {
 		CHARACTER_SIZEMAP.put(Character.UnicodeBlock.BASIC_LATIN, new Pair<>(1D, 1.2D));
 		CHARACTER_SIZEMAP.put(Character.UnicodeBlock.DINGBATS, new Pair<>(1.5D, 1.55D));
 		CHARACTER_SIZEMAP.put(Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION, new Pair<>(1.5D, 1.55D));
@@ -22,21 +21,18 @@ public class QuestBookPage
 		CHARACTER_SIZEMAP.put(Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS, new Pair<>(1.5D, 1.55D));
 	}
 
-	public QuestBookPage()
-	{
+	public QuestBookPage() {
 		page = new TextComponent();
 		saved = new TextComponent();
 	}
 
-	public QuestBookPage(TextComponent text)
-	{
+	public QuestBookPage(TextComponent text) {
 		this();
 		add(text);
 	}
 
 	// used for duplicating
-	public QuestBookPage(TextComponent p, TextComponent s, double d, int i)
-	{
+	public QuestBookPage(TextComponent p, TextComponent s, double d, int i) {
 		page = p;
 		saved = s;
 		size = d;
@@ -54,63 +50,53 @@ public class QuestBookPage
 	private double size = 0d;
 	private int lineUsed = 1;
 
-	public QuestBookPage add(String s)
-	{
+	public QuestBookPage add(String s) {
 		if (s.equals(""))
 			return this;
 		add(new TextComponent(s));
 		return this;
 	}
 
-	public QuestBookPage add(TextComponent t)
-	{
-		if (t.getText().contains("\n"))
-		{
+	public QuestBookPage add(TextComponent t) {
+		if (t.getText().contains("\n")) {
 			String[] split = t.getText().split("\n");
-			for (String s : split)
-			{
+			for (String s : split) {
 				add(new TextComponent(s));
 				changeLine();
 			}
 			return this;
 		}
 
-//		DebugHandler.log(5, "Adding: %s", t.getText());
+		//		DebugHandler.log(5, "Adding: %s", t.getText());
 		TextComponent sanitized = TextComponentFactory.formatSanitize(t);
-//		DebugHandler.log(5, "Sanitized: %s", sanitized);
+		//		DebugHandler.log(5, "Sanitized: %s", sanitized);
 
 		StringBuilder builder = new StringBuilder();
-		for (char c : sanitized.getText().toCharArray())
-		{
+		for (char c : sanitized.getText().toCharArray()) {
 			Pair<Double, Double> pair = CHARACTER_SIZEMAP.getOrDefault(Character.UnicodeBlock.of(c), new Pair<>(1d, 1d));
 			double charSize = sanitized.isBold() ? pair.getValue() : pair.getKey();
-//			DebugHandler.log(5, "Size: %2.2f, charSize: %2.2f", size, charSize);
-			if (size + charSize > MAXIMUM_CHAR_PER_LINE)
-			{
+			//			DebugHandler.log(5, "Size: %2.2f, charSize: %2.2f", size, charSize);
+			if (size + charSize > MAXIMUM_CHAR_PER_LINE) {
 				TextComponent left = new TextComponent();
 				left.setText(builder.toString());
 				left.copyFormatting(sanitized);
 				saved.addExtra(left);
-//				DebugHandler.log(5, "Saved: %s", saved.toLegacyText());
+				//				DebugHandler.log(5, "Saved: %s", saved.toLegacyText());
 
 				changeLine();
 				saved.copyFormatting(sanitized);
-//				DebugHandler.log(5, "Page: %s", page.toLegacyText());
+				//				DebugHandler.log(5, "Page: %s", page.toLegacyText());
 				builder = new StringBuilder();
 			}
 			builder.append(c);
 			size += charSize;
 		}
 
-		if (builder.length() != 0)
-		{
-			if (saved.toPlainText().length() == 0)
-			{
+		if (builder.length() != 0) {
+			if (saved.toPlainText().length() == 0) {
 				saved.copyFormatting(sanitized);
 				saved.setText(builder.toString());
-			}
-			else
-			{
+			} else {
 				TextComponent left = new TextComponent();
 				left.setText(builder.toString());
 				left.copyFormatting(sanitized);
@@ -118,10 +104,8 @@ public class QuestBookPage
 			}
 		}
 
-		if (sanitized.getExtra() != null && !sanitized.getExtra().isEmpty())
-		{
-			for (BaseComponent comp : sanitized.getExtra())
-			{
+		if (sanitized.getExtra() != null && !sanitized.getExtra().isEmpty()) {
+			for (BaseComponent comp : sanitized.getExtra()) {
 				if (!(comp instanceof TextComponent))
 					continue;
 				// we need to cancel out parent's formatting
@@ -144,45 +128,38 @@ public class QuestBookPage
 		return this;
 	}
 
-	public QuestBookPage add(InteractiveText it)
-	{
+	public QuestBookPage add(InteractiveText it) {
 		add(it.get());
 		return this;
 	}
 
-	public void changeLine()
-	{
-		if (saved.toPlainText().length() != 0)
-		{
+	public void changeLine() {
+		if (saved.toPlainText().length() != 0) {
 			page.addExtra(saved);
 			saved = new TextComponent();
 		}
 		size = 0d;
 		page.addExtra("\n");
-		lineUsed+=1;
-//		DebugHandler.log(5, "Line changed.");
+		lineUsed += 1;
+		//		DebugHandler.log(5, "Line changed.");
 	}
 
-	public TextComponent getOriginalPage()
-	{
+	public TextComponent getOriginalPage() {
 		if (saved.toPlainText().length() != 0)
 			page.addExtra(saved);
 		return page;
 	}
-	
-	public QuestBookPage duplicate()
-	{
+
+	public QuestBookPage duplicate() {
 		// TextComponent.duplicate() will fail if user is not adopting new versions
 		return new QuestBookPage(new TextComponent(page), new TextComponent(saved), size, lineUsed);
 	}
 
-	public TextComponent getSaved()
-	{
+	public TextComponent getSaved() {
 		return saved;
 	}
-	
-	public boolean isOutOfBounds()
-	{
+
+	public boolean isOutOfBounds() {
 		return lineUsed >= MAXIMUM_LINE_PER_PAGE;
 	}
 }

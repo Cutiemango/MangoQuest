@@ -8,8 +8,8 @@ import org.bukkit.event.HandlerList;
 public class QuestTakeEvent extends Event
 {
 	private static final HandlerList handlers = new HandlerList();
-	private Player player;
-	private Quest quest;
+	private final Player player;
+	private final Quest quest;
 
 	public QuestTakeEvent(Player who, Quest q)
 	{

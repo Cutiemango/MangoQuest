@@ -26,55 +26,48 @@ import java.util.logging.Level;
 
 public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject, EditorObject
 {
-	
-	public QuestObjectTalkToNPC(){}
 
-	public QuestObjectTalkToNPC(NPC n)
-	{
+	public QuestObjectTalkToNPC() {
+	}
+
+	public QuestObjectTalkToNPC(NPC n) {
 		npc = n;
 	}
-	
+
 	@Override
-	public String getConfigString()
-	{
+	public String getConfigString() {
 		return "TALK_TO_NPC";
 	}
 
 	@Override
-	public String getObjectName()
-	{
+	public String getObjectName() {
 		return I18n.locMsg("QuestObjectName.TalkToNPC");
 	}
 
 	private NPC npc;
 
-	public NPC getTargetNPC()
-	{
+	public NPC getTargetNPC() {
 		return npc;
 	}
 
-	public void setTargetNPC(NPC targetNPC)
-	{
+	public void setTargetNPC(NPC targetNPC) {
 		npc = targetNPC;
 		if (!QuestNPCManager.hasData(npc.getId()))
 			QuestNPCManager.registerNPC(npc);
 	}
 
 	@Override
-	public TextComponent toTextComponent(boolean isFinished)
-	{
+	public TextComponent toTextComponent(boolean isFinished) {
 		return super.toTextComponent(ChatColor.stripColor(I18n.locMsg("QuestObject.TalkToNPC")), isFinished, npc);
 	}
 
 	@Override
-	public String toDisplayText()
-	{
+	public String toDisplayText() {
 		return I18n.locMsg("QuestObject.TalkToNPC", getTargetNPC().getName());
 	}
 
 	@Override
-	public void formatEditorPage(QuestBookPage page, int stage, int obj)
-	{
+	public void formatEditorPage(QuestBookPage page, int stage, int obj) {
 		page.add(I18n.locMsg("QuestEditor.TalkNPC"));
 		if (npc == null)
 			page.add(new InteractiveText(I18n.locMsg("QuestEditor.NotSet")));
@@ -91,11 +84,9 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 	}
 
 	@Override
-	public boolean load(QuestIO config, String path)
-	{
+	public boolean load(QuestIO config, String path) {
 		String id = config.getString(path + "TargetNPC");
-		if (!QuestValidater.validateNPC(id))
-		{
+		if (!QuestValidater.validateNPC(id)) {
 			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.NPCNotValid", id));
 			return false;
 		}
@@ -106,16 +97,13 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 	}
 
 	@Override
-	public void save(QuestIO config, String objpath)
-	{
+	public void save(QuestIO config, String objpath) {
 		config.set(objpath + "TargetNPC", npc.getId());
 	}
 
 	@Override
-	public boolean receiveCommandInput(Player sender, String type, String obj)
-	{
-		switch (type)
-		{
+	public boolean receiveCommandInput(Player sender, String type, String obj) {
+		switch (type) {
 			case "npc":
 				if (!QuestValidater.validateNPC(obj))
 					return false;
@@ -130,11 +118,9 @@ public class QuestObjectTalkToNPC extends SimpleQuestObject implements NPCObject
 	}
 
 	@Override
-	public EditorListenerObject createCommandOutput(Player sender, String command, String type)
-	{
+	public EditorListenerObject createCommandOutput(Player sender, String command, String type) {
 		EditorListenerObject obj = null;
-		switch (type)
-		{
+		switch (type) {
 			case "npc":
 				obj = new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, command, Syntax.of("N", I18n.locMsg("Syntax.NPCID"), ""));
 				QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.ClickNPC"));

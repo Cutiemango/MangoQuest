@@ -14,12 +14,10 @@ import java.util.List;
 
 public class QuestBaseAction
 {
-
-	private EnumAction action;
+	private final EnumAction action;
 	private String obj;
 
-	public QuestBaseAction(EnumAction act, String st)
-	{
+	public QuestBaseAction(EnumAction act, String st) {
 		action = act;
 		obj = st;
 	}
@@ -39,28 +37,23 @@ public class QuestBaseAction
 		FINISH(I18n.locMsg("EnumAction.Finish")),
 		TAKE_QUEST(I18n.locMsg("EnumAction.TakeQuest")),
 		EXIT(I18n.locMsg("EnumAction.Exit"));
-		
-		EnumAction(String s)
-		{
+
+		EnumAction(String s) {
 			name = s;
 		}
 
-		public static final List<EnumAction> NO_OBJ_ACTIONS = Arrays.asList(EnumAction.CHANGE_LINE, EnumAction.CHANGE_PAGE, EnumAction.BUTTON, EnumAction.TAKE_QUEST, EnumAction.EXIT);
-		private String name;
-		
-		public String toCustomString()
-		{
+		public static final List<EnumAction> NO_OBJ_ACTIONS = Arrays
+				.asList(EnumAction.CHANGE_LINE, EnumAction.CHANGE_PAGE, EnumAction.BUTTON, EnumAction.TAKE_QUEST, EnumAction.EXIT);
+		private final String name;
+
+		public String toCustomString() {
 			return name;
 		}
 	}
 
-	public void execute(final ConversationProgress cp)
-	{
-		String target = obj;
-		if (obj != null)
-			target = obj.replace("<player>", cp.getOwner().getName());
-		switch (action)
-		{
+	public void execute(final ConversationProgress cp) {
+		String target = obj != null ? obj.replace("<player>", cp.getOwner().getName()) : null;
+		switch (action) {
 			case BUTTON:
 				cp.getCurrentPage().add(new InteractiveText(I18n.locMsg("Conversation.Button")).clickCommand("/mq conv next")).changeLine();
 				break;
@@ -95,14 +88,14 @@ public class QuestBaseAction
 				if (split.length == 1 || !QuestValidater.validateNPC(split[1]))
 					cp.getCurrentPage().add(I18n.locMsg("QuestJourney.NPCMessage", split[0])).changeLine();
 				else
-					cp.getCurrentPage().add(I18n.locMsg("QuestJourney.NPCFriendMessage", Main.getHooker().getNPC(split[1]).getName(), split[0])).changeLine();
+					cp.getCurrentPage().add(I18n.locMsg("QuestJourney.NPCFriendMessage", Main.getHooker().getNPC(split[1]).getName(), split[0]))
+							.changeLine();
 				break;
 			case WAIT:
 				new BukkitRunnable()
 				{
 					@Override
-					public void run()
-					{
+					public void run() {
 						cp.nextAction();
 					}
 				}.runTaskLater(Main.getInstance(), Long.parseLong(target));
@@ -113,10 +106,9 @@ public class QuestBaseAction
 			case TAKE_QUEST:
 				if (!(cp.getConversation() instanceof StartTriggerConversation))
 					break;
-				StartTriggerConversation conv = (StartTriggerConversation)cp.getConversation();
+				StartTriggerConversation conv = (StartTriggerConversation) cp.getConversation();
 				QuestPlayerData data = QuestUtil.getData(cp.getOwner());
-				if (!data.checkQuestSize(false))
-				{
+				if (!data.checkQuestSize(false)) {
 					cp.getCurrentPage().add(conv.getQuestFullMessage()).changeLine();
 					cp.getActionQueue().add(new QuestBaseAction(EnumAction.FINISH, "false"));
 					break;
@@ -138,21 +130,18 @@ public class QuestBaseAction
 			default:
 				break;
 		}
-		
+
 	}
 
-	public EnumAction getActionType()
-	{
+	public EnumAction getActionType() {
 		return action;
 	}
-	
-	public String getObject()
-	{
+
+	public String getObject() {
 		return obj;
 	}
-	
-	public String toConfigFormat()
-	{
+
+	public String toConfigFormat() {
 		if (obj == null)
 			obj = "";
 		return action.toString() + "#" + obj;

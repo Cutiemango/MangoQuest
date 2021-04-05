@@ -13,29 +13,22 @@ public abstract class ItemObject extends NumerableObject
 {
 	protected ItemStack item;
 
-	public ItemStack getItem()
-	{
+	public ItemStack getItem() {
 		return item;
 	}
 
-	public void setItem(ItemStack is)
-	{
+	public void setItem(ItemStack is) {
 		item = is;
 	}
-	
+
 	@Override
-	public boolean receiveCommandInput(Player sender, String type, String obj)
-	{
-		if (type.equals("item"))
-		{
+	public boolean receiveCommandInput(Player sender, String type, String obj) {
+		if (type.equals("item")) {
 			ItemStack item = sender.getInventory().getItemInMainHand();
-			if (item == null || item.getType() == Material.AIR)
-			{
+			if (item == null || item.getType() == Material.AIR) {
 				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ItemInHand"));
 				return false;
-			}
-			else
-			{
+			} else {
 				setItem(item);
 				QuestChatManager.info(sender, I18n.locMsg("EditorMessage.ItemRegistered"));
 				return true;
@@ -43,13 +36,11 @@ public abstract class ItemObject extends NumerableObject
 		}
 		return super.receiveCommandInput(sender, type, obj);
 	}
-	
+
 	@Override
-	public EditorListenerObject createCommandOutput(Player sender, String command, String type)
-	{
+	public EditorListenerObject createCommandOutput(Player sender, String command, String type) {
 		EditorListenerObject obj;
-		if (type.equals("item"))
-		{
+		if (type.equals("item")) {
 			obj = new EditorListenerObject(ListeningType.ITEM, command, null);
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.RightClick"));
 			return obj;

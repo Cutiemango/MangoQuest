@@ -16,16 +16,12 @@ import org.bukkit.entity.Player;
 public class CommandNewConv
 {
 	// /mq ce newconv args[2] args[3]
-	public static void execute(Player sender, String[] args)
-	{
-		if (args.length == 2){
+	public static void execute(Player sender, String[] args) {
+		if (args.length == 2) {
 			ConversationEditorManager.edit(sender, new QuestConversation());
 			ConversationEditorManager.createConversation(sender);
-		}
-		else if (args.length > 2)
-		{
-			switch (args[2])
-			{
+		} else if (args.length > 2) {
+			switch (args[2]) {
 				case "id":
 					setInternalID(sender, args);
 					break;
@@ -41,17 +37,14 @@ public class CommandNewConv
 			}
 		}
 	}
-	
-	private static void setInternalID(Player p, String[] args)
-	{
-		if (args.length == 3)
-		{
+
+	private static void setInternalID(Player p, String[] args) {
+		if (args.length == 3) {
 			QuestBookGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewConv.EnterID"));
 			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq ce newconv id", null));
 			return;
 		}
-		if (args[3].equalsIgnoreCase("cancel"))
-		{
+		if (args[3].equalsIgnoreCase("cancel")) {
 			ConversationEditorManager.createConversation(p);
 			return;
 		}
@@ -59,15 +52,14 @@ public class CommandNewConv
 		QuestChatManager.info(p, I18n.locMsg("EditorMessage.NameRegistered", args[3]));
 		ConversationEditorManager.createConversation(p);
 	}
-	
-	private static void setConvName(Player p, String[] args)
-	{
-		if (args.length == 3){
+
+	private static void setConvName(Player p, String[] args) {
+		if (args.length == 3) {
 			QuestBookGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewConv.EnterName"));
 			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.STRING, "mq ce newconv name", null));
 			return;
 		}
-		if (args[3].equalsIgnoreCase("cancel")){
+		if (args[3].equalsIgnoreCase("cancel")) {
 			ConversationEditorManager.createConversation(p);
 			return;
 		}
@@ -75,15 +67,15 @@ public class CommandNewConv
 		QuestChatManager.info(p, I18n.locMsg("EditorMessage.NameRegistered", args[3]));
 		ConversationEditorManager.createConversation(p);
 	}
-	
-	private static void setConvNPC(Player p, String[] args)
-	{
-		if (args.length == 3){
+
+	private static void setConvNPC(Player p, String[] args) {
+		if (args.length == 3) {
 			QuestBookGUIManager.openInfo(p, I18n.locMsg("EditorMessage.NewConv.EnterNPC"));
-			EditorListenerHandler.register(p, new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, "mq ce newconv npc", Syntax.of("N", I18n.locMsg("Syntax.NPCID"), "")));
+			EditorListenerHandler.register(p,
+					new EditorListenerObject(ListeningType.NPC_LEFT_CLICK, "mq ce newconv npc", Syntax.of("N", I18n.locMsg("Syntax.NPCID"), "")));
 			return;
 		}
-		if (args[3].equalsIgnoreCase("cancel")){
+		if (args[3].equalsIgnoreCase("cancel")) {
 			ConversationEditorManager.createConversation(p);
 			return;
 		}
@@ -94,17 +86,13 @@ public class CommandNewConv
 		QuestChatManager.info(p, I18n.locMsg("EditorMessage.NPCRegistered", npc.getName()));
 		ConversationEditorManager.createConversation(p);
 	}
-	
-	private static void create(Player p)
-	{
+
+	private static void create(Player p) {
 		QuestConversation conv = ConversationEditorManager.getEditingConversation(p);
-		if (conv.getInternalID() != null && conv.getName() != null && conv.getNPC() != null)
-		{
+		if (conv.getInternalID() != null && conv.getName() != null && conv.getNPC() != null) {
 			QuestChatManager.info(p, I18n.locMsg("EditorMessage.NewConv.Successful", conv.getName()));
 			ConversationEditorManager.editConversation(p);
-		}
-		else
-		{
+		} else {
 			QuestChatManager.info(p, I18n.locMsg("EditorMessage.NewConv.Failed"));
 			ConversationEditorManager.createConversation(p);
 		}

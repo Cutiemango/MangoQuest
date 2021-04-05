@@ -21,11 +21,9 @@ public class QuestValidater
 {
 	public static class WrappedWeakItem
 	{
-		public WrappedWeakItem(ItemStack item)
-		{
+		public WrappedWeakItem(ItemStack item) {
 			type = item.getType();
-			if (item.getItemMeta() != null)
-			{
+			if (item.getItemMeta() != null) {
 				hasItemMeta = true;
 				displayName = item.getItemMeta().getDisplayName();
 				lore = Optional.ofNullable(item.getItemMeta().getLore());
@@ -37,47 +35,39 @@ public class QuestValidater
 		private String displayName = "";
 		private Optional<List<String>> lore = Optional.empty();
 
-		public Material getType()
-		{
+		public Material getType() {
 			return type;
 		}
 
-		public boolean hasItemMeta()
-		{
+		public boolean hasItemMeta() {
 			return hasItemMeta;
 		}
 
-		public String getDisplayName()
-		{
+		public String getDisplayName() {
 			return displayName;
 		}
 
-		public boolean hasDisplayName()
-		{
+		public boolean hasDisplayName() {
 			return !displayName.equals("");
 		}
 
-		public Optional<List<String>> getLore()
-		{
+		public Optional<List<String>> getLore() {
 			return lore;
 		}
 
 		@Override
-		public int hashCode()
-		{
+		public int hashCode() {
 			return Objects.hash(type, hasItemMeta, displayName, lore);
 		}
 
 		@Override
-		public boolean equals(Object obj)
-		{
+		public boolean equals(Object obj) {
 			if (!(obj instanceof WrappedWeakItem))
 				return false;
 			WrappedWeakItem other = (WrappedWeakItem) obj;
 			if (type != other.getType() || hasItemMeta != other.hasItemMeta())
 				return false;
-			if (hasItemMeta)
-			{
+			if (hasItemMeta) {
 				if (!displayName.equals(other.getDisplayName()))
 					return false;
 				return lore.equals(other.getLore());
@@ -86,20 +76,16 @@ public class QuestValidater
 		}
 
 	}
-	public static boolean isWorld(String s)
-	{
+
+	public static boolean isWorld(String s) {
 		return s != null && Bukkit.getWorld(s) != null;
 	}
-	
-	public static boolean weakItemCheck(ItemStack original, ItemStack compare)
-	{
-		if (original.getType().equals(compare.getType()))
-		{
+
+	public static boolean weakItemCheck(ItemStack original, ItemStack compare) {
+		if (original.getType().equals(compare.getType())) {
 			Optional<ItemMeta> oriMeta = Optional.ofNullable(original.getItemMeta()), cmpMeta = Optional.ofNullable(compare.getItemMeta());
-			if (oriMeta.isPresent() == cmpMeta.isPresent())
-			{
-				if (oriMeta.isPresent())
-				{
+			if (oriMeta.isPresent() == cmpMeta.isPresent()) {
+				if (oriMeta.isPresent()) {
 					ItemMeta im = oriMeta.get(), mm = cmpMeta.get();
 
 					// Optional.equals(): The other object is considered equal if:
@@ -108,8 +94,7 @@ public class QuestValidater
 					// or the present values are "equal to" each other via equals().
 					Optional<String> oriName = Optional.ofNullable(im.getDisplayName()), cmpName = Optional.ofNullable(mm.getDisplayName());
 					// Name check
-					if (!oriName.equals(cmpName))
-					{
+					if (!oriName.equals(cmpName)) {
 						DebugHandler.log(5, "[ItemCheck] Item displayName mismatch.");
 						return false;
 					}
@@ -121,8 +106,7 @@ public class QuestValidater
 					Optional<List<String>> oriLore = Optional.ofNullable(im.getLore()), cmpLore = Optional.ofNullable(mm.getLore());
 
 					// Lore check
-					if (!oriLore.equals(cmpLore))
-					{
+					if (!oriLore.equals(cmpLore)) {
 						DebugHandler.log(5, "[ItemCheck] Item lore mismatch.");
 						return false;
 					}
@@ -135,38 +119,32 @@ public class QuestValidater
 		DebugHandler.log(5, "[ItemCheck] Type is not correct.");
 		return false;
 	}
-	
-	public static boolean validateMythicMob(String id)
-	{
+
+	public static boolean validateMythicMob(String id) {
 		if (!Main.getHooker().hasMythicMobEnabled())
 			return false;
 		MythicMob m = Main.getHooker().getMythicMob(id);
 		return m != null;
 	}
 
-	public static boolean validateNPC(String id)
-	{
+	public static boolean validateNPC(String id) {
 		if (!validateInteger(id))
 			return false;
 		NPC npc = Main.getHooker().getNPC(id);
 		return npc != null;
 	}
 
-	public static boolean validateInteger(String number)
-	{
-		try
-		{
+	public static boolean validateInteger(String number) {
+		try {
 			Integer.parseInt(number);
 		}
-		catch (NumberFormatException | NullPointerException e)
-		{
+		catch (NumberFormatException | NullPointerException e) {
 			return false;
 		}
 		return true;
 	}
-	
-	public static boolean detailedValidate(Quest before, Quest after)
-	{
+
+	public static boolean detailedValidate(Quest before, Quest after) {
 		if (before == null || after == null)
 			return false;
 		if (!before.getInternalID().equals(after.getInternalID()))
@@ -175,8 +153,7 @@ public class QuestValidater
 			return false;
 		if (!(before.isCommandQuest() == after.isCommandQuest()))
 			return false;
-		if (!before.isCommandQuest())
-		{
+		if (!before.isCommandQuest()) {
 			if (!(before.getQuestNPC().getId() == after.getQuestNPC().getId()))
 				return false;
 		}
@@ -188,8 +165,7 @@ public class QuestValidater
 			return false;
 		if (!(before.isRedoable() == after.isRedoable()))
 			return false;
-		if (before.isRedoable())
-		{
+		if (before.isRedoable()) {
 			if (!(before.getRedoDelay() == after.getRedoDelay()))
 				return false;
 		}
@@ -197,13 +173,10 @@ public class QuestValidater
 			return false;
 		if (!before.getStages().equals(after.getStages()))
 			return false;
-		if (!before.getTriggerMap().equals(after.getTriggerMap()))
-			return false;
-		return true;
+		return before.getTriggerMap().equals(after.getTriggerMap());
 	}
-	
-	public static boolean detailedValidate(QuestConversation before, QuestConversation after)
-	{
+
+	public static boolean detailedValidate(QuestConversation before, QuestConversation after) {
 		if (before == null || after == null)
 			return false;
 		if (!before.getInternalID().equals(after.getInternalID()))
@@ -214,27 +187,22 @@ public class QuestValidater
 			return false;
 		if (!before.getActions().equals(after.getActions()))
 			return false;
-		if (!(before instanceof FriendConversation && after instanceof FriendConversation))
-			return false;
-		if (before instanceof FriendConversation && after instanceof FriendConversation)
-			if (!(((FriendConversation)before).getReqPoint() == ((FriendConversation)after).getReqPoint()))
-				return false;
-		if (!(before instanceof StartTriggerConversation && after instanceof StartTriggerConversation))
-			return false;
-		if (before instanceof StartTriggerConversation && after instanceof StartTriggerConversation)
-			if (!((StartTriggerConversation)before).getQuest().equals(((StartTriggerConversation)after).getQuest()))
-				return false;
+		if (before instanceof FriendConversation) {
+			if (!(after instanceof FriendConversation)) return false;
+			else if (((FriendConversation) before).getReqPoint() != ((FriendConversation) after).getReqPoint()) return false;
+		}
+		if (before instanceof StartTriggerConversation) {
+			if (!(after instanceof StartTriggerConversation)) return false;
+			else if (!((StartTriggerConversation) before).getQuest().equals(((StartTriggerConversation) after).getQuest())) return false;
+		}
 		return true;
 	}
 
-	public static boolean weakValidate(Quest before, Quest after)
-	{
+	public static boolean weakValidate(Quest before, Quest after) {
 		if (before == null || after == null)
 			return false;
 		if (!before.getInternalID().equals(after.getInternalID()))
 			return false;
-		if (!before.getQuestName().equals(after.getQuestName()))
-			return false;
-		return true;
+		return before.getQuestName().equals(after.getQuestName());
 	}
 }

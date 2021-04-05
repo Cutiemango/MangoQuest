@@ -13,24 +13,20 @@ public enum TriggerType
 	private String name;
 	private boolean hasStage;
 
-	TriggerType(String s, boolean b)
-	{
+	TriggerType(String s, boolean b) {
 		name = s;
 		hasStage = b;
 	}
 
-	public String toCustomString()
-	{
+	public String toCustomString() {
 		return name;
 	}
 
-	public boolean hasStage()
-	{
+	public boolean hasStage() {
 		return hasStage;
 	}
 
-	public String toCustomString(int i)
-	{
+	public String toCustomString(int i) {
 		return name.replace("N", Integer.toString(i));
 	}
 }

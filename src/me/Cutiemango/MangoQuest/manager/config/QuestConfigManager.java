@@ -11,12 +11,11 @@ public class QuestConfigManager
 
 	private QuestIO globalQuest;
 	private QuestIO globalConv;
-	
+
 	private static QuestConfigLoader loader;
 	private static QuestConfigSaver saver;
 
-	public QuestConfigManager()
-	{
+	public QuestConfigManager() {
 		config = new QuestIO("config.yml", false, true, false);
 
 		loader = new QuestConfigLoader(this);
@@ -25,50 +24,42 @@ public class QuestConfigManager
 
 		loadFile();
 	}
-	
-	public void loadFile()
-	{
+
+	public void loadFile() {
 		globalQuest = new QuestIO("quest", "globalquest.yml");
 		globalConv = new QuestIO("conversation", "globalconv.yml");
 
 		translation = new QuestIO("translations.yml", true, true, true);
 		npcData = new QuestIO("npc.yml", true, false, false);
-		
+
 		DebugHandler.log(1, "[Config] File Loaded.");
 	}
-	
-	public static QuestConfigLoader getLoader()
-	{
+
+	public static QuestConfigLoader getLoader() {
 		return loader;
 	}
-	
-	public static QuestConfigSaver getSaver()
-	{
+
+	public static QuestConfigSaver getSaver() {
 		return saver;
 	}
-	
-	protected QuestIO getTranslation()
-	{
+
+	protected QuestIO getTranslation() {
 		return translation;
 	}
 
-	protected QuestIO getNPC()
-	{
+	protected QuestIO getNPC() {
 		return npcData;
 	}
 
-	protected QuestIO getConfig()
-	{
+	protected QuestIO getConfig() {
 		return config;
 	}
 
-	protected QuestIO getGlobalQuest()
-	{
+	protected QuestIO getGlobalQuest() {
 		return globalQuest;
 	}
 
-	protected QuestIO getGlobalConversation()
-	{
+	protected QuestIO getGlobalConversation() {
 		return globalConv;
 	}
 }

@@ -11,49 +11,39 @@ import java.util.logging.Level;
 
 public class QuestChatManager
 {
-	public static String translateColor(String s)
-	{
+	public static String translateColor(String s) {
 		return ChatColor.translateAlternateColorCodes('&', s);
 	}
-	
-	public static String toNormalDisplay(String s)
-	{
+
+	public static String toNormalDisplay(String s) {
 		return QuestChatManager.translateColor(s.replaceAll("&0", "&f").replaceAll("§0", "§f"));
 	}
-	
-	public static String toBookDisplay(String s)
-	{
+
+	public static String toBookDisplay(String s) {
 		return QuestChatManager.translateColor(s.replaceAll("&f", "&0").replaceAll("§f", "§0"));
 	}
-	
-	public static String finishedObjectFormat(String s)
-	{
+
+	public static String finishedObjectFormat(String s) {
 		return I18n.locMsg("QuestGUI.ColorFormat.FinishedObject") + ChatColor.stripColor(s);
 	}
 
-	public static String unavailableQuestFormat(String s)
-	{
+	public static String unavailableQuestFormat(String s) {
 		return I18n.locMsg("QuestGUI.ColorFormat.UnavailableQuest") + ChatColor.stripColor(s);
 	}
-	
-	public static String trimColor(String s)
-	{	
+
+	public static String trimColor(String s) {
 		String targetText = translateColor(s);
 		boolean escape = false;
 		boolean nextTextSplit = false;
 		int index = 0;
 		String savedText = "";
-		for (int i = 0; i < targetText.toCharArray().length; i++)
-		{
-			if (escape)
-			{
+		for (int i = 0; i < targetText.toCharArray().length; i++) {
+			if (escape) {
 				escape = false;
 				continue;
 			}
-			if (targetText.charAt(i) == '§')
-			{
-				if (nextTextSplit)
-				{
+			if (targetText.charAt(i) == '§') {
+				if (nextTextSplit) {
 					String split = targetText.substring(index, i);
 					savedText += ChatColor.getLastColors(split) + ChatColor.stripColor(split);
 					index = i;
@@ -68,27 +58,23 @@ public class QuestChatManager
 		savedText += ChatColor.getLastColors(split) + ChatColor.stripColor(split);
 		return savedText;
 	}
-	
-	public static void info(CommandSender p, String s)
-	{
+
+	public static void info(CommandSender p, String s) {
 		p.sendMessage(QuestStorage.prefix + " " + translateColor(s));
 	}
 
-	public static void error(CommandSender p, String s)
-	{
+	public static void error(CommandSender p, String s) {
 		p.sendMessage(translateColor("&c&lError> " + s));
 	}
-	
-	public static void logCmd(Level lv, String msg)
-	{
+
+	public static void logCmd(Level lv, String msg) {
 		Bukkit.getLogger().log(lv, "[MangoQuest] " + msg);
 	}
-	
-	public static void syntaxError(Player p, String req, String entry)
-	{
+
+	public static void syntaxError(Player p, String req, String entry) {
 		info(p, I18n.locMsg("SyntaxError.IllegalArgument"));
 		info(p, I18n.locMsg("SyntaxError.ReqEntry") + req);
 		info(p, I18n.locMsg("SyntaxError.YourEntry") + entry);
 	}
-	
+
 }

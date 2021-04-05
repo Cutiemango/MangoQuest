@@ -22,56 +22,50 @@ public class AdminCommand implements CommandExecutor
 {
 	// Command: /mqa [args]
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
-	{
-		if (!sender.hasPermission("MangoQuest.AdminCommand"))
-		{
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!sender.hasPermission("MangoQuest.AdminCommand")) {
 			QuestChatManager.error(sender, I18n.locMsg("CommandInfo.NoPermission"));
 			return false;
 		}
-		if (args.length == 1)
-		{
-			if (args[0].equalsIgnoreCase("reload"))
-			{
+		if (args.length == 1) {
+			if (args[0].equalsIgnoreCase("reload")) {
 				Main.getInstance().reload();
 				QuestChatManager.info(sender, "&a" + I18n.locMsg("CommandInfo.ReloadSuccessful"));
 				return true;
-			}
-			else
-			{
+			} else {
 				sendAdminHelp(sender);
 				return false;
 			}
-		}
-		else if (args.length > 1)
-		{
+		} else if (args.length > 1) {
 			Player target = Bukkit.getPlayer(args[1]);
-			if (target == null)
-			{
+			if (target == null) {
 				QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
 				return false;
 			}
 			QuestPlayerData pd = QuestUtil.getData(target);
-			switch (args[0])
-			{
+			switch (args[0]) {
 				// /mqa nextstage [ID] [quest]
 				// /mqa forcetake [ID] [quest]
 				// /mqa forcefinish [ID] [quest]
 				case "nextstage":
 					Optional<Quest> quest = getQuestArg(args, 2);
-					quest.ifPresentOrElse(q -> pd.forceNextStage(q, true), () -> QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument")));
+					quest.ifPresentOrElse(q -> pd.forceNextStage(q, true),
+							() -> QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument")));
 					break;
 				case "forcetake":
 					quest = getQuestArg(args, 2);
-					quest.ifPresentOrElse(q -> pd.forceTake(q, true), () -> QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument")));
+					quest.ifPresentOrElse(q -> pd.forceTake(q, true),
+							() -> QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument")));
 					break;
 				case "forcefinish":
 					quest = getQuestArg(args, 2);
-					quest.ifPresentOrElse(q -> pd.forceFinish(q, true), () -> QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument")));
+					quest.ifPresentOrElse(q -> pd.forceFinish(q, true),
+							() -> QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument")));
 					break;
 				case "forcequit":
 					quest = getQuestArg(args, 2);
-					quest.ifPresentOrElse(q -> pd.forceQuit(q, true), () -> QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument")));
+					quest.ifPresentOrElse(q -> pd.forceQuit(q, true),
+							() -> QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument")));
 					break;
 				// /mqa finishobject [ID] [quest] [objindex]
 				case "finishobject":
@@ -79,14 +73,13 @@ public class AdminCommand implements CommandExecutor
 						return false;
 					quest = getQuestArg(args, 2);
 					int obj = Integer.parseInt(args[3]);
-					if (!quest.isPresent())
-					{
+					if (!quest.isPresent()) {
 						QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
 						return false;
 					}
 					pd.forceFinishObj(quest.get(), obj, true);
 					break;
-					// /mqa removedata [ID]
+				// /mqa removedata [ID]
 				case "removedata":
 					target.kickPlayer(I18n.locMsg("CommandInfo.KickForDataClearing"));
 					QuestConfigManager.getSaver().clearPlayerData(target);
@@ -96,20 +89,17 @@ public class AdminCommand implements CommandExecutor
 				case "friendpoint":
 					if (args.length < 5)
 						return false;
-					if (!QuestValidater.validateNPC(args[3]))
-					{
+					if (!QuestValidater.validateNPC(args[3])) {
 						QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
 						return false;
 					}
-					if (!QuestValidater.validateInteger(args[4]))
-					{
+					if (!QuestValidater.validateInteger(args[4])) {
 						QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
 						return false;
 					}
 					NPC npc = Main.getHooker().getNPC(args[3]);
 					int amount = Integer.parseInt(args[4]);
-					switch (args[2])
-					{
+					switch (args[2]) {
 						case "add":
 							pd.addNPCfp(npc.getId(), amount);
 							QuestChatManager.info(target,
@@ -122,12 +112,11 @@ public class AdminCommand implements CommandExecutor
 							return false;
 					}
 					break;
-					// /mqa opennpc [ID] [NPCID] [trade]
+				// /mqa opennpc [ID] [NPCID] [trade]
 				case "opennpc":
 					if (args.length < 4)
 						return false;
-					if (!QuestValidater.validateNPC(args[2]))
-					{
+					if (!QuestValidater.validateNPC(args[2])) {
 						QuestChatManager.error(sender, I18n.locMsg("CommandInfo.InvalidArgument"));
 						return false;
 					}
@@ -143,14 +132,11 @@ public class AdminCommand implements CommandExecutor
 		return true;
 	}
 
-	private Optional<Quest> getQuestArg(String[] args, int index)
-	{
-		return args.length > index ? Optional.empty() : Optional.ofNullable(QuestUtil.getQuest(args[index]));
+	private Optional<Quest> getQuestArg(String[] args, int index) {
+		return index < args.length ? Optional.ofNullable(QuestUtil.getQuest(args[index])) : Optional.empty();
 	}
 
-
-	public void sendAdminHelp(CommandSender p)
-	{
+	public void sendAdminHelp(CommandSender p) {
 		QuestChatManager.info(p, I18n.locMsg("AdminCommandHelp.Title"));
 		QuestChatManager.info(p, I18n.locMsg("AdminCommandHelp.Reload"));
 		QuestChatManager.info(p, I18n.locMsg("AdminCommandHelp.NextStage"));

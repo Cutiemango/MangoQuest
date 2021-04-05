@@ -8,27 +8,23 @@ import java.util.List;
 
 public class RewardChoice
 {
-	public RewardChoice(List<ItemStack> items)
-	{
+	public RewardChoice(List<ItemStack> items) {
 		rewards = items;
 	}
-	
+
 	public List<ItemStack> rewards;
-	
-	public void executeReward(Player p)
-	{
+
+	public void executeReward(Player p) {
 		// the reward item needs to be cloned here to prevent bugs
 		for (ItemStack item : rewards)
 			QuestRewardManager.giveRewardItem(p, item.clone());
 	}
-	
-	public List<ItemStack> getItems()
-	{
+
+	public List<ItemStack> getItems() {
 		return rewards;
 	}
-	
-	public void addItem(ItemStack item)
-	{
+
+	public void addItem(ItemStack item) {
 		rewards.add(item);
 	}
 }

@@ -15,17 +15,14 @@ import org.bukkit.entity.Player;
 
 public class CommandEditSetting
 {
-	public static void execute(Quest q, Player sender, String[] args)
-	{
+	public static void execute(Quest q, Player sender, String[] args) {
 		if (!QuestEditorManager.checkEditorMode(sender, true))
 			return;
-		if (args.length == 4 && args[3].equals("cancel"))
-		{
+		if (args.length == 4 && args[3].equals("cancel")) {
 			QuestEditorManager.editQuest(sender);
 			return;
 		}
-		switch (args[2])
-		{
+		switch (args[2]) {
 			case "limit":
 				editLimit(q, sender, args);
 				break;
@@ -58,75 +55,55 @@ public class CommandEditSetting
 				break;
 		}
 	}
-	
+
 	// /mq e edit perm 
-	private static void editPermission(Quest q, Player sender, String[] args)
-	{
-		if (args.length == 3)
-		{
+	private static void editPermission(Quest q, Player sender, String[] args) {
+		if (args.length == 3) {
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit perm", null));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+		} else if (args.length == 4) {
+			q.setUsePermission(Boolean.parseBoolean(args[3]));
+			QuestEditorManager.editQuest(sender);
 		}
-		else
-			if (args.length == 4)
-			{
-				q.setUsePermission(Boolean.parseBoolean(args[3]));
-				QuestEditorManager.editQuest(sender);
-			}
 	}
 
-	private static void editWorld(Quest q, Player sender, String[] args)
-	{
-		if (args.length == 3)
-		{
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit world", Syntax.of("W", I18n.locMsg("Syntax.World"), "")));
+	private static void editWorld(Quest q, Player sender, String[] args) {
+		if (args.length == 3) {
+			EditorListenerHandler.register(sender,
+					new EditorListenerObject(ListeningType.STRING, "mq e edit world", Syntax.of("W", I18n.locMsg("Syntax.World"), "")));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+		} else if (args.length == 4) {
+			q.setWorldLimit(Bukkit.getWorld(args[3]));
+			QuestEditorManager.editQuest(sender);
 		}
-		else
-			if (args.length == 4)
-			{
-				q.setWorldLimit(Bukkit.getWorld(args[3]));
-				QuestEditorManager.editQuest(sender);
-			}
 	}
 
-	private static void editLimit(Quest q, Player sender, String[] args)
-	{
-		if (args.length == 3)
-		{
+	private static void editLimit(Quest q, Player sender, String[] args) {
+		if (args.length == 3) {
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit limit", null));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+		} else if (args.length == 4) {
+			q.setTimeLimited(Boolean.parseBoolean(args[3]));
+			QuestEditorManager.editQuest(sender);
 		}
-		else
-			if (args.length == 4)
-			{
-				q.setTimeLimited(Boolean.parseBoolean(args[3]));
-				QuestEditorManager.editQuest(sender);
-			}
 	}
-	
-	private static void editTimeLimit(Quest q, Player sender, String[] args)
-	{
-		if (args.length == 3)
-		{
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit timelimit", Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
+
+	private static void editTimeLimit(Quest q, Player sender, String[] args) {
+		if (args.length == 3) {
+			EditorListenerHandler.register(sender,
+					new EditorListenerObject(ListeningType.STRING, "mq e edit timelimit", Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+		} else if (args.length == 4) {
+			String mili = Integer.toString(Integer.parseInt(args[3]) * 1000);
+			q.setTimeLimit(Long.parseLong(mili));
+			QuestEditorManager.editQuest(sender);
 		}
-		else
-			if (args.length == 4)
-			{
-				String mili = Integer.toString(Integer.parseInt(args[3]) * 1000);
-				q.setTimeLimit(Long.parseLong(mili));
-				QuestEditorManager.editQuest(sender);
-			}
 	}
-	
+
 	// /mq e edit vis [take/prog/finish] [true/false]
-	private static void editVisibility(Quest q, Player sender, String[] args)
-	{
+	private static void editVisibility(Quest q, Player sender, String[] args) {
 		QuestSetting s = q.getSettings();
-		switch (args[3])
-		{
+		switch (args[3]) {
 			case "take":
 				s.toggle(Boolean.parseBoolean(args[4]), s.displayOnProgress(), s.displayOnFinish(), s.displayOnInteraction());
 				break;
@@ -142,90 +119,69 @@ public class CommandEditSetting
 		}
 		QuestEditorManager.editQuest(sender);
 	}
-	
-	private static void editQuit(Quest q, Player sender, String[] args)
-	{
+
+	private static void editQuit(Quest q, Player sender, String[] args) {
 		q.setQuitable(Boolean.parseBoolean(args[3]));
 		QuestEditorManager.editQuest(sender);
 	}
 
 	// /mq e edit redo [redoSettingEnum]
-	private static void editRedo(Quest q, Player sender, String[] args)
-	{
-		if (args.length == 3)
-		{
+	private static void editRedo(Quest q, Player sender, String[] args) {
+		if (args.length == 3) {
 			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit redo", null));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.RedoSetting"));
-		}
-		else
-			if (args.length == 4)
-			{
-				QuestSetting.RedoSetting redo;
-				try
-				{
-					redo = QuestSetting.RedoSetting.valueOf(args[3]);
-					q.setRedoSetting(redo);
-				}
-				catch (IllegalArgumentException e)
-				{
-					QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
-				}
-				QuestEditorManager.editQuest(sender);
+		} else if (args.length == 4) {
+			QuestSetting.RedoSetting redo;
+			try {
+				redo = QuestSetting.RedoSetting.valueOf(args[3]);
+				q.setRedoSetting(redo);
 			}
-	}
-	
-
-	private static void editRedoDelay(Quest q, Player sender, String[] args)
-	{
-		if (args.length == 3)
-		{
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit redodelay", Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
-			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
-		}
-		else
-			if (args.length == 4)
-			{
-				String mili = Integer.toString(Integer.parseInt(args[3]));
-				q.setRedoDelay(Long.parseLong(mili) * 1000);
-				QuestEditorManager.editQuest(sender);
+			catch (IllegalArgumentException e) {
+				QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
 			}
+			QuestEditorManager.editQuest(sender);
+		}
 	}
 
-	private static void editResetHour(Quest q, Player sender, String[] args)
-	{
-		if (args.length == 3)
-		{
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit resethour", Syntax.of("I", I18n.locMsg("Syntax.Hour"), "")));
+	private static void editRedoDelay(Quest q, Player sender, String[] args) {
+		if (args.length == 3) {
+			EditorListenerHandler.register(sender,
+					new EditorListenerObject(ListeningType.STRING, "mq e edit redodelay", Syntax.of("I", I18n.locMsg("Syntax.Number"), "")));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+		} else if (args.length == 4) {
+			String mili = Integer.toString(Integer.parseInt(args[3]));
+			q.setRedoDelay(Long.parseLong(mili) * 1000);
+			QuestEditorManager.editQuest(sender);
 		}
-		else
-			if (args.length == 4)
-			{
-				int hour = Integer.parseInt(args[3]);
-				if (hour < 0 || hour > 23)
-					QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
-				else
-					q.setResetHour(hour);
-				QuestEditorManager.editQuest(sender);
-			}
 	}
 
-	private static void editResetDay(Quest q, Player sender, String[] args)
-	{
-		if (args.length == 3)
-		{
-			EditorListenerHandler.register(sender, new EditorListenerObject(ListeningType.STRING, "mq e edit resetday", Syntax.of("I", I18n.locMsg("Syntax.Day"), "")));
+	private static void editResetHour(Quest q, Player sender, String[] args) {
+		if (args.length == 3) {
+			EditorListenerHandler.register(sender,
+					new EditorListenerObject(ListeningType.STRING, "mq e edit resethour", Syntax.of("I", I18n.locMsg("Syntax.Hour"), "")));
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+		} else if (args.length == 4) {
+			int hour = Integer.parseInt(args[3]);
+			if (hour < 0 || hour > 23)
+				QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
+			else
+				q.setResetHour(hour);
+			QuestEditorManager.editQuest(sender);
 		}
-		else
-			if (args.length == 4)
-			{
-				int day = Integer.parseInt(args[3]);
-				if (day < 1 || day > 7)
-					QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
-				else
-					q.setResetDay(day);
-				QuestEditorManager.editQuest(sender);
-			}
+	}
+
+	private static void editResetDay(Quest q, Player sender, String[] args) {
+		if (args.length == 3) {
+			EditorListenerHandler.register(sender,
+					new EditorListenerObject(ListeningType.STRING, "mq e edit resetday", Syntax.of("I", I18n.locMsg("Syntax.Day"), "")));
+			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.EnterValue"));
+		} else if (args.length == 4) {
+			int day = Integer.parseInt(args[3]);
+			if (day < 1 || day > 7)
+				QuestChatManager.error(sender, I18n.locMsg("EditorMessage.WrongFormat"));
+			else
+				q.setResetDay(day);
+			QuestEditorManager.editQuest(sender);
+		}
 	}
 }

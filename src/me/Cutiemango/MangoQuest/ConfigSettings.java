@@ -11,12 +11,12 @@ public class ConfigSettings
 	public static int MAXIMUM_DISPLAY_QUEST_AMOUNT = 3;
 	public static int PLAYER_DATA_SAVE_INTERVAL = 600;
 	public static int CONVERSATION_ACTION_INTERVAL_IN_TICKS = 25;
-	
+
 	public static boolean POP_LOGIN_MESSAGE = true;
 	public static boolean ENABLE_SCOREBOARD = true;
 	public static boolean USE_PARTICLE_EFFECT = true;
 	public static boolean ENABLE_SKIP = false;
-	
+
 	public static boolean USE_WEAK_ITEM_CHECK = false;
 
 	public static SaveType SAVE_TYPE = SaveType.YML;

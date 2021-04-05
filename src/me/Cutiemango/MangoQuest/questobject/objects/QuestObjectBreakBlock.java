@@ -19,10 +19,10 @@ import org.bukkit.entity.Player;
 public class QuestObjectBreakBlock extends NumerableObject implements EditorObject
 {
 	// Reserved for initializing with load()
-	public QuestObjectBreakBlock(){}
-	
-	public QuestObjectBreakBlock(Material m, int i)
-	{
+	public QuestObjectBreakBlock() {
+	}
+
+	public QuestObjectBreakBlock(Material m, int i) {
 		if (!m.isBlock())
 			return;
 		block = m;
@@ -30,69 +30,57 @@ public class QuestObjectBreakBlock extends NumerableObject implements EditorObje
 	}
 
 	@Override
-	public String getConfigString()
-	{
+	public String getConfigString() {
 		return "BREAK_BLOCK";
 	}
 
 	@Override
-	public String getObjectName()
-	{
+	public String getObjectName() {
 		return I18n.locMsg("QuestObjectName.BreakBlock");
 	}
 
 	private Material block;
 
 	@Override
-	public TextComponent toTextComponent(boolean isFinished)
-	{
+	public TextComponent toTextComponent(boolean isFinished) {
 		return super.toTextComponent(ChatColor.stripColor(I18n.locMsg("QuestObject.BreakBlock")), isFinished, amount, block);
 	}
-	
+
 	@Override
-	public String toDisplayText()
-	{
+	public String toDisplayText() {
 		return I18n.locMsg("QuestObject.BreakBlock", Integer.toString(amount), QuestUtil.translate(block), "");
 	}
 
-	public Material getType()
-	{
+	public Material getType() {
 		return block;
 	}
 
-
-	public void setType(Material m)
-	{
+	public void setType(Material m) {
 		block = m;
 	}
 
 	@Override
-	public void formatEditorPage(QuestBookPage page, int stage, int obj)
-	{
+	public void formatEditorPage(QuestBookPage page, int stage, int obj) {
 		page.add(I18n.locMsg("QuestEditor.BreakBlock") + QuestUtil.translate(block));
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " block")).changeLine();
 		super.formatEditorPage(page, stage, obj);
 	}
 
 	@Override
-	public boolean load(QuestIO config, String path)
-	{
+	public boolean load(QuestIO config, String path) {
 		block = Material.getMaterial(config.getString(path + "BlockType"));
 		return super.load(config, path);
 	}
 
 	@Override
-	public void save(QuestIO config, String objpath)
-	{
+	public void save(QuestIO config, String objpath) {
 		config.set(objpath + "BlockType", block.toString());
 		super.save(config, objpath);
 	}
 
 	@Override
-	public boolean receiveCommandInput(Player sender, String type, String obj)
-	{
-		if (type.equals("block"))
-		{
+	public boolean receiveCommandInput(Player sender, String type, String obj) {
+		if (type.equals("block")) {
 			Material mat = Material.getMaterial(obj);
 			setType(mat);
 			DebugHandler.log(5, "Material registered: " + block.toString());
@@ -102,11 +90,9 @@ public class QuestObjectBreakBlock extends NumerableObject implements EditorObje
 	}
 
 	@Override
-	public EditorListenerObject createCommandOutput(Player sender, String command, String type)
-	{
+	public EditorListenerObject createCommandOutput(Player sender, String command, String type) {
 		EditorListenerObject obj;
-		if (type.equals("block"))
-		{
+		if (type.equals("block")) {
 			obj = new EditorListenerObject(ListeningType.BLOCK, command, null);
 			QuestBookGUIManager.openInfo(sender, I18n.locMsg("EditorMessage.BreakBlock"));
 			return obj;

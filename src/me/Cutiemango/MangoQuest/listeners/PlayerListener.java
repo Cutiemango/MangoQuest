@@ -30,25 +30,23 @@ import java.util.Optional;
 
 public class PlayerListener
 {
-	public static void onPlayerJoin(Player p)
-	{
+	public static void onPlayerJoin(Player p) {
 		DebugHandler.log(2, "[Listener] Player " + p.getName() + " logged in.");
 		new BukkitRunnable()
 		{
 			@Override
-			public void run()
-			{
+			public void run() {
 				QuestPlayerData qd = new QuestPlayerData(p);
 				qd.load(ConfigSettings.SAVE_TYPE);
-				QuestStorage.playerData.put(p.getName(), qd);
 				qd.checkQuestFail();
 				qd.checkUnclaimedReward();
+
+				QuestStorage.playerData.put(p.getName(), qd);
 			}
 		}.runTaskLater(Main.getInstance(), 20L);
 	}
 
-	public static void onPlayerQuit(Player p)
-	{
+	public static void onPlayerQuit(Player p) {
 		QuestPlayerData qd = QuestUtil.getData(p);
 		if (qd != null)
 			qd.save();
@@ -56,8 +54,7 @@ public class PlayerListener
 
 		// clear the conversation progress
 		Optional<ConversationProgress> prog = Optional.ofNullable(ConversationManager.getConvProgress(p));
-		if (prog.isPresent())
-		{
+		if (prog.isPresent()) {
 			prog.get().cancelTask();
 			QuestStorage.conversationProgress.remove(p.getName());
 		}
@@ -65,35 +62,28 @@ public class PlayerListener
 		DebugHandler.log(2, "[Listener] Saved data of player " + p.getName() + ".");
 	}
 
-	public static void onNPCRightClick(Player p, NPC npc, Cancellable event)
-	{
-		if (!ConfigSettings.USE_RIGHT_CLICK_MENU)
-		{
+	public static void onNPCRightClick(Player p, NPC npc, Cancellable event) {
+		if (!ConfigSettings.USE_RIGHT_CLICK_MENU) {
 			DebugHandler.log(4, "[Listener] Event cancelled because useRightClickMenu=false.");
 			return;
 		}
 		if (p.isSneaking())
 			return;
-		if (!QuestNPCManager.hasData(npc.getId()))
-		{
+		if (!QuestNPCManager.hasData(npc.getId())) {
 			DebugHandler.log(4, "[Listener] Event cancelled because NPC data of id=" + npc.getId() + " does not exist.");
 			return;
 		}
 		event.setCancelled(true);
-		if (QuestEditorManager.checkEditorMode(p, false) || EditorListenerHandler.isListening(p))
-		{
+		if (QuestEditorManager.checkEditorMode(p, false) || EditorListenerHandler.isListening(p)) {
 			DebugHandler.log(4, "[Listener] Event cancelled because the player is in editor mode.");
 			return;
 		}
 
 		// Player can only access npc gui if they have no item held in hand.
 		// Else the system will try to detect if there are compatible item-delivering quests.
-		if (p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType() == Material.AIR)
-		{
-			if (Main.getHooker().hasShopkeepersEnabled())
-			{
-				if (ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(npc.getEntity()))
-				{
+		if (p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType() == Material.AIR) {
+			if (Main.getHooker().hasShopkeepersEnabled()) {
+				if (ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(npc.getEntity())) {
 					// close the shopkeeper's trading ui, because there's no way we can handle it before it fires
 					p.closeInventory();
 					QuestBookGUIManager.openNPCInfo(p, npc, true);
@@ -103,69 +93,54 @@ public class PlayerListener
 			}
 			QuestBookGUIManager.openNPCInfo(p, npc, false);
 			DebugHandler.log(4, "[Listener] Opening NPC info(id=" + npc.getId() + ") for " + p.getName() + "...");
-		}
-		else
-		{
-			if (Main.getHooker().hasShopkeepersEnabled() && ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(npc.getEntity()))
-			{
+		} else {
+			if (Main.getHooker().hasShopkeepersEnabled() && ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(npc.getEntity())) {
 				p.closeInventory();
 				DebugHandler.log(4, "[Listener] Shopkeepers NPC detected, closing trading window.");
 			}
 			QuestPlayerData pd = QuestUtil.getData(p);
-			if (pd.deliverItem(npc))
-			{
+			if (pd.deliverItem(npc)) {
 				DebugHandler.log(3, "[Listener] Player " + p.getName() + " tried to deliver item.");
 				return;
 			}
 		}
 	}
 
-	public static void onEntityDeath(Entity e)
-	{
-		if (e.getLastDamageCause() instanceof EntityDamageByEntityEvent)
-		{
+	public static void onEntityDeath(Entity e) {
+		if (e.getLastDamageCause() instanceof EntityDamageByEntityEvent) {
 			Entity damager = ((EntityDamageByEntityEvent) e.getLastDamageCause()).getDamager();
 			if (!(damager instanceof Player || damager instanceof Projectile))
 				return;
 			Player attacker;
-			if (damager instanceof Projectile)
-			{
+			if (damager instanceof Projectile) {
 				if (!(((Projectile) damager).getShooter() instanceof Player))
 					return;
 				attacker = (Player) ((Projectile) damager).getShooter();
-			}
-			else
+			} else
 				attacker = (Player) damager;
 			QuestPlayerData qd = QuestUtil.getData(attacker);
-			if (qd != null)
-			{
-				if (Main.getHooker().hasMythicMobEnabled() && Main.getHooker().getMythicMobsAPI().isMythicMob(e))
-				{
+			if (qd != null) {
+				if (Main.getHooker().hasMythicMobEnabled() && Main.getHooker().getMythicMobsAPI().isMythicMob(e)) {
 					String type = Main.getHooker().getMythicMobsAPI().getMythicMobInstance(e).getType().getInternalName();
 					DebugHandler.log(4, "[Listener] Player " + attacker.getName() + " killed MythicMob, id: %s", type);
 					qd.killMythicMob(type);
-				}
-				else
-				{
+				} else {
 					DebugHandler.log(4, "[Listener] Player " + attacker.getName() + " killed normal mob: %s", e.getType().toString());
 					qd.killMob(e);
 				}
 			}
 		}
 	}
-	public static void onFish(Player p, Item item)
-	{
+
+	public static void onFish(Player p, Item item) {
 		QuestPlayerData qd = QuestUtil.getData(p);
 		if (QuestObjectFishing.FISHES.contains(item.getItemStack().getType()))
 			qd.catchFish();
 	}
 
-
-	public static void onBreakBlock(Player p, Material m)
-	{
+	public static void onBreakBlock(Player p, Material m) {
 		QuestPlayerData qd = QuestUtil.getData(p);
-		if (qd == null)
-		{
+		if (qd == null) {
 			DebugHandler.log(4, "[Listener] Player " + p.getName() + " has no player data.");
 			return;
 		}
@@ -173,11 +148,9 @@ public class PlayerListener
 		DebugHandler.log(4, "[Listener] Player " + p.getName() + " broke block mat=" + m.toString());
 	}
 
-	public static void onConsumeItem(Player p, ItemStack is)
-	{
+	public static void onConsumeItem(Player p, ItemStack is) {
 		QuestPlayerData qd = QuestUtil.getData(p);
-		if (qd == null)
-		{
+		if (qd == null) {
 			DebugHandler.log(4, "[Listener] Player " + p.getName() + " has no player data.");
 			return;
 		}
@@ -185,8 +158,7 @@ public class PlayerListener
 		DebugHandler.log(4, "[Listener] Player " + p.getName() + " consumed item mat=" + is.getType().toString());
 	}
 
-	public static void onMove(Player p, Location loc)
-	{
+	public static void onMove(Player p, Location loc) {
 		QuestPlayerData qd = QuestUtil.getData(p);
 		qd.reachLocation(loc);
 	}

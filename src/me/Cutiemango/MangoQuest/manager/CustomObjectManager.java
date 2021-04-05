@@ -10,41 +10,34 @@ import java.util.logging.Level;
 
 public class CustomObjectManager
 {
-	private static Set<Class<? extends CustomQuestObject>> objectList = new HashSet<>();
-	private static HashMap<String, Class<? extends CustomQuestObject>> loadedObjects = new HashMap<>();
-	
-	public static void registerObject(Class<? extends CustomQuestObject> obj)
-	{
+	private static final Set<Class<? extends CustomQuestObject>> objectList = new HashSet<>();
+	private static final HashMap<String, Class<? extends CustomQuestObject>> loadedObjects = new HashMap<>();
+
+	public static void registerObject(Class<? extends CustomQuestObject> obj) {
 		if (obj == null)
 			return;
 		objectList.add(obj);
 	}
-	
-	public static void loadCustomObjects()
-	{
-		for (Class<? extends CustomQuestObject> obj : objectList)
-		{
+
+	public static void loadCustomObjects() {
+		for (Class<? extends CustomQuestObject> obj : objectList) {
 			loadedObjects.put(obj.getName(), obj);
 			QuestChatManager.logCmd(Level.INFO, I18n.locMsg("CustomObject.ObjectRegistered", obj.getName()));
 		}
 	}
 
-	public static CustomQuestObject getSpecificObject(String className)
-	{
-		try
-		{
+	public static CustomQuestObject getSpecificObject(String className) {
+		try {
 			return loadedObjects.get(className).getDeclaredConstructor().newInstance();
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("CustomObject.ObjectNotFound", className));
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
-	public static boolean hasCustomObject(String className)
-	{
+
+	public static boolean hasCustomObject(String className) {
 		return loadedObjects.containsKey(className);
 	}
 }
