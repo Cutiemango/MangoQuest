@@ -24,7 +24,7 @@ import java.util.Optional;
 
 public class RequirementManager
 {
-	public static Optional<String> meetRequirementWith(Player p, EnumMap<RequirementType, Object> requirements, boolean debug) {
+	public static Optional<String> meetRequirementWith(Player p, EnumMap<RequirementType, Object> requirements, boolean sendMsg) {
 		QuestPlayerData pd = QuestUtil.getData(p);
 
 		List<String> failMsg = new ArrayList<>();
@@ -34,7 +34,8 @@ public class RequirementManager
 			switch (t) {
 				case PERMISSION:
 					if (!(value instanceof List)) {
-						DebugHandler.log(5, "[Requirements] Requirement type is PERMISSION, but the value is not a list.");
+						if (sendMsg)
+							DebugHandler.log(5, "[Requirements] Requirement type is PERMISSION, but the value is not a list.");
 						break;
 					}
 					List<String> permissions = (List<String>) value;
@@ -66,7 +67,8 @@ public class RequirementManager
 					break;
 				case ITEM:
 					if (!(value instanceof List)) {
-						DebugHandler.log(5, "[Requirements] Requirement type is ITEM, but the value is not a list.");
+						if (sendMsg)
+							DebugHandler.log(5, "[Requirements] Requirement type is ITEM, but the value is not a list.");
 						break;
 					}
 					if (ConfigSettings.USE_WEAK_ITEM_CHECK) {
@@ -82,42 +84,18 @@ public class RequirementManager
 							}
 							if (need > 0) {
 								failMsg.add(I18n.locMsg("Requirements.NotMeet.Item", QuestUtil.getItemName(reqItem), Integer.toString(reqItem.getAmount())));
-								if (debug) {
+								if (sendMsg) {
 									DebugHandler.log(5, "[Requirements] User has failed requirement: " + t.toString());
 									DebugHandler
 											.log(5, "[Requirements] Did not found enough (or any) %s in user's inventory.", QuestUtil.getItemName(reqItem));
 								}
 							}
 						}
-//						HashMap<QuestValidater.WrappedWeakItem, Integer> reqItems = new HashMap<>();
-//						for (ItemStack i : (List<ItemStack>) value)
-//							if (i != null)
-//								reqItems.put(new QuestValidater.WrappedWeakItem(i), i.getAmount());
-//
-//						for (ItemStack owned : p.getInventory().getContents()) {
-//							if (owned == null || owned.getType() == Material.AIR)
-//								continue;
-//							QuestValidater.WrappedWeakItem wrapped = new QuestValidater.WrappedWeakItem(owned);
-//							if (reqItems.containsKey(wrapped))
-//								reqItems.put(wrapped, Math.max(0, reqItems.get(wrapped) - owned.getAmount()));
-//						}
-//
-//						for (QuestValidater.WrappedWeakItem wrapped : reqItems.keySet()) {
-//							if (reqItems.get(wrapped) != 0) {
-//								failMsg.add(I18n.locMsg("Requirements.NotMeet.Item", QuestUtil.getItemName(wrapped),
-//										Integer.toString(reqItems.get(wrapped))));
-//								if (debug) {
-//									DebugHandler.log(5, "[Requirements] User has failed requirement: " + t.toString());
-//									DebugHandler.log(5, "[Requirements] Did not found enough (or any) %s in user's inventory.",
-//											QuestUtil.getItemName(wrapped));
-//								}
-//							}
-//						}
 					} else {
 						for (ItemStack reqItem : (List<ItemStack>) value) {
 							if (!p.getInventory().containsAtLeast(reqItem, reqItem.getAmount())) {
 								failMsg.add(I18n.locMsg("Requirements.NotMeet.Item", QuestUtil.getItemName(reqItem), Integer.toString(reqItem.getAmount())));
-								if (debug) {
+								if (sendMsg) {
 									DebugHandler.log(5, "[Requirements] User has failed requirement: " + t.toString());
 									DebugHandler
 											.log(5, "[Requirements] Did not found enough (or any) %s in user's inventory.", QuestUtil.getItemName(reqItem));
@@ -145,7 +123,7 @@ public class RequirementManager
 								while (it.getParent() != null) {
 									if (it.getParent().getName().equalsIgnoreCase(classID)) {
 										found = true;
-										if (debug)
+										if (sendMsg)
 											DebugHandler.log(5, "[Requirements] User has descendant class: %s", classID);
 										break;
 									}
@@ -154,7 +132,7 @@ public class RequirementManager
 							}
 							if (!found) {
 								failMsg.add(I18n.locMsg("Requirements.NotMeet.RPGClass", reqClass.getPrefix()));
-								if (debug) {
+								if (sendMsg) {
 									DebugHandler.log(5, "[Requirements] User has failed requirement: " + t.toString());
 									DebugHandler.log(5, "[Requirements] User has the following class: %s, while the required class is %s.", userClass,
 											classID);
@@ -194,7 +172,7 @@ public class RequirementManager
 								while (it.getParent() != null) {
 									if (it.getParent().getId().equalsIgnoreCase(classID)) {
 										found = true;
-										if (debug)
+										if (sendMsg)
 											DebugHandler.log(5, "[Requirements] User has descendant class: %s", classID);
 										break;
 									}
@@ -203,7 +181,7 @@ public class RequirementManager
 							}
 							if (!found) {
 								failMsg.add(I18n.locMsg("Requirements.NotMeet.RPGClass", reqClass.getName()));
-								if (debug) {
+								if (sendMsg) {
 									DebugHandler.log(5, "[Requirements] User has failed requirement: " + t.toString());
 									DebugHandler.log(5, "[Requirements] User has the following class: %s, while the required class is %s.",
 											user.getClassData().getClassId(), classID);
@@ -220,7 +198,7 @@ public class RequirementManager
 						UserProfile user = Main.getHooker().getQuantumRPG().getUserManager().getOrLoadUser(p).getActiveProfile();
 						if (user.getClassData() == null || user.getClassData().getLevel() < lvl) {
 							failMsg.add(I18n.locMsg("Requirements.NotMeet.RPGLevel", Integer.toString(lvl)));
-							if (debug) {
+							if (sendMsg) {
 								DebugHandler.log(5, "[Requirements] User has failed requirement: " + t.toString());
 								DebugHandler
 										.log(5, "[Requirements] User has level %d, while the required level is %d.", user.getClassData().getLevel(),

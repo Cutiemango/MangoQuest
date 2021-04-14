@@ -689,10 +689,13 @@ public class QuestPlayerData
 				QuestChatManager.info(owner, I18n.locMsg("CommandInfo.NoPermTakeQuest"));
 			return false;
 		}
-		if (q.hasRequirement() && RequirementManager.meetRequirementWith(owner, q.getRequirements(), true).isPresent()) {
-			if (sendMsg)
-				QuestChatManager.info(owner, q.getFailMessage());
-			return false;
+		if (q.hasRequirement()) {
+			Optional<String> failedRequirements = RequirementManager.meetRequirementWith(owner, q.getRequirements(), false);
+			if (failedRequirements.isPresent()) {
+				if (sendMsg)
+					QuestChatManager.info(owner, failedRequirements.get());
+				return false;
+			}
 		}
 
 		if (hasFinished(q)) {
