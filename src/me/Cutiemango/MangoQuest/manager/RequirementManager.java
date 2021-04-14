@@ -70,38 +70,57 @@ public class RequirementManager
 						break;
 					}
 					if (ConfigSettings.USE_WEAK_ITEM_CHECK) {
-						HashMap<QuestValidater.WrappedWeakItem, Integer> reqItems = new HashMap<>();
-						for (ItemStack i : (List<ItemStack>) value)
-							if (i != null)
-								reqItems.put(new QuestValidater.WrappedWeakItem(i), i.getAmount());
-
-						for (ItemStack owned : p.getInventory().getContents()) {
-							if (owned == null || owned.getType() == Material.AIR)
-								continue;
-							QuestValidater.WrappedWeakItem wrapped = new QuestValidater.WrappedWeakItem(owned);
-							if (reqItems.containsKey(wrapped))
-								reqItems.put(wrapped, Math.max(0, reqItems.get(wrapped) - owned.getAmount()));
-						}
-
-						for (QuestValidater.WrappedWeakItem wrapped : reqItems.keySet()) {
-							if (reqItems.get(wrapped) != 0) {
-								failMsg.add(I18n.locMsg("Requirements.NotMeet.Item", QuestUtil.getItemName(wrapped),
-										Integer.toString(reqItems.get(wrapped))));
-								if (debug) {
-									DebugHandler.log(5, "[Requirements] User has failed requirement: " + t.toString());
-									DebugHandler.log(5, "[Requirements] Did not found enough (or any) %s in user's inventory.",
-											QuestUtil.getItemName(wrapped));
+						for (ItemStack reqItem : (List<ItemStack>) value) {
+							int need = reqItem.getAmount();
+							for (ItemStack owned : p.getInventory().getContents()) {
+								if (owned == null || owned.getType() == Material.AIR)
+									continue;
+								if (QuestValidater.weakItemCheck(reqItem, owned, false)) {
+									need -= Math.min(need, reqItem.getAmount());
+									if (need == 0) break;
 								}
 							}
-						}
-					} else {
-						for (ItemStack i : (List<ItemStack>) value) {
-							if (!p.getInventory().containsAtLeast(i, i.getAmount())) {
-								failMsg.add(I18n.locMsg("Requirements.NotMeet.Item", QuestUtil.getItemName(i), Integer.toString(i.getAmount())));
+							if (need > 0) {
+								failMsg.add(I18n.locMsg("Requirements.NotMeet.Item", QuestUtil.getItemName(reqItem), Integer.toString(reqItem.getAmount())));
 								if (debug) {
 									DebugHandler.log(5, "[Requirements] User has failed requirement: " + t.toString());
 									DebugHandler
-											.log(5, "[Requirements] Did not found enough (or any) %s in user's inventory.", QuestUtil.getItemName(i));
+											.log(5, "[Requirements] Did not found enough (or any) %s in user's inventory.", QuestUtil.getItemName(reqItem));
+								}
+							}
+						}
+//						HashMap<QuestValidater.WrappedWeakItem, Integer> reqItems = new HashMap<>();
+//						for (ItemStack i : (List<ItemStack>) value)
+//							if (i != null)
+//								reqItems.put(new QuestValidater.WrappedWeakItem(i), i.getAmount());
+//
+//						for (ItemStack owned : p.getInventory().getContents()) {
+//							if (owned == null || owned.getType() == Material.AIR)
+//								continue;
+//							QuestValidater.WrappedWeakItem wrapped = new QuestValidater.WrappedWeakItem(owned);
+//							if (reqItems.containsKey(wrapped))
+//								reqItems.put(wrapped, Math.max(0, reqItems.get(wrapped) - owned.getAmount()));
+//						}
+//
+//						for (QuestValidater.WrappedWeakItem wrapped : reqItems.keySet()) {
+//							if (reqItems.get(wrapped) != 0) {
+//								failMsg.add(I18n.locMsg("Requirements.NotMeet.Item", QuestUtil.getItemName(wrapped),
+//										Integer.toString(reqItems.get(wrapped))));
+//								if (debug) {
+//									DebugHandler.log(5, "[Requirements] User has failed requirement: " + t.toString());
+//									DebugHandler.log(5, "[Requirements] Did not found enough (or any) %s in user's inventory.",
+//											QuestUtil.getItemName(wrapped));
+//								}
+//							}
+//						}
+					} else {
+						for (ItemStack reqItem : (List<ItemStack>) value) {
+							if (!p.getInventory().containsAtLeast(reqItem, reqItem.getAmount())) {
+								failMsg.add(I18n.locMsg("Requirements.NotMeet.Item", QuestUtil.getItemName(reqItem), Integer.toString(reqItem.getAmount())));
+								if (debug) {
+									DebugHandler.log(5, "[Requirements] User has failed requirement: " + t.toString());
+									DebugHandler
+											.log(5, "[Requirements] Did not found enough (or any) %s in user's inventory.", QuestUtil.getItemName(reqItem));
 								}
 							}
 						}
@@ -223,7 +242,6 @@ public class RequirementManager
 
 		if (failMsg.isEmpty())
 			return Optional.empty();
-
 		return Optional.of(Strings.join(failMsg, "\n"));
 	}
 

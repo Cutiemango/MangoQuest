@@ -81,7 +81,7 @@ public class QuestValidater
 		return s != null && Bukkit.getWorld(s) != null;
 	}
 
-	public static boolean weakItemCheck(ItemStack original, ItemStack compare) {
+	public static boolean weakItemCheck(ItemStack original, ItemStack compare, boolean msg) {
 		if (original.getType().equals(compare.getType())) {
 			Optional<ItemMeta> oriMeta = Optional.ofNullable(original.getItemMeta()), cmpMeta = Optional.ofNullable(compare.getItemMeta());
 			if (oriMeta.isPresent() == cmpMeta.isPresent()) {
@@ -95,7 +95,8 @@ public class QuestValidater
 					Optional<String> oriName = Optional.ofNullable(im.getDisplayName()), cmpName = Optional.ofNullable(mm.getDisplayName());
 					// Name check
 					if (!oriName.equals(cmpName)) {
-						DebugHandler.log(5, "[ItemCheck] Item displayName mismatch.");
+						if (msg)
+							DebugHandler.log(5, "[ItemCheck] Item displayName mismatch.");
 						return false;
 					}
 
@@ -107,16 +108,19 @@ public class QuestValidater
 
 					// Lore check
 					if (!oriLore.equals(cmpLore)) {
-						DebugHandler.log(5, "[ItemCheck] Item lore mismatch.");
+						if (msg)
+							DebugHandler.log(5, "[ItemCheck] Item lore mismatch.");
 						return false;
 					}
 				}
 				return true;
 			}
-			DebugHandler.log(5, "[ItemCheck] ItemMeta mismatch.");
+			if (msg)
+				DebugHandler.log(5, "[ItemCheck] ItemMeta mismatch.");
 			return false;
 		}
-		DebugHandler.log(5, "[ItemCheck] Type is not correct.");
+		if (msg)
+			DebugHandler.log(5, "[ItemCheck] Type is not correct.");
 		return false;
 	}
 

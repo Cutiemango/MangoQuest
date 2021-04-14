@@ -278,10 +278,11 @@ public class QuestPlayerData
 	}
 
 	public boolean checkQuestSize(boolean msg) {
-		if (currentQuests.size() + 1 <= ConfigSettings.MAXIMUM_QUEST_AMOUNT)
+		if (currentQuests.size() + 1 > ConfigSettings.MAXIMUM_QUEST_AMOUNT) {
+			if (msg)
+				QuestChatManager.info(owner, I18n.locMsg("CommandInfo.QuestListFull"));
 			return false;
-		if (msg)
-			QuestChatManager.info(owner, I18n.locMsg("CommandInfo.QuestListFull"));
+		}
 		return true;
 	}
 
@@ -438,11 +439,12 @@ public class QuestPlayerData
 		int amountNeeded = o.getAmount() - qop.getProgress();
 		DebugHandler.log(5, "[Listener] Checking item submission...");
 		if (o.getTargetNPC().equals(npc)) {
+			boolean bukkitSimilar = o.getItem().isSimilar(itemToDeliver);
+			boolean weakItemCheck = QuestValidater.weakItemCheck(itemToDeliver, o.getItem(), true);
 			DebugHandler.log(5, "[Listener] NPC check PASSED.");
-			DebugHandler.log(5, "[Listener] Bukkit similarity = " + o.getItem().isSimilar(itemToDeliver));
-			DebugHandler.log(5, "[Listener] Weak itemCheck = " + QuestValidater.weakItemCheck(itemToDeliver, o.getItem()));
-			if (o.getItem().isSimilar(itemToDeliver) || (ConfigSettings.USE_WEAK_ITEM_CHECK && QuestValidater
-					.weakItemCheck(itemToDeliver, o.getItem()))) {
+			DebugHandler.log(5, "[Listener] Bukkit similarity = " + bukkitSimilar);
+			DebugHandler.log(5, "[Listener] Weak itemCheck = " + weakItemCheck);
+			if (bukkitSimilar || (ConfigSettings.USE_WEAK_ITEM_CHECK && weakItemCheck)) {
 				DebugHandler.log(5, "[Listener] Item similarity check PASSED.");
 				if (itemToDeliver.getAmount() > amountNeeded) {
 					itemToDeliver.setAmount(itemToDeliver.getAmount() - amountNeeded);
@@ -574,7 +576,7 @@ public class QuestPlayerData
 		if (qop.isFinished() || !(qop.getObject() instanceof QuestObjectConsumeItem))
 			return false;
 		QuestObjectConsumeItem o = (QuestObjectConsumeItem) qop.getObject();
-		return o.getItem().isSimilar(is) || (ConfigSettings.USE_WEAK_ITEM_CHECK && QuestValidater.weakItemCheck(is, o.getItem()));
+		return o.getItem().isSimilar(is) || (ConfigSettings.USE_WEAK_ITEM_CHECK && QuestValidater.weakItemCheck(is, o.getItem(), false));
 	}
 
 	public void reachLocation(Location l) {
@@ -687,7 +689,7 @@ public class QuestPlayerData
 				QuestChatManager.info(owner, I18n.locMsg("CommandInfo.NoPermTakeQuest"));
 			return false;
 		}
-		if (q.hasRequirement() && RequirementManager.meetRequirementWith(owner, q.getRequirements(), false).isPresent()) {
+		if (q.hasRequirement() && RequirementManager.meetRequirementWith(owner, q.getRequirements(), true).isPresent()) {
 			if (sendMsg)
 				QuestChatManager.info(owner, q.getFailMessage());
 			return false;
