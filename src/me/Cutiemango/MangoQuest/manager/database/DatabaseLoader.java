@@ -21,10 +21,8 @@ import java.util.Set;
 public class DatabaseLoader
 {
 
-	public static void loadPlayer(QuestPlayerData pd)
-	{
-		try
-		{
+	public static void loadPlayer(QuestPlayerData pd) {
+		try {
 			Connection conn = DatabaseManager.getConnection();
 			PreparedStatement query = conn.prepareStatement("SELECT * FROM `mq_playerdata` WHERE `UUID` = ?");
 			Player p = pd.getPlayer();
@@ -32,8 +30,7 @@ public class DatabaseLoader
 
 			ResultSet rsRet = query.executeQuery();
 			// if player data found in database
-			if (rsRet.next())
-			{
+			if (rsRet.next()) {
 				int PDID = rsRet.getInt("PDID");
 				Set<QuestProgress> prog = getQuestProgress(p, PDID);
 				Set<QuestFinishData> data = getFinishedData(PDID);
@@ -42,9 +39,7 @@ public class DatabaseLoader
 
 				DebugHandler.log(2, "[Database] Player %s's data has been loaded from the database.", p.getName());
 				pd.loadExistingData(prog, data, convs, fp, PDID);
-			}
-			else
-			{
+			} else {
 				// no previous player data found in database, try to migrate data from yml file
 				File f = new File(Main.getInstance().getDataFolder() + "/data/", p.getUniqueId() + ".yml");
 				DatabaseSaver.saveLoginData(p);
@@ -52,8 +47,7 @@ public class DatabaseLoader
 				pd.load(ConfigSettings.SaveType.SQL);
 
 				// found yml data, start migrating
-				if (f.exists())
-				{
+				if (f.exists()) {
 					DebugHandler.log(2, "[Database] Found player %s's yml data, start migrating...", p.getName());
 					// load from yml
 					pd.load(ConfigSettings.SaveType.YML);
@@ -64,35 +58,29 @@ public class DatabaseLoader
 				}
 			}
 		}
-		catch (SQLException e)
-		{
+		catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static Set<QuestProgress> getQuestProgress(Player p, int PDID)
-	{
+	private static Set<QuestProgress> getQuestProgress(Player p, int PDID) {
 		Set<QuestProgress> prog = new HashSet<>();
 		Connection conn = DatabaseManager.getConnection();
 
-		try
-		{
+		try {
 			PreparedStatement query = conn.prepareStatement("SELECT * FROM `mq_questprogress` WHERE `PDID` = ?");
 			query.setInt(1, PDID);
 
 			ResultSet rsRet = query.executeQuery();
-			while (rsRet.next())
-			{
-				if (QuestUtil.getQuest(rsRet.getString("QuestID")) == null)
-				{
+			while (rsRet.next()) {
+				if (QuestUtil.getQuest(rsRet.getString("QuestID")) == null) {
 					DebugHandler.log(2, "[Database] Found an invalid quest (%s) in player's quest data, skipping...", rsRet.getString("QuestID"));
 					continue;
 				}
 				Quest q = QuestUtil.getQuest(rsRet.getString("QuestID"));
 				long version = rsRet.getLong("Version");
 
-				if (q.getVersion().getTimeStamp() != version)
-				{
+				if (q.getVersion().getTimeStamp() != version) {
 					QuestChatManager.error(p, I18n.locMsg("CommandInfo.OutdatedQuestVersion", q.getInternalID()));
 					continue;
 				}
@@ -100,34 +88,29 @@ public class DatabaseLoader
 				int stage = rsRet.getInt("QuestStage");
 				long takeStamp = rsRet.getLong("TakeStamp");
 
-				QuestProgress progress = new QuestProgress(q, p, stage, JSONSerializer.jsonDeserialize(q.getStage(stage).getObjects(),
-						rsRet.getString("QuestObjectProgress")), takeStamp);
+				QuestProgress progress = new QuestProgress(q, p, stage,
+						JSONSerializer.jsonDeserialize(q.getStage(stage).getObjects(), rsRet.getString("QuestObjectProgress")), takeStamp);
 				prog.add(progress);
 			}
 		}
-		catch (SQLException e)
-		{
+		catch (SQLException e) {
 			e.printStackTrace();
 		}
 
 		return prog;
 	}
 
-	private static Set<QuestFinishData> getFinishedData(int PDID)
-	{
+	private static Set<QuestFinishData> getFinishedData(int PDID) {
 		Set<QuestFinishData> data = new HashSet<>();
 		Connection conn = DatabaseManager.getConnection();
 
-		try
-		{
+		try {
 			PreparedStatement query = conn.prepareStatement("SELECT * FROM `mq_finishedquest` WHERE `PDID` = ?");
 			query.setInt(1, PDID);
 
 			ResultSet rsRet = query.executeQuery();
-			while (rsRet.next())
-			{
-				if (QuestUtil.getQuest(rsRet.getString("QuestID")) == null)
-				{
+			while (rsRet.next()) {
+				if (QuestUtil.getQuest(rsRet.getString("QuestID")) == null) {
 					DebugHandler.log(2, "[Database] Found an invalid quest (%s) in player's quest data, skipping...", rsRet.getString("QuestID"));
 					continue;
 				}
@@ -135,20 +118,17 @@ public class DatabaseLoader
 				data.add(new QuestFinishData(q, rsRet.getInt("FinishedTimes"), rsRet.getLong("LastFinishTime"), rsRet.getInt("RewardTaken") != 0));
 			}
 		}
-		catch (SQLException e)
-		{
+		catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return data;
 	}
 
-	private static HashMap<Integer, Integer> getFriendPointMap(int PDID)
-	{
+	private static HashMap<Integer, Integer> getFriendPointMap(int PDID) {
 		HashMap<Integer, Integer> map = new HashMap<>();
 		Connection conn = DatabaseManager.getConnection();
 
-		try
-		{
+		try {
 			PreparedStatement query = conn.prepareStatement("SELECT * FROM `mq_friendpoint` WHERE `PDID` = ?");
 			query.setInt(1, PDID);
 
@@ -156,36 +136,31 @@ public class DatabaseLoader
 			while (rsRet.next())
 				map.put(rsRet.getInt("NPC"), rsRet.getInt("FriendPoint"));
 		}
-		catch (SQLException e)
-		{
+		catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return map;
 	}
 
-	private static Set<String> getFinishedConversations(int PDID)
-	{
+	private static Set<String> getFinishedConversations(int PDID) {
 		Set<String> set = new HashSet<>();
 		Connection conn = DatabaseManager.getConnection();
 
-		try
-		{
+		try {
 			PreparedStatement query = conn.prepareStatement("SELECT * FROM `mq_finishedconv` WHERE `PDID` = ?");
 			query.setInt(1, PDID);
 
 			ResultSet rsRet = query.executeQuery();
-			while (rsRet.next())
-			{
-				if (ConversationManager.getConversation(rsRet.getString("ConvID")) == null)
-				{
-					DebugHandler.log(2, "[Database] Found an invalid conversation (%s) in player's data, skipping...", rsRet.getString("QuestID"));
+			while (rsRet.next()) {
+				String convID = rsRet.getString("ConvID");
+				if (ConversationManager.getConversation(convID) == null) {
+					DebugHandler.log(2, "[Database] Found an invalid conversation (%s) in player's data, skipping...", convID);
 					continue;
 				}
-				set.add(rsRet.getString("ConvID"));
+				set.add(convID);
 			}
 		}
-		catch (SQLException e)
-		{
+		catch (SQLException e) {
 			e.printStackTrace();
 		}
 
