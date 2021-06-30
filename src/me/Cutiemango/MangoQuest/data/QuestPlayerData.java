@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -89,17 +90,19 @@ public class QuestPlayerData
 	}
 
 	public void save() {
-		switch (ConfigSettings.SAVE_TYPE) {
-			case YML:
-				saveToYml();
-				break;
-			case SQL:
-				DatabaseSaver.savePlayerData(this);
-				break;
-			case MONGODB:
-				MongodbSaver.savePlayerData(this);
-				break;
-		}
+		CompletableFuture.runAsync(() -> { // save actions can be done async
+			switch (ConfigSettings.SAVE_TYPE) {
+				case YML:
+					saveToYml();
+					break;
+				case SQL:
+					DatabaseSaver.savePlayerData(this);
+					break;
+				case MONGODB:
+					MongodbSaver.savePlayerData(this);
+					break;
+			}
+		});
 	}
 
 	public void loadFromYml() {
@@ -387,16 +390,16 @@ public class QuestPlayerData
 	}
 
 	public void breakBlock(Material m) {
-		HashSet<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> set = new HashSet<>();
+		ArrayList<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> list = new ArrayList<>();
 		currentQuests.stream().filter(qp -> checkPlayerInWorld(qp.getQuest()))
 				.forEach(qp -> qp.getCurrentObjects().stream().filter(qop -> checkBlock(qop, m)).collect(Collectors.toList()).forEach(qop -> {
 					AtomicReference<Pair<QuestProgress, QuestObjectProgress>> ref = new AtomicReference<>();
 					ref.set(new Pair<>(qp, qop));
-					set.add(ref);
+					list.add(ref);
 				}));
-		if (set.isEmpty())
+		if (list.isEmpty())
 			return;
-		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : set) {
+		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : list) {
 			if (any.get() != null) {
 				Pair<QuestProgress, QuestObjectProgress> pair = any.get();
 				objectSuccess(pair.getKey(), pair.getValue());
@@ -491,16 +494,16 @@ public class QuestPlayerData
 	}
 
 	public void killMob(Entity e) {
-		HashSet<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> set = new HashSet<>();
+		ArrayList<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> list = new ArrayList<>();
 		currentQuests.stream().filter(qp -> checkPlayerInWorld(qp.getQuest()))
 				.forEach(qp -> qp.getCurrentObjects().stream().filter(qop -> checkMob(qop, e)).collect(Collectors.toList()).forEach(qop -> {
 					AtomicReference<Pair<QuestProgress, QuestObjectProgress>> ref = new AtomicReference<>();
 					ref.set(new Pair<>(qp, qop));
-					set.add(ref);
+					list.add(ref);
 				}));
-		if (set.isEmpty())
+		if (list.isEmpty())
 			return;
-		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : set) {
+		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : list) {
 			if (any.get() != null) {
 				Pair<QuestProgress, QuestObjectProgress> pair = any.get();
 				objectSuccess(pair.getKey(), pair.getValue());
@@ -509,17 +512,17 @@ public class QuestPlayerData
 	}
 
 	public void catchFish() {
-		HashSet<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> set = new HashSet<>();
+		ArrayList<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> list = new ArrayList<>();
 		currentQuests.stream().filter(qp -> checkPlayerInWorld(qp.getQuest())).forEach(
 				qp -> qp.getCurrentObjects().stream().filter(qop -> qop.getObject() instanceof QuestObjectFishing && !qop.isFinished())
 						.collect(Collectors.toList()).forEach(qop -> {
 							AtomicReference<Pair<QuestProgress, QuestObjectProgress>> ref = new AtomicReference<>();
 							ref.set(new Pair<>(qp, qop));
-							set.add(ref);
+							list.add(ref);
 						}));
-		if (set.isEmpty())
+		if (list.isEmpty())
 			return;
-		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : set) {
+		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : list) {
 			if (any.get() != null) {
 				Pair<QuestProgress, QuestObjectProgress> pair = any.get();
 				objectSuccess(pair.getKey(), pair.getValue());
@@ -528,16 +531,16 @@ public class QuestPlayerData
 	}
 
 	public void killMythicMob(String mtmMob) {
-		HashSet<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> set = new HashSet<>();
+		ArrayList<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> list = new ArrayList<>();
 		currentQuests.stream().filter(qp -> checkPlayerInWorld(qp.getQuest())).forEach(
 				qp -> qp.getCurrentObjects().stream().filter(qop -> checkMythicMob(qop, mtmMob)).collect(Collectors.toList()).forEach(qop -> {
 					AtomicReference<Pair<QuestProgress, QuestObjectProgress>> ref = new AtomicReference<>();
 					ref.set(new Pair<>(qp, qop));
-					set.add(ref);
+					list.add(ref);
 				}));
-		if (set.isEmpty())
+		if (list.isEmpty())
 			return;
-		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : set) {
+		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : list) {
 			if (any.get() != null) {
 				Pair<QuestProgress, QuestObjectProgress> pair = any.get();
 				objectSuccess(pair.getKey(), pair.getValue());
@@ -555,16 +558,16 @@ public class QuestPlayerData
 	}
 
 	public void consumeItem(ItemStack is) {
-		HashSet<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> set = new HashSet<>();
+		ArrayList<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> list = new ArrayList<>();
 		currentQuests.stream().filter(qp -> checkPlayerInWorld(qp.getQuest()))
 				.forEach(qp -> qp.getCurrentObjects().stream().filter(qop -> checkConsume(qop, is)).collect(Collectors.toList()).forEach(qop -> {
 					AtomicReference<Pair<QuestProgress, QuestObjectProgress>> ref = new AtomicReference<>();
 					ref.set(new Pair<>(qp, qop));
-					set.add(ref);
+					list.add(ref);
 				}));
-		if (set.isEmpty())
+		if (list.isEmpty())
 			return;
-		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : set) {
+		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : list) {
 			if (any.get() != null) {
 				Pair<QuestProgress, QuestObjectProgress> pair = any.get();
 				objectSuccess(pair.getKey(), pair.getValue());
@@ -580,16 +583,16 @@ public class QuestPlayerData
 	}
 
 	public void reachLocation(Location l) {
-		HashSet<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> set = new HashSet<>();
+		ArrayList<AtomicReference<Pair<QuestProgress, QuestObjectProgress>>> list = new ArrayList<>();
 		currentQuests.stream().filter(qp -> checkPlayerInWorld(qp.getQuest()))
 				.forEach(qp -> qp.getCurrentObjects().stream().filter(qop -> checkLocation(qop, l)).collect(Collectors.toList()).forEach(qop -> {
 					AtomicReference<Pair<QuestProgress, QuestObjectProgress>> ref = new AtomicReference<>();
 					ref.set(new Pair<>(qp, qop));
-					set.add(ref);
+					list.add(ref);
 				}));
-		if (set.isEmpty())
+		if (list.isEmpty())
 			return;
-		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : set) {
+		for (AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any : list) {
 			if (any.get() != null) {
 				Pair<QuestProgress, QuestObjectProgress> pair = any.get();
 				objectSuccess(pair.getKey(), pair.getValue());
@@ -609,7 +612,8 @@ public class QuestPlayerData
 	}
 
 	public void removeProgress(Quest q) {
-		currentQuests.stream().filter(qp -> QuestValidater.weakValidate(q, qp.getQuest())).findFirst().ifPresent(qp -> currentQuests.remove(qp));
+		currentQuests.removeIf(qp -> QuestValidater.weakValidate(q, qp.getQuest()));
+		// currentQuests.stream().filter(qp -> QuestValidater.weakValidate(q, qp.getQuest())).findFirst().ifPresent(qp -> currentQuests.remove(qp));
 	}
 
 	public Set<QuestFinishData> getFinishQuests() {
@@ -740,14 +744,16 @@ public class QuestPlayerData
 	}
 
 	public void checkQuestFail() {
+		ArrayList<Quest> list = new ArrayList<>();
 		currentQuests.stream()
 				.filter(qp -> qp.getQuest().isTimeLimited() && System.currentTimeMillis() > qp.getQuest().getTimeLimit() + qp.getTakeTime())
-				.forEach(qp -> {
-					forceQuit(qp.getQuest(), false);
-					QuestChatManager.info(owner, I18n.locMsg("QuestJourney.QuestFailed", qp.getQuest().getQuestName()));
-					DebugHandler.log(3,
-							"[Listener] Player " + owner.getName() + " failed quest " + qp.getQuest().getQuestName() + " because time is due.");
-				});
+				.forEach(qp -> list.add(qp.getQuest()));
+		for (Quest q : list) {
+			forceQuit(q, false);
+			QuestChatManager.info(owner, I18n.locMsg("QuestJourney.QuestFailed", q.getQuestName()));
+			DebugHandler.log(3,
+					"[Listener] Player " + owner.getName() + " failed quest " + q.getQuestName() + " because time is due.");
+		}
 	}
 
 	public long getDelay(long last, long quest) {
