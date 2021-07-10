@@ -76,17 +76,19 @@ public class QuestPlayerData
 	}
 
 	public void load(ConfigSettings.SaveType saveType) {
-		switch (saveType) {
-			case YML:
-				loadFromYml();
-				break;
-			case SQL:
-				DatabaseLoader.loadPlayer(this);
-				break;
-			case MONGODB:
-				MongodbLoader.loadPlayer(this);
-				break;
-		}
+		CompletableFuture.runAsync(() -> {
+			switch (saveType) {
+				case YML:
+					loadFromYml();
+					break;
+				case SQL:
+					DatabaseLoader.loadPlayer(this);
+					break;
+				case MONGODB:
+					MongodbLoader.loadPlayer(this);
+					break;
+			}
+		});
 	}
 
 	public void save() {
