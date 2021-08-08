@@ -171,7 +171,7 @@ public class Main extends JavaPlugin {
 							try {
 								DriverManager.deregisterDriver(driver);
 							} catch (SQLException e) {
-								ChatManager.logCmd(Level.SEVERE, "An error occured while deregistering sql drivers!");
+								QuestChatManager.logCmd(Level.SEVERE, "An error occured while deregistering sql drivers!");
 								e.printStackTrace();
 							}
 						});
