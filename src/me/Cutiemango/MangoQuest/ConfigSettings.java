@@ -10,8 +10,8 @@ public class ConfigSettings
 	public static int MAXIMUM_QUEST_AMOUNT = 4;
 	public static int MAXIMUM_DISPLAY_QUEST_AMOUNT = 3;
 	public static int PLAYER_DATA_SAVE_INTERVAL = 600;
-	//SQL Garbage Collector in ticks
-	public static int SQL_CLEAR_INTERVAL = 24000;
+	// SQL Garbage Collector in ticks
+	public static int SQL_CLEAR_INTERVAL_IN_TICKS = 24000;
 	public static int CONVERSATION_ACTION_INTERVAL_IN_TICKS = 25;
 
 	public static boolean POP_LOGIN_MESSAGE = true;
