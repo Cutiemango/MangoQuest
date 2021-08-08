@@ -86,9 +86,9 @@ public class QuestConfigLoader
 		ConfigSettings.PLAYER_DATA_SAVE_INTERVAL = config.getIntOrDefault("saveIntervalInSeconds", 600);
 		DebugHandler.log(5, "[Config] saveInterval=" + ConfigSettings.PLAYER_DATA_SAVE_INTERVAL);
         
-		//SQL Clear Interval
-		ConfigSettings.SQL_CLEAR_INTERVAL = config.getIntOrDefault("databaseClearInterval", 24000);
-		DebugHandler.log(5, "[Config] databaseClearInterval="+ConfigSettings.SQL_CLEAR_INTERVAL);
+		// SQL Clear Interval
+		ConfigSettings.SQL_CLEAR_INTERVAL_IN_TICKS = config.getIntOrDefault("databaseClearInterval", 24000);
+		DebugHandler.log(5, "[Config] databaseClearInterval=" + ConfigSettings.SQL_CLEAR_INTERVAL_IN_TICKS);
 		
 		// Debug mode
 		DebugHandler.DEBUG_LEVEL = config.getInt("debugLevel");
