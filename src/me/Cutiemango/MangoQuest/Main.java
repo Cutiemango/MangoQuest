@@ -57,32 +57,32 @@ public class Main extends JavaPlugin {
 
 		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
 		switch (version) {
-		case "v1_13_R1":
-			handler = new Version_v1_13_R1();
-			break;
-		case "v1_13_R2":
-			handler = new Version_v1_13_R2();
-			break;
-		case "v1_14_R1":
-			handler = new Version_v1_14_R1();
-			break;
-		case "v1_15_R1":
-			handler = new Version_v1_15_R1();
-			break;
-		case "v1_16_R1":
-			handler = new Version_v1_16_R1();
-			break;
-		case "v1_16_R2":
-			handler = new Version_v1_16_R2();
-			break;
-		case "v1_16_R3":
-			handler = new Version_v1_16_R3();
-			QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.TestingVersion"));
-			break;
-		default:
-			QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.VersionNotSupported1"));
-			QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.VersionNotSupported2"));
-			break;
+			case "v1_13_R1":
+				handler = new Version_v1_13_R1();
+				break;
+			case "v1_13_R2":
+				handler = new Version_v1_13_R2();
+				break;
+			case "v1_14_R1":
+				handler = new Version_v1_14_R1();
+				break;
+			case "v1_15_R1":
+				handler = new Version_v1_15_R1();
+				break;
+			case "v1_16_R1":
+				handler = new Version_v1_16_R1();
+				break;
+			case "v1_16_R2":
+				handler = new Version_v1_16_R2();
+				break;
+			case "v1_16_R3":
+				handler = new Version_v1_16_R3();
+				QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.TestingVersion"));
+				break;
+			default:
+				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.VersionNotSupported1"));
+				QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.VersionNotSupported2"));
+				break;
 		}
 
 		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.LoadedNMSVersion", version));
@@ -165,17 +165,17 @@ public class Main extends JavaPlugin {
 
 					if (pd == null)
 						continue;
-					if (clearCounter++ > ConfigSettings.SQL_CLEAR_INTERVAL) {
+					if (clearCounter++ > ConfigSettings.SQL_CLEAR_INTERVAL_IN_TICKS) {
 						// clear sql drivers (force garbage collector)
 						Collections.list(DriverManager.getDrivers()).forEach(driver -> {
 							try {
 								DriverManager.deregisterDriver(driver);
 							} catch (SQLException e) {
-								Bukkit.getLogger().info("Error unregistering driver!");
+								ChatManager.logCmd(Level.SEVERE, "An error occured while deregistering sql drivers!");
 								e.printStackTrace();
 							}
 						});
-                        clearCounter = 0;
+                        			clearCounter = 0;
 					}
 					if (counter++ > ConfigSettings.PLAYER_DATA_SAVE_INTERVAL) {
 						pd.save();
