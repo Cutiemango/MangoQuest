@@ -1,5 +1,16 @@
 package me.Cutiemango.MangoQuest;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Scoreboard;
+
 import me.Cutiemango.MangoQuest.commands.AdminCommand;
 import me.Cutiemango.MangoQuest.commands.CommandReceiver;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
@@ -20,16 +31,8 @@ import me.Cutiemango.MangoQuest.versions.Version_v1_15_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_16_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_16_R2;
 import me.Cutiemango.MangoQuest.versions.Version_v1_16_R3;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.Scoreboard;
 
-import java.util.logging.Level;
-
-public class Main extends JavaPlugin
-{
+public class Main extends JavaPlugin {
 	private static Main instance;
 
 	public PluginHooker pluginHooker;
@@ -84,8 +87,7 @@ public class Main extends JavaPlugin
 
 		QuestChatManager.logCmd(Level.INFO, I18n.locMsg("Cmdlog.LoadedNMSVersion", version));
 
-		new BukkitRunnable()
-		{
+		new BukkitRunnable() {
 			@Override
 			public void run() {
 				pluginHooker.hookPlugins();
@@ -152,9 +154,9 @@ public class Main extends JavaPlugin
 	}
 
 	public void startCounter() {
-		counterTaskID = new BukkitRunnable()
-		{
+		counterTaskID = new BukkitRunnable() {
 			int counter = 0;
+			int clearCounter = 0;
 
 			@Override
 			public void run() {
@@ -163,6 +165,18 @@ public class Main extends JavaPlugin
 
 					if (pd == null)
 						continue;
+					if (clearCounter++ > ConfigSettings.SQL_CLEAR_INTERVAL_IN_TICKS) {
+						// clear sql drivers (force garbage collector)
+						Collections.list(DriverManager.getDrivers()).forEach(driver -> {
+							try {
+								DriverManager.deregisterDriver(driver);
+							} catch (SQLException e) {
+								ChatManager.logCmd(Level.SEVERE, "An error occured while deregistering sql drivers!");
+								e.printStackTrace();
+							}
+						});
+                        			clearCounter = 0;
+					}
 					if (counter++ > ConfigSettings.PLAYER_DATA_SAVE_INTERVAL) {
 						pd.save();
 						counter = 0;
@@ -173,8 +187,7 @@ public class Main extends JavaPlugin
 					if (ConfigSettings.USE_PARTICLE_EFFECT) {
 						try {
 							QuestNPCManager.effectTask(pd);
-						}
-						catch (Exception e) {
+						} catch (Exception e) {
 							System.out.println(e);
 							e.printStackTrace();
 							this.cancel();
@@ -185,8 +198,7 @@ public class Main extends JavaPlugin
 							try {
 								Scoreboard score = ScoreboardManager.update(pd);
 								pd.getPlayer().setScoreboard(score);
-							}
-							catch (Exception e) {
+							} catch (Exception e) {
 								QuestChatManager.logCmd(Level.SEVERE, I18n.locMsg("Cmdlog.ScoreboardException"));
 								System.out.println(e);
 								e.printStackTrace();
