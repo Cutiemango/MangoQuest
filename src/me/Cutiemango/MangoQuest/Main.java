@@ -31,6 +31,7 @@ import me.Cutiemango.MangoQuest.versions.Version_v1_15_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_16_R1;
 import me.Cutiemango.MangoQuest.versions.Version_v1_16_R2;
 import me.Cutiemango.MangoQuest.versions.Version_v1_16_R3;
+import me.Cutiemango.MangoQuest.versions.Version_v1_17_R1;
 
 public class Main extends JavaPlugin {
 	private static Main instance;
@@ -77,6 +78,10 @@ public class Main extends JavaPlugin {
 				break;
 			case "v1_16_R3":
 				handler = new Version_v1_16_R3();
+				QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.TestingVersion"));
+				break;
+			case "v1_17_R1":
+				handler = new Version_v1_17_R1();
 				QuestChatManager.logCmd(Level.WARNING, I18n.locMsg("Cmdlog.TestingVersion"));
 				break;
 			default:
@@ -172,7 +177,7 @@ public class Main extends JavaPlugin {
 								DriverManager.deregisterDriver(driver);
 								DriverManager.registerDriver(driver);
 							} catch (SQLException e) {
-								ChatManager.logCmd(Level.SEVERE, "An error occured while deregistering sql drivers!");
+								QuestChatManager.logCmd(Level.SEVERE, "An error occured while deregistering sql drivers!");
 								e.printStackTrace();
 							}
 						});
