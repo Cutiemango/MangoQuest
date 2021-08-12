@@ -81,12 +81,13 @@ public class QuestProgress
 		}
 	}
 
-	public void checkIfNextStage() {
+	public boolean checkIfNextStage() {
 		for (QuestObjectProgress o : objList) {
 			if (!o.isFinished())
-				return;
+				return false;
 		}
 		nextStage();
+		return true;
 	}
 
 	public void nextStage() {
