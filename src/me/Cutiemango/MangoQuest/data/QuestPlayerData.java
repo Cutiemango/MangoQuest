@@ -471,6 +471,9 @@ public class QuestPlayerData
 		AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any = new AtomicReference<>();
 		for(QuestProgress qp:currentQuests) {
 			if(checkPlayerInWorld(qp.getQuest())) {
+				if(qp.checkIfNextStage()){
+				  continue;
+				}
 				for(QuestObjectProgress qop:qp.getCurrentObjects()) {
 					if(checkItem(qop,npc)) {
 						any.set(new Pair<>(qp,qop));
