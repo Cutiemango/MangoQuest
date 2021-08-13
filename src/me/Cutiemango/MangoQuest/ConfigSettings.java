@@ -18,6 +18,7 @@ public class ConfigSettings
 	public static boolean ENABLE_SCOREBOARD = true;
 	public static boolean USE_PARTICLE_EFFECT = true;
 	public static boolean ENABLE_SKIP = false;
+	public static final int MAX_LENGTH = 800;
 	
 
 	public static boolean USE_WEAK_ITEM_CHECK = false;
