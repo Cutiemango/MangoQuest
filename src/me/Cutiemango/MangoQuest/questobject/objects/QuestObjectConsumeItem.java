@@ -8,6 +8,7 @@ import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.editor.EditorListenerObject;
 import me.Cutiemango.MangoQuest.questobject.ItemObject;
 import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
+import me.Cutiemango.MangoQuest.book.ItemSafeInteractiveText;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
@@ -53,7 +54,7 @@ public class QuestObjectConsumeItem extends ItemObject implements EditorObject
 	@Override
 	public void formatEditorPage(QuestBookPage page, int stage, int obj) {
 		page.add(I18n.locMsg("QuestEditor.ConsumeItem"));
-		page.add(new InteractiveText(item));
+		page.add(new ItemSafeInteractiveText(item));
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " item")).changeLine();
 		super.formatEditorPage(page, stage, obj);
 	}
