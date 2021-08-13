@@ -1,8 +1,16 @@
 package me.Cutiemango.MangoQuest.questobject;
 
+import java.util.HashMap;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.ItemStack;
+
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.book.ItemSafeInteractiveText;
 import me.Cutiemango.MangoQuest.book.TextComponentFactory;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
@@ -10,12 +18,6 @@ import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.HashMap;
 
 public abstract class SimpleQuestObject
 {
@@ -59,9 +61,9 @@ public abstract class SimpleQuestObject
 			} else
 				left = "";
 
-			if (args[i] instanceof ItemStack)
-				text.addExtra(TextComponentFactory.convertItemHoverEvent((ItemStack) args[i], isFinished));
-			else if (args[i] instanceof Integer)
+			if (args[i] instanceof ItemStack) {
+			   new ItemSafeInteractiveText((ItemStack)args[i]).get();
+			}else if (args[i] instanceof Integer)
 				text.addExtra(color + args[i]);
 			else if (args[i] instanceof NPC) {
 				NPC npc = (NPC) args[i];
