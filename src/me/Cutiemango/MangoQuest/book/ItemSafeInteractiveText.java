@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
+import me.Cutiemango.MangoQuest.ConfigSettings;
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
@@ -19,7 +20,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class ItemSafeInteractiveText extends InteractiveText{
-	public static final int MAX_LENGTH =  800;
 	private TextComponent text;
 	
 	public ItemSafeInteractiveText(TextComponent t) {
@@ -53,7 +53,7 @@ public class ItemSafeInteractiveText extends InteractiveText{
 			
 				try {
 					int length = t.getBytes("UTF-8").length;
-					if(bytelen+length > MAX_LENGTH) {
+					if(bytelen+length > ConfigSettings.MAX_LENGTH) {
 						index--;
 						break;
 					}
