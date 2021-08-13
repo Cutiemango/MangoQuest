@@ -71,11 +71,6 @@ public class ItemSafeInteractiveText extends InteractiveText{
 		}
 		itemclone.setItemMeta(meta);
 		text = TextComponentFactory.convertItemHoverEvent(itemclone, false);
-		if(text != null) {
-			for(Player p:Bukkit.getOnlinePlayers()) { 
-				p.spigot().sendMessage(text);
-			}
-		}
 	}
 
 
