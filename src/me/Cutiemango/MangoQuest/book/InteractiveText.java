@@ -1,5 +1,8 @@
 package me.Cutiemango.MangoQuest.book;
 
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+
 import me.Cutiemango.MangoQuest.data.QuestPlayerData;
 import me.Cutiemango.MangoQuest.manager.QuestChatManager;
 import me.Cutiemango.MangoQuest.model.Quest;
@@ -8,8 +11,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 public class InteractiveText
 {
@@ -23,7 +24,9 @@ public class InteractiveText
 
 	// similar to showItem
 	public InteractiveText(@NotNull ItemStack item) {
+		if(!this.getClass().isAssignableFrom(ItemSafeInteractiveText.class)) {
 		text = TextComponentFactory.convertItemHoverEvent(item, false);
+		}
 	}
 
 	private TextComponent text;
