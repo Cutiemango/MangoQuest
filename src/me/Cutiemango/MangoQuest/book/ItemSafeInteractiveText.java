@@ -101,7 +101,7 @@ public class ItemSafeInteractiveText extends InteractiveText{
 			
 				try {
 					int length = t.getBytes("UTF-8").length;
-					if(bytelen+length > MAX_LENGTH) {
+					if(bytelen+length > ConfigSettings.MAX_LENGTH) {
 
 						index--;
 						break;
