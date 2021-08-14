@@ -1,11 +1,18 @@
 package me.Cutiemango.MangoQuest.manager;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Main;
 import me.Cutiemango.MangoQuest.QuestStorage;
 import me.Cutiemango.MangoQuest.QuestUtil;
 import me.Cutiemango.MangoQuest.book.FlexibleBook;
 import me.Cutiemango.MangoQuest.book.InteractiveText;
+import me.Cutiemango.MangoQuest.book.ItemSafeInteractiveText;
 import me.Cutiemango.MangoQuest.book.QuestBookPage;
 import me.Cutiemango.MangoQuest.conversation.FriendConversation;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
@@ -21,11 +28,6 @@ import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class QuestBookGUIManager
 {
@@ -87,13 +89,13 @@ public class QuestBookGUIManager
 					book.add("- ");
 					List<ItemStack> items = choice.getItems();
 					for (int j = 0; j < items.size(); j++)
-						book.add(new InteractiveText(items.get(j))).add(j == items.size() - 1 ? "" : ", ");
+						book.add(new ItemSafeInteractiveText(items.get(j))).add(j == items.size() - 1 ? "" : ", ");
 					book.changeLine();
 				}
 			} else {
 				for (ItemStack is : qp.getQuest().getQuestReward().getDefaultChoice().getItems()) {
 					if (is != null) {
-						book.add(new InteractiveText(is));
+						book.add(new ItemSafeInteractiveText(is));
 						book.add(" ");
 						book.add(I18n.locMsg("QuestReward.RewardAmount", Integer.toString(is.getAmount()))).changeLine();
 					}
