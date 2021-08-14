@@ -2,9 +2,11 @@ package me.Cutiemango.MangoQuest.questobject;
 
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import me.Cutiemango.MangoQuest.I18n;
@@ -62,7 +64,7 @@ public abstract class SimpleQuestObject
 				left = "";
 
 			if (args[i] instanceof ItemStack) {
-			   new ItemSafeInteractiveText((ItemStack)args[i]).get();
+			   text.addExtra(new ItemSafeInteractiveText((ItemStack)args[i]).get());
 			}else if (args[i] instanceof Integer)
 				text.addExtra(color + args[i]);
 			else if (args[i] instanceof NPC) {
@@ -93,6 +95,9 @@ public abstract class SimpleQuestObject
 		if (block != null)
 			text.addExtra(color + QuestUtil.translate(block));
 		text.addExtra(color + left);
+		for(Player p:Bukkit.getOnlinePlayers()) {
+			p.spigot().sendMessage(text);
+		}
 		return text;
 	}
 
