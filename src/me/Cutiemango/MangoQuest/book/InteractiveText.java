@@ -25,9 +25,7 @@ public class InteractiveText
 	// similar to showItem
 	public InteractiveText(@NotNull ItemStack item) {
 		
-		if(!this.getClass().isAssignableFrom(ItemSafeInteractiveText.class)) {
 		text = TextComponentFactory.convertItemHoverEvent(item, false);
-		}
 	}
 
 	protected TextComponent text;
