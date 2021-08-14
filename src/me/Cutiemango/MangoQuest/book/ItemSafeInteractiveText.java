@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -25,10 +27,12 @@ public class ItemSafeInteractiveText extends InteractiveText{
 	public ItemSafeInteractiveText(TextComponent t) {
 		super(t);
 		text = t;
+		super.text = t;
 	}
 
 	public ItemSafeInteractiveText(String s) {
 		this(new TextComponent(TextComponent.fromLegacyText(QuestChatManager.translateColor(s))));
+		super.text =this.text;
 	}
 
 	// similar to showItem
@@ -50,7 +54,6 @@ public class ItemSafeInteractiveText extends InteractiveText{
 			int index = -1;
 			for (String t : temp) {
 				index++;
-			
 				try {
 					int length = t.getBytes("UTF-8").length;
 					if(bytelen+length > ConfigSettings.MAX_LENGTH) {
@@ -64,11 +67,18 @@ public class ItemSafeInteractiveText extends InteractiveText{
 				}
 			}
 			temp = temp.subList(0, index);
-			temp.add(ChatColor.translateAlternateColorCodes('&', "&2..................."));
+			temp.add(ChatColor.translateAlternateColorCodes('&', "&2..........................."));
 			meta.setLore(temp);
+			itemclone.setItemMeta(meta);
 		}
-		itemclone.setItemMeta(meta);
-		text = TextComponentFactory.convertItemHoverEvent(itemclone, false);
+	
+	    text = TextComponentFactory.convertItemHoverEvent(itemclone, false);
+	    super.text = this.text;
+        for(Player p:Bukkit.getOnlinePlayers()) {
+        	p.spigot().sendMessage(text);
+        }
+		//debug
+	   
 	}
 
 
@@ -116,22 +126,25 @@ public class ItemSafeInteractiveText extends InteractiveText{
 			}
 			temp = temp.subList(0, index);
 			meta.setLore(temp);
-			
+			itemclone.setItemMeta(meta);
 		}
 
-		itemclone.setItemMeta(meta);
+		
 		text = TextComponentFactory.convertItemHoverEvent(itemclone, false);
+		super.text = this.text;
 		return this;
 	}
 
 	public ItemSafeInteractiveText showText(String s) {
 		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 				new BaseComponent[] { new TextComponent(QuestChatManager.translateColor(s)) }));
+		super.text = this.text;
 		return this;
 	}
 
 	public ItemSafeInteractiveText showNPCInfo(@NotNull NPC npc) {
 		text.addExtra(TextComponentFactory.convertLocHoverEvent(npc.getName(), npc.getStoredLocation(), false));
+		super.text = this.text;
 		return this;
 	}
 
@@ -139,6 +152,7 @@ public class ItemSafeInteractiveText extends InteractiveText{
 	// hover: "click to view"
 	public ItemSafeInteractiveText showQuest(Quest q) {
 		text = TextComponentFactory.convertViewQuest(q);
+		super.text = this.text;
 		return this;
 	}
 
@@ -146,6 +160,7 @@ public class ItemSafeInteractiveText extends InteractiveText{
 	// hover: requirement message
 	public ItemSafeInteractiveText showRequirement(QuestPlayerData qd, Quest q) {
 		text = TextComponentFactory.convertRequirement(qd, q);
+		super.text = this.text;
 		return this;
 	}
 
