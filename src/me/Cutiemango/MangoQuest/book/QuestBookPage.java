@@ -1,14 +1,14 @@
 package me.Cutiemango.MangoQuest.book;
 
+import java.util.HashMap;
+
 import me.Cutiemango.MangoQuest.Pair;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-import java.util.HashMap;
-
 public class QuestBookPage
 {
-	private static final double MAXIMUM_CHAR_PER_LINE = 19D;
+	private static final double MAXIMUM_CHAR_PER_LINE = 30D;
 	private static final double MAXIMUM_LINE_PER_PAGE = 14D;
 
 	public static HashMap<Character.UnicodeBlock, Pair<Double, Double>> CHARACTER_SIZEMAP = new HashMap<>();
@@ -129,6 +129,7 @@ public class QuestBookPage
 	}
 
 	public QuestBookPage add(InteractiveText it) {
+		
 		add(it.get());
 		return this;
 	}
