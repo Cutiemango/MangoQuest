@@ -89,13 +89,13 @@ public class QuestBookGUIManager
 					book.add("- ");
 					List<ItemStack> items = choice.getItems();
 					for (int j = 0; j < items.size(); j++)
-						book.add(new ItemSafeInteractiveText(items.get(j))).add(j == items.size() - 1 ? "" : ", ");
+						book.add(new ItemSafeInteractiveText(items.get(j)).get()).add(j == items.size() - 1 ? "" : ", ");
 					book.changeLine();
 				}
 			} else {
 				for (ItemStack is : qp.getQuest().getQuestReward().getDefaultChoice().getItems()) {
 					if (is != null) {
-						book.add(new ItemSafeInteractiveText(is));
+						book.add(new ItemSafeInteractiveText(is).get());
 						book.add(" ");
 						book.add(I18n.locMsg("QuestReward.RewardAmount", Integer.toString(is.getAmount()))).changeLine();
 					}
