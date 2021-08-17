@@ -12,6 +12,7 @@ import me.Cutiemango.MangoQuest.manager.QuestValidater;
 import me.Cutiemango.MangoQuest.questobject.ItemObject;
 import me.Cutiemango.MangoQuest.questobject.interfaces.EditorObject;
 import me.Cutiemango.MangoQuest.questobject.interfaces.NPCObject;
+import me.Cutiemango.MangoQuest.book.ItemSafeInteractiveText;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -73,7 +74,7 @@ public class QuestObjectDeliverItem extends ItemObject implements NPCObject, Edi
 	@Override
 	public void formatEditorPage(QuestBookPage page, int stage, int obj) {
 		page.add(I18n.locMsg("QuestEditor.DeliverItem"));
-		page.add(new InteractiveText(item));
+		page.add(new ItemSafeInteractiveText(item));
 		page.add(new InteractiveText(I18n.locMsg("QuestEditor.Edit")).clickCommand("/mq e edit object " + stage + " " + obj + " item")).changeLine();
 		page.add(I18n.locMsg("QuestEditor.DeliverNPC"));
 		if (npc == null)

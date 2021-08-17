@@ -13,6 +13,7 @@ public class ConfigSettings
 	// SQL Garbage Collector in ticks
 	public static int SQL_CLEAR_INTERVAL_IN_TICKS = 24000;
 	public static int CONVERSATION_ACTION_INTERVAL_IN_TICKS = 25;
+	public static final int MAX_LENGTH = 600;
 
 	public static boolean POP_LOGIN_MESSAGE = true;
 	public static boolean ENABLE_SCOREBOARD = true;
