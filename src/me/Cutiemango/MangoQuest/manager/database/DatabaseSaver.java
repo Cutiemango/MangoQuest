@@ -19,10 +19,10 @@ public class DatabaseSaver
 	/**
 	 * Saves the entire player data into the database.
 	 * PDID is required.
+	 *
 	 * @param pd player's data to be saved
 	 */
-	public static void savePlayerData(QuestPlayerData pd)
-	{
+	public static void savePlayerData(QuestPlayerData pd) {
 		int PDID = pd.getPDID();
 		saveLoginData(pd.getPlayer());
 
@@ -33,151 +33,115 @@ public class DatabaseSaver
 
 		removeFinishedQuests(pd.getProgresses(), PDID);
 	}
-	
-	public static void saveLoginData(Player p)
-	{
+
+	public static void saveLoginData(Player p) {
 		Connection conn = DatabaseManager.getConnection();
-		try(PreparedStatement insertupdate = conn.prepareStatement("INSERT INTO mq_playerdata (UUID, LastKnownID) values (?, ?)"
-				+ " ON DUPLICATE KEY UPDATE mq_playerdata set LastKnownID = ? WHERE UUID = ?");)
-		{
-			
-			insertupdate.setNString(1, p.getUniqueId().toString());
-			insertupdate.setNString(2, p.getName());
-			insertupdate.setNString(3, p.getName());
-			insertupdate.setNString(4, p.getUniqueId().toString());
-			insertupdate.execute();
-	
-		}
-		catch (SQLException e)
-		{
+		try (PreparedStatement stmt = conn.prepareStatement(
+				"INSERT INTO mq_playerdata (UUID, LastKnownID) values (?, ?)" + " ON DUPLICATE KEY UPDATE mq_playerdata set LastKnownID = ? WHERE UUID = ?")) {
+
+			stmt.setNString(1, p.getUniqueId().toString());
+			stmt.setNString(2, p.getName());
+			stmt.setNString(3, p.getName());
+			stmt.setNString(4, p.getUniqueId().toString());
+			stmt.execute();
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-
-	
-	private static void saveFriendPoint(int npc, int friendPoint, int PDID)
-	{
+	private static void saveFriendPoint(int npc, int friendPoint, int PDID) {
 		Connection conn = DatabaseManager.getConnection();
-		try(PreparedStatement insertupdate = conn.prepareStatement("INSERT INTO mq_friendpoint (PDID, NPC, FriendPoint) values (?, ?, ?)"
-				+ " ON DUPLICATE KEY UPDATE mq_friendpoint set FriendPoint = ? WHERE PDID = ? AND NPC = ?"))
-		{
-			insertupdate.setInt(1, PDID);
-			insertupdate.setInt(2, npc);
-			insertupdate.setInt(3, friendPoint);
-			insertupdate.setInt(4, friendPoint);
-			insertupdate.setInt(5, PDID);
-			insertupdate.setInt(6, npc);
-			insertupdate.execute();
-			
-		}
-		catch (SQLException e)
-		{
+		try (PreparedStatement stmt = conn.prepareStatement(
+				"INSERT INTO mq_friendpoint (PDID, NPC, FriendPoint) values (?, ?, ?)" + " ON DUPLICATE KEY UPDATE mq_friendpoint set FriendPoint = ? WHERE PDID = ? AND NPC = ?")) {
+			stmt.setInt(1, PDID);
+			stmt.setInt(2, npc);
+			stmt.setInt(3, friendPoint);
+			stmt.setInt(4, friendPoint);
+			stmt.setInt(5, PDID);
+			stmt.setInt(6, npc);
+			stmt.execute();
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void saveFinishedConversation(String convID, int PDID)
-	{
+	private static void saveFinishedConversation(String convID, int PDID) {
 		Connection conn = DatabaseManager.getConnection();
-		try
-		{
+		try {
 			PreparedStatement select = conn.prepareStatement("SELECT * FROM mq_finishedconv WHERE PDID = ? AND ConvID = ?");
 			select.setInt(1, PDID);
 			select.setNString(2, convID);
 
-			if (!select.executeQuery().next())
-			{
+			if (!select.executeQuery().next()) {
 				PreparedStatement insert = conn.prepareStatement("INSERT INTO mq_finishedconv (PDID, ConvID) values (?, ?)");
 				insert.setInt(1, PDID);
 				insert.setNString(2, convID);
 				insert.execute();
 			}
-		}
-		catch (SQLException e)
-		{
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-
-	
-	private static void saveQuestProgress(QuestProgress questProgress, int PDID)
-	{
+	private static void saveQuestProgress(QuestProgress questProgress, int PDID) {
 		Connection conn = DatabaseManager.getConnection();
-		try(PreparedStatement insertupdate = conn.prepareStatement("INSERT INTO mq_questprogress (PDID, QuestID, QuestObjectProgress, QuestStage, TakeStamp, Version) values (?, ?, ?, ?, ?, ?) "
-				+ "ON DUPLICATE KEY UPDATE mq_questprogress set QuestObjectProgress = ?, QuestStage = ?, Version = ? WHERE PDID = ? AND QuestID = ?");)
-		{
-			insertupdate.setInt(1, PDID);
-			insertupdate.setNString(2, questProgress.getQuest().getInternalID());
-			insertupdate.setNString(3, JSONSerializer.jsonSerialize(questProgress.getCurrentObjects()));
-			insertupdate.setInt(4, questProgress.getCurrentStage());
-			insertupdate.setLong(5, questProgress.getTakeTime());
-			insertupdate.setLong(6, questProgress.getQuest().getVersion().getTimeStamp());
-		    insertupdate.setNString(7, JSONSerializer.jsonSerialize(questProgress.getCurrentObjects()));
-			insertupdate.setInt(8, questProgress.getCurrentStage());
-			insertupdate.setLong(9, questProgress.getQuest().getVersion().getTimeStamp());
-			insertupdate.setInt(10, PDID);
-			insertupdate.setNString(11, questProgress.getQuest().getInternalID());
-			insertupdate.execute();
-			
-		}
-		catch (SQLException e)
-		{
+		try (PreparedStatement stmt = conn.prepareStatement(
+				"INSERT INTO mq_questprogress (PDID, QuestID, QuestObjectProgress, QuestStage, TakeStamp, Version) values (?, ?, ?, ?, ?, ?) " + "ON DUPLICATE KEY UPDATE mq_questprogress set QuestObjectProgress = ?, QuestStage = ?, Version = ? WHERE PDID = ? AND QuestID = ?")) {
+			stmt.setInt(1, PDID);
+			stmt.setNString(2, questProgress.getQuest().getInternalID());
+			stmt.setNString(3, JSONSerializer.jsonSerialize(questProgress.getCurrentObjects()));
+			stmt.setInt(4, questProgress.getCurrentStage());
+			stmt.setLong(5, questProgress.getTakeTime());
+			stmt.setLong(6, questProgress.getQuest().getVersion().getTimeStamp());
+			stmt.setNString(7, JSONSerializer.jsonSerialize(questProgress.getCurrentObjects()));
+			stmt.setInt(8, questProgress.getCurrentStage());
+			stmt.setLong(9, questProgress.getQuest().getVersion().getTimeStamp());
+			stmt.setInt(10, PDID);
+			stmt.setNString(11, questProgress.getQuest().getInternalID());
+			stmt.execute();
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void removeFinishedQuests(Set<QuestProgress> progresses, int PDID)
-	{
+	private static void removeFinishedQuests(Set<QuestProgress> progresses, int PDID) {
 		Connection conn = DatabaseManager.getConnection();
-		try
-		{
+		try {
 			PreparedStatement select = conn.prepareStatement("SELECT * FROM mq_questprogress WHERE PDID = ?");
 			select.setInt(1, PDID);
 			ResultSet results = select.executeQuery();
-			while (results.next())
-			{
+			while (results.next()) {
 				String questID = results.getString("QuestID");
-				if (progresses.stream().noneMatch(questProgress -> questProgress.getQuest().getInternalID().equals(questID)))
-				{
+				if (progresses.stream().noneMatch(questProgress -> questProgress.getQuest().getInternalID().equals(questID))) {
 					PreparedStatement delete = conn.prepareStatement("DELETE FROM mq_questprogress WHERE PDID = ? AND QuestID = ?");
 					delete.setInt(1, PDID);
 					delete.setNString(2, questID);
 					delete.execute();
 				}
 			}
-		}
-		catch (SQLException e)
-		{
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	
-	private static void saveFinishedQuest(QuestFinishData questData, int PDID)
-	{
+	private static void saveFinishedQuest(QuestFinishData questData, int PDID) {
 		Connection conn = DatabaseManager.getConnection();
-		try(PreparedStatement insertupdate = conn.prepareStatement("INSERT INTO mq_finishedquest (PDID, QuestID, LastFinishTime, FinishedTimes, RewardTaken) values (?, ?, ?, ?, ?) "
-				+ "ON DUPLICATE KEY UPDATE mq_finishedquest set FinishedTimes = ?, RewardTaken = ?, LastFinishTime = ? WHERE PDID = ? AND QuestID = ?");)
-		{
-			insertupdate.setInt(1, PDID);
-			insertupdate.setNString(2, questData.getQuest().getInternalID());
-			insertupdate.setLong(3, questData.getLastFinish());
-			insertupdate.setInt(4, questData.getFinishedTimes());
-			insertupdate.setBoolean(5, questData.isRewardTaken());
-			insertupdate.setInt(6, questData.getFinishedTimes());
-			insertupdate.setInt(7, questData.isRewardTaken() ? 1 : 0);
-			insertupdate.setLong(8, questData.getLastFinish());
-			insertupdate.setInt(9, PDID);
-			insertupdate.setNString(10, questData.getQuest().getInternalID());
-			insertupdate.execute();
-		
-		}
-		catch (SQLException e)
-		{
+		try (PreparedStatement stmt = conn.prepareStatement(
+				"INSERT INTO mq_finishedquest (PDID, QuestID, LastFinishTime, FinishedTimes, RewardTaken) values (?, ?, ?, ?, ?) " + "ON DUPLICATE KEY UPDATE mq_finishedquest set FinishedTimes = ?, RewardTaken = ?, LastFinishTime = ? WHERE PDID = ? AND QuestID = ?")) {
+			stmt.setInt(1, PDID);
+			stmt.setNString(2, questData.getQuest().getInternalID());
+			stmt.setLong(3, questData.getLastFinish());
+			stmt.setInt(4, questData.getFinishedTimes());
+			stmt.setBoolean(5, questData.isRewardTaken());
+			stmt.setInt(6, questData.getFinishedTimes());
+			stmt.setInt(7, questData.isRewardTaken() ? 1 : 0);
+			stmt.setLong(8, questData.getLastFinish());
+			stmt.setInt(9, PDID);
+			stmt.setNString(10, questData.getQuest().getInternalID());
+			stmt.execute();
+
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
 }
