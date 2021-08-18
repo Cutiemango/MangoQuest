@@ -1,11 +1,30 @@
 package me.Cutiemango.MangoQuest.data;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.Scoreboard;
+
 import me.Cutiemango.MangoQuest.ConfigSettings;
 import me.Cutiemango.MangoQuest.DebugHandler;
 import me.Cutiemango.MangoQuest.I18n;
 import me.Cutiemango.MangoQuest.Pair;
 import me.Cutiemango.MangoQuest.QuestIO;
 import me.Cutiemango.MangoQuest.QuestUtil;
+import me.Cutiemango.MangoQuest.book.InteractiveText;
 import me.Cutiemango.MangoQuest.conversation.ConversationManager;
 import me.Cutiemango.MangoQuest.conversation.QuestChoice.Choice;
 import me.Cutiemango.MangoQuest.conversation.QuestConversation;
@@ -26,26 +45,15 @@ import me.Cutiemango.MangoQuest.objects.trigger.TriggerType;
 import me.Cutiemango.MangoQuest.questobject.CustomQuestObject;
 import me.Cutiemango.MangoQuest.questobject.NumerableObject;
 import me.Cutiemango.MangoQuest.questobject.SimpleQuestObject;
-import me.Cutiemango.MangoQuest.questobject.objects.*;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectBreakBlock;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectConsumeItem;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectDeliverItem;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectFishing;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectKillMob;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectReachLocation;
+import me.Cutiemango.MangoQuest.questobject.objects.QuestObjectTalkToNPC;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scoreboard.Scoreboard;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 public class QuestPlayerData
 {
@@ -469,10 +477,19 @@ public class QuestPlayerData
 
 	public boolean deliverItem(NPC npc) {
 		AtomicReference<Pair<QuestProgress, QuestObjectProgress>> any = new AtomicReference<>();
-		currentQuests.stream().filter(qp -> checkPlayerInWorld(qp.getQuest())).forEach(qp -> {
-			Optional<QuestObjectProgress> obj = qp.getCurrentObjects().stream().filter(qop -> checkItem(qop, npc)).findFirst();
-			obj.ifPresent(qop -> any.set(new Pair<>(qp, qop)));
-		});
+		for(QuestProgress qp:currentQuests) {
+			if(checkPlayerInWorld(qp.getQuest())) {
+				if(qp.checkIfNextStage()){
+				 continue;
+				}
+				for(QuestObjectProgress qop:qp.getCurrentObjects()) {
+					if(checkItem(qop,npc)) {
+						any.set(new Pair<>(qp,qop));
+						break;
+					}
+				}
+			}
+		}
 		if (any.get() != null) {
 			Pair<QuestProgress, QuestObjectProgress> pair = any.get();
 			checkFinished(pair.getKey(), pair.getValue());
