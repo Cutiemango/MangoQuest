@@ -65,7 +65,7 @@ public class DatabaseManager
 						"    `Version` BIGINT(20) NOT NULL DEFAULT '0' COMMENT '任務版本'," +
 						"    `TakeStamp` BIGINT(20) NOT NULL DEFAULT '0' COMMENT '任務接取時間'," +
 						"    `QuestObjectProgress` VARCHAR(1023) NOT NULL DEFAULT '' COMMENT '任務物件進度資料'," +
-						"    PRIMARY KEY (`QPDID`)," +
+						"    PRIMARY KEY (`PDID`,`QuestID`)," +
 						"    UNIQUE INDEX `QPDID` (`QPDID`)" +
 						") " +
 						"ENGINE=InnoDB " +
@@ -84,7 +84,7 @@ public class DatabaseManager
 						"    `FinishedTimes` INT(11) NOT NULL COMMENT '完成次數'," +
 						"    `LastFinishTime` BIGINT(20) NOT NULL DEFAULT '0' COMMENT '上次完成時間'," +
 						"    `RewardTaken` INT(11) NOT NULL DEFAULT 0 COMMENT '是否已領取獎勵'," +
-						"    PRIMARY KEY (`FQID`)," +
+						"    PRIMARY KEY (`PDID`,`QuestID`)," +
 						"    UNIQUE INDEX `FQID` (`FQID`)" +
 						") " +
 						"ENGINE=InnoDB " +
@@ -101,7 +101,7 @@ public class DatabaseManager
 						"	`PDID` INT(11) NOT NULL COMMENT '玩家資料流水號'," +
 						"	`NPC` INT(11) NOT NULL COMMENT 'NPC代號(ID)'," +
 						"	`FriendPoint` INT(11) DEFAULT '0' NOT NULL COMMENT '好感度'," +
-						"	PRIMARY KEY (`FPID`)," +
+						"	PRIMARY KEY (`PDID`,`NPC`)," +
 						"	UNIQUE INDEX `FPID` (`FPID`)" +
 						") " +
 						"ENGINE=InnoDB " +
@@ -117,7 +117,7 @@ public class DatabaseManager
 						"	`FCID` INT(11) NOT NULL AUTO_INCREMENT COMMENT '完成對話流水號'," +
 						"	`PDID` INT(11) NOT NULL COMMENT '玩家資料流水號'," +
 						"	`ConvID` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '對話名稱(ID)'," +
-						"	PRIMARY KEY (`FCID`)," +
+						"	PRIMARY KEY (`PDID`,`ConvID`)," +
 						"	UNIQUE INDEX `FCID` (`FCID`)" +
 						") " +
 						"ENGINE=InnoDB " +
